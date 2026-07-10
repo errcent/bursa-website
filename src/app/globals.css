@@ -233,7 +233,7 @@
 
 @layer utilities {
   .container-page {
-    @apply relative z-[1] mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-10;
+    @apply relative z-[1] mx-auto w-full min-w-0 max-w-6xl px-5 sm:px-8 lg:px-10;
   }
   .page-hero-title {
     @apply font-heading text-[2rem] font-semibold leading-[1.1] tracking-[-0.03em] sm:text-5xl md:text-[3.5rem];
@@ -366,7 +366,7 @@
   }
 
   .catalog-section {
-    @apply flex flex-col;
+    @apply flex min-w-0 flex-col;
     gap: var(--catalog-section-gap);
   }
 
@@ -383,6 +383,8 @@
   }
 
   .catalog-row-bleed {
+    min-width: 0;
+    max-width: 100%;
     margin-left: calc(-1 * var(--catalog-container-px));
     margin-right: calc(-1 * var(--catalog-container-px));
     padding-left: var(--catalog-container-px);
@@ -416,6 +418,9 @@
   @media (max-width: 767px) {
     .catalog-row-scroll {
       display: flex;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
       gap: 0.5rem;
       overflow-x: auto;
       overscroll-behavior-x: contain;
@@ -480,6 +485,8 @@
   }
 
   .landing-carousel-bleed {
+    min-width: 0;
+    max-width: 100%;
     margin-left: calc(-1 * var(--landing-container-px));
     margin-right: calc(-1 * var(--landing-container-px));
     padding-left: var(--landing-container-px);
@@ -491,6 +498,8 @@
   }
 
   .testimonial-scroll-carousel {
+    min-width: 0;
+    max-width: 100%;
     margin-left: calc(-1 * var(--landing-container-px));
     margin-right: calc(-1 * var(--landing-container-px));
     padding-left: var(--landing-container-px);

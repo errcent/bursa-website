@@ -26,6 +26,8 @@ const HIDDEN_PATH_PREFIXES = [
   "/kelas",
   "/instruktur",
   "/jadi-mentor",
+  "/kebijakan-privasi",
+  "/syarat-dan-ketentuan",
 ] as const;
 
 function isHiddenPath(pathname: string) {

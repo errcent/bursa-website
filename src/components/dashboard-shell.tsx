@@ -121,12 +121,12 @@ function DashboardBody() {
           <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
             <div className="flex min-w-0 flex-col gap-10">
               <section>
-                <Reveal className="mb-4 flex items-center justify-between">
-                  <h2 className="section-title flex items-center gap-2">
+                <Reveal className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="section-title flex min-w-0 items-center gap-2">
                     <Flame className="size-4 text-accent" />
                     Lanjutkan Belajar
                   </h2>
-                  <Link href="/katalog" className="link-accent text-sm">
+                  <Link href="/katalog" className="link-accent shrink-0 text-sm">
                     Cari kelas baru
                   </Link>
                 </Reveal>
@@ -158,32 +158,32 @@ function DashboardBody() {
                         <motion.div whileHover={{ y: -4 }}>
                           <Link
                             href={`/belajar/${course.slug}/${course.lastLessonId}`}
-                            className="surface-card-hover flex flex-col gap-3 p-5 sm:flex-row sm:items-center"
+                            className="surface-card-hover flex min-w-0 flex-col gap-3 p-5 sm:flex-row sm:items-center"
                           >
                             <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-accent-soft via-surface-2 to-background">
                               <PlayCircle className="size-6 text-accent" />
                             </div>
-                            <div className="flex-1">
+                            <div className="min-w-0 flex-1">
                               <div className="mb-1 flex items-center gap-2">
                                 <InstrumentBadge instrument={course.instrument} />
                               </div>
-                              <p className="font-heading text-sm font-medium">{course.title}</p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="line-clamp-2 font-heading text-sm font-medium">{course.title}</p>
+                              <p className="truncate text-xs text-muted-foreground">
                                 oleh {course.mentorName}
                               </p>
-                              <div className="mt-2 flex w-full items-center gap-3">
+                              <div className="mt-2 flex w-full min-w-0 items-center gap-3">
                                 <Progress
                                   value={course.progressPercent}
-                                  className="w-full max-w-40 [&_[data-slot=progress-indicator]]:bg-accent"
+                                  className="min-w-0 w-full max-w-40 [&_[data-slot=progress-indicator]]:bg-accent"
                                 />
-                                <span className="text-xs text-muted-foreground">
+                                <span className="shrink-0 text-xs text-muted-foreground">
                                   {course.progressPercent}%
                                 </span>
                               </div>
                             </div>
-                            <Button size="sm" className="btn-primary shrink-0">
+                            <span className="btn-primary inline-flex h-8 shrink-0 items-center justify-center rounded-lg px-3 text-xs font-medium">
                               {course.progressPercent === 0 ? "Mulai" : "Lanjutkan"}
-                            </Button>
+                            </span>
                           </Link>
                         </motion.div>
                       </StaggerItem>

@@ -44,7 +44,7 @@ function RoomCard({ room, locked }: { room: ChatRoom; locked?: boolean }) {
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
           {!isPublic && (
             <ChatUserAvatar
               userId={room.mentorId}
@@ -96,8 +96,8 @@ function RoomCard({ room, locked }: { room: ChatRoom; locked?: boolean }) {
         )}
       </div>
 
-      <div>
-        <h3 className="font-heading text-sm font-semibold">{room.name}</h3>
+      <div className="min-w-0">
+        <h3 className="truncate font-heading text-sm font-semibold">{room.name}</h3>
         <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
           {locked
             ? "Konten privat mentor — tidak tersedia untuk role developer."
