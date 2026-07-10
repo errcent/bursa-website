@@ -9,6 +9,7 @@ import {
   requireAdmin,
   unauthorized,
 } from "@/lib/admin/server";
+import { revalidateCatalog } from "@/lib/catalog/server";
 import type { CourseFormInput } from "@/lib/admin/types";
 
 type RouteContext = { params: Promise<{ id: string }> };
