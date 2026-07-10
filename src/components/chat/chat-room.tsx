@@ -58,8 +58,8 @@ import type {
 } from "@/lib/chat/types";
 import type { ScreenshotAttemptMethod } from "@/lib/chat/anti-screenshot";
 
-const POLL_INTERVAL_MS = 3000;
-const POLL_INTERVAL_MOBILE_MS = 6000;
+const POLL_INTERVAL_MS = 4000;
+const POLL_INTERVAL_MOBILE_MS = 10000;
 const TYPING_SIMULATION_INTERVAL_MS = 8000;
 const NEAR_BOTTOM_PX = 80;
 
@@ -78,9 +78,32 @@ function messagesSnapshotKey(messages: ChatMessage[]): string {
   return messages
     .map(
       (m) =>
-        `${m.id}:${m.createdAt}:${m.content.length}:${m.poll?.votedOptionId ?? ""}:${m.reactions?.length ?? 0}`
+        `${m.id}:${m.createdAt}:${m.content.length}:${m.poll?.votedOptionId ?? ""}:${m.reactions?.map((r) => `${r.emoji}:${r.count}`).join(",") ?? ""}`
     )
     .join("|");
+}
+
+/** Client-side guard: never render messages from another cabang or room. */
+function filterMessagesForScope(
+  messages: ChatMessage[],
+  roomId: string,
+  branchId?: string | null,
+  hasBranches = false
+): ChatMessage[] {
+  return messages.filter((m) => {
+    if (m.roomId && m.roomId !== roomId) return false;
+    if (!hasBranches) return true;
+    if (!branchId) return m.branchId == null;
+    return m.branchId === branchId;
+  });
+}
+
+function scrollListToBottom(el: HTMLElement, instant: boolean) {
+  if (instant) {
+    el.scrollTop = el.scrollHeight;
+  } else {
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }
 }
 
 interface ChatRoomProps {
@@ -239,6 +262,9 @@ export function ChatRoomView({
   const [isPolling, setIsPolling] = useState(false);
   const pollGenerationRef = useRef(0);
   const activePollScopeRef = useRef("");
+  const branchLoadInFlightRef = useRef(false);
+  const pollInFlightRef = useRef(false);
+  const branchMessagesCacheRef = useRef<Map<string, ChatMessage[]>>(new Map());
   const [replyTo, setReplyTo] = useState<ChatMessage | null>(null);
   const [replyFocusKey, setReplyFocusKey] = useState(0);
   const [signalModalOpen, setSignalModalOpen] = useState(false);
@@ -291,11 +317,19 @@ export function ChatRoomView({
       return isMentor || isModerator;
     });
   }, [room.branches, isDeveloper, isMentor, isModerator]);
+  /** Single source of truth — UI tab, fetch, poll, and send must all use this id. */
+  const effectiveBranchId = useMemo(() => {
+    if (visibleBranches.length === 0) return activeBranchId;
+    if (activeBranchId && visibleBranches.some((b) => b.id === activeBranchId)) {
+      return activeBranchId;
+    }
+    return pickDefaultBranchId(visibleBranches, { preferTwoWay: true });
+  }, [activeBranchId, visibleBranches]);
   const activeBranch =
-    visibleBranches.find((b) => b.id === activeBranchId) ??
-    visibleBranches.find((b) => isTwoWayMode(b.mode)) ??
+    visibleBranches.find((b) => b.id === effectiveBranchId) ??
     visibleBranches[0] ??
     null;
+  const hasBranches = visibleBranches.length > 0;
   const branchSend = canSendInActiveBranch(
     activeBranch,
     isMentor,
@@ -326,38 +360,52 @@ export function ChatRoomView({
   }, [messages, room.lastReadMessageId]);
 
   const pollMessages = useCallback(async () => {
-    const branchForPoll = activeBranch?.id ?? activeBranchId;
+    if (branchLoadInFlightRef.current || pollInFlightRef.current) return;
+    if (typeof document !== "undefined" && document.hidden) return;
+
+    const branchForPoll = effectiveBranchId;
     const scopeKey = pollScopeKey(room.id, branchForPoll);
     const generationAtStart = pollGenerationRef.current;
     activePollScopeRef.current = scopeKey;
+    pollInFlightRef.current = true;
 
     const { currentUserId: viewerId, ownUserIds: viewerIds } =
       fetchViewerRef.current;
-    const remote = await fetchMessages(
-      room.id,
-      branchForPoll,
-      viewerId,
-      viewerIds
-    );
+    let remote: Awaited<ReturnType<typeof fetchMessages>> = null;
+    try {
+      remote = await fetchMessages(room.id, branchForPoll, viewerId, viewerIds);
+    } finally {
+      pollInFlightRef.current = false;
+    }
 
     if (generationAtStart !== pollGenerationRef.current) return;
     if (activePollScopeRef.current !== scopeKey) return;
 
     if (remote) {
       if (remote.viewerId) setViewerUserId(remote.viewerId);
-      // Keep in-flight optimistic bubbles until POST confirms; drop if server already has them
+      const scopedRemote = filterMessagesForScope(
+        remote.messages,
+        room.id,
+        branchForPoll,
+        hasBranches
+      );
       setMessages((prev) => {
-        const pending = prev.filter((m) => m.id.startsWith("local-"));
+        const scopedPrev = filterMessagesForScope(
+          prev,
+          room.id,
+          branchForPoll,
+          hasBranches
+        );
+        const pending = scopedPrev.filter((m) => m.id.startsWith("local-"));
         const viewerIds = fetchViewerRef.current.ownUserIds;
         if (pending.length === 0) {
-          if (messagesSnapshotKey(prev) === messagesSnapshotKey(remote.messages)) {
-            return prev;
+          if (messagesSnapshotKey(scopedPrev) === messagesSnapshotKey(scopedRemote)) {
+            return scopedPrev;
           }
-          return remote.messages;
+          return scopedRemote;
         }
 
         const stillPending = pending.filter((local) => {
-          // Never re-attach optimistics from another cabang after a tab switch
           if (
             local.branchId &&
             branchForPoll &&
@@ -367,7 +415,7 @@ export function ChatRoomView({
           }
           if (local.type === "signal" && local.signal) {
             const s = local.signal;
-            return !remote.messages.some(
+            return !scopedRemote.some(
               (r) =>
                 r.type === "signal" &&
                 r.signal?.ticker === s.ticker &&
@@ -378,11 +426,11 @@ export function ChatRoomView({
             );
           }
           if (local.type === "poll" && local.poll) {
-            return !remote.messages.some(
+            return !scopedRemote.some(
               (r) => r.type === "poll" && r.poll?.question === local.poll?.question
             );
           }
-          return !remote.messages.some(
+          return !scopedRemote.some(
             (r) =>
               r.content === local.content &&
               (r.author.id === local.author.id ||
@@ -393,19 +441,15 @@ export function ChatRoomView({
           );
         });
 
-        // Preserve this viewer's optimistic vote until the server includes them
-        // in voterIds (avoids a 3s poll wiping a successful click before remap).
         const merged =
           stillPending.length === 0
-            ? remote.messages
-            : [...remote.messages, ...stillPending];
+            ? scopedRemote
+            : [...scopedRemote, ...stillPending];
 
         const next = merged.map((remoteMsg) => {
-          const local = prev.find((m) => m.id === remoteMsg.id);
+          const local = scopedPrev.find((m) => m.id === remoteMsg.id);
           let next = remoteMsg;
 
-          // Preserve this viewer's optimistic vote until the server includes them
-          // in voterIds (avoids a 3s poll wiping a successful click before remap).
           if (
             next.type === "poll" &&
             next.poll &&
@@ -417,8 +461,6 @@ export function ChatRoomView({
               poll: {
                 ...next.poll,
                 votedOptionId: local.poll.votedOptionId,
-                // Prefer server tallies when present; keep local bump only if
-                // server has not caught up yet.
                 totalVotes: Math.max(
                   next.poll.totalVotes,
                   local.poll.totalVotes
@@ -435,8 +477,6 @@ export function ChatRoomView({
             };
           }
 
-          // Keep optimistic emoji adds until the server round-trips them
-          // (POST may still be in flight when the 3s poll remaps messages).
           if (local?.reactions?.some((r) => r.userReacted)) {
             const remoteReactions = next.reactions ?? [];
             const byEmoji = new Map(
@@ -444,13 +484,13 @@ export function ChatRoomView({
             );
             for (const lr of local.reactions) {
               if (!lr.userReacted) continue;
-              const remote = byEmoji.get(lr.emoji);
-              if (!remote) {
+              const remoteReaction = byEmoji.get(lr.emoji);
+              if (!remoteReaction) {
                 byEmoji.set(lr.emoji, { ...lr });
-              } else if (!remote.userReacted) {
+              } else if (!remoteReaction.userReacted) {
                 byEmoji.set(lr.emoji, {
                   emoji: lr.emoji,
-                  count: Math.max(remote.count + 1, lr.count),
+                  count: Math.max(remoteReaction.count + 1, lr.count),
                   userReacted: true,
                 });
               }
@@ -465,8 +505,8 @@ export function ChatRoomView({
           return next;
         });
 
-        if (messagesSnapshotKey(next) === messagesSnapshotKey(prev)) {
-          return prev;
+        if (messagesSnapshotKey(next) === messagesSnapshotKey(scopedPrev)) {
+          return scopedPrev;
         }
         return next;
       });
@@ -480,7 +520,7 @@ export function ChatRoomView({
         );
       }
     }
-  }, [room.id, activeBranch?.id, activeBranchId]);
+  }, [room.id, effectiveBranchId, hasBranches]);
 
   const loadMembers = useCallback(async () => {
     const remote = await fetchRoomMembers(room.id);
@@ -536,19 +576,20 @@ export function ChatRoomView({
     unreadDividerFrozenRef.current = false;
     pollGenerationRef.current += 1;
     activePollScopeRef.current = "";
+    branchLoadInFlightRef.current = false;
+    pollInFlightRef.current = false;
+    branchMessagesCacheRef.current.clear();
   }, [initialRoom]);
 
   useEffect(() => {
-    if (visibleBranches.length === 0) return;
     if (
-      !activeBranchId ||
-      !visibleBranches.some((b) => b.id === activeBranchId)
+      effectiveBranchId &&
+      effectiveBranchId !== activeBranchId &&
+      visibleBranches.some((b) => b.id === effectiveBranchId)
     ) {
-      setActiveBranchId(
-        pickDefaultBranchId(visibleBranches, { preferTwoWay: true })
-      );
+      setActiveBranchId(effectiveBranchId);
     }
-  }, [activeBranchId, visibleBranches]);
+  }, [effectiveBranchId, activeBranchId, visibleBranches]);
 
   // Join room + load members + mark read. Message load is owned by the branch
   // effect so cabang switches and viewer-id resolution never race here.
@@ -589,12 +630,15 @@ export function ChatRoomView({
     // Branch switches: allow a fresh divider cursor for the new thread.
     unreadDividerFrozenRef.current = false;
     pollGenerationRef.current += 1;
-    const branchForLoad = activeBranchId;
+    const branchForLoad = effectiveBranchId;
     const scopeKey = pollScopeKey(room.id, branchForLoad);
     const generation = pollGenerationRef.current;
     activePollScopeRef.current = scopeKey;
-    setMessages([]);
+    branchLoadInFlightRef.current = true;
     setIsPolling(true);
+
+    const cached = branchMessagesCacheRef.current.get(scopeKey);
+    setMessages(cached ?? []);
 
     let cancelled = false;
     void (async () => {
@@ -610,7 +654,14 @@ export function ChatRoomView({
       if (activePollScopeRef.current !== scopeKey) return;
       if (remote) {
         if (remote.viewerId) setViewerUserId(remote.viewerId);
-        setMessages(remote.messages);
+        const scoped = filterMessagesForScope(
+          remote.messages,
+          room.id,
+          branchForLoad,
+          hasBranches
+        );
+        branchMessagesCacheRef.current.set(scopeKey, scoped);
+        setMessages(scoped);
         setHistoryHidden(remote.historyHidden);
         if (!unreadDividerFrozenRef.current && remote.lastReadMessageId) {
           unreadDividerFrozenRef.current = true;
@@ -620,17 +671,30 @@ export function ChatRoomView({
           }));
         }
       }
-      if (!cancelled) setIsPolling(false);
+      if (!cancelled) {
+        branchLoadInFlightRef.current = false;
+        setIsPolling(false);
+      }
     })();
 
     return () => {
       cancelled = true;
+      branchLoadInFlightRef.current = false;
     };
-  }, [activeBranchId, room.id]);
+  }, [effectiveBranchId, room.id, hasBranches]);
 
   useEffect(() => {
-    void pollMessages();
-    const interval = window.setInterval(pollMessages, getPollIntervalMs());
+    if (branchLoadInFlightRef.current) return;
+    const key = pollScopeKey(room.id, effectiveBranchId);
+    branchMessagesCacheRef.current.set(key, messages);
+  }, [messages, room.id, effectiveBranchId]);
+
+  useEffect(() => {
+    const tick = () => {
+      if (document.hidden) return;
+      void pollMessages();
+    };
+    const interval = window.setInterval(tick, getPollIntervalMs());
     const onVisible = () => {
       if (document.visibilityState === "visible") {
         void pollMessages();
@@ -653,9 +717,7 @@ export function ChatRoomView({
     }
 
     if (stickToBottomRef.current) {
-      messagesEndRef.current?.scrollIntoView({
-        behavior: prefersInstantScroll() ? "auto" : "smooth",
-      });
+      scrollListToBottom(el, prefersInstantScroll());
     }
   }, [messages.length]);
 
@@ -798,7 +860,7 @@ export function ChatRoomView({
     // Keep viewport stable when sending — never force-scroll on send
     skipScrollOnNextLengthChangeRef.current = true;
 
-    const branchIdForSend = activeBranch?.id ?? activeBranchId;
+    const branchIdForSend = effectiveBranchId;
     const newMsg: ChatMessage = {
       id: `local-${Date.now()}`,
       roomId: room.id,
@@ -888,7 +950,7 @@ export function ChatRoomView({
     setSendError(null);
 
     const localId = `local-sig-${Date.now()}`;
-    const branchIdForSend = activeBranch?.id ?? activeBranchId;
+    const branchIdForSend = effectiveBranchId;
     const newMsg: ChatMessage = {
       id: localId,
       roomId: room.id,
@@ -992,7 +1054,7 @@ export function ChatRoomView({
     setSendError(null);
 
     const localId = `local-poll-${Date.now()}`;
-    const branchIdForSend = activeBranch?.id ?? activeBranchId;
+    const branchIdForSend = effectiveBranchId;
     const options = poll.options.map((label, index) => ({
       id: `opt-${index + 1}`,
       label,
@@ -1225,6 +1287,7 @@ export function ChatRoomView({
         const announce: ChatMessage = {
           id: `local-live-${Date.now()}`,
           roomId: prev.id,
+          branchId: effectiveBranchId ?? null,
           type: "announcement",
           content: `🔴 Mentor sedang live${patch.liveTitle ? `: ${patch.liveTitle}` : ""}`,
           author: {
@@ -1474,7 +1537,7 @@ export function ChatRoomView({
         {visibleBranches.length > 0 && (
           <div className="flex flex-wrap items-center gap-1.5 border-t border-border/60 px-3 py-2">
             {visibleBranches.map((branch) => {
-              const active = branch.id === (activeBranch?.id ?? activeBranchId);
+              const active = branch.id === effectiveBranchId;
               const branchUnread = safeRoomCount(branch.unreadCount);
               const branchHasMention =
                 branch.hasMention === true ||
