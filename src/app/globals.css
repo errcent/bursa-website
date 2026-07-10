@@ -406,6 +406,50 @@
     scroll-snap-stop: normal;
   }
 
+  @media (max-width: 767px) {
+    .catalog-row-scroll {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 0.125rem;
+    }
+    .catalog-row-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .catalog-row-scroll > * {
+      flex-shrink: 0;
+      scroll-snap-align: start;
+      width: var(--catalog-card-width);
+    }
+    .catalog-row-scroll--mentor > * {
+      width: var(--catalog-mentor-card-width);
+    }
+
+    .katalog-hero-compact {
+      @apply py-7;
+    }
+    .katalog-hero-compact .page-hero-title {
+      font-size: clamp(1.375rem, 6vw, 1.75rem);
+      line-height: 1.2;
+      max-width: 20ch;
+    }
+    .katalog-hero-compact .eyebrow {
+      @apply mb-1.5 text-[10px];
+    }
+
+    .catalog-filter-compact.surface-card {
+      @apply gap-2.5 rounded-xl p-3;
+    }
+
+    .course-card-poster.surface-card-hover:hover {
+      transform: scale(1.03);
+    }
+  }
+
   @media (min-width: 640px) {
     :root {
       --catalog-container-px: 2rem;
