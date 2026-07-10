@@ -9,6 +9,7 @@ import {
   slugify,
   unauthorized,
 } from "@/lib/admin/server";
+import { revalidateCatalog } from "@/lib/catalog/server";
 import type { MentorFormInput } from "@/lib/admin/types";
 
 export async function GET(request: Request) {
@@ -87,6 +88,8 @@ export async function POST(request: Request) {
         entityId: profile.id,
       },
     });
+
+    revalidateCatalog();
 
     return NextResponse.json(mapMentor(profile), { status: 201 });
   } catch (error) {

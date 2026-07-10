@@ -9,6 +9,7 @@ import {
   slugify,
   unauthorized,
 } from "@/lib/admin/server";
+import { revalidateCatalog } from "@/lib/catalog/server";
 import type { CourseFormInput } from "@/lib/admin/types";
 
 export async function GET(request: Request) {
@@ -86,6 +87,8 @@ export async function POST(request: Request) {
         entityId: course.id,
       },
     });
+
+    revalidateCatalog();
 
     return NextResponse.json(mapCourse(course), { status: 201 });
   } catch (error) {

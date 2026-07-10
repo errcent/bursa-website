@@ -6,9 +6,11 @@ import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { CatalogBrowser } from "@/components/catalog-browser";
 import { KatalogHero } from "@/components/katalog-hero";
-import { courses, mentors } from "@/lib/mock-data";
+import { getCatalogData } from "@/lib/catalog/server";
 import { buildSearchMetadata, buildSearchResultsJsonLd } from "@/lib/search/seo";
 import type { Instrument } from "@/lib/types";
+
+export const dynamic = "force-dynamic";
 
 const validInstruments: Instrument[] = ["Saham", "Crypto", "Forex"];
 const validViews = ["kelas", "instruktur"] as const;
@@ -34,6 +36,7 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
     : "kelas";
 
   const searchJsonLd = initialQuery ? buildSearchResultsJsonLd(initialQuery) : null;
+  const { courses, mentors } = await getCatalogData();
 
   return (
     <>
