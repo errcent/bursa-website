@@ -708,7 +708,13 @@ export function CatalogBrowser({
             </div>
 
             <div className="md:hidden">
-              <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
+              <Sheet
+                open={filterSheetOpen}
+                onOpenChange={(open) => {
+                  setFilterSheetOpen(open);
+                  if (open) setSearchOpen(false);
+                }}
+              >
                 <SheetTrigger
                   render={
                     <Button
@@ -735,9 +741,15 @@ export function CatalogBrowser({
                 </SheetTrigger>
                 <SheetContent
                   side="bottom"
+                  showCloseButton={false}
+                  overlayClassName="bg-black/50 supports-backdrop-filter:backdrop-blur-sm"
                   className="max-h-[85dvh] gap-0 overflow-y-auto rounded-t-2xl border-border/60 px-0 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2"
                 >
                   <SheetHeader className="border-b border-border/60 px-4 pb-3 text-left">
+                    <div
+                      className="mx-auto mb-3 h-1 w-10 rounded-full bg-border/80"
+                      aria-hidden
+                    />
                     <SheetTitle className="font-heading text-lg">Filter</SheetTitle>
                     <SheetDescription className="sr-only">
                       Atur instrumen, level, dan urutan katalog

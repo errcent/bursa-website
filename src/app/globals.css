@@ -497,6 +497,17 @@
     scroll-padding-inline: var(--landing-container-px);
   }
 
+  @media (max-width: 767px) {
+    .landing-course-carousel .catalog-scroll-carousel-item {
+      width: var(--landing-course-card-width);
+      flex-basis: var(--landing-course-card-width);
+    }
+    .landing-mentor-carousel .catalog-scroll-carousel-item {
+      width: var(--landing-mentor-card-width);
+      flex-basis: var(--landing-mentor-card-width);
+    }
+  }
+
   .testimonial-scroll-carousel {
     min-width: 0;
     max-width: 100%;

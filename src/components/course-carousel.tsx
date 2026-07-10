@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { CourseCard } from "@/components/course-card";
 import {
@@ -26,6 +26,8 @@ interface CourseCarouselProps {
 export function CourseCarousel({ courses, className }: CourseCarouselProps) {
   const isMobile = useMobileLayout();
   const carouselRef = useRef<ScrollCarouselHandle>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   if (courses.length === 0) return null;
 
@@ -51,6 +53,7 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
             size="icon-sm"
             className="rounded-full"
             onClick={() => carouselRef.current?.scrollByStep(-1)}
+            disabled={!canScrollLeft}
             aria-label="Kelas sebelumnya"
           >
             <ArrowLeft className="size-4" />
@@ -60,6 +63,7 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
             size="icon-sm"
             className="rounded-full"
             onClick={() => carouselRef.current?.scrollByStep(1)}
+            disabled={!canScrollRight}
             aria-label="Kelas berikutnya"
           >
             <ArrowRight className="size-4" />
@@ -67,7 +71,7 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
         </div>
       </div>
 
-      <div className={cn(isMobile && "landing-carousel-bleed")}>
+      <div className={cn(isMobile && "landing-carousel-bleed landing-course-carousel")}>
         <ScrollCarousel
           ref={carouselRef}
           ariaLabel="Kelas unggulan"
@@ -76,6 +80,10 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
           getPerView={landingCourseGetScrollPerView}
           fixedItemWidth={isMobile ? "var(--landing-course-card-width)" : undefined}
           gap={isMobile ? LANDING_CAROUSEL_GAP : SCROLL_CAROUSEL_GAP}
+          onScrollStateChange={({ canScrollLeft, canScrollRight }) => {
+            setCanScrollLeft(canScrollLeft);
+            setCanScrollRight(canScrollRight);
+          }}
         >
           {courses.map((course) => (
             <CourseCard key={course.slug} course={course} variant={cardVariant} className="w-full" />

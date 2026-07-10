@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { MentorCard } from "@/components/mentor-card";
 import {
@@ -26,6 +26,8 @@ interface MentorCarouselProps {
 export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
   const isMobile = useMobileLayout();
   const carouselRef = useRef<ScrollCarouselHandle>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   if (mentors.length === 0) return null;
 
@@ -54,6 +56,7 @@ export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
             size="icon-sm"
             className="rounded-full"
             onClick={() => carouselRef.current?.scrollByStep(-1)}
+            disabled={!canScrollLeft}
             aria-label="Mentor sebelumnya"
           >
             <ArrowLeft className="size-4" />
@@ -63,6 +66,7 @@ export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
             size="icon-sm"
             className="rounded-full"
             onClick={() => carouselRef.current?.scrollByStep(1)}
+            disabled={!canScrollRight}
             aria-label="Mentor berikutnya"
           >
             <ArrowRight className="size-4" />
@@ -70,7 +74,7 @@ export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
         </div>
       </div>
 
-      <div className={cn(isMobile && "landing-carousel-bleed")}>
+      <div className={cn(isMobile && "landing-carousel-bleed landing-mentor-carousel")}>
         <ScrollCarousel
           ref={carouselRef}
           ariaLabel="Mentor di platform"
@@ -79,6 +83,10 @@ export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
           getPerView={mentorGetScrollPerView}
           fixedItemWidth={isMobile ? "var(--landing-mentor-card-width)" : undefined}
           gap={isMobile ? LANDING_CAROUSEL_GAP : SCROLL_CAROUSEL_GAP}
+          onScrollStateChange={({ canScrollLeft, canScrollRight }) => {
+            setCanScrollLeft(canScrollLeft);
+            setCanScrollRight(canScrollRight);
+          }}
         >
           {mentors.map((mentor) => (
             <MentorCard key={mentor.slug} mentor={mentor} variant={cardVariant} className="h-full w-full" />

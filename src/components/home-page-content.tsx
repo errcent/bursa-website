@@ -50,11 +50,13 @@ const paths = [
   },
 ];
 
+/** Scroll to #kelas-unggulan; explicit offset so repeat clicks still work when the section is partially in view. */
 function scrollToPopularClasses() {
-  document.getElementById("kelas-unggulan")?.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
+  const el = document.getElementById("kelas-unggulan");
+  if (!el) return;
+  const navOffset = 96; // matches scroll-mt-24
+  const top = el.getBoundingClientRect().top + window.scrollY - navOffset;
+  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
 }
 
 const proofPoints = [

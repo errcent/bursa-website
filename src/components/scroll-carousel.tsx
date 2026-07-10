@@ -43,6 +43,7 @@ export function landingCourseGetScrollPerView(width: number) {
 
 /** Katalog grouped rows on desktop — tighter than landing carousels. */
 export function catalogCourseGetScrollPerView(width: number) {
+  if (width >= 1536) return 5;
   if (width >= 1280) return 4;
   if (width >= 768) return 3;
   if (width >= 640) return 2;
@@ -69,6 +70,10 @@ interface ScrollCarouselProps {
   /** Hide built-in edge arrow buttons (e.g. when using external header controls). */
   hideArrows?: boolean;
   onActiveIndexChange?: (index: number) => void;
+  onScrollStateChange?: (state: {
+    canScrollLeft: boolean;
+    canScrollRight: boolean;
+  }) => void;
 }
 
 export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselProps>(
@@ -85,6 +90,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       gap = SCROLL_CAROUSEL_GAP,
       hideArrows = false,
       onActiveIndexChange,
+      onScrollStateChange,
     },
     ref
   ) {
@@ -101,8 +107,14 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
     const el = viewportRef.current;
     if (!el) return;
     const { scrollLeft, scrollWidth, clientWidth } = el;
-    setCanScrollLeft(scrollLeft > 2);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 2);
+    const nextCanScrollLeft = scrollLeft > 2;
+    const nextCanScrollRight = scrollLeft < scrollWidth - clientWidth - 2;
+    setCanScrollLeft(nextCanScrollLeft);
+    setCanScrollRight(nextCanScrollRight);
+    onScrollStateChange?.({
+      canScrollLeft: nextCanScrollLeft,
+      canScrollRight: nextCanScrollRight,
+    });
 
     if (onActiveIndexChange) {
       const firstItem = el.querySelector<HTMLElement>("[data-scroll-carousel-item]");
@@ -110,7 +122,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       const index = Math.round(scrollLeft / Math.max(stride, 1));
       onActiveIndexChange(Math.min(Math.max(index, 0), childItems.length - 1));
     }
-  }, [childItems.length, gap, onActiveIndexChange]);
+  }, [childItems.length, gap, onActiveIndexChange, onScrollStateChange]);
 
   useLayoutEffect(() => {
     const el = viewportRef.current;
