@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { ChevronLeft } from "lucide-react";
 
 import { LearningWorkspace } from "@/components/learning-workspace";
 import { courses, getCourseBySlug } from "@/lib/mock-data";
@@ -38,10 +39,20 @@ export default async function LearningPage({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="flex h-14 shrink-0 items-center border-b border-border px-4 sm:px-6">
-        <Link href="/" className="text-lg font-semibold">
+      <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-6">
+        <Link
+          href={`/kelas/${course.slug}`}
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ChevronLeft className="size-4" />
+          <span className="hidden sm:inline">Kembali</span>
+        </Link>
+        <Link href="/" className="truncate text-lg font-semibold">
           Bursa
         </Link>
+        <span className="ml-auto max-w-[45%] truncate text-xs text-muted-foreground sm:max-w-none">
+          {course.title}
+        </span>
       </header>
       <LearningWorkspace course={course} currentLessonId={lessonId} />
     </div>

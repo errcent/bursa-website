@@ -39,6 +39,13 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
+function getEffectiveDuration(video: HTMLVideoElement | null, fallback: number): number {
+  if (video && Number.isFinite(video.duration) && video.duration > 0) {
+    return video.duration;
+  }
+  return fallback;
+}
+
 export interface ProtectedVideoPlayerProps {
   courseId: string;
   lessonId: string;
@@ -290,11 +297,19 @@ export function ProtectedVideoPlayer({
     if (seekRequestSeconds == null || !Number.isFinite(seekRequestSeconds)) return;
     const video = videoRef.current;
     if (!video) return;
-    const next = Math.max(0, Math.floor(seekRequestSeconds));
+    const max = getEffectiveDuration(video, duration);
+    const next = Math.max(0, Math.min(max, Math.floor(seekRequestSeconds)));
     video.currentTime = next;
     setCurrentTime(next);
     onTimeUpdate?.(next);
-  }, [seekRequestSeconds, onTimeUpdate]);
+    setShowControls(true);
+    if (video.paused) {
+      void video.play().then(
+        () => setIsPlaying(true),
+        () => setIsPlaying(false)
+      );
+    }
+  }, [duration, seekRequestSeconds, onTimeUpdate]);
 
   const handleTimeUpdate = useCallback(() => {
     const video = videoRef.current;
@@ -315,11 +330,12 @@ export function ProtectedVideoPlayer({
     (clientX: number) => {
       const bar = progressRef.current;
       const video = videoRef.current;
-      if (!bar || !video || duration <= 0) return;
+      const max = getEffectiveDuration(video, duration);
+      if (!bar || !video || max <= 0) return;
 
       const rect = bar.getBoundingClientRect();
       const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-      video.currentTime = ratio * duration;
+      video.currentTime = ratio * max;
       setCurrentTime(video.currentTime);
       onTimeUpdate?.(video.currentTime);
     },
@@ -329,8 +345,9 @@ export function ProtectedVideoPlayer({
   const seekBy = useCallback(
     (deltaSeconds: number) => {
       const video = videoRef.current;
-      if (!video || duration <= 0) return;
-      const next = Math.max(0, Math.min(duration, video.currentTime + deltaSeconds));
+      const max = getEffectiveDuration(video, duration);
+      if (!video || max <= 0) return;
+      const next = Math.max(0, Math.min(max, video.currentTime + deltaSeconds));
       video.currentTime = next;
       setCurrentTime(next);
       onTimeUpdate?.(next);
@@ -489,7 +506,9 @@ export function ProtectedVideoPlayer({
       <div
         className={cn(
           "absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-black/90 via-black/50 to-transparent px-3 pb-3 pt-10 transition-opacity duration-300 sm:px-4",
-          showControls || !isPlaying ? "opacity-100" : "opacity-0"
+          showControls || !isPlaying
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
         )}
       >
         <div
@@ -535,8 +554,12 @@ export function ProtectedVideoPlayer({
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <button
             type="button"
-            onClick={() => seekBy(-10)}
-            className="rounded-md px-1.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
+            onClick={(e) => {
+              e.stopPropagation();
+              seekBy(-10);
+            }}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="min-h-9 min-w-9 rounded-md px-1.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
             aria-label="Mundur 10 detik"
           >
             -10s
@@ -544,7 +567,10 @@ export function ProtectedVideoPlayer({
 
           <button
             type="button"
-            onClick={togglePlay}
+            onClick={(e) => {
+              e.stopPropagation();
+              togglePlay();
+            }}
             className="rounded-md p-1.5 text-white transition-colors hover:bg-white/10"
             aria-label={isPlaying ? "Jeda" : "Putar"}
           >
@@ -553,8 +579,12 @@ export function ProtectedVideoPlayer({
 
           <button
             type="button"
-            onClick={() => seekBy(10)}
-            className="rounded-md px-1.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
+            onClick={(e) => {
+              e.stopPropagation();
+              seekBy(10);
+            }}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="min-h-9 min-w-9 rounded-md px-1.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
             aria-label="Maju 10 detik"
           >
             +10s
@@ -635,16 +665,25 @@ export function ProtectedVideoPlayer({
       </div>
 
       {!isPlaying && !isBlurred && (
-        <button
-          type="button"
-          onClick={togglePlay}
-          className="absolute inset-0 z-10 flex items-center justify-center bg-black/20 transition-opacity hover:bg-black/30"
-          aria-label="Putar video"
-        >
-          <div className="flex size-16 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm transition-transform hover:scale-105">
+        <>
+          <button
+            type="button"
+            onClick={togglePlay}
+            className="absolute inset-x-0 top-0 bottom-20 z-10 bg-black/20 transition-opacity hover:bg-black/30"
+            aria-label="Putar video"
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              togglePlay();
+            }}
+            className="absolute left-1/2 top-1/2 z-20 flex size-16 -translate-x-1/2 -translate-y-[calc(50%+1.5rem)] items-center justify-center rounded-full bg-white/15 backdrop-blur-sm transition-transform hover:scale-105 sm:-translate-y-1/2"
+            aria-label="Putar video"
+          >
             <Play className="size-8 text-white" />
-          </div>
-        </button>
+          </button>
+        </>
       )}
 
       {isProtected && (

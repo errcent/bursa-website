@@ -14,7 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { courses, formatRupiah, getCourseBySlug, getMentorBySlug } from "@/lib/mock-data";
 
@@ -175,6 +175,13 @@ export default async function CourseDetailPage({
                 <h3 className="text-sm font-medium text-muted-foreground">Tentang Mentor</h3>
                 <div className="mt-3 flex items-center gap-3">
                   <Avatar className="size-14">
+                    {mentor.avatarUrl ? (
+                      <AvatarImage
+                        src={mentor.avatarUrl}
+                        alt={`Foto ${mentor.name}`}
+                        className="object-cover object-top"
+                      />
+                    ) : null}
                     <AvatarFallback className="bg-surface-2">{mentor.initials}</AvatarFallback>
                   </Avatar>
                   <div>

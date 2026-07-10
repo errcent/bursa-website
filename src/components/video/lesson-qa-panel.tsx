@@ -553,7 +553,7 @@ export function LessonQaPanel({
                 </ul>
               )}
 
-              {session && (
+              {session && replyDrafts[question.id] !== undefined && (
                 <div className="mt-3 flex items-start gap-2">
                   <input
                     value={replyDrafts[question.id] ?? ""}

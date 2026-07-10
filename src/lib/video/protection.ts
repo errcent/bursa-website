@@ -95,11 +95,11 @@ export function watermarkConfig(userId: string, userEmail: string): WatermarkSet
 
   return {
     text: `${emailPrefix} · ${shortId}`,
-    opacity: 0.18,
-    fontSize: "0.85rem",
+    opacity: 0.22,
+    fontSize: "0.8rem",
     rotation: -24,
-    instanceCount: 4,
-    repositionIntervalMs: 30_000,
+    instanceCount: 5,
+    repositionIntervalMs: 25_000,
   };
 }
 

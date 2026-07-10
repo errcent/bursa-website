@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Circle,
   Download,
+  List,
   MessageSquare,
   StickyNote,
 } from "lucide-react";
@@ -20,6 +21,13 @@ import { ProtectedVideoPlayer } from "@/components/video/protected-video-player"
 import { ResizableVideoStage } from "@/components/video/resizable-video-stage";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMentorBySlug } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
@@ -56,6 +64,7 @@ export function LearningWorkspace({
   const [seekRequestSeconds, setSeekRequestSeconds] = useState<number | null>(null);
   const seekTokenRef = useRef(0);
   const [videoExpanded, setVideoExpanded] = useState(false);
+  const [mobileLessonOpen, setMobileLessonOpen] = useState(false);
   const [moduleCompleteBanner, setModuleCompleteBanner] = useState<string | null>(null);
   const progressApi = `/api/courses/${course.slug}/progress`;
   const enrollApi = `/api/courses/${course.slug}/enroll`;
@@ -225,6 +234,58 @@ export function LearningWorkspace({
     }
   }
 
+  const lessonList = (
+    <div className="flex flex-col gap-1">
+      {course.modules.map((module, moduleIndex) => {
+        const moduleDone =
+          module.lessons.length > 0 && module.lessons.every((l) => completed.has(l.id));
+        return (
+          <div key={module.title} className="mb-2">
+            <p className="mb-1 flex items-center gap-1.5 px-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {module.title}
+              {moduleDone && <CheckCircle2 className="size-3.5 text-emerald" />}
+            </p>
+            <ul className="flex flex-col gap-1">
+              {module.lessons.map((lesson, lessonIndex) => {
+                const isActive = lesson.id === currentLesson.id;
+                const isDone = completed.has(lesson.id);
+                const isFree = isLessonFreePreview(lesson, moduleIndex, lessonIndex);
+                return (
+                  <li key={lesson.id}>
+                    <Link
+                      href={`/belajar/${course.slug}/${lesson.id}`}
+                      onClick={() => setMobileLessonOpen(false)}
+                      className={cn(
+                        "flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm transition-colors",
+                        isActive
+                          ? "bg-foreground/10 text-foreground"
+                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                      )}
+                    >
+                      <LessonPreviewThumb
+                        title={lesson.title}
+                        isFree={isFree}
+                        hasAccess={hasCourseAccess}
+                        durationMinutes={lesson.durationMinutes}
+                        size="sm"
+                      />
+                      <span className="flex-1 truncate">{lesson.title}</span>
+                      {isDone ? (
+                        <CheckCircle2 className="size-4 shrink-0 text-emerald" />
+                      ) : (
+                        <Circle className="size-4 shrink-0 opacity-40" />
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   return (
     <div
       className={cn(
@@ -238,35 +299,60 @@ export function LearningWorkspace({
           !videoExpanded && "lg:border-r"
         )}
       >
-        <div className="mx-auto w-full max-w-5xl text-center sm:text-left">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            {course.title}
-          </p>
-          <h1 className="font-heading text-xl font-medium sm:text-2xl">
-            {currentLesson.title}
-          </h1>
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 text-center sm:text-left">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              {course.title}
+            </p>
+            <h1 className="font-heading text-xl font-medium sm:text-2xl">
+              {currentLesson.title}
+            </h1>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+            <Sheet open={mobileLessonOpen} onOpenChange={setMobileLessonOpen}>
+              <SheetTrigger
+                render={
+                  <Button size="sm" variant="outline" className="gap-1.5 lg:hidden" />
+                }
+              >
+                <List className="size-3.5" />
+                Daftar Lesson
+              </SheetTrigger>
+              <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle>Progres Kelas · {progressPercent}%</SheetTitle>
+                </SheetHeader>
+                <Progress
+                  value={progressPercent}
+                  className="mb-3 [&_[data-slot=progress-indicator]]:bg-foreground"
+                />
+                {lessonList}
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
 
-        <ResizableVideoStage
-          expanded={videoExpanded}
-          onExpandedChange={setVideoExpanded}
-          className="max-w-5xl"
-        >
-          <ProtectedVideoPlayer
-            courseId={course.slug}
-            lessonId={currentLesson.id}
-            lessonTitle={currentLesson.title}
-            durationMinutes={currentLesson.durationMinutes}
-            isPreview={isPreview}
-            hasAccess={hasCourseAccess}
-            userId={session?.userId}
-            userEmail={session?.email}
-            seekRequestSeconds={seekRequestSeconds}
-            onTimeUpdate={setPlayheadSeconds}
-            onProtectionViolation={handleProtectionViolation}
-          />
+        <div className="mx-auto w-full max-w-5xl">
+          <ResizableVideoStage
+            expanded={videoExpanded}
+            onExpandedChange={setVideoExpanded}
+          >
+            <ProtectedVideoPlayer
+              courseId={course.slug}
+              lessonId={currentLesson.id}
+              lessonTitle={currentLesson.title}
+              durationMinutes={currentLesson.durationMinutes}
+              isPreview={isPreview}
+              hasAccess={hasCourseAccess}
+              userId={session?.userId}
+              userEmail={session?.email}
+              seekRequestSeconds={seekRequestSeconds}
+              onTimeUpdate={setPlayheadSeconds}
+              onProtectionViolation={handleProtectionViolation}
+            />
+          </ResizableVideoStage>
           {mentor ? <MentorVideoBar mentor={mentor} className="mt-3" /> : null}
-        </ResizableVideoStage>
+        </div>
 
         {nextLesson && nextLessonContext && (
           <section className="mx-auto w-full max-w-5xl">
@@ -343,7 +429,7 @@ export function LearningWorkspace({
         )}
 
         <Tabs defaultValue="catatan" className="mx-auto mt-2 w-full max-w-5xl">
-          <TabsList>
+          <TabsList className="w-full overflow-x-auto">
             <TabsTrigger value="catatan">
               <StickyNote className="size-3.5" /> Catatan
             </TabsTrigger>
@@ -385,7 +471,7 @@ export function LearningWorkspace({
       </div>
 
       {!videoExpanded && (
-        <aside className="flex flex-col gap-3 border-t border-border p-4 sm:p-6 lg:border-t-0">
+        <aside className="hidden flex-col gap-3 border-t border-border p-4 sm:p-6 lg:flex lg:border-t-0">
           <div className="flex items-center justify-between">
             <h2 className="font-heading text-sm font-medium">Progres Kelas</h2>
             <span className="text-xs text-muted-foreground">{progressPercent}%</span>
@@ -398,55 +484,7 @@ export function LearningWorkspace({
             Selesaikan satu modul penuh untuk membuka rating & ulasan kelas.
           </p>
 
-          <div className="mt-2 flex flex-col gap-1">
-            {course.modules.map((module, moduleIndex) => {
-              const moduleDone =
-                module.lessons.length > 0 &&
-                module.lessons.every((l) => completed.has(l.id));
-              return (
-                <div key={module.title} className="mb-2">
-                  <p className="mb-1 flex items-center gap-1.5 px-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    {module.title}
-                    {moduleDone && <CheckCircle2 className="size-3.5 text-emerald" />}
-                  </p>
-                  <ul className="flex flex-col gap-1">
-                    {module.lessons.map((lesson, lessonIndex) => {
-                      const isActive = lesson.id === currentLesson.id;
-                      const isDone = completed.has(lesson.id);
-                      const isFree = isLessonFreePreview(lesson, moduleIndex, lessonIndex);
-                      return (
-                        <li key={lesson.id}>
-                          <Link
-                            href={`/belajar/${course.slug}/${lesson.id}`}
-                            className={cn(
-                              "flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm transition-colors",
-                              isActive
-                                ? "bg-foreground/10 text-foreground"
-                                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                            )}
-                          >
-                            <LessonPreviewThumb
-                              title={lesson.title}
-                              isFree={isFree}
-                              hasAccess={hasCourseAccess}
-                              durationMinutes={lesson.durationMinutes}
-                              size="sm"
-                            />
-                            <span className="flex-1 truncate">{lesson.title}</span>
-                            {isDone ? (
-                              <CheckCircle2 className="size-4 shrink-0 text-emerald" />
-                            ) : (
-                              <Circle className="size-4 shrink-0 opacity-40" />
-                            )}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
+          <div className="mt-2">{lessonList}</div>
         </aside>
       )}
     </div>
