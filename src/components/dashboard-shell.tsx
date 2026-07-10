@@ -103,7 +103,7 @@ function DashboardBody() {
   return (
     <>
       <SiteNavbar />
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-clip">
         <div className="hero-cinematic page-header-strip">
           <div className="container-page py-10 sm:py-12">
             <Reveal>
@@ -119,7 +119,7 @@ function DashboardBody() {
 
         <div className="container-page section-spacious">
           <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
-            <div className="flex flex-col gap-10">
+            <div className="flex min-w-0 flex-col gap-10">
               <section>
                 <Reveal className="mb-4 flex items-center justify-between">
                   <h2 className="section-title flex items-center gap-2">
@@ -171,10 +171,10 @@ function DashboardBody() {
                               <p className="text-xs text-muted-foreground">
                                 oleh {course.mentorName}
                               </p>
-                              <div className="mt-2 flex items-center gap-3">
+                              <div className="mt-2 flex w-full items-center gap-3">
                                 <Progress
                                   value={course.progressPercent}
-                                  className="w-40 [&_[data-slot=progress-indicator]]:bg-accent"
+                                  className="w-full max-w-40 [&_[data-slot=progress-indicator]]:bg-accent"
                                 />
                                 <span className="text-xs text-muted-foreground">
                                   {course.progressPercent}%
@@ -214,9 +214,9 @@ function DashboardBody() {
                 <Reveal>
                   <h2 className="section-title mb-4">Rekomendasi Lanjutan</h2>
                 </Reveal>
-                <Stagger className="flex gap-4 overflow-x-auto pb-2">
+                <Stagger className="flex gap-3 overflow-x-auto pb-2 sm:gap-4">
                   {courses.slice(0, 3).map((course) => (
-                    <StaggerItem key={course.slug} className="w-64 shrink-0">
+                    <StaggerItem key={course.slug} className="w-56 shrink-0 sm:w-64">
                       <Link
                         href={`/kelas/${course.slug}`}
                         className="surface-card-hover flex h-full flex-col gap-2 p-4"
@@ -235,7 +235,7 @@ function DashboardBody() {
               </section>
             </div>
 
-            <aside className="flex flex-col gap-4">
+            <aside className="flex min-w-0 flex-col gap-4">
               <Reveal>
                 <DashboardWatchlist />
               </Reveal>

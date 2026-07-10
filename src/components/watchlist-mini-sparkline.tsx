@@ -46,7 +46,7 @@ export function WatchlistMiniSparkline({
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className={cn("h-7 w-[4.5rem] shrink-0", className)}
+      className={cn("h-7 w-14 shrink-0 sm:w-[4.5rem]", className)}
       preserveAspectRatio="none"
       role="img"
       aria-label={label}

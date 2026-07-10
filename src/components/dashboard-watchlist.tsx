@@ -249,9 +249,12 @@ export function DashboardWatchlist() {
             const up = day.changePct >= 0;
 
             return (
-              <li key={item.id} className="flex items-center gap-2 text-sm">
+              <li
+                key={item.id}
+                className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-2 text-sm"
+              >
                 <div className="min-w-0 flex-1">
-                  <p className="font-mono font-medium">{item.ticker}</p>
+                  <p className="truncate font-mono font-medium">{item.ticker}</p>
                   {item.notes ? (
                     <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{item.notes}</p>
                   ) : (
