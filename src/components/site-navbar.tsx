@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Code2, GraduationCap, LayoutDashboard, Menu, Shield } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
+import { AccountMenuMobileLinks } from "@/components/account-menu-mobile-links";
 import { useAuth } from "@/components/auth-provider";
 import { SiteNavAuth } from "@/components/site-nav-auth";
 import { SiteNavSearch } from "@/components/site-nav-search";
@@ -226,36 +227,23 @@ export function SiteNavbar() {
                     })}
                   </nav>
 
-                  {roleLinks.length > 0 && (
+                  {session && (
                     <div className="mt-4 border-t border-border/60 pt-4">
-                      <p className="mb-2 px-2 text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
-                        Akses role
-                      </p>
-                      <div className="flex flex-col gap-1">
-                        {roleLinks.map((link) => (
-                          <SheetClose
-                            key={link.href}
-                            render={
-                              <Link
-                                href={link.href}
-                                className="mobile-nav-item gap-2 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                              />
-                            }
-                          >
-                            <RoleLinkIcon href={link.href} />
-                            {link.label}
-                          </SheetClose>
-                        ))}
-                      </div>
+                      <AccountMenuMobileLinks
+                        roleLinks={roleLinks}
+                        onNavigate={() => setMenuOpen(false)}
+                      />
                     </div>
                   )}
                 </div>
 
-                <div className="mt-auto border-t border-border/60 p-4">
-                  <Suspense fallback={<AuthSkeleton mobile />}>
-                    <SiteNavAuth mobileMenu />
-                  </Suspense>
-                </div>
+                {!session && (
+                  <div className="mt-auto border-t border-border/60 p-4">
+                    <Suspense fallback={<AuthSkeleton mobile />}>
+                      <SiteNavAuth mobileMenu />
+                    </Suspense>
+                  </div>
+                )}
               </SheetContent>
             </Sheet>
           </div>

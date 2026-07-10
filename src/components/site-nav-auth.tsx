@@ -1,29 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Code2, GraduationCap, LayoutDashboard, LogOut, Settings, Shield } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
 
+import { AccountMenuPanel } from "@/components/account-menu-panel";
 import { useAuth } from "@/components/auth-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { buildLoginHref, buildRegisterHref, POST_AUTH_HOME } from "@/lib/auth/redirect";
 import { getRoleNavLinks } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
-
-function RoleMenuIcon({ href }: { href: string }) {
-  if (href.startsWith("/dashboard")) return <LayoutDashboard className="size-4" />;
-  if (href.startsWith("/admin")) return <Shield className="size-4" />;
-  if (href.startsWith("/mentor")) return <GraduationCap className="size-4" />;
-  return <Code2 className="size-4" />;
-}
 
 function initials(name: string) {
   return name
@@ -34,19 +21,17 @@ function initials(name: string) {
 }
 
 type SiteNavAuthProps = {
+  /** @deprecated Mobile account links are rendered in the drawer body via AccountMenuMobileLinks */
   mobileMenu?: boolean;
 };
 
 export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
-  const { session, isLoading, logout } = useAuth();
-  const router = useRouter();
+  const { session, isLoading } = useAuth();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPathWithQuery = searchParams.toString()
     ? `${pathname}?${searchParams.toString()}`
     : pathname;
-  // Login may return to deep links; register always starts at beranda.
-  // Never pass /dashboard or /pengaturan as sticky next across accounts.
   const loginHref = buildLoginHref(currentPathWithQuery || POST_AUTH_HOME);
   const registerHref = buildRegisterHref();
   const roleLinks = getRoleNavLinks(session?.role);
@@ -85,12 +70,15 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
     );
   }
 
+  if (mobileMenu) {
+    return null;
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         className={cn(
-          "flex items-center justify-center rounded-full border border-border outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          mobileMenu ? "h-11 w-full justify-start gap-2 rounded-lg px-3" : "size-9"
+          "flex size-9 items-center justify-center rounded-full border border-border outline-none transition-colors hover:border-accent/40 hover:bg-accent/5 focus-visible:ring-2 focus-visible:ring-ring"
         )}
         aria-label={`Menu akun ${session.name}`}
       >
@@ -102,43 +90,8 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
             {initials(session.name)}
           </AvatarFallback>
         </Avatar>
-        {mobileMenu && <span className="text-sm font-medium">Menu akun</span>}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={mobileMenu ? "start" : "end"} className="w-52">
-        <div className="px-2 py-1.5">
-          <p className="truncate text-sm font-medium">{session.name}</p>
-          <p className="truncate text-xs text-muted-foreground">{session.email}</p>
-        </div>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem render={<Link href="/dashboard" />}>
-          <LayoutDashboard className="size-4" />
-          Dashboard
-        </DropdownMenuItem>
-        {roleLinks
-          .filter((link) => link.href !== "/dashboard")
-          .map((link) => (
-          <DropdownMenuItem key={link.href} render={<Link href={link.href} />}>
-            <RoleMenuIcon href={link.href} />
-            {link.label}
-          </DropdownMenuItem>
-        ))}
-        <DropdownMenuItem render={<Link href="/pengaturan#profil" />}>
-          <Settings className="size-4" />
-          Pengaturan
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          onClick={() => {
-            logout();
-            router.push("/masuk");
-            router.refresh();
-          }}
-        >
-          <LogOut className="size-4" />
-          Keluar
-        </DropdownMenuItem>
-      </DropdownMenuContent>
+      <AccountMenuPanel roleLinks={roleLinks} />
     </DropdownMenu>
   );
 }
