@@ -765,6 +765,41 @@ async function main() {
     });
   }
 
+  // Sample 1-on-1 availability slots for mentors with availableFor1on1
+  const adminUser = await prisma.user.findUnique({ where: { email: "admin@test.dev" } });
+  const slotOffsets = [2, 3, 5, 7, 10];
+  const slotTimes = [
+    { start: 10, end: 10, endMin: 45 },
+    { start: 14, end: 14, endMin: 45 },
+    { start: 19, end: 19, endMin: 30 },
+  ];
+
+  for (const mentor of mentors) {
+    if (!mentor.availableFor1on1) continue;
+    const mentorId = mentorProfileMap.get(mentor.slug);
+    if (!mentorId) continue;
+
+    for (let i = 0; i < 3; i++) {
+      const dayOffset = slotOffsets[i];
+      const time = slotTimes[i];
+      const startAt = new Date();
+      startAt.setDate(startAt.getDate() + dayOffset);
+      startAt.setUTCHours(time.start - 7, 0, 0, 0);
+      const endAt = new Date(startAt);
+      endAt.setUTCHours(time.end - 7, time.endMin, 0, 0);
+
+      await prisma.mentorAvailabilitySlot.create({
+        data: {
+          mentorId,
+          startAt,
+          endAt,
+          notes: i === 0 ? "Via Zoom — link dikirim setelah booking" : null,
+          createdByAdminId: adminUser?.id ?? null,
+        },
+      });
+    }
+  }
+
   console.log("Seed completed.");
   console.log("Test accounts (password: password123):");
   console.log("  learner@test.dev  | username: test_learner  | phone: +6281110000001");

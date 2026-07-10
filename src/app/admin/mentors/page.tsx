@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Loader2, Calendar, Pencil, Plus, Trash2 } from "lucide-react";
 
 import { useAdminToast } from "@/components/admin/admin-toast";
 import { DataTable, type DataTableColumn } from "@/components/admin/data-table";
@@ -172,6 +173,10 @@ export default function AdminMentorsPage() {
       header: "Aksi",
       render: (row) => (
         <div className="flex items-center gap-1">
+          <Button size="xs" variant="outline" render={<Link href={`/admin/mentors/${row.id}/sesi`} />}>
+            <Calendar className="size-3" />
+            Jadwal
+          </Button>
           <Button
             size="xs"
             variant="outline"
@@ -334,6 +339,17 @@ export default function AdminMentorsPage() {
             />
             Tersedia 1-on-1
           </label>
+          {form.availableFor1on1 && (
+            <label className="space-y-1 text-sm sm:col-span-2">
+              <span>Harga sesi (tampilan)</span>
+              <input
+                value={form.sessionPrice ?? ""}
+                onChange={(e) => setForm({ ...form, sessionPrice: e.target.value })}
+                placeholder="Rp750.000 / 45 menit"
+                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              />
+            </label>
+          )}
         </form>
       </FormModal>
 

@@ -173,6 +173,8 @@ model User {
   chatBranchChangeRequests       ChatBranchChangeRequest[] @relation("ChatBranchChangeMentor")
   chatBranchChangeRequestReviews ChatBranchChangeRequest[] @relation("ChatBranchChangeReviewer")
   passwordResetTokens            PasswordResetToken[]
+  sessionBookings                MentorAvailabilitySlot[] @relation("SessionBookings")
+  sessionSlotsCreated            MentorAvailabilitySlot[] @relation("SessionSlotsCreated")
 }
 
 /// Single-use reset token — stores hash only, never plaintext (UU PDP / GDPR-ready).
@@ -217,6 +219,28 @@ model MentorProfile {
   courses        Course[]
   chatRooms      ChatRoom[]
   tradingSignals TradingSignal[]
+  availabilitySlots MentorAvailabilitySlot[]
+}
+
+/// Admin-managed time slots for mentor 1-on-1 sessions.
+model MentorAvailabilitySlot {
+  id               String   @id @default(cuid())
+  mentorId         String
+  startAt          DateTime
+  endAt            DateTime
+  isBooked         Boolean  @default(false)
+  bookedByUserId   String?
+  createdByAdminId String?
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  mentor         MentorProfile @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  bookedBy       User?         @relation("SessionBookings", fields: [bookedByUserId], references: [id], onDelete: SetNull)
+  createdByAdmin User?         @relation("SessionSlotsCreated", fields: [createdByAdminId], references: [id], onDelete: SetNull)
+
+  @@index([mentorId, startAt])
+  @@index([mentorId, isBooked, startAt])
 }
 
 model Course {

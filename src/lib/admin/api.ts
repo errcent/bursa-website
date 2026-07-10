@@ -36,6 +36,9 @@ import type {
   AdminRevenueReport,
   AdminStats,
   AdminUser,
+  AvailabilitySlotInput,
+  AdminAvailabilitySlot,
+  MentorSessionConfig,
   ChatRoomFormInput,
   CourseFormInput,
   CurriculumReorderInput,
@@ -255,6 +258,42 @@ export async function updateMentor(
 
 export async function deleteMentor(id: string): Promise<ApiResult<{ ok: boolean }>> {
   return request<{ ok: boolean }>(`/mentors/${id}`, { method: "DELETE" });
+}
+
+export async function fetchMentorSlots(
+  mentorId: string
+): Promise<ApiResult<{ mentor: MentorSessionConfig; slots: AdminAvailabilitySlot[] }>> {
+  return request(`/mentors/${mentorId}/availability-slots`);
+}
+
+export async function createMentorSlot(
+  mentorId: string,
+  input: AvailabilitySlotInput
+): Promise<ApiResult<AdminAvailabilitySlot>> {
+  return request<AdminAvailabilitySlot>(`/mentors/${mentorId}/availability-slots`, {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export async function updateMentorSlot(
+  mentorId: string,
+  slotId: string,
+  input: Partial<AvailabilitySlotInput>
+): Promise<ApiResult<AdminAvailabilitySlot>> {
+  return request<AdminAvailabilitySlot>(
+    `/mentors/${mentorId}/availability-slots/${slotId}`,
+    { method: "PATCH", body: JSON.stringify(input) }
+  );
+}
+
+export async function deleteMentorSlot(
+  mentorId: string,
+  slotId: string
+): Promise<ApiResult<{ ok: boolean }>> {
+  return request<{ ok: boolean }>(`/mentors/${mentorId}/availability-slots/${slotId}`, {
+    method: "DELETE",
+  });
 }
 
 export async function fetchCourses(): Promise<ApiResult<AdminCourse[]>> {
