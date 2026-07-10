@@ -180,23 +180,25 @@ export function SiteNavbar() {
                     <SheetClose
                       render={
                         <Link
-                          href="/katalog"
+                          href={session ? "/dashboard" : "/katalog"}
                           className="btn-primary flex min-h-12 items-center justify-center rounded-xl text-[15px] font-medium"
                         />
                       }
                     >
-                      Mulai Belajar
+                      {session ? "Lanjut Belajar" : "Mulai Belajar"}
                     </SheetClose>
-                    <SheetClose
-                      render={
-                        <Link
-                          href="/daftar"
-                          className="flex min-h-12 items-center justify-center rounded-xl border border-border/70 bg-card/50 text-[15px] font-medium"
-                        />
-                      }
-                    >
-                      Daftar Gratis
-                    </SheetClose>
+                    {!session && (
+                      <SheetClose
+                        render={
+                          <Link
+                            href="/daftar"
+                            className="flex min-h-12 items-center justify-center rounded-xl border border-border/70 bg-card/50 text-[15px] font-medium"
+                          />
+                        }
+                      >
+                        Daftar Gratis
+                      </SheetClose>
+                    )}
                   </div>
 
                   <nav className="flex flex-col gap-1" aria-label="Navigasi mobile">

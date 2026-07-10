@@ -5,6 +5,8 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 
+import { useAuth } from "@/components/auth-provider";
+
 /** Only these marketing pages may show the sticky CTA. */
 const ALLOWED_PATHS = ["/", "/katalog"] as const;
 
@@ -55,6 +57,7 @@ function hasOpenOverlay() {
 /** Mobile-only sticky CTA after scrolling past the hero. */
 export function StickyBottomCta() {
   const pathname = usePathname();
+  const { session, isLoading } = useAuth();
   const allowed = shouldShow(pathname);
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
   const [overlayOpen, setOverlayOpen] = useState(false);
@@ -94,7 +97,11 @@ export function StickyBottomCta() {
     return () => observer.disconnect();
   }, [allowed, pathname]);
 
-  if (!allowed || !scrolledPastHero || overlayOpen) return null;
+  if (!allowed || !scrolledPastHero || overlayOpen || isLoading) return null;
+
+  const isMember = Boolean(session);
+  const ctaHref = isMember ? "/dashboard" : "/katalog";
+  const ctaLabel = isMember ? "Lanjut Belajar" : "Mulai Belajar";
 
   return (
     <div
@@ -102,10 +109,10 @@ export function StickyBottomCta() {
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
     >
       <Link
-        href="/katalog"
+        href={ctaHref}
         className="btn-primary flex h-12 min-h-12 w-full items-center justify-center gap-2 rounded-full text-[15px] font-medium"
       >
-        Mulai Belajar
+        {ctaLabel}
         <ArrowRight className="size-4" aria-hidden />
       </Link>
     </div>

@@ -306,6 +306,16 @@ export function NarrativeClosingCta() {
                 Daftar gratis
               </Button>
             ) : null}
+            {!isLoading && isMember ? (
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-11 rounded-full border-border/70 bg-card/40 px-7 text-sm"
+                render={<Link href="/dashboard" />}
+              >
+                Lanjut Belajar
+              </Button>
+            ) : null}
           </div>
 
           <p className="mt-6 font-mono text-[10px] text-muted-foreground/60">
