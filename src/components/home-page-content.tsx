@@ -20,6 +20,7 @@ import {
   NarrativeClosingCta,
   NarrativeScrollSections,
 } from "@/components/narrative-scroll-sections";
+import { HomeFaqSection } from "@/components/home/home-faq-section";
 import { TestimonialShowcase } from "@/components/testimonial-showcase";
 import { Button } from "@/components/ui/button";
 import { Reveal, RevealText, Stagger, StaggerItem } from "@/components/motion/reveal";
@@ -262,6 +263,9 @@ export function HomePageContent() {
 
         {/* Testimonials + founder response */}
         <TestimonialShowcase reviews={reviews} founderResponse={featuredFounderResponse} />
+
+        {/* FAQ */}
+        <HomeFaqSection />
 
         {/* Closing CTA */}
         <NarrativeClosingCta />
