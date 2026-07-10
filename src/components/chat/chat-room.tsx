@@ -1540,7 +1540,7 @@ export function ChatRoomView({
         )}
 
         {!canPost && (
-          <p className="shrink-0 border-t border-border bg-muted/40 px-4 py-2 text-center text-xs text-muted-foreground">
+          <p className="hidden shrink-0 border-t border-border bg-muted/40 px-4 py-2 text-center text-xs text-muted-foreground sm:block">
             {branchSend.reason ??
               (isOneWayMode(activeBranch?.mode)
                 ? "Cabang 1 arah — hanya mentor yang dapat mengirim."
