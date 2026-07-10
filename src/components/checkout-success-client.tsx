@@ -19,13 +19,16 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getSession } from "@/lib/auth/client";
+import { buildLoginHref } from "@/lib/auth/redirect";
 import { formatRupiah, getCourseBySlug, getMentorBySlug } from "@/lib/mock-data";
 import { enrollUser } from "@/lib/video/protection";
 
 export function CheckoutSuccessClient({ courseSlug }: { courseSlug: string }) {
-  const { session } = useAuth();
+  const { session, isLoading: authLoading } = useAuth();
   const searchParams = useSearchParams();
   const slug = courseSlug || searchParams.get("course") || "";
+  const successPath = slug ? `/checkout/sukses?course=${encodeURIComponent(slug)}` : "/checkout/sukses";
+  const loginHref = buildLoginHref(successPath);
 
   const course = getCourseBySlug(slug);
   const mentor = course ? getMentorBySlug(course.mentorSlug) : undefined;
@@ -62,6 +65,34 @@ export function CheckoutSuccessClient({ courseSlug }: { courseSlug: string }) {
         <SiteNavbar />
         <main className="flex flex-1 items-center justify-center py-24">
           <p className="text-sm text-muted-foreground">Kelas tidak ditemukan.</p>
+        </main>
+        <SiteFooter />
+      </>
+    );
+  }
+
+  if (!authLoading && !session) {
+    return (
+      <>
+        <SiteNavbar />
+        <main className="flex-1">
+          <div className="hero-cinematic page-header-strip">
+            <div className="container-page flex flex-col items-center py-16 text-center sm:py-24">
+              <h1 className="font-heading text-2xl font-medium sm:text-3xl">Masuk untuk mengaktifkan akses</h1>
+              <p className="mt-2 max-w-md text-sm text-muted-foreground">
+                Simulasi pembayaran untuk <span className="text-foreground/90">{course.title}</span>{" "}
+                memerlukan akun agar enrollment tersimpan.
+              </p>
+              <div className="mt-8 flex w-full max-w-xs flex-col gap-2 sm:flex-row">
+                <Button className="flex-1 btn-primary" render={<Link href={loginHref} />}>
+                  Masuk
+                </Button>
+                <Button variant="outline" className="flex-1" render={<Link href="/daftar" />}>
+                  Daftar
+                </Button>
+              </div>
+            </div>
+          </div>
         </main>
         <SiteFooter />
       </>

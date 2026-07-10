@@ -23,7 +23,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/components/auth-provider";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
+import { buildLoginHref } from "@/lib/auth/redirect";
 import { formatRupiah } from "@/lib/mock-data";
 import type { Course, Mentor } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -42,7 +44,10 @@ export function CheckoutForm({
   mentor: Mentor;
 }) {
   const router = useRouter();
+  const { session, isLoading: authLoading } = useAuth();
   const { enrolled, loading: enrollmentLoading } = useCourseEnrollment(course.slug);
+  const checkoutPath = `/checkout/${course.slug}`;
+  const loginHref = buildLoginHref(checkoutPath);
   const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<(typeof paymentMethods)[number]["id"]>("gopay");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,11 +61,33 @@ export function CheckoutForm({
     router.push(`/checkout/sukses?course=${course.slug}`);
   }
 
-  if (enrollmentLoading) {
+  if (authLoading || enrollmentLoading) {
     return (
       <div className="flex min-h-48 items-center justify-center rounded-xl border border-border bg-card">
         <Loader2 className="size-5 animate-spin text-muted-foreground" />
       </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <Card className="mx-auto max-w-lg border-border bg-card">
+        <CardHeader className="text-center">
+          <CardTitle>Masuk untuk checkout</CardTitle>
+          <CardDescription>
+            Anda perlu masuk ke akun untuk mensimulasikan pembayaran dan mengaktifkan akses kelas{" "}
+            <span className="text-foreground/90">{course.title}</span>.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2 sm:flex-row">
+          <Button className="flex-1 btn-primary" render={<Link href={loginHref} />}>
+            Masuk
+          </Button>
+          <Button variant="outline" className="flex-1" render={<Link href="/daftar" />}>
+            Daftar
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -112,8 +139,8 @@ export function CheckoutForm({
                 <label
                   key={method.id}
                   className={cn(
-                    "flex cursor-not-allowed items-center gap-3 rounded-xl border p-4 opacity-60",
-                    selected ? "border-foreground/20 bg-foreground/5" : "border-border bg-surface/40"
+                    "flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors",
+                    selected ? "border-foreground/20 bg-foreground/5" : "border-border bg-surface/40 hover:border-foreground/15"
                   )}
                 >
                   <input
@@ -121,7 +148,6 @@ export function CheckoutForm({
                     name="payment-method"
                     value={method.id}
                     checked={selected}
-                    disabled
                     onChange={() => setSelectedMethod(method.id)}
                     className="size-4 accent-foreground"
                   />

@@ -2,17 +2,19 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 import { AuthField, authInputClassName } from "@/components/auth-field";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
-import { POST_AUTH_HOME } from "@/lib/auth/redirect";
+import { buildLoginHref, POST_AUTH_HOME } from "@/lib/auth/redirect";
 
 export function RegisterForm() {
   const { register, session, isLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const loginHref = buildLoginHref(searchParams.get("next"));
   // New accounts always land on beranda — ignore sticky ?next= from prior sessions.
   const next = POST_AUTH_HOME;
 
@@ -158,7 +160,7 @@ export function RegisterForm() {
       <p className="text-center text-sm text-muted-foreground">
         Sudah punya akun?{" "}
         <Link
-          href="/masuk"
+          href={loginHref}
           className="font-medium text-foreground underline-offset-4 hover:underline"
         >
           Masuk

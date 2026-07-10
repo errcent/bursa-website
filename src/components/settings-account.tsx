@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
+import { buildLoginHref } from "@/lib/auth/redirect";
 
 export function SettingsAccount() {
   const { session, isLoading } = useAuth();
@@ -20,7 +21,7 @@ export function SettingsAccount() {
           Masuk atau buat akun untuk menyimpan progres belajar dan mengakses dashboard.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <Button size="sm" variant="outline" render={<Link href="/masuk" />}>
+          <Button size="sm" variant="outline" render={<Link href={buildLoginHref("/pengaturan")} />}>
             Masuk
           </Button>
           <Button size="sm" className="btn-primary" render={<Link href="/daftar" />}>

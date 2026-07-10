@@ -8,7 +8,6 @@ import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { Badge } from "@/components/ui/badge";
 import { courses, getCourseBySlug, getMentorBySlug } from "@/lib/mock-data";
-import { PLATFORM_COMMISSION_RATE } from "@/lib/pricing";
 
 export function generateStaticParams() {
   return courses.map((course) => ({ slug: course.slug }));
@@ -60,9 +59,8 @@ export default async function CheckoutPage({
               </Badge>
             </div>
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-              Murid membayar langsung ke mentor (bukan per modul). Platform mengambil komisi{" "}
-              <span className="text-foreground/80">{PLATFORM_COMMISSION_RATE * 100}%</span> per
-              transaksi untuk infrastruktur & verifikasi.
+              Murid membayar langsung ke mentor (bukan per modul). Total yang ditampilkan adalah
+              jumlah yang Anda bayar untuk akses kelas selamanya.
             </p>
           </div>
         </div>

@@ -9,13 +9,15 @@ import { AuthField, authInputClassName } from "@/components/auth-field";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { getDemoCredentials } from "@/lib/auth/client";
-import { resolvePostAuthRedirect } from "@/lib/auth/redirect";
+import { buildLoginHref, resolvePostAuthRedirect, POST_AUTH_HOME } from "@/lib/auth/redirect";
 
 export function LoginForm() {
   const { login, session, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = resolvePostAuthRedirect(searchParams.get("next"));
+  const registerHref =
+    next === POST_AUTH_HOME ? "/daftar" : `/daftar?next=${encodeURIComponent(next)}`;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -152,7 +154,7 @@ export function LoginForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Belum punya akun?{" "}
-        <Link href="/daftar" className="link-accent text-sm font-medium">
+        <Link href={registerHref} className="link-accent text-sm font-medium">
           Daftar gratis
         </Link>
       </p>
