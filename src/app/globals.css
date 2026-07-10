@@ -360,6 +360,9 @@
     --catalog-mentor-card-width: 6.5rem;
     --catalog-row-gap: 1.25rem;
     --catalog-section-gap: 1.5rem;
+    --landing-container-px: 1.25rem;
+    --landing-course-card-width: 8rem;
+    --landing-mentor-card-width: 5.75rem;
   }
 
   .catalog-section {
@@ -419,7 +422,16 @@
       --catalog-mentor-card-width: 5.75rem;
       --catalog-row-gap: 1rem;
       --catalog-section-gap: 1.25rem;
+      --landing-course-card-width: 6.75rem;
+      --landing-mentor-card-width: 5.25rem;
     }
+  }
+
+  .landing-carousel-bleed {
+    margin-left: calc(-1 * var(--landing-container-px));
+    margin-right: calc(-1 * var(--landing-container-px));
+    padding-left: var(--landing-container-px);
+    padding-right: var(--landing-container-px);
   }
 
   .testimonial-tilt-row {
@@ -515,7 +527,68 @@
 
     .surface-card,
     .surface-card-hover {
-      @apply p-5;
+      @apply p-4;
+    }
+
+    .narrative-visual-card {
+      @apply p-4;
+    }
+
+    .narrative-visual-card .narrative-stat-tile {
+      @apply p-4;
+    }
+
+    .narrative-visual-card .narrative-stat-value {
+      font-size: 1.25rem;
+      line-height: 1.2;
+    }
+
+    .landing-path-card {
+      @apply gap-3 p-4;
+    }
+
+    .landing-path-card h3 {
+      font-size: 1.0625rem;
+      line-height: 1.3;
+    }
+
+    .landing-proof-card {
+      @apply p-4;
+    }
+
+    .landing-proof-card h3 {
+      font-size: 0.9375rem;
+    }
+
+    .testimonial-tilt-card {
+      min-height: 0;
+      padding: 1rem;
+    }
+
+    .testimonial-tilt-item {
+      width: min(58vw, 11.5rem);
+    }
+
+    .testimonial-featured-card {
+      padding: 1.25rem 1rem;
+    }
+
+    .testimonial-featured-card blockquote p {
+      font-size: 0.9375rem;
+      line-height: 1.55;
+    }
+
+    .mentor-card-compact .mentor-card-compact-avatar {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+
+    .course-card-poster h3 {
+      font-size: 0.625rem;
+    }
+
+    .course-card-poster .course-card-poster-meta {
+      font-size: 0.5625rem;
     }
 
     .testimonial-showcase {
@@ -550,15 +623,6 @@
 
     .course-card-poster.surface-card-hover:hover {
       transform: scale(1.03);
-    }
-  }
-
-  @media (max-width: 430px) {
-    :root {
-      --catalog-card-width: 7.5rem;
-      --catalog-mentor-card-width: 5.75rem;
-      --catalog-row-gap: 1rem;
-      --catalog-section-gap: 1.25rem;
     }
   }
 

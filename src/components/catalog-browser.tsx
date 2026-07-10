@@ -34,6 +34,7 @@ import { SnapCollapse, SnapPresence } from "@/components/motion/snap";
 import { SearchDropdown } from "@/components/search/search-dropdown";
 import { SearchPlaceholderMarquee } from "@/components/search/search-placeholder-marquee";
 import { useMyLearning } from "@/hooks/use-my-learning";
+import { useMobileLayout } from "@/hooks/use-mobile-layout";
 import {
   clearRecentSearches,
   detectSearchIntent,
@@ -265,23 +266,8 @@ type CatalogCourseRowProps = {
   enrollmentBySlug: Map<string, LearningCourseProgress>;
 };
 
-function useCatalogLayout() {
-  const [layout, setLayout] = useState<"mobile" | "desktop">("desktop");
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const apply = () => setLayout(mq.matches ? "mobile" : "desktop");
-    apply();
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, []);
-
-  return layout;
-}
-
 function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCourseRowProps) {
-  const layout = useCatalogLayout();
-  const isMobile = layout === "mobile";
+  const isMobile = useMobileLayout();
 
   if (courses.length === 0) return null;
 
@@ -327,8 +313,7 @@ function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCo
 }
 
 function CatalogMentorRow({ title, mentors, count }: { title: string; mentors: Mentor[]; count?: number }) {
-  const layout = useCatalogLayout();
-  const isMobile = layout === "mobile";
+  const isMobile = useMobileLayout();
 
   if (mentors.length === 0) return null;
 
@@ -602,18 +587,6 @@ export function CatalogBrowser({
     ].filter((row) => row.mentors.length > 0);
   }, [mentors, showGroupedMentorRows]);
 
-  function courseEnrollment(slug: string) {
-    const learning = enrollmentBySlug.get(slug);
-    return learning
-      ? {
-          progressPercent: learning.progressPercent,
-          completedLessons: learning.completedLessons,
-          totalLessons: learning.totalLessons,
-          lastLessonId: learning.lastLessonId,
-        }
-      : null;
-  }
-
   return (
     <div className="flex flex-col gap-6 md:gap-10">
       <Reveal>
@@ -880,7 +853,7 @@ export function CatalogBrowser({
             seed={19}
             className="relative z-0 block"
           >
-            <h2 className="mb-3 hidden font-heading text-lg font-semibold tracking-tight md:mb-4 md:block">
+            <h2 className="mb-3 font-heading text-lg font-semibold tracking-tight md:mb-4">
               {resultHeading ?? (
                 filteredMentors.length > 0
                   ? `${filteredMentors.length} mentor ditemukan`
@@ -893,35 +866,26 @@ export function CatalogBrowser({
               )}
             </h2>
             {filteredMentors.length > 0 ? (
-              <>
-                <div className="catalog-section md:hidden">
-                  {showGroupedMentorRows && groupedMentorRows ? (
-                    groupedMentorRows.map((row) => (
-                      <CatalogMentorRow
-                        key={row.title}
-                        title={row.title}
-                        mentors={row.mentors}
-                      />
-                    ))
-                  ) : (
+              <div className="catalog-section">
+                {showGroupedMentorRows && groupedMentorRows ? (
+                  groupedMentorRows.map((row) => (
                     <CatalogMentorRow
-                      title={
-                        resultHeading ??
-                        `${filteredMentors.length} mentor ditemukan`
-                      }
-                      mentors={filteredMentors}
-                      count={filteredMentors.length}
+                      key={row.title}
+                      title={row.title}
+                      mentors={row.mentors}
                     />
-                  )}
-                </div>
-                <Stagger className="hidden gap-4 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-                  {filteredMentors.map((mentor) => (
-                    <StaggerItem key={mentor.slug}>
-                      <MentorCard mentor={mentor} className="w-full" />
-                    </StaggerItem>
-                  ))}
-                </Stagger>
-              </>
+                  ))
+                ) : (
+                  <CatalogMentorRow
+                    title={
+                      resultHeading ??
+                      `${filteredMentors.length} mentor ditemukan`
+                    }
+                    mentors={filteredMentors}
+                    count={filteredMentors.length}
+                  />
+                )}
+              </div>
             ) : (
               <div className="surface-card flex flex-col items-center gap-2 border-dashed py-16 text-center">
                 <p className="text-sm text-muted-foreground">
