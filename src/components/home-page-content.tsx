@@ -24,7 +24,8 @@ import { HomeFaqSection } from "@/components/home/home-faq-section";
 import { TestimonialShowcase } from "@/components/testimonial-showcase";
 import { Button } from "@/components/ui/button";
 import { Reveal, RevealText, Stagger, StaggerItem } from "@/components/motion/reveal";
-import { courses, featuredFounderResponse, mentors, reviews } from "@/lib/mock-data";
+import { featuredFounderResponse, reviews } from "@/lib/mock-data";
+import type { Course, Mentor } from "@/lib/types";
 
 const instruments = [
   { name: "Saham", href: "/katalog?instrumen=Saham", icon: LineChart },
@@ -78,10 +79,20 @@ const proofPoints = [
   },
 ];
 
-export function HomePageContent() {
+export function HomePageContent({
+  courses,
+  mentors,
+}: {
+  courses: Course[];
+  mentors: Mentor[];
+}) {
   const featuredCourses = [...courses]
     .sort((a, b) => b.studentsCount - a.studentsCount)
     .slice(0, 6);
+
+  const featuredMentors = [...mentors]
+    .sort((a, b) => b.studentsCount - a.studentsCount)
+    .slice(0, 8);
 
   return (
     <>
@@ -170,7 +181,7 @@ export function HomePageContent() {
           </div>
         </section>
 
-        {/* Course carousel — featured from mock-data */}
+        {/* Course carousel — featured from catalog */}
         <section
           id="kelas-unggulan"
           className="section-tight scroll-mt-24 border-b border-border/60"
@@ -181,7 +192,7 @@ export function HomePageContent() {
         </section>
 
         {/* Scroll narrative — trust story as vertical sections */}
-        <NarrativeScrollSections />
+        <NarrativeScrollSections courses={courses} mentors={mentors} />
 
         {/* Two paths */}
         <section className="section-spacious border-b border-border/60">
@@ -257,7 +268,7 @@ export function HomePageContent() {
         {/* Mentors */}
         <section className="section-loose border-b border-border/60">
           <div className="container-page">
-            <MentorCarousel mentors={mentors} />
+            <MentorCarousel mentors={featuredMentors} />
           </div>
         </section>
 

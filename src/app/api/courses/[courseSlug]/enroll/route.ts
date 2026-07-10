@@ -4,6 +4,7 @@ import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { ensureHubMembershipForCourseEnrollment } from "@/lib/chat/db-rooms";
 import { db } from "@/lib/db";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
+import { recalculateStatsForCourse } from "@/lib/stats/server";
 
 type RouteContext = {
   params: Promise<{ courseSlug: string }>;
@@ -147,6 +148,10 @@ export async function POST(request: NextRequest, context: RouteContext) {
       userId: user.id,
       courseId: course.id,
     });
+
+    if (!existing) {
+      await recalculateStatsForCourse(course.id);
+    }
 
     return jsonOk({
       enrollmentId: enrollment.id,

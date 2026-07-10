@@ -9,24 +9,8 @@ import { useAuth } from "@/components/auth-provider";
 import { DeviceOrbit } from "@/components/ui/orbit-visuals";
 import { Button } from "@/components/ui/button";
 import { Progress, ProgressIndicator, ProgressTrack } from "@/components/ui/progress";
-import { courses, mentors } from "@/lib/mock-data";
+import type { Course, Mentor } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-/* ── Stats derived from mock-data ── */
-
-const verifiedMentors = mentors.filter((m) => m.verified);
-const totalModules = courses.reduce((sum, c) => sum + c.modules.length, 0);
-const totalDurationHours = courses.reduce((sum, c) => sum + c.durationHours, 0);
-const totalStudents = courses.reduce((sum, c) => sum + c.studentsCount, 0);
-
-const learningPathTracks = [
-  { label: "Level pemula", count: courses.filter((c) => c.level === "Pemula").length, tone: "bg-accent/85" },
-  { label: "Level menengah", count: courses.filter((c) => c.level === "Menengah").length, tone: "bg-foreground/45" },
-  { label: "Saham", count: courses.filter((c) => c.instrument === "Saham").length, tone: "bg-emerald/85" },
-  { label: "Crypto", count: courses.filter((c) => c.instrument === "Crypto").length, tone: "bg-accent/65" },
-  { label: "Forex", count: courses.filter((c) => c.instrument === "Forex").length, tone: "bg-amber-300/70" },
-  { label: "Sesi mentor langsung", count: mentors.length, tone: "bg-foreground/55" },
-];
 
 const verificationSteps = [
   { label: "Kredensial dan lisensi diperiksa", done: true },
@@ -86,8 +70,16 @@ function NarrativeBlock({
 
 /* ── Visual: Verification stats + checklist ── */
 
-function VerificationVisual() {
-  const verifyRate = Math.round((verifiedMentors.length / mentors.length) * 100);
+function VerificationVisual({
+  courses,
+  mentors,
+  verifiedMentors,
+}: {
+  courses: Course[];
+  mentors: Mentor[];
+  verifiedMentors: Mentor[];
+}) {
+  const verifyRate = mentors.length > 0 ? Math.round((verifiedMentors.length / mentors.length) * 100) : 0;
 
   return (
     <div className="narrative-visual-card surface-card bg-card/60 p-4 sm:p-8">
@@ -139,7 +131,19 @@ function VerificationVisual() {
 
 /* ── Visual: User learning paths orbit ── */
 
-function LearningPathsVisual() {
+function LearningPathsVisual({
+  courses,
+  mentors,
+  learningPathTracks,
+  totalModules,
+  totalDurationHours,
+}: {
+  courses: Course[];
+  mentors: Mentor[];
+  learningPathTracks: { label: string; count: number; tone: string }[];
+  totalModules: number;
+  totalDurationHours: number;
+}) {
   const maxTrack = Math.max(...learningPathTracks.map((item) => item.count), 1);
 
   return (
@@ -188,7 +192,15 @@ function LearningPathsVisual() {
 
 /* ── Visual: Learn anywhere devices + access stats ── */
 
-function LearnAnywhereVisual() {
+function LearnAnywhereVisual({
+  totalModules,
+  totalDurationHours,
+  totalStudents,
+}: {
+  totalModules: number;
+  totalDurationHours: number;
+  totalStudents: number;
+}) {
   return (
     <div className="narrative-visual-card surface-card bg-card/60 p-4 sm:p-8">
       <p className="mb-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground sm:mb-6">
@@ -225,14 +237,40 @@ function LearnAnywhereVisual() {
 
 /* ── Main export: 3 narrative blocks ── */
 
-export function NarrativeScrollSections() {
+export function NarrativeScrollSections({
+  courses,
+  mentors,
+}: {
+  courses: Course[];
+  mentors: Mentor[];
+}) {
+  const verifiedMentors = mentors.filter((m) => m.verified);
+  const totalModules = courses.reduce((sum, c) => sum + c.modules.length, 0);
+  const totalDurationHours = courses.reduce((sum, c) => sum + c.durationHours, 0);
+  const totalStudents = courses.reduce((sum, c) => sum + c.studentsCount, 0);
+
+  const learningPathTracks = [
+    { label: "Level pemula", count: courses.filter((c) => c.level === "Pemula").length, tone: "bg-accent/85" },
+    { label: "Level menengah", count: courses.filter((c) => c.level === "Menengah").length, tone: "bg-foreground/45" },
+    { label: "Saham", count: courses.filter((c) => c.instrument === "Saham").length, tone: "bg-emerald/85" },
+    { label: "Crypto", count: courses.filter((c) => c.instrument === "Crypto").length, tone: "bg-accent/65" },
+    { label: "Forex", count: courses.filter((c) => c.instrument === "Forex").length, tone: "bg-amber-300/70" },
+    { label: "Sesi mentor langsung", count: mentors.length, tone: "bg-foreground/55" },
+  ];
+
   return (
     <>
       <NarrativeBlock
         eyebrow="Verifikasi"
         title="Mentor dicek dulu, baru kelas tayang"
         copy="Kami cek kredensial, kurikulum, dan aspek kepatuhan dulu. Mentor baru tampil setelah lolos review."
-        visual={<VerificationVisual />}
+        visual={
+          <VerificationVisual
+            courses={courses}
+            mentors={mentors}
+            verifiedMentors={verifiedMentors}
+          />
+        }
         spacing="loose"
       />
 
@@ -240,7 +278,15 @@ export function NarrativeScrollSections() {
         eyebrow="Jalur belajar"
         title="Banyak pilihan, kamu yang tentukan arahnya"
         copy="Trading bukan cuma soal strategi — juga soal tahu diri sendiri. Di Bursa kamu bisa mulai dari level pemula atau menengah, pilih saham crypto atau forex, belajar mandiri lewat modul atau bareng mentor. Jelajahi dulu sampai ketemu yang pas buat kamu."
-        visual={<LearningPathsVisual />}
+        visual={
+          <LearningPathsVisual
+            courses={courses}
+            mentors={mentors}
+            learningPathTracks={learningPathTracks}
+            totalModules={totalModules}
+            totalDurationHours={totalDurationHours}
+          />
+        }
         reverse
         muted
         spacing="tight"
@@ -250,7 +296,13 @@ export function NarrativeScrollSections() {
         eyebrow="Akses fleksibel"
         title="Lanjutkan belajar kapan pun"
         copy="Akses modul dari desktop atau mobile kapan saja. Lanjut dari progres terakhirmu."
-        visual={<LearnAnywhereVisual />}
+        visual={
+          <LearnAnywhereVisual
+            totalModules={totalModules}
+            totalDurationHours={totalDurationHours}
+            totalStudents={totalStudents}
+          />
+        }
         spacing="base"
       />
     </>

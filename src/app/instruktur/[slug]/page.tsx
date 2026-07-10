@@ -10,11 +10,17 @@ import { InstrumentBadge } from "@/components/instrument-badge";
 import { CourseCard } from "@/components/course-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { getCoursesByMentor, getMentorBySlug, mentors, reviews } from "@/lib/mock-data";
+import {
+  getCatalogMentorSlugs,
+  getCoursesByMentor,
+  getMentorBySlug,
+  getMentorReviews,
+} from "@/lib/catalog/server";
 import { formatRating } from "@/lib/utils";
 
-export function generateStaticParams() {
-  return mentors.map((mentor) => ({ slug: mentor.slug }));
+export async function generateStaticParams() {
+  const slugs = await getCatalogMentorSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -23,7 +29,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const mentor = getMentorBySlug(slug);
+  const mentor = await getMentorBySlug(slug);
   if (!mentor) return {};
   return {
     title: mentor.name,
@@ -37,10 +43,14 @@ export default async function MentorProfilePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const mentor = getMentorBySlug(slug);
+  const mentor = await getMentorBySlug(slug);
   if (!mentor) notFound();
 
-  const mentorCourses = getCoursesByMentor(mentor.slug);
+  const [mentorCourses, mentorReviews] = await Promise.all([
+    getCoursesByMentor(mentor.slug),
+    getMentorReviews(mentor.slug),
+  ]);
+
   const statCards = [
     { icon: Users, label: "Total Siswa", value: mentor.studentsCount.toLocaleString("id-ID") },
     { icon: Star, label: "Rating Agregat", value: formatRating(mentor.rating) },
@@ -89,7 +99,7 @@ export default async function MentorProfilePage({
                   Pilih Kelas {mentorFirstName}
                 </Button>
                 {mentor.availableFor1on1 && (
-                  <Button variant="outline" render={<Link href="#" />}>
+                  <Button variant="outline" render={<Link href={`/instruktur/${mentor.slug}/sesi`} />}>
                     Tanya Sesi 1-on-1 · {mentor.sessionPrice}
                   </Button>
                 )}
@@ -175,29 +185,33 @@ export default async function MentorProfilePage({
                 Ulasan siswa dan status review tim ditampilkan sebagai referensi tambahan saat
                 memilih kelas.
               </p>
-              <div className="flex flex-col gap-4">
-                {reviews.map((review) => (
-                  <div key={review.name} className="surface-card p-5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Avatar size="sm">
-                          <AvatarFallback className="bg-surface-2 text-xs">
-                            {review.initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium">{review.name}</p>
-                          <p className="text-xs text-muted-foreground">{review.date}</p>
+              {mentorReviews.length > 0 ? (
+                <div className="flex flex-col gap-4">
+                  {mentorReviews.map((review) => (
+                    <div key={`${review.name}-${review.date}`} className="surface-card p-5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Avatar size="sm">
+                            <AvatarFallback className="bg-surface-2 text-xs">
+                              {review.initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-sm font-medium">{review.name}</p>
+                            <p className="text-xs text-muted-foreground">{review.date}</p>
+                          </div>
                         </div>
+                        <span className="flex items-center gap-1 text-xs">
+                          <Star className="size-3.5 fill-foreground" /> {formatRating(review.rating)}
+                        </span>
                       </div>
-                      <span className="flex items-center gap-1 text-xs">
-                        <Star className="size-3.5 fill-foreground" /> {formatRating(review.rating)}
-                      </span>
+                      <p className="mt-3 text-sm text-muted-foreground">{review.comment}</p>
                     </div>
-                    <p className="mt-3 text-sm text-muted-foreground">{review.comment}</p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Belum ada ulasan untuk kelas mentor ini.</p>
+              )}
             </section>
           </div>
 
@@ -241,7 +255,7 @@ export default async function MentorProfilePage({
                   Diskusikan portofolio atau strategi tradingmu secara personal. Pembayaran
                   ditahan (escrow) hingga sesi terkonfirmasi selesai.
                 </p>
-                <Button className="mt-4 w-full" variant="outline" render={<Link href="#" />}>
+                <Button className="mt-4 w-full" variant="outline" render={<Link href={`/instruktur/${mentor.slug}/sesi`} />}>
                   Lihat Jadwal Tersedia
                 </Button>
               </div>

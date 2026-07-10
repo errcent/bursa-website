@@ -105,6 +105,119 @@ export async function getCatalogData(): Promise<{ courses: Course[]; mentors: Me
   return { courses, mentors };
 }
 
+/** Single mentor by slug — verified profiles only (public catalog). */
+export async function getMentorBySlug(slug: string): Promise<Mentor | null> {
+  const profile = await db.mentorProfile.findFirst({
+    where: { slug, verificationStatus: VerificationStatus.VERIFIED },
+    include: mentorInclude,
+  });
+  return profile ? mapCatalogMentor(profile) : null;
+}
+
+/** Published course by slug from a verified mentor. */
+export async function getCourseBySlug(slug: string): Promise<Course | null> {
+  const course = await db.course.findFirst({
+    where: {
+      slug,
+      isPublished: true,
+      mentor: { verificationStatus: VerificationStatus.VERIFIED },
+    },
+    include: {
+      mentor: { select: { slug: true } },
+      modules: {
+        orderBy: { sortOrder: "asc" },
+        include: {
+          lessons: { orderBy: { sortOrder: "asc" } },
+        },
+      },
+    },
+  });
+  return course ? mapCatalogCourse(course) : null;
+}
+
+/** Published courses for a verified mentor. */
+export async function getCoursesByMentor(mentorSlug: string): Promise<Course[]> {
+  const courses = await db.course.findMany({
+    where: {
+      isPublished: true,
+      mentor: {
+        slug: mentorSlug,
+        verificationStatus: VerificationStatus.VERIFIED,
+      },
+    },
+    include: {
+      mentor: { select: { slug: true } },
+      modules: {
+        orderBy: { sortOrder: "asc" },
+        include: {
+          lessons: { orderBy: { sortOrder: "asc" } },
+        },
+      },
+    },
+    orderBy: [{ studentsCount: "desc" }, { updatedAt: "desc" }],
+  });
+  return courses.map(mapCatalogCourse);
+}
+
+/** Slugs for static generation of mentor profile pages. */
+export async function getCatalogMentorSlugs(): Promise<string[]> {
+  const profiles = await db.mentorProfile.findMany({
+    where: { verificationStatus: VerificationStatus.VERIFIED },
+    select: { slug: true },
+  });
+  return profiles.map((p) => p.slug);
+}
+
+/** Slugs for static generation of course detail pages. */
+export async function getCatalogCourseSlugs(): Promise<string[]> {
+  const courses = await db.course.findMany({
+    where: {
+      isPublished: true,
+      mentor: { verificationStatus: VerificationStatus.VERIFIED },
+    },
+    select: { slug: true },
+  });
+  return courses.map((c) => c.slug);
+}
+
+/** Recent reviews across all courses taught by a mentor. */
+export async function getMentorReviews(mentorSlug: string, limit = 10) {
+  const mentor = await db.mentorProfile.findFirst({
+    where: { slug: mentorSlug, verificationStatus: VerificationStatus.VERIFIED },
+    select: { courses: { select: { id: true } } },
+  });
+  if (!mentor || mentor.courses.length === 0) return [];
+
+  const reviews = await db.review.findMany({
+    where: { courseId: { in: mentor.courses.map((c) => c.id) } },
+    include: { user: { select: { nama: true } } },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+
+  return reviews.map((review) => {
+    const parts = review.user.nama.trim().split(/\s+/).filter(Boolean);
+    const initials =
+      parts.length === 0
+        ? "?"
+        : parts.length === 1
+          ? parts[0].slice(0, 2).toUpperCase()
+          : `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+
+    return {
+      name: review.user.nama,
+      initials,
+      rating: review.rating,
+      comment: review.comment,
+      date: review.createdAt.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }),
+    };
+  });
+}
+
 /** Call after admin changes that affect catalog visibility. */
 export function revalidateCatalog() {
   revalidatePath("/katalog");

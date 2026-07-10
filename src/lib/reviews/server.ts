@@ -126,19 +126,9 @@ export async function getReviewEligibility(
   };
 }
 
+/** @deprecated Use recalculateCourseStats from @/lib/stats/server */
 export async function recalculateCourseRating(courseId: string) {
-  const aggregate = await db.review.aggregate({
-    where: { courseId },
-    _avg: { rating: true },
-    _count: { _all: true },
-  });
-
-  const rating = aggregate._count._all > 0 ? Number(aggregate._avg.rating?.toFixed(1)) : 0;
-
-  await db.course.update({
-    where: { id: courseId },
-    data: { rating },
-  });
-
-  return rating;
+  const { recalculateCourseStats } = await import("@/lib/stats/server");
+  const stats = await recalculateCourseStats(courseId);
+  return stats.rating;
 }

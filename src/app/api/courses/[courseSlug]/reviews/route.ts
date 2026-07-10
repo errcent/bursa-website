@@ -3,11 +3,8 @@ import { NextRequest } from "next/server";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { db } from "@/lib/db";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
-import {
-  getReviewEligibility,
-  recalculateCourseRating,
-  serializeCourseReview,
-} from "@/lib/reviews/server";
+import { getReviewEligibility, serializeCourseReview } from "@/lib/reviews/server";
+import { recalculateStatsForCourse } from "@/lib/stats/server";
 import { createCourseReviewSchema } from "@/lib/validations/api";
 
 type RouteContext = {
@@ -93,7 +90,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       include: { user: { select: authorSelect } },
     });
 
-    await recalculateCourseRating(result.courseId);
+    await recalculateStatsForCourse(result.courseId);
 
     return jsonOk({ review: serializeCourseReview(review) }, 201);
   } catch (error) {

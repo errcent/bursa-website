@@ -16,10 +16,16 @@ import {
 } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { courses, formatRupiah, getCourseBySlug, getMentorBySlug } from "@/lib/mock-data";
+import {
+  getCatalogCourseSlugs,
+  getCourseBySlug,
+  getMentorBySlug,
+} from "@/lib/catalog/server";
+import { formatRupiah } from "@/lib/mock-data";
 
-export function generateStaticParams() {
-  return courses.map((course) => ({ slug: course.slug }));
+export async function generateStaticParams() {
+  const slugs = await getCatalogCourseSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -28,7 +34,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const course = getCourseBySlug(slug);
+  const course = await getCourseBySlug(slug);
   if (!course) return {};
   return { title: course.title, description: course.shortDescription };
 }
@@ -55,10 +61,10 @@ export default async function CourseDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const course = getCourseBySlug(slug);
+  const course = await getCourseBySlug(slug);
   if (!course) notFound();
 
-  const mentor = getMentorBySlug(course.mentorSlug);
+  const mentor = await getMentorBySlug(course.mentorSlug);
   const totalLessons = course.modules.reduce((sum, m) => sum + m.lessons.length, 0);
   const primaryCheckoutHref = `/checkout/${course.slug}`;
 
