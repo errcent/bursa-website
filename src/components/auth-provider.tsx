@@ -28,6 +28,8 @@ interface AuthContextValue {
   refresh: () => void;
   updateLocalProfile: (input: {
     name?: string;
+    username?: string | null;
+    phone?: string | null;
     avatarUrl?: string | null;
     bio?: string | null;
   }) => AuthSession | null;
@@ -81,8 +83,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateLocalProfile = useCallback(
-    (input: { name?: string; avatarUrl?: string | null; bio?: string | null }) =>
-      updateLocalProfileRequest(input),
+    (input: {
+      name?: string;
+      username?: string | null;
+      phone?: string | null;
+      avatarUrl?: string | null;
+      bio?: string | null;
+    }) => updateLocalProfileRequest(input),
     []
   );
 

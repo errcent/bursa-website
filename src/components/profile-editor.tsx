@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Camera, Loader2, Settings } from "lucide-react";
+import { Camera, Check, Loader2, Settings, X } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ROLE_LABELS } from "@/lib/auth/roles";
+import { isValidIndonesianPhone, normalizeIndonesianPhone } from "@/lib/auth/validation";
 import type { UserRole } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,8 @@ type ProfilePayload = {
   id: string;
   email: string;
   name: string;
+  username: string | null;
+  phone: string | null;
   bio: string;
   avatarUrl: string | null;
   role: string;
@@ -23,9 +26,13 @@ type ProfilePayload = {
 
 type ProfileSnapshot = {
   name: string;
+  username: string;
+  phone: string;
   bio: string;
   avatarUrl: string | null;
 };
+
+const USERNAME_PATTERN = /^[a-z0-9_]{3,30}$/;
 
 function initials(name: string) {
   return name
@@ -55,31 +62,41 @@ export function ProfileEditor() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [saved, setSaved] = useState<ProfileSnapshot>({
     name: "",
+    username: "",
+    phone: "",
     bio: "",
     avatarUrl: null,
   });
 
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(
-    null
+  const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [usernameCheck, setUsernameCheck] = useState<"idle" | "checking" | "available" | "taken">(
+    "idle"
   );
+  const usernameTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!session) return;
 
     const fromSession: ProfileSnapshot = {
       name: session.name ?? "",
+      username: session.username ?? "",
+      phone: session.phone ?? "",
       bio: session.bio ?? "",
       avatarUrl: session.avatarUrl ?? null,
     };
     setName(fromSession.name);
+    setUsername(fromSession.username);
+    setPhone(fromSession.phone);
     setBio(fromSession.bio);
     setAvatarUrl(fromSession.avatarUrl);
     setSaved(fromSession);
@@ -104,10 +121,14 @@ export function ProfileEditor() {
         if (cancelled) return;
         const next: ProfileSnapshot = {
           name: data.profile.name,
+          username: data.profile.username ?? "",
+          phone: data.profile.phone ?? "",
           bio: data.profile.bio ?? "",
           avatarUrl: data.profile.avatarUrl,
         };
         setName(next.name);
+        setUsername(next.username);
+        setPhone(next.phone);
         setBio(next.bio);
         setAvatarUrl(next.avatarUrl);
         setSaved(next);
@@ -118,6 +139,8 @@ export function ProfileEditor() {
         });
         updateLocalProfile({
           name: next.name,
+          username: next.username || null,
+          phone: next.phone || null,
           bio: next.bio,
           avatarUrl: next.avatarUrl,
         });
@@ -137,16 +160,43 @@ export function ProfileEditor() {
   useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (usernameTimer.current) clearTimeout(usernameTimer.current);
     };
   }, [previewUrl]);
+
+  function scheduleUsernameCheck(value: string, profileId?: string) {
+    if (usernameTimer.current) clearTimeout(usernameTimer.current);
+    const normalized = value.trim().toLowerCase();
+    if (!normalized || !USERNAME_PATTERN.test(normalized) || normalized === saved.username) {
+      setUsernameCheck("idle");
+      return;
+    }
+    setUsernameCheck("checking");
+    usernameTimer.current = setTimeout(() => {
+      const params = new URLSearchParams({ username: normalized });
+      if (profileId) params.set("excludeUserId", profileId);
+      void fetch(`/api/auth/check-username?${params}`)
+        .then(async (res) => {
+          const data = (await res.json()) as { available?: boolean };
+          if (!res.ok) {
+            setUsernameCheck("idle");
+            return;
+          }
+          setUsernameCheck(data.available ? "available" : "taken");
+        })
+        .catch(() => setUsernameCheck("idle"));
+    }, 400);
+  }
 
   const isDirty = useMemo(() => {
     if (pendingFile) return true;
     if (name.trim() !== saved.name.trim()) return true;
+    if (username.trim().toLowerCase() !== saved.username.trim().toLowerCase()) return true;
+    if (phone.trim() !== saved.phone.trim()) return true;
     if (normalizeBio(bio) !== normalizeBio(saved.bio)) return true;
     if ((avatarUrl ?? null) !== (saved.avatarUrl ?? null)) return true;
     return false;
-  }, [name, bio, avatarUrl, pendingFile, saved]);
+  }, [name, username, phone, bio, avatarUrl, pendingFile, saved]);
 
   if (isLoading) {
     return <div className="h-40 animate-pulse rounded-2xl bg-muted" />;
@@ -179,9 +229,30 @@ export function ProfileEditor() {
     if (!session || saving || !isDirty) return;
 
     const trimmedName = name.trim();
+    const normalizedUsername = username.trim().toLowerCase();
+    const trimmedPhone = phone.trim();
+
     if (trimmedName.length < 2) {
-      setMessage({ type: "err", text: "Nama pengguna minimal 2 karakter." });
+      setMessage({ type: "err", text: "Nama tampilan minimal 2 karakter." });
       return;
+    }
+    if (normalizedUsername && !USERNAME_PATTERN.test(normalizedUsername)) {
+      setMessage({
+        type: "err",
+        text: "Username 3–30 karakter, huruf kecil, angka, dan underscore.",
+      });
+      return;
+    }
+    if (usernameCheck === "taken") {
+      setMessage({ type: "err", text: "Username sudah dipakai." });
+      return;
+    }
+    if (trimmedPhone) {
+      const normalizedPhone = normalizeIndonesianPhone(trimmedPhone);
+      if (!isValidIndonesianPhone(normalizedPhone)) {
+        setMessage({ type: "err", text: "Format nomor telepon tidak valid (+62)." });
+        return;
+      }
     }
 
     setSaving(true);
@@ -216,6 +287,8 @@ export function ProfileEditor() {
         nextAvatar = uploadJson.avatarUrl ?? nextAvatar;
       }
 
+      const normalizedPhone = trimmedPhone ? normalizeIndonesianPhone(trimmedPhone) : null;
+
       const patchRes = await fetch("/api/me/profile", {
         method: "PATCH",
         headers: {
@@ -229,6 +302,8 @@ export function ProfileEditor() {
           userId: session.userId,
           email: session.email,
           name: trimmedName,
+          username: normalizedUsername || null,
+          phone: normalizedPhone,
           bio: bio.trim(),
           avatarUrl: nextAvatar,
           role: session.role,
@@ -246,14 +321,19 @@ export function ProfileEditor() {
       const profile = patchJson.profile;
       const next: ProfileSnapshot = {
         name: profile.name,
+        username: profile.username ?? "",
+        phone: profile.phone ?? "",
         bio: profile.bio ?? "",
         avatarUrl: profile.avatarUrl,
       };
       setName(next.name);
+      setUsername(next.username);
+      setPhone(next.phone);
       setBio(next.bio);
       setAvatarUrl(next.avatarUrl);
       setSaved(next);
       setPendingFile(null);
+      setUsernameCheck("idle");
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
         setPreviewUrl(null);
@@ -261,6 +341,8 @@ export function ProfileEditor() {
 
       updateLocalProfile({
         name: next.name,
+        username: next.username || null,
+        phone: next.phone || null,
         bio: next.bio,
         avatarUrl: next.avatarUrl,
       });
@@ -277,7 +359,7 @@ export function ProfileEditor() {
   }
 
   const displayAvatar = previewUrl || avatarUrl;
-  const canSave = isDirty && !saving && !loadingProfile;
+  const canSave = isDirty && !saving && !loadingProfile && usernameCheck !== "taken";
 
   return (
     <div className="space-y-6">
@@ -286,6 +368,9 @@ export function ProfileEditor() {
           <Badge variant={roleBadgeVariant(session.role)} className="rounded-full px-3 py-1 text-xs">
             {ROLE_LABELS[session.role]}
           </Badge>
+          {session.username && (
+            <p className="text-xs font-mono text-muted-foreground">@{session.username}</p>
+          )}
           <p className="text-xs text-muted-foreground">{session.email}</p>
         </div>
         <Button size="sm" variant="outline" render={<Link href="/pengaturan" />}>
@@ -349,6 +434,58 @@ export function ProfileEditor() {
             placeholder="Nama tampilan"
             autoComplete="nickname"
           />
+        </label>
+
+        <label className="block space-y-1.5">
+          <span className="text-xs font-medium text-muted-foreground">Username</span>
+          <div className="relative">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+              @
+            </span>
+            <input
+              value={username}
+              onChange={(e) => {
+                const nextValue = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "");
+                setUsername(nextValue);
+                scheduleUsernameCheck(nextValue);
+              }}
+              disabled={saving || loadingProfile}
+              maxLength={30}
+              autoComplete="username"
+              spellCheck={false}
+              className="w-full rounded-lg border border-border bg-background py-2 pl-7 pr-9 text-sm disabled:opacity-60"
+              placeholder="username_kamu"
+            />
+            {usernameCheck === "checking" && (
+              <Loader2 className="absolute right-3 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+            )}
+            {usernameCheck === "available" && (
+              <Check className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-emerald-500" />
+            )}
+            {usernameCheck === "taken" && (
+              <X className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-destructive" />
+            )}
+          </div>
+          <span className="block text-[11px] text-muted-foreground">
+            Dipakai untuk masuk dan mention di chat. Huruf kecil, angka, underscore.
+          </span>
+        </label>
+
+        <label className="block space-y-1.5">
+          <span className="text-xs font-medium text-muted-foreground">Nomor telepon</span>
+          <input
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            disabled={saving || loadingProfile}
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm disabled:opacity-60"
+            placeholder="+62812xxxxxxx (opsional)"
+          />
+          <span className="block text-[11px] text-muted-foreground">
+            Format Indonesia (+62). Bisa dipakai untuk masuk.
+          </span>
         </label>
 
         <label className="block space-y-1.5">

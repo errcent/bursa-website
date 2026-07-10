@@ -1,15 +1,8 @@
 import { NextRequest } from "next/server";
-import { z } from "zod";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { ensureUserSchema } from "@/lib/auth/validation";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
-
-const ensureUserSchema = z.object({
-  email: z.string().email(),
-  name: z.string().min(1).max(120).optional(),
-  role: z.string().optional(),
-  userId: z.string().optional(),
-});
 
 /**
  * Bridge client-auth (localStorage) registrants into Prisma.
@@ -38,6 +31,8 @@ export async function POST(request: NextRequest) {
           body.name?.trim() ||
           request.headers.get("x-user-name")?.trim() ||
           undefined,
+        username: body.username?.trim(),
+        phone: body.phone,
         role:
           body.role ||
           request.headers.get("x-user-role")?.trim() ||
@@ -55,6 +50,8 @@ export async function POST(request: NextRequest) {
         id: user.id,
         email: user.email,
         name: user.nama,
+        username: user.username,
+        phone: user.phone,
         role: user.role,
       },
     });

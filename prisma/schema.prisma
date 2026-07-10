@@ -137,6 +137,10 @@ model User {
   id           String    @id @default(cuid())
   email        String    @unique
   passwordHash String
+  /// Login handle — lowercase alphanumeric + underscore; separate from display name.
+  username     String?   @unique
+  /// E.164 or Indonesian +62... format.
+  phone        String?   @unique
   nama         String
   /// Optional short bio for the base user profile (learners, mentors, staff).
   bio          String?
@@ -168,6 +172,22 @@ model User {
   changeRequestReviews CourseChangeRequest[]    @relation("ChangeRequestReviewer")
   chatBranchChangeRequests       ChatBranchChangeRequest[] @relation("ChatBranchChangeMentor")
   chatBranchChangeRequestReviews ChatBranchChangeRequest[] @relation("ChatBranchChangeReviewer")
+  passwordResetTokens            PasswordResetToken[]
+}
+
+/// Single-use reset token — stores hash only, never plaintext (UU PDP / GDPR-ready).
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model MentorProfile {

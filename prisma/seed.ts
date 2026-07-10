@@ -77,6 +77,7 @@ async function main() {
   await prisma.contentModerationQueue.deleteMany();
   await prisma.adminAuditLog.deleteMany();
   await prisma.platformConfig.deleteMany();
+  await prisma.passwordResetToken.deleteMany();
   await prisma.mentorProfile.deleteMany();
   await prisma.user.deleteMany();
 
@@ -85,6 +86,8 @@ async function main() {
   const learner = await prisma.user.create({
     data: {
       email: "learner@test.dev",
+      username: "test_learner",
+      phone: "+6281110000001",
       passwordHash,
       nama: "Test Learner",
       role: UserRole.LEARNER,
@@ -95,6 +98,8 @@ async function main() {
   await prisma.user.create({
     data: {
       email: "demo@bursa.id",
+      username: "dinda_r",
+      phone: "+6281110000002",
       passwordHash,
       nama: "Dinda Ramadhani",
       role: UserRole.LEARNER,
@@ -105,6 +110,8 @@ async function main() {
   const admin = await prisma.user.create({
     data: {
       email: "admin@test.dev",
+      username: "test_admin",
+      phone: "+6281110000003",
       passwordHash,
       nama: "Test Admin",
       role: UserRole.ADMIN,
@@ -115,6 +122,8 @@ async function main() {
   const mentorUser = await prisma.user.create({
     data: {
       email: "mentor@test.dev",
+      username: "test_mentor",
+      phone: "+6281110000004",
       passwordHash,
       nama: "Test Mentor",
       role: UserRole.MENTOR,
@@ -131,6 +140,8 @@ async function main() {
       : await prisma.user.create({
           data: {
             email: `${mentor.slug}@mentor.bursa.dev`,
+            username: mentor.slug.replace(/-/g, "_"),
+            phone: `+62812${String(mentors.indexOf(mentor) + 1000000).slice(-7)}`,
             passwordHash,
             nama: mentor.name,
             role: UserRole.MENTOR,
@@ -291,6 +302,7 @@ async function main() {
           : await prisma.user.create({
               data: {
                 email: `reviewer${index}@test.dev`,
+                username: `reviewer_${index}`,
                 passwordHash,
                 nama: review.name,
                 role: UserRole.LEARNER,
@@ -755,9 +767,10 @@ async function main() {
 
   console.log("Seed completed.");
   console.log("Test accounts (password: password123):");
-  console.log("  learner@test.dev");
-  console.log("  mentor@test.dev");
-  console.log("  admin@test.dev");
+  console.log("  learner@test.dev  | username: test_learner  | phone: +6281110000001");
+  console.log("  demo@bursa.id     | username: dinda_r       | phone: +6281110000002 (password: demo1234)");
+  console.log("  mentor@test.dev   | username: test_mentor   | phone: +6281110000004");
+  console.log("  admin@test.dev    | username: test_admin    | phone: +6281110000003");
 }
 
 main()

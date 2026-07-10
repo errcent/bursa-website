@@ -1,5 +1,10 @@
 import { registerDeviceOnLogin, touchDeviceSession } from "./devices";
 import type { AuthSession, LoginInput, RegisterInput, StoredUser, UserRole } from "./types";
+import {
+  classifyLoginIdentifier,
+  normalizeIndonesianPhone,
+  normalizeLoginIdentifier,
+} from "./validation";
 
 const USERS_KEY = "bursa-users";
 const SESSION_KEY = "bursa-session";
@@ -17,6 +22,8 @@ const DEMO_USER: StoredUser = {
   id: "user-demo-dinda",
   name: "Dinda Ramadhani",
   email: "demo@bursa.id",
+  username: "dinda_r",
+  phone: "+6281110000002",
   password: "demo1234",
   role: "learner",
   createdAt: "2026-01-15T00:00:00.000Z",
@@ -26,6 +33,8 @@ const ADMIN_USER: StoredUser = {
   id: "user-admin-seed",
   name: "Test Admin",
   email: "admin@test.dev",
+  username: "test_admin",
+  phone: "+6281110000003",
   password: "password123",
   role: "admin",
   createdAt: "2026-01-01T00:00:00.000Z",
@@ -35,6 +44,8 @@ const LEARNER_USER: StoredUser = {
   id: "user-learner-seed",
   name: "Test Learner",
   email: "learner@test.dev",
+  username: "test_learner",
+  phone: "+6281110000001",
   password: "password123",
   role: "learner",
   createdAt: "2026-01-01T00:00:00.000Z",
@@ -44,6 +55,8 @@ const MENTOR_USER: StoredUser = {
   id: "user-mentor-seed",
   name: "Test Mentor",
   email: "mentor@test.dev",
+  username: "test_mentor",
+  phone: "+6281110000004",
   password: "password123",
   role: "mentor",
   createdAt: "2026-01-01T00:00:00.000Z",
@@ -53,6 +66,8 @@ const DEVELOPER_USER: StoredUser = {
   id: "user-developer-seed",
   name: "Test Developer",
   email: "developer@test.dev",
+  username: "test_developer",
+  phone: "+6281110000005",
   password: "password123",
   role: "developer",
   createdAt: "2026-01-01T00:00:00.000Z",
@@ -122,9 +137,24 @@ function readUsers(): StoredUser[] {
     const merged = [...users];
     let changed = false;
     for (const seed of SEED_USERS) {
-      if (!merged.some((u) => u.email === seed.email)) {
+      const idx = merged.findIndex((u) => u.email === seed.email);
+      if (idx < 0) {
         merged.push(seed);
         changed = true;
+      } else {
+        const current = merged[idx];
+        const patched: StoredUser = {
+          ...current,
+          username: current.username ?? seed.username ?? null,
+          phone: current.phone ?? seed.phone ?? null,
+        };
+        if (
+          patched.username !== current.username ||
+          patched.phone !== current.phone
+        ) {
+          merged[idx] = patched;
+          changed = true;
+        }
       }
     }
     const result = merged.length > 0 ? merged : SEED_USERS;
@@ -149,11 +179,27 @@ function writeUsers(users: StoredUser[]) {
   cachedUsers = users;
 }
 
+function findStoredUserByIdentifier(identifier: string): StoredUser | undefined {
+  const kind = classifyLoginIdentifier(identifier);
+  const normalized = normalizeLoginIdentifier(identifier);
+  const users = readUsers();
+
+  if (kind === "email") {
+    return users.find((u) => u.email === normalized);
+  }
+  if (kind === "phone") {
+    return users.find((u) => u.phone === normalized);
+  }
+  return users.find((u) => u.username?.toLowerCase() === normalized);
+}
+
 function toSession(user: StoredUser): AuthSession {
   return {
     userId: user.id,
     email: user.email,
     name: user.name,
+    username: user.username ?? null,
+    phone: user.phone ?? null,
     role: user.role ?? roleForEmail(user.email),
     issuedAt: new Date().toISOString(),
     avatarUrl: user.avatarUrl ?? null,
@@ -177,6 +223,8 @@ export function getSession(): AuthSession | null {
     cachedSession = {
       ...session,
       role: session.role ?? roleForEmail(session.email),
+      username: session.username ?? null,
+      phone: session.phone ?? null,
       avatarUrl: session.avatarUrl ?? null,
       bio: session.bio ?? null,
     };
@@ -212,15 +260,71 @@ export function setSession(session: AuthSession | null) {
   notifyAuthChange();
 }
 
-export function login(input: LoginInput): { ok: true; session: AuthSession } | { ok: false; error: string } {
+function prismaRoleToClient(role: string): UserRole {
+  const map: Record<string, UserRole> = {
+    LEARNER: "learner",
+    MENTOR: "mentor",
+    ADMIN: "admin",
+    DEVELOPER: "developer",
+  };
+  return map[role] ?? roleForEmail("");
+}
+
+/** Bridge Google OAuth (NextAuth) into localStorage session for prototype APIs. */
+export function loginWithOAuth(input: {
+  userId: string;
+  email: string;
+  name: string;
+  avatarUrl?: string | null;
+  role?: string;
+}): { ok: true; session: AuthSession } | { ok: false; error: string } {
   const email = input.email.trim().toLowerCase();
-  const user = readUsers().find((u) => u.email === email);
+  const name = input.name.trim() || email.split("@")[0] || "Pengguna";
+  const users = readUsers();
+  const existingIdx = users.findIndex((u) => u.email === email);
+
+  let user: StoredUser;
+  if (existingIdx >= 0) {
+    user = {
+      ...users[existingIdx],
+      name,
+      ...(input.avatarUrl !== undefined ? { avatarUrl: input.avatarUrl } : {}),
+      role: input.role ? prismaRoleToClient(input.role) : users[existingIdx].role,
+    };
+    const nextUsers = [...users];
+    nextUsers[existingIdx] = user;
+    writeUsers(nextUsers);
+  } else {
+    user = {
+      id: input.userId.startsWith("user-") ? input.userId : `user-${input.userId}`,
+      name,
+      email,
+      password: "",
+      role: input.role ? prismaRoleToClient(input.role) : roleForEmail(email),
+      createdAt: new Date().toISOString(),
+      avatarUrl: input.avatarUrl ?? null,
+    };
+    writeUsers([...users, user]);
+  }
+
+  const session = toSession(user);
+  const deviceResult = registerDeviceOnLogin(session.userId);
+  if (!deviceResult.ok) {
+    return { ok: false, error: deviceResult.error };
+  }
+  setSession(session);
+  void ensurePrismaUser(session);
+  return { ok: true, session };
+}
+
+export function login(input: LoginInput): { ok: true; session: AuthSession } | { ok: false; error: string } {
+  const user = findStoredUserByIdentifier(input.identifier);
 
   if (!user) {
-    return { ok: false, error: "Email atau kata sandi salah." };
+    return { ok: false, error: "Username, email, telepon, atau kata sandi salah." };
   }
   if (user.password !== input.password) {
-    return { ok: false, error: "Email atau kata sandi salah." };
+    return { ok: false, error: "Username, email, telepon, atau kata sandi salah." };
   }
 
   const session = toSession(user);
@@ -239,12 +343,17 @@ export function register(
 ): { ok: true; session: AuthSession } | { ok: false; error: string } {
   const name = input.name.trim();
   const email = input.email.trim().toLowerCase();
+  const username = input.username.trim().toLowerCase();
+  const phone = input.phone?.trim() ? normalizeIndonesianPhone(input.phone.trim()) : undefined;
 
   if (name.length < 2) {
     return { ok: false, error: "Nama minimal 2 karakter." };
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { ok: false, error: "Format email tidak valid." };
+  }
+  if (!/^[a-z0-9_]{3,30}$/.test(username)) {
+    return { ok: false, error: "Username minimal 3 karakter (huruf kecil, angka, underscore)." };
   }
   if (input.password.length < 8) {
     return { ok: false, error: "Kata sandi minimal 8 karakter." };
@@ -254,11 +363,19 @@ export function register(
   if (users.some((u) => u.email === email)) {
     return { ok: false, error: "Email sudah terdaftar. Silakan masuk." };
   }
+  if (users.some((u) => u.username?.toLowerCase() === username)) {
+    return { ok: false, error: "Username sudah dipakai. Pilih username lain." };
+  }
+  if (phone && users.some((u) => u.phone === phone)) {
+    return { ok: false, error: "Nomor telepon sudah terdaftar." };
+  }
 
   const newUser: StoredUser = {
     id: `user-${crypto.randomUUID()}`,
     name,
     email,
+    username,
+    phone: phone ?? null,
     password: input.password,
     role: "learner",
     createdAt: new Date().toISOString(),
@@ -278,7 +395,7 @@ export function register(
 
 /** Ensure the client-auth session has a Prisma User row (idempotent). */
 export async function ensurePrismaUser(
-  session: Pick<AuthSession, "userId" | "email" | "name" | "role">
+  session: Pick<AuthSession, "userId" | "email" | "name" | "role" | "username" | "phone">
 ): Promise<{ id: string } | null> {
   if (!isBrowser()) return null;
   try {
@@ -294,6 +411,8 @@ export async function ensurePrismaUser(
       body: JSON.stringify({
         email: session.email,
         name: session.name,
+        username: session.username ?? undefined,
+        phone: session.phone ?? undefined,
         role: session.role,
         userId: session.userId,
       }),
@@ -341,6 +460,8 @@ export function consumeLogoutFlag(): boolean {
  */
 export function updateLocalProfile(input: {
   name?: string;
+  username?: string | null;
+  phone?: string | null;
   avatarUrl?: string | null;
   bio?: string | null;
 }): AuthSession | null {
@@ -355,6 +476,8 @@ export function updateLocalProfile(input: {
     const nextUser: StoredUser = {
       ...users[idx],
       ...(input.name !== undefined ? { name: input.name } : {}),
+      ...(input.username !== undefined ? { username: input.username } : {}),
+      ...(input.phone !== undefined ? { phone: input.phone } : {}),
       ...(input.avatarUrl !== undefined ? { avatarUrl: input.avatarUrl } : {}),
       ...(input.bio !== undefined ? { bio: input.bio } : {}),
     };
@@ -366,6 +489,8 @@ export function updateLocalProfile(input: {
   const nextSession: AuthSession = {
     ...session,
     ...(input.name !== undefined ? { name: input.name } : {}),
+    ...(input.username !== undefined ? { username: input.username } : {}),
+    ...(input.phone !== undefined ? { phone: input.phone } : {}),
     ...(input.avatarUrl !== undefined ? { avatarUrl: input.avatarUrl } : {}),
     ...(input.bio !== undefined ? { bio: input.bio } : {}),
   };
@@ -381,7 +506,7 @@ export function getStoredUserCreatedAt(email: string): string | null {
 }
 
 export function getDemoCredentials() {
-  return { email: DEMO_USER.email, password: DEMO_USER.password };
+  return { identifier: DEMO_USER.email, password: DEMO_USER.password };
 }
 
 export function getAdminCredentials() {
@@ -394,4 +519,16 @@ export function getMentorCredentials() {
 
 export function getDeveloperCredentials() {
   return { email: DEVELOPER_USER.email, password: DEVELOPER_USER.password };
+}
+
+/** Sync localStorage mock password after server-side bcrypt reset. */
+export function syncLocalPasswordAfterReset(email: string, newPassword: string) {
+  if (!isBrowser()) return;
+  const normalized = email.trim().toLowerCase();
+  const users = readUsers();
+  const idx = users.findIndex((u) => u.email === normalized);
+  if (idx < 0) return;
+  const nextUsers = [...users];
+  nextUsers[idx] = { ...nextUsers[idx], password: newPassword };
+  writeUsers(nextUsers);
 }

@@ -1,6 +1,6 @@
 # Bursa — Platform Edukasi Trading (Next.js)
 
-> **Status: PROTOTYPE LANJUTAN (P0+ selesai, P1/P2 parsial).** Frontend premium + backend parsial (Prisma, API routes, admin, chat, search). Bukan production-ready — payment real, NextAuth, dan video hosting belum.
+> **Status: PROTOTYPE LANJUTAN (P0+ selesai, P1/P2 parsial).** Frontend premium + backend parsial (Prisma, API routes, admin, chat, search). Bukan production-ready — payment real, video hosting belum. **Google OAuth (NextAuth)** tersedia untuk login/daftar; sesi client localStorage masih dipakai sebagai bridge prototype.
 
 📚 **Dokumentasi lengkap:** [`../Documentation/00 - Overview & Peta Dokumentasi.md`](../Documentation/00%20-%20Overview%20%26%20Peta%20Dokumentasi.md)  
 📊 **Status implementasi terkini:** [`../Documentation/16 - Engineer Onboarding Guide/15 - Status Implementasi Kode (Living Doc).md`](../Documentation/16%20-%20Engineer%20Onboarding%20Guide/15%20-%20Status%20Implementasi%20Kode%20(Living%20Doc).md)
@@ -64,7 +64,54 @@ Buka http://localhost:3000
 | `/checkout/...` | Mock checkout (komisi 25%) |
 | `/dashboard` | Dashboard user |
 | `/admin` | Panel admin (DB-backed) |
-| `/masuk`, `/daftar` | Auth prototype (localStorage) |
+| `/masuk`, `/daftar` | Auth (email/password + Google OAuth) |
+
+---
+
+## Login dengan Google (NextAuth)
+
+Tombol **Lanjutkan dengan Google** di `/masuk` dan `/daftar` memakai [NextAuth.js v5](https://authjs.dev) + Google OAuth. Scope minimal: **email** dan **profil publik** (nama, foto) — tanpa akses Gmail.
+
+### Environment variables
+
+Salin dari `.env.example`:
+
+| Variable | Keterangan |
+|---|---|
+| `GOOGLE_CLIENT_ID` | OAuth Client ID dari Google Cloud Console |
+| `GOOGLE_CLIENT_SECRET` | OAuth Client Secret |
+| `NEXTAUTH_SECRET` | Random secret (`openssl rand -base64 32`) |
+| `NEXTAUTH_URL` | URL publik tanpa trailing slash (mis. `http://localhost:3000`) |
+
+Build **tetap jalan** tanpa variabel Google — tombol menampilkan petunjuk konfigurasi.
+
+### Konfigurasi Google Cloud Console (admin)
+
+1. Buka [Google Cloud Console](https://console.cloud.google.com/) → pilih/buat project
+2. **APIs & Services** → **OAuth consent screen**
+   - User type: **External** (testing) atau Internal (Workspace)
+   - Isi app name (Bursa), support email, logo opsional
+   - Scopes: cukup default `email`, `profile`, `openid` — **jangan** tambah Gmail/Drive
+   - Tambahkan domain produksi di **Authorized domains** (mis. `bursa-website.vercel.app`)
+3. **Credentials** → **Create credentials** → **OAuth client ID**
+   - Application type: **Web application**
+   - **Authorized JavaScript origins:**
+     - `http://localhost:3000` (dev)
+     - `https://bursa-website.vercel.app` (production)
+   - **Authorized redirect URIs:**
+     - `http://localhost:3000/api/auth/callback/google`
+     - `https://bursa-website.vercel.app/api/auth/callback/google`
+4. Salin **Client ID** dan **Client secret** ke Vercel env vars + `.env` lokal
+5. Redeploy setelah env vars disimpan
+
+### Alur teknis (prototype)
+
+1. User klik Google → NextAuth redirect ke Google consent
+2. Callback `/api/auth/callback/google` → upsert user di Prisma (email, nama, avatar)
+3. Redirect ke `/masuk?oauth=sync` → bridge ke localStorage session (kompatibel API existing)
+4. Kebijakan privasi: link di form + consent screen Google
+
+Privasi & keamanan: lihat `Documentation/18 - Cybersecurity, Privasi Data & Kepatuhan IT/`.
 
 ---
 
@@ -132,8 +179,12 @@ Vercel → project **bursa-website** → **Settings** → **Environment Variable
 |---|---|
 | `DATABASE_URL` | Pooled connection string dari Neon |
 | `DIRECT_URL` | Direct connection string dari Neon |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret |
+| `NEXTAUTH_SECRET` | Random secret untuk session JWT |
+| `NEXTAUTH_URL` | `https://bursa-website.vercel.app` (Production) |
 
-Tidak perlu env lain untuk error `DATABASE_URL` ini.
+Untuk Google OAuth, tambahkan redirect URI `https://bursa-website.vercel.app/api/auth/callback/google` di Google Cloud Console (lihat bagian Login dengan Google di atas).
 
 ### 3. Migrate & seed
 
@@ -168,7 +219,7 @@ prisma/            # schema, migrations, seed
 
 ## Belum Production-Ready
 
-- NextAuth / session server-side
+- Session server-side penuh (localStorage bridge masih dipakai setelah Google login)
 - Midtrans payment + webhooks
 - Bunny.net / Mux video hosting
 - WebSocket real-time chat (saat ini polling)

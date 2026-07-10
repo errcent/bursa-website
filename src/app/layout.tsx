@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono, Sora } from "next/font/google";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
+import { NextAuthProvider } from "@/components/next-auth-provider";
 import { LanguageProvider } from "@/components/language-provider";
 import { CursorGlow } from "@/components/cursor-glow";
 import { PreloaderGate } from "@/components/preloader-gate";
@@ -64,12 +65,14 @@ export default function RootLayout({
         <ThemeProvider>
           <CursorGlow />
           <PreloaderGate>
-            <AuthProvider>
-              <LanguageProvider>
-                {children}
-                <StickyBottomCta />
-              </LanguageProvider>
-            </AuthProvider>
+            <NextAuthProvider>
+              <AuthProvider>
+                <LanguageProvider>
+                  {children}
+                  <StickyBottomCta />
+                </LanguageProvider>
+              </AuthProvider>
+            </NextAuthProvider>
           </PreloaderGate>
         </ThemeProvider>
       </body>

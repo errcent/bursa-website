@@ -9,6 +9,8 @@ function serializeProfile(user: {
   id: string;
   email: string;
   nama: string;
+  username: string | null;
+  phone: string | null;
   bio: string | null;
   avatarUrl: string | null;
   role: string;
@@ -17,6 +19,8 @@ function serializeProfile(user: {
     id: user.id,
     email: user.email,
     name: user.nama,
+    username: user.username,
+    phone: user.phone,
     bio: user.bio ?? "",
     avatarUrl: user.avatarUrl,
     role: user.role,
@@ -69,8 +73,8 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * PATCH /api/me/profile — update nama, bio, and/or avatarUrl.
- * Body JSON: { userId?, email?, name?, bio?, avatarUrl?, role? }
+ * PATCH /api/me/profile — update nama, username, phone, bio, and/or avatarUrl.
+ * Body JSON: { userId?, email?, name?, username?, phone?, bio?, avatarUrl?, role? }
  */
 export async function PATCH(request: NextRequest) {
   try {
@@ -95,14 +99,42 @@ export async function PATCH(request: NextRequest) {
       return jsonError("Pengguna tidak ditemukan.", 404);
     }
 
-    if (body.name === undefined && body.bio === undefined && body.avatarUrl === undefined) {
+    if (
+      body.name === undefined &&
+      body.username === undefined &&
+      body.phone === undefined &&
+      body.bio === undefined &&
+      body.avatarUrl === undefined
+    ) {
       return jsonError("Tidak ada perubahan untuk disimpan.", 400);
+    }
+
+    if (body.username) {
+      const conflict = await db.user.findFirst({
+        where: { username: body.username, NOT: { id: user.id } },
+        select: { id: true },
+      });
+      if (conflict) {
+        return jsonError("Username sudah dipakai.", 409);
+      }
+    }
+
+    if (body.phone) {
+      const conflict = await db.user.findFirst({
+        where: { phone: body.phone, NOT: { id: user.id } },
+        select: { id: true },
+      });
+      if (conflict) {
+        return jsonError("Nomor telepon sudah terdaftar.", 409);
+      }
     }
 
     const updated = await db.user.update({
       where: { id: user.id },
       data: {
         ...(body.name !== undefined ? { nama: body.name.trim() } : {}),
+        ...(body.username !== undefined ? { username: body.username || null } : {}),
+        ...(body.phone !== undefined ? { phone: body.phone } : {}),
         ...(body.bio !== undefined ? { bio: body.bio.trim() } : {}),
         ...(body.avatarUrl !== undefined
           ? { avatarUrl: body.avatarUrl?.trim() || null }

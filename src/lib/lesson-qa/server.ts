@@ -30,6 +30,8 @@ export async function resolveRequestUser(
     userId: string;
     email?: string;
     name?: string;
+    username?: string;
+    phone?: string;
     role?: string;
   },
   options?: { createIfMissing?: boolean }
@@ -39,7 +41,22 @@ export async function resolveRequestUser(
 
   if (email) {
     const existing = await db.user.findUnique({ where: { email } });
-    if (existing) return existing;
+    if (existing) {
+      const username = input.username?.trim().toLowerCase();
+      const phone = input.phone ?? undefined;
+      const needsUpdate =
+        (username && !existing.username) || (phone && !existing.phone);
+      if (needsUpdate) {
+        return db.user.update({
+          where: { id: existing.id },
+          data: {
+            ...(username && !existing.username ? { username } : {}),
+            ...(phone && !existing.phone ? { phone } : {}),
+          },
+        });
+      }
+      return existing;
+    }
 
     if (!createIfMissing) return null;
 
@@ -48,6 +65,8 @@ export async function resolveRequestUser(
         email,
         passwordHash: "client-auth-bridge",
         nama: input.name?.trim() || email.split("@")[0] || "Pengguna",
+        username: input.username?.trim().toLowerCase() || null,
+        phone: input.phone ?? null,
         role: mapClientRole(input.role),
       },
     });

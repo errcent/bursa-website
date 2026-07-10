@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 
 import { AuthField, authInputClassName } from "@/components/auth-field";
 import { useAuth } from "@/components/auth-provider";
+import { GoogleSignInButton, OAuthSessionSync } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { getDemoCredentials } from "@/lib/auth/client";
 import { buildLoginHref, resolvePostAuthRedirect, POST_AUTH_HOME } from "@/lib/auth/redirect";
@@ -19,10 +20,10 @@ export function LoginForm() {
   const registerHref =
     next === POST_AUTH_HOME ? "/daftar" : `/daftar?next=${encodeURIComponent(next)}`;
 
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{ identifier?: string; password?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -36,8 +37,8 @@ export function LoginForm() {
     setError(null);
     setFieldErrors({});
 
-    const errors: { email?: string; password?: string } = {};
-    if (!email.trim()) errors.email = "Email wajib diisi.";
+    const errors: { identifier?: string; password?: string } = {};
+    if (!identifier.trim()) errors.identifier = "Username, email, atau nomor telepon wajib diisi.";
     if (!password) errors.password = "Kata sandi wajib diisi.";
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -45,7 +46,7 @@ export function LoginForm() {
     }
 
     setIsSubmitting(true);
-    const result = login({ email, password });
+    const result = login({ identifier, password });
 
     if (!result.ok) {
       setIsSubmitting(false);
@@ -58,7 +59,7 @@ export function LoginForm() {
 
   function fillDemo() {
     const demo = getDemoCredentials();
-    setEmail(demo.email);
+    setIdentifier(demo.identifier);
     setPassword(demo.password);
     setError(null);
     setFieldErrors({});
@@ -66,6 +67,8 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <OAuthSessionSync />
+
       {error && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {error}
@@ -73,26 +76,27 @@ export function LoginForm() {
       )}
 
       <AuthField
-        label="Email"
-        id="email"
-        error={fieldErrors.email}
-        helperText="Gunakan email yang kamu pakai saat mendaftar."
+        label="Email, username, atau nomor telepon"
+        id="identifier"
+        error={fieldErrors.identifier}
+        helperText="Masuk dengan email, username (@handle), atau nomor telepon (+62)."
       >
         <input
-          id="email"
-          type="email"
-          autoComplete="email"
-          value={email}
+          id="identifier"
+          type="text"
+          autoComplete="username"
+          inputMode="text"
+          value={identifier}
           onChange={(e) => {
-            setEmail(e.target.value);
-            if (fieldErrors.email) {
-              setFieldErrors((prev) => ({ ...prev, email: undefined }));
+            setIdentifier(e.target.value);
+            if (fieldErrors.identifier) {
+              setFieldErrors((prev) => ({ ...prev, identifier: undefined }));
             }
           }}
-          placeholder="nama@email.com"
+          placeholder="nama@email.com, @username, atau +62812..."
           className={authInputClassName}
           disabled={isSubmitting}
-          aria-invalid={Boolean(fieldErrors.email)}
+          aria-invalid={Boolean(fieldErrors.identifier)}
         />
       </AuthField>
 
@@ -102,22 +106,29 @@ export function LoginForm() {
         error={fieldErrors.password}
         helperText="Gunakan kata sandi akun yang sudah terdaftar."
       >
-        <input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            if (fieldErrors.password) {
-              setFieldErrors((prev) => ({ ...prev, password: undefined }));
-            }
-          }}
-          placeholder="Minimal 8 karakter"
-          className={authInputClassName}
-          disabled={isSubmitting}
-          aria-invalid={Boolean(fieldErrors.password)}
-        />
+        <div className="flex flex-col gap-1.5">
+          <input
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (fieldErrors.password) {
+                setFieldErrors((prev) => ({ ...prev, password: undefined }));
+              }
+            }}
+            placeholder="Minimal 8 karakter"
+            className={authInputClassName}
+            disabled={isSubmitting}
+            aria-invalid={Boolean(fieldErrors.password)}
+          />
+          <div className="flex justify-end">
+            <Link href="/lupa-password" className="link-accent text-xs font-medium">
+              Lupa kata sandi?
+            </Link>
+          </div>
+        </div>
       </AuthField>
 
       <Button type="submit" className="h-11 w-full btn-primary" disabled={isSubmitting}>
@@ -131,10 +142,20 @@ export function LoginForm() {
         )}
       </Button>
 
+      <div className="relative flex items-center gap-3 py-1">
+        <span className="h-px flex-1 bg-border/80" aria-hidden="true" />
+        <span className="text-xs text-muted-foreground">atau</span>
+        <span className="h-px flex-1 bg-border/80" aria-hidden="true" />
+      </div>
+
+      <GoogleSignInButton mode="login" />
+
       <div className="rounded-xl border border-border/60 bg-accent-soft/50 p-3 text-xs text-muted-foreground">
         <p className="font-medium text-foreground">Mode demo (prototype)</p>
         <p className="mt-1">
-          Learner: <span className="font-mono">demo@bursa.id</span> /{" "}
+          Learner: <span className="font-mono">demo@bursa.id</span>,{" "}
+          <span className="font-mono">dinda_r</span>, atau{" "}
+          <span className="font-mono">+6281110000002</span> — password{" "}
           <span className="font-mono">demo1234</span>
         </p>
         <p className="mt-1">
