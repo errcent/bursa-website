@@ -5,10 +5,12 @@ import { useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowRight,
+  AtSign,
   BadgeCheck,
   ChevronRight,
   Lock,
   Mail,
+  Phone,
   UserRound,
 } from "lucide-react";
 
@@ -16,7 +18,7 @@ import { useAuth } from "@/components/auth-provider";
 import { useLanguage } from "@/components/language-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { getStoredUserCreatedAt } from "@/lib/auth/client";
 import { buildLoginHref } from "@/lib/auth/redirect";
 import { ROLE_LABELS } from "@/lib/auth/roles";
@@ -120,28 +122,82 @@ export function SettingsAccount() {
             </Avatar>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">{session.name || "Pengguna"}</p>
+              {session.username && (
+                <p className="mt-0.5 truncate font-mono text-xs text-muted-foreground">
+                  @{session.username}
+                </p>
+              )}
               <p className="mt-0.5 truncate text-xs text-muted-foreground">{session.email}</p>
               {session.bio && (
                 <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{session.bio}</p>
               )}
             </div>
           </div>
-          <Button
-            size="lg"
-            variant="outline"
-            className="min-h-11 w-full shrink-0 sm:w-auto"
-            render={<Link href="/profil" />}
+          <Link
+            href="/profil"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "lg" }),
+              "min-h-11 w-full shrink-0 sm:w-auto"
+            )}
           >
             <UserRound className="size-4" />
             {common.editProfile}
             <ChevronRight className="size-4 opacity-60" />
-          </Button>
+          </Link>
         </div>
       </SettingsSection>
 
       <SettingsSection title={t.accountInfoTitle} description={t.accountInfoDescription}>
         <div className="surface-card divide-y divide-border/60 p-5">
           <div className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-start gap-3">
+              <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/30 text-muted-foreground">
+                <AtSign className="size-4" />
+              </span>
+              <div>
+                <p className="text-xs font-medium text-muted-foreground">Username</p>
+                <p className="mt-1 font-mono text-sm">
+                  {session.username ? `@${session.username}` : "—"}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Dipakai untuk masuk dan mention di chat.
+                </p>
+              </div>
+            </div>
+            <Button
+              size="lg"
+              variant="outline"
+              className="min-h-11 w-full shrink-0 sm:w-auto"
+              render={<Link href="/profil" />}
+            >
+              {common.editProfile}
+            </Button>
+          </div>
+
+          <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-start gap-3">
+              <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/30 text-muted-foreground">
+                <Phone className="size-4" />
+              </span>
+              <div>
+                <p className="text-xs font-medium text-muted-foreground">Nomor telepon</p>
+                <p className="mt-1 font-mono text-sm">{session.phone ?? "—"}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Opsional — bisa dipakai untuk masuk.
+                </p>
+              </div>
+            </div>
+            <Button
+              size="lg"
+              variant="outline"
+              className="min-h-11 w-full shrink-0 sm:w-auto"
+              render={<Link href="/profil" />}
+            >
+              {common.editProfile}
+            </Button>
+          </div>
+
+          <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-3">
               <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/30 text-muted-foreground">
                 <Mail className="size-4" />
@@ -316,15 +372,16 @@ export function SettingsAccount() {
           <p className="text-sm font-medium">{t.openProfileTitle}</p>
           <p className="mt-1 text-xs text-muted-foreground">{t.openProfileDescription}</p>
         </div>
-        <Button
-          size="lg"
-          variant="outline"
-          className="min-h-11 w-full sm:w-auto"
-          render={<Link href="/profil" />}
+        <Link
+          href="/profil"
+          className={cn(
+            buttonVariants({ variant: "outline", size: "lg" }),
+            "min-h-11 w-full sm:w-auto"
+          )}
         >
           {t.openProfile}
           <ArrowRight className="size-4" />
-        </Button>
+        </Link>
       </div>
     </div>
   );

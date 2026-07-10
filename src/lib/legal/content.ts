@@ -114,15 +114,17 @@ export const privacyPolicy: LegalDocument = {
   eyebrow: "Legal",
   description:
     "Cara Bursa mengumpulkan, menggunakan, dan melindungi data pribadimu saat menggunakan platform edukasi trading kami.",
-  lastUpdated: "1 Juli 2026",
+  lastUpdated: "11 Juli 2026",
   sections: [
     {
       id: "data-dikumpulkan",
       title: "1. Data yang Kami Kumpulkan",
       paragraphs: ["Kami mengumpulkan data yang kamu berikan langsung dan data penggunaan otomatis:"],
       bullets: [
-        "Identitas: nama, email, nomor telepon (opsional)",
-        "Akun: kata sandi terenkripsi, preferensi tampilan, riwayat enrollment",
+        "Identitas: nama, email, nomor telepon (opsional), username",
+        "Akun: kata sandi ter-hash (bcrypt), preferensi tampilan, riwayat enrollment",
+        "Login Google (opsional): email, nama tampilan, dan URL foto profil publik dari akun Google — kami tidak mengakses Gmail, kontak, atau kalender",
+        "Reset kata sandi: alamat email untuk mengirim tautan reset (token disimpan sebagai hash, bukan plaintext)",
         "Transaksi: kelas yang dibeli, status pembayaran, bukti transaksi",
         "Komunitas: pesan chat, reaksi, dan aktivitas di ruang diskusi",
         "Teknis: alamat IP, perangkat, log akses untuk keamanan",
@@ -133,8 +135,9 @@ export const privacyPolicy: LegalDocument = {
       title: "2. Cara Kami Menggunakan Data",
       paragraphs: ["Data digunakan untuk menyediakan dan meningkatkan layanan platform:"],
       bullets: [
-        "Autentikasi akun dan manajemen enrollment kelas",
+        "Autentikasi akun (email/kata sandi atau Google) dan manajemen enrollment kelas",
         "Pemrosesan pembayaran dan rekonsiliasi dengan mentor",
+        "Pengiriman tautan reset kata sandi saat kamu memintanya",
         "Komunikasi penting terkait kelas, pembaruan, dan keamanan",
         "Moderasi konten dan pencegahan penyalahgunaan",
         "Analitik agregat untuk meningkatkan pengalaman belajar (tanpa menjual data pribadi)",
@@ -145,6 +148,7 @@ export const privacyPolicy: LegalDocument = {
       title: "3. Berbagi Data dengan Pihak Ketiga",
       paragraphs: [
         "Kami tidak menjual data pribadimu. Data dapat dibagikan kepada penyedia layanan tepercaya (pembayaran, hosting, email) yang terikat perjanjian kerahasiaan.",
+        "Login Google memproses data melalui Google OAuth — hanya email dan profil publik. Kamu bisa mencabut akses Google kapan saja melalui pengaturan akun Google (Security → Third-party access).",
         "Mentor menerima informasi terbatas yang diperlukan untuk mengelola murid dan kelas (nama, email enrollment, progress belajar).",
       ],
     },
@@ -152,7 +156,8 @@ export const privacyPolicy: LegalDocument = {
       id: "penyimpanan",
       title: "4. Penyimpanan & Keamanan",
       paragraphs: [
-        "Data disimpan di server dengan enkripsi transit (TLS) dan kontrol akses berbasis peran. Kata sandi di-hash dan tidak disimpan dalam bentuk plain text.",
+        "Data disimpan di server dengan enkripsi transit (TLS) dan kontrol akses berbasis peran. Kata sandi di-hash dengan bcrypt (cost ≥ 12) dan tidak pernah disimpan dalam bentuk plain text.",
+        "Tautan reset kata sandi berlaku 30 menit, single-use, dan disimpan sebagai hash di database. Permintaan reset selalu mendapat respons yang sama untuk mencegah enumerasi email.",
         "Kami menyimpan data selama akun aktif atau sesuai kewajiban hukum. Kamu dapat meminta penghapusan akun melalui pengaturan atau kontak support.",
       ],
     },

@@ -229,10 +229,35 @@ export const updateUserProfileSchema = z.object({
   userId: z.string().min(1).optional(),
   email: z.string().email().optional(),
   name: z.string().min(2, "Nama pengguna minimal 2 karakter.").max(80).optional(),
+  username: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(3, "Username minimal 3 karakter.")
+    .max(30, "Username maksimal 30 karakter.")
+    .regex(/^[a-z0-9_]+$/, "Username hanya huruf kecil, angka, dan underscore.")
+    .optional()
+    .nullable(),
+  phone: z
+    .string()
+    .trim()
+    .optional()
+    .nullable()
+    .transform((v) => {
+      if (v == null || v === "") return null;
+      let digits = v.replace(/[\s\-().]/g, "");
+      if (digits.startsWith("+")) digits = digits.slice(1);
+      if (digits.startsWith("0")) digits = `62${digits.slice(1)}`;
+      if (!digits.startsWith("62")) digits = `62${digits}`;
+      return `+${digits}`;
+    })
+    .refine((v) => v === null || /^\+62[0-9]{9,13}$/.test(v), {
+      message: "Format nomor telepon tidak valid (gunakan +62 atau 08...).",
+    }),
   bio: z.string().max(500, "Bio maksimal 500 karakter.").optional(),
   avatarUrl: z
     .string()
-    .max(500)
+    .max(3_000_000)
     .optional()
     .nullable()
     .refine(
@@ -240,6 +265,7 @@ export const updateUserProfileSchema = z.object({
         v == null ||
         v === "" ||
         v.startsWith("/uploads/avatars/") ||
+        v.startsWith("data:image/") ||
         v.startsWith("https://") ||
         v.startsWith("http://"),
       { message: "URL foto profil tidak valid." }
