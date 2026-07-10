@@ -68,6 +68,8 @@ async function main() {
   await prisma.enrollment.deleteMany();
   await prisma.transaction.deleteMany();
   await prisma.review.deleteMany();
+  await prisma.playlistItem.deleteMany();
+  await prisma.playlist.deleteMany();
   await prisma.watchlistItem.deleteMany();
   await prisma.lesson.deleteMany();
   await prisma.module.deleteMany();
@@ -686,6 +688,70 @@ async function main() {
       ipAddress: "127.0.0.1",
     },
   });
+
+  async function findLessonByCourseAndLegacy(courseSlug: string, legacyId: string) {
+    return prisma.lesson.findFirst({
+      where: {
+        legacyId,
+        module: { course: { slug: courseSlug } },
+      },
+      select: { id: true },
+    });
+  }
+
+  const mentalLessons = await Promise.all([
+    findLessonByCourseAndLegacy("manajemen-risiko-crypto-pemula", "l1"),
+    findLessonByCourseAndLegacy("manajemen-risiko-crypto-pemula", "l4"),
+    findLessonByCourseAndLegacy("swing-trading-teknikal-dasar", "l4"),
+    findLessonByCourseAndLegacy("fundamental-saham-untuk-pemula", "l1"),
+    findLessonByCourseAndLegacy("forex-makro-dasar", "l1"),
+  ]);
+
+  const mentalLessonIds = mentalLessons.filter(Boolean).map((lesson) => lesson!.id);
+
+  if (mentalLessonIds.length > 0) {
+    await prisma.playlist.create({
+      data: {
+        userId: learner.id,
+        title: "Kesehatan Mental Trading",
+        description:
+          "Kurasi modul psikologi, disiplin, dan mindset dari lima mentor berbeda — susun jalur belajar untuk trading yang lebih tenang.",
+        slug: "kesehatan-mental-trading",
+        items: {
+          create: mentalLessonIds.map((lessonId, index) => ({
+            lessonId,
+            sortOrder: index,
+          })),
+        },
+      },
+    });
+  }
+
+  const fundasiLessons = await Promise.all([
+    findLessonByCourseAndLegacy("fundamental-saham-untuk-pemula", "l1"),
+    findLessonByCourseAndLegacy("fundamental-saham-untuk-pemula", "l4"),
+    findLessonByCourseAndLegacy("membaca-laporan-keuangan-lanjutan", "l1"),
+  ]);
+
+  const fundasiLessonIds = fundasiLessons.filter(Boolean).map((lesson) => lesson!.id);
+
+  if (demoLearner && fundasiLessonIds.length > 0) {
+    await prisma.playlist.create({
+      data: {
+        userId: demoLearner.id,
+        title: "Fundasi Analisis Saham",
+        description:
+          "Tiga pelajaran pembuka untuk memahami fundamental dan valuasi sebelum menyelam lebih dalam.",
+        slug: "fundasi-analisis-saham",
+        items: {
+          create: fundasiLessonIds.map((lessonId, index) => ({
+            lessonId,
+            sortOrder: index,
+          })),
+        },
+      },
+    });
+  }
 
   console.log("Seed completed.");
   console.log("Test accounts (password: password123):");

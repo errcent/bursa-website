@@ -291,3 +291,69 @@ export const deleteWatchlistItemSchema = z.object({
   name: z.string().min(1).max(120).optional(),
   role: z.string().optional(),
 });
+
+const playlistItemInputSchema = z
+  .object({
+    lessonId: z.string().min(1).optional(),
+    courseId: z.string().min(1).optional(),
+  })
+  .refine((value) => Boolean(value.lessonId || value.courseId), {
+    message: "Setiap item playlist harus memiliki lessonId atau courseId.",
+  });
+
+export const createPlaylistSchema = z.object({
+  userId: z.string().min(1).optional(),
+  email: z.string().email().optional(),
+  name: z.string().min(1).max(120).optional(),
+  role: z.string().optional(),
+  title: z
+    .string()
+    .trim()
+    .min(1, "Judul wajib diisi.")
+    .max(120, "Judul maksimal 120 karakter."),
+  description: z
+    .string()
+    .max(500, "Deskripsi maksimal 500 karakter.")
+    .optional()
+    .transform((v) => {
+      const trimmed = v?.trim();
+      return trimmed ? trimmed : undefined;
+    }),
+  slug: z
+    .string()
+    .min(1)
+    .max(80)
+    .regex(/^[a-z0-9-]+$/, "Slug hanya huruf kecil, angka, dan tanda hubung.")
+    .optional(),
+  items: z.array(playlistItemInputSchema).max(100).optional(),
+});
+
+export const updatePlaylistSchema = z.object({
+  userId: z.string().min(1).optional(),
+  email: z.string().email().optional(),
+  name: z.string().min(1).max(120).optional(),
+  role: z.string().optional(),
+  title: z
+    .string()
+    .trim()
+    .min(1, "Judul wajib diisi.")
+    .max(120, "Judul maksimal 120 karakter.")
+    .optional(),
+  description: z
+    .string()
+    .max(500, "Deskripsi maksimal 500 karakter.")
+    .nullable()
+    .optional()
+    .transform((v) => {
+      if (v === null) return null;
+      const trimmed = v?.trim();
+      return trimmed ? trimmed : null;
+    }),
+});
+
+export const deletePlaylistSchema = z.object({
+  userId: z.string().min(1).optional(),
+  email: z.string().email().optional(),
+  name: z.string().min(1).max(120).optional(),
+  role: z.string().optional(),
+});
