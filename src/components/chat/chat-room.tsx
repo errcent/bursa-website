@@ -59,8 +59,29 @@ import type {
 import type { ScreenshotAttemptMethod } from "@/lib/chat/anti-screenshot";
 
 const POLL_INTERVAL_MS = 3000;
+const POLL_INTERVAL_MOBILE_MS = 6000;
 const TYPING_SIMULATION_INTERVAL_MS = 8000;
 const NEAR_BOTTOM_PX = 80;
+
+function getPollIntervalMs() {
+  if (typeof window === "undefined") return POLL_INTERVAL_MS;
+  return window.matchMedia("(max-width: 768px)").matches
+    ? POLL_INTERVAL_MOBILE_MS
+    : POLL_INTERVAL_MS;
+}
+
+function pollScopeKey(roomId: string, branchId?: string | null) {
+  return `${roomId}:${branchId ?? ""}`;
+}
+
+function messagesSnapshotKey(messages: ChatMessage[]): string {
+  return messages
+    .map(
+      (m) =>
+        `${m.id}:${m.createdAt}:${m.content.length}:${m.poll?.votedOptionId ?? ""}:${m.reactions?.length ?? 0}`
+    )
+    .join("|");
+}
 
 interface ChatRoomProps {
   room: ChatRoom;
@@ -211,6 +232,8 @@ export function ChatRoomView({
       pickDefaultBranchId(initialRoom.branches, { preferTwoWay: true })
   );
   const [isPolling, setIsPolling] = useState(false);
+  const pollGenerationRef = useRef(0);
+  const activePollScopeRef = useRef("");
   const [replyTo, setReplyTo] = useState<ChatMessage | null>(null);
   const [replyFocusKey, setReplyFocusKey] = useState(0);
   const [signalModalOpen, setSignalModalOpen] = useState(false);
@@ -295,20 +318,32 @@ export function ChatRoomView({
   }, [messages, room.lastReadMessageId]);
 
   const pollMessages = useCallback(async () => {
-    setIsPolling(true);
     const branchForPoll = activeBranch?.id ?? activeBranchId;
+    const scopeKey = pollScopeKey(room.id, branchForPoll);
+    const generation = ++pollGenerationRef.current;
+    activePollScopeRef.current = scopeKey;
+
     const remote = await fetchMessages(
       room.id,
       branchForPoll,
       currentUserId,
       ownUserIds
     );
+
+    if (generation !== pollGenerationRef.current) return;
+    if (activePollScopeRef.current !== scopeKey) return;
+
     if (remote) {
       if (remote.viewerId) setViewerUserId(remote.viewerId);
       // Keep in-flight optimistic bubbles until POST confirms; drop if server already has them
       setMessages((prev) => {
         const pending = prev.filter((m) => m.id.startsWith("local-"));
-        if (pending.length === 0) return remote.messages;
+        if (pending.length === 0) {
+          if (messagesSnapshotKey(prev) === messagesSnapshotKey(remote.messages)) {
+            return prev;
+          }
+          return remote.messages;
+        }
 
         const stillPending = pending.filter((local) => {
           // Never re-attach optimistics from another cabang after a tab switch
@@ -354,7 +389,7 @@ export function ChatRoomView({
             ? remote.messages
             : [...remote.messages, ...stillPending];
 
-        return merged.map((remoteMsg) => {
+        const next = merged.map((remoteMsg) => {
           const local = prev.find((m) => m.id === remoteMsg.id);
           let next = remoteMsg;
 
@@ -418,6 +453,11 @@ export function ChatRoomView({
 
           return next;
         });
+
+        if (messagesSnapshotKey(next) === messagesSnapshotKey(prev)) {
+          return prev;
+        }
+        return next;
       });
       setHistoryHidden(remote.historyHidden);
       if (!unreadDividerFrozenRef.current && remote.lastReadMessageId) {
@@ -429,7 +469,6 @@ export function ChatRoomView({
         );
       }
     }
-    setIsPolling(false);
   }, [room.id, activeBranch?.id, activeBranchId, currentUserId, ownUserIds]);
 
   const loadMembers = useCallback(async () => {
@@ -484,6 +523,8 @@ export function ChatRoomView({
     setSendError(null);
     stickToBottomRef.current = true;
     unreadDividerFrozenRef.current = false;
+    pollGenerationRef.current += 1;
+    activePollScopeRef.current = "";
   }, [initialRoom]);
 
   useEffect(() => {
@@ -564,14 +605,57 @@ export function ChatRoomView({
   useEffect(() => {
     // Branch switches: allow a fresh divider cursor for the new thread.
     unreadDividerFrozenRef.current = false;
-    // Drop previous cabang messages immediately so optimistics cannot leak.
+    pollGenerationRef.current += 1;
+    const branchForLoad = activeBranchId;
+    const scopeKey = pollScopeKey(room.id, branchForLoad);
+    const generation = pollGenerationRef.current;
+    activePollScopeRef.current = scopeKey;
     setMessages([]);
-  }, [activeBranchId]);
+    setIsPolling(true);
+
+    let cancelled = false;
+    void (async () => {
+      const remote = await fetchMessages(
+        room.id,
+        branchForLoad,
+        currentUserId,
+        ownUserIds
+      );
+      if (cancelled || generation !== pollGenerationRef.current) return;
+      if (activePollScopeRef.current !== scopeKey) return;
+      if (remote) {
+        if (remote.viewerId) setViewerUserId(remote.viewerId);
+        setMessages(remote.messages);
+        setHistoryHidden(remote.historyHidden);
+        if (!unreadDividerFrozenRef.current && remote.lastReadMessageId) {
+          unreadDividerFrozenRef.current = true;
+          setRoom((prev) => ({
+            ...prev,
+            lastReadMessageId: remote.lastReadMessageId ?? undefined,
+          }));
+        }
+      }
+      if (!cancelled) setIsPolling(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeBranchId, room.id, currentUserId, ownUserIds]);
 
   useEffect(() => {
     void pollMessages();
-    const interval = window.setInterval(pollMessages, POLL_INTERVAL_MS);
-    return () => window.clearInterval(interval);
+    const interval = window.setInterval(pollMessages, getPollIntervalMs());
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        void pollMessages();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [pollMessages]);
 
   useEffect(() => {

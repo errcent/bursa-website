@@ -67,7 +67,7 @@ export function ChatInput({
   replyTo,
   onCancelReply,
   replyFocusKey = 0,
-  placeholder = "Ketik pesan... gunakan $TICKER atau @username",
+  placeholder = "Ketik pesan...",
   disabled,
   readOnly,
   readOnlyMessage,
@@ -82,6 +82,7 @@ export function ChatInput({
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [pendingAttachments, setPendingAttachments] = useState<PendingAttachment[]>([]);
   const [slowTick, setSlowTick] = useState(0);
+  const [compactUi, setCompactUi] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -100,6 +101,19 @@ export function ChatInput({
   }, [isSlowModeBlocked, lastSentAt]);
 
   void slowTick;
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const apply = () => setCompactUi(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  const resolvedPlaceholder =
+    compactUi && placeholder.includes("$TICKER")
+      ? "Ketik pesan..."
+      : placeholder;
 
   useEffect(() => {
     if (!replyTo && replyFocusKey === 0) return;
@@ -428,7 +442,7 @@ export function ChatInput({
               onTyping?.();
             }}
             onKeyDown={handleKeyDown}
-            placeholder={placeholder}
+            placeholder={resolvedPlaceholder}
             disabled={isDisabled}
             rows={1}
             className={cn(
@@ -458,7 +472,7 @@ export function ChatInput({
         </Button>
       </div>
 
-      <p className="mt-1.5 text-[10px] text-muted-foreground">
+      <p className="mt-1.5 hidden text-[10px] text-muted-foreground sm:block">
         Enter kirim · Shift+Enter baris baru · $ ticker · @ sebut pengguna
         {isMentor ? " · Tombol chart = entry posisi · Tombol grafik = buat polling" : ""}
       </p>

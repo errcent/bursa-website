@@ -76,6 +76,7 @@ export function ProtectedVideoPlayer({
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const isScrubbingRef = useRef(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -325,6 +326,27 @@ export function ProtectedVideoPlayer({
     [duration, onTimeUpdate]
   );
 
+  const seekBy = useCallback(
+    (deltaSeconds: number) => {
+      const video = videoRef.current;
+      if (!video || duration <= 0) return;
+      const next = Math.max(0, Math.min(duration, video.currentTime + deltaSeconds));
+      video.currentTime = next;
+      setCurrentTime(next);
+      onTimeUpdate?.(next);
+      setShowControls(true);
+    },
+    [duration, onTimeUpdate]
+  );
+
+  const handleProgressPointer = useCallback(
+    (clientX: number) => {
+      seekTo(clientX);
+      setShowControls(true);
+    },
+    [seekTo]
+  );
+
   const toggleMute = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -472,8 +494,24 @@ export function ProtectedVideoPlayer({
       >
         <div
           ref={progressRef}
-          className="group/progress relative mb-3 h-1.5 cursor-pointer rounded-full bg-white/20"
-          onClick={(e) => seekTo(e.clientX)}
+          className="group/progress relative mb-3 h-3 cursor-pointer touch-none rounded-full bg-white/20 sm:h-1.5"
+          onClick={(e) => handleProgressPointer(e.clientX)}
+          onPointerDown={(e) => {
+            isScrubbingRef.current = true;
+            progressRef.current?.setPointerCapture(e.pointerId);
+            handleProgressPointer(e.clientX);
+          }}
+          onPointerMove={(e) => {
+            if (!isScrubbingRef.current) return;
+            handleProgressPointer(e.clientX);
+          }}
+          onPointerUp={(e) => {
+            isScrubbingRef.current = false;
+            progressRef.current?.releasePointerCapture(e.pointerId);
+          }}
+          onPointerCancel={() => {
+            isScrubbingRef.current = false;
+          }}
           role="slider"
           aria-label="Progres video"
           aria-valuemin={0}
@@ -497,11 +535,29 @@ export function ProtectedVideoPlayer({
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <button
             type="button"
+            onClick={() => seekBy(-10)}
+            className="rounded-md px-1.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
+            aria-label="Mundur 10 detik"
+          >
+            -10s
+          </button>
+
+          <button
+            type="button"
             onClick={togglePlay}
             className="rounded-md p-1.5 text-white transition-colors hover:bg-white/10"
             aria-label={isPlaying ? "Jeda" : "Putar"}
           >
             {isPlaying ? <Pause className="size-5" /> : <Play className="size-5" />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => seekBy(10)}
+            className="rounded-md px-1.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
+            aria-label="Maju 10 detik"
+          >
+            +10s
           </button>
 
           <span className="min-w-[5.5rem] font-mono text-xs text-white/90 tabular-nums">
