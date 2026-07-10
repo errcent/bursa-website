@@ -492,8 +492,9 @@ export function MessageBubble({
       "w-full sm:w-[min(100%,32rem)]"
   );
 
-  const showOthersHeader =
-    !isOwn && (group.showName || group.showAvatar);
+  const showNameHeader = !isOwn && group.showName;
+  const showAvatarBesideBubble =
+    !isOwn && group.showAvatar && !group.showName && !message.replyTo;
 
   return (
     <article
@@ -514,25 +515,16 @@ export function MessageBubble({
           {reactionsRow}
           {actionRow}
         </div>
-      ) : (
+      ) : showNameHeader ? (
         <>
-          {showOthersHeader && (
-            <div className="flex items-start gap-2.5 sm:gap-3">
-              <div className={cn(avatarColumnClass, "flex justify-center")}>
-                {group.showAvatar ? avatarNode : avatarSpacer}
-              </div>
-              <div className="min-h-8 min-w-0 flex-1">
-                {group.showName ? metaRow : null}
-              </div>
+          <div className="flex items-start gap-2.5 sm:gap-3">
+            <div className={cn(avatarColumnClass, "flex justify-center")}>
+              {group.showAvatar ? avatarNode : avatarSpacer}
             </div>
-          )}
+            <div className="min-h-8 min-w-0 flex-1">{metaRow}</div>
+          </div>
 
-          <div
-            className={cn(
-              "flex gap-2.5 sm:gap-3",
-              showOthersHeader && group.showName && "mt-0.5"
-            )}
-          >
+          <div className="mt-0.5 flex gap-2.5 sm:gap-3">
             <div className={avatarColumnClass}>{avatarSpacer}</div>
             <div className={contentColumnClass}>
               {replyPreview}
@@ -542,6 +534,18 @@ export function MessageBubble({
             </div>
           </div>
         </>
+      ) : (
+        <div className="flex gap-2.5 sm:gap-3">
+          <div className={cn(avatarColumnClass, "flex justify-center")}>
+            {showAvatarBesideBubble ? avatarNode : avatarSpacer}
+          </div>
+          <div className={contentColumnClass}>
+            {replyPreview}
+            {bubbleShell}
+            {reactionsRow}
+            {actionRow}
+          </div>
+        </div>
       )}
     </article>
   );

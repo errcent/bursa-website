@@ -111,8 +111,14 @@ export function ChatInput({
   }, []);
 
   const resolvedPlaceholder =
-    compactUi && placeholder.includes("$TICKER")
-      ? "Ketik pesan..."
+    compactUi && placeholder.length > 24
+      ? placeholder.includes("1 arah")
+        ? "Hanya baca"
+        : placeholder.includes("2 arah")
+          ? "Ketik pesan..."
+          : placeholder.includes("$TICKER")
+            ? "Ketik pesan..."
+            : placeholder.slice(0, 22) + "…"
       : placeholder;
 
   useEffect(() => {

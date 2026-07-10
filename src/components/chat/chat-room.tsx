@@ -216,6 +216,11 @@ function isNearBottom(el: HTMLElement) {
   return el.scrollHeight - el.scrollTop - el.clientHeight <= NEAR_BOTTOM_PX;
 }
 
+function prefersInstantScroll() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(max-width: 768px)").matches;
+}
+
 export function ChatRoomView({
   room: initialRoom,
   className,
@@ -271,6 +276,9 @@ export function ChatRoomView({
     if (session?.userId) ids.add(session.userId);
     return [...ids];
   }, [viewerUserId, session?.userId]);
+  /** Latest viewer ids for fetches — must not retrigger branch reload when Prisma id arrives. */
+  const fetchViewerRef = useRef({ currentUserId, ownUserIds });
+  fetchViewerRef.current = { currentUserId, ownUserIds };
   const currentMember = members.find(
     (m) => m.id === currentUserId || (session?.userId != null && m.id === session.userId)
   );
@@ -320,17 +328,19 @@ export function ChatRoomView({
   const pollMessages = useCallback(async () => {
     const branchForPoll = activeBranch?.id ?? activeBranchId;
     const scopeKey = pollScopeKey(room.id, branchForPoll);
-    const generation = ++pollGenerationRef.current;
+    const generationAtStart = pollGenerationRef.current;
     activePollScopeRef.current = scopeKey;
 
+    const { currentUserId: viewerId, ownUserIds: viewerIds } =
+      fetchViewerRef.current;
     const remote = await fetchMessages(
       room.id,
       branchForPoll,
-      currentUserId,
-      ownUserIds
+      viewerId,
+      viewerIds
     );
 
-    if (generation !== pollGenerationRef.current) return;
+    if (generationAtStart !== pollGenerationRef.current) return;
     if (activePollScopeRef.current !== scopeKey) return;
 
     if (remote) {
@@ -338,6 +348,7 @@ export function ChatRoomView({
       // Keep in-flight optimistic bubbles until POST confirms; drop if server already has them
       setMessages((prev) => {
         const pending = prev.filter((m) => m.id.startsWith("local-"));
+        const viewerIds = fetchViewerRef.current.ownUserIds;
         if (pending.length === 0) {
           if (messagesSnapshotKey(prev) === messagesSnapshotKey(remote.messages)) {
             return prev;
@@ -375,7 +386,7 @@ export function ChatRoomView({
             (r) =>
               r.content === local.content &&
               (r.author.id === local.author.id ||
-                ownUserIds.includes(r.author.id)) &&
+                viewerIds.includes(r.author.id)) &&
               Math.abs(
                 new Date(r.createdAt).getTime() - new Date(local.createdAt).getTime()
               ) < 15_000
@@ -469,7 +480,7 @@ export function ChatRoomView({
         );
       }
     }
-  }, [room.id, activeBranch?.id, activeBranchId, currentUserId, ownUserIds]);
+  }, [room.id, activeBranch?.id, activeBranchId]);
 
   const loadMembers = useCallback(async () => {
     const remote = await fetchRoomMembers(room.id);
@@ -539,9 +550,8 @@ export function ChatRoomView({
     }
   }, [activeBranchId, visibleBranches]);
 
-  // Ensure membership, capture unread divider from prior cursor, then mark read.
-  // Intentionally keyed only on room.id / user — not branch — so switching
-  // cabang does not re-mark or re-join.
+  // Join room + load members + mark read. Message load is owned by the branch
+  // effect so cabang switches and viewer-id resolution never race here.
   useEffect(() => {
     let cancelled = false;
     async function syncMembershipAndMembers() {
@@ -555,40 +565,13 @@ export function ChatRoomView({
       if (cancelled) return;
       await loadMembers();
       if (cancelled) return;
-      const branchForLoad =
-        activeBranchId ??
-        pickDefaultBranchId(initialRoom.branches, { preferTwoWay: true });
-      const remote = await fetchMessages(
-        room.id,
-        branchForLoad,
-        currentUserId,
-        ownUserIds
-      );
-      if (cancelled) return;
-      if (remote) {
-        if (remote.viewerId) setViewerUserId(remote.viewerId);
-        setMessages(remote.messages);
-        setHistoryHidden(remote.historyHidden);
-        if (!unreadDividerFrozenRef.current) {
-          unreadDividerFrozenRef.current = true;
-          if (remote.lastReadMessageId) {
-            setRoom((prev) => ({
-              ...prev,
-              lastReadMessageId: remote.lastReadMessageId ?? undefined,
-            }));
-          }
-        }
-      } else if (!unreadDividerFrozenRef.current) {
-        unreadDividerFrozenRef.current = true;
-      }
       await markCurrentRoomReadRef.current();
     }
     void syncMembershipAndMembers();
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- open-room once per room/user
-  }, [room.id, session?.userId, loadMembers, currentUserId]);
+  }, [room.id, session?.userId, loadMembers]);
 
   // Re-mark as read while the tab is focused and the user is near the bottom
   // (actively viewing the latest messages).
@@ -615,11 +598,13 @@ export function ChatRoomView({
 
     let cancelled = false;
     void (async () => {
+      const { currentUserId: viewerId, ownUserIds: viewerIds } =
+        fetchViewerRef.current;
       const remote = await fetchMessages(
         room.id,
         branchForLoad,
-        currentUserId,
-        ownUserIds
+        viewerId,
+        viewerIds
       );
       if (cancelled || generation !== pollGenerationRef.current) return;
       if (activePollScopeRef.current !== scopeKey) return;
@@ -641,7 +626,7 @@ export function ChatRoomView({
     return () => {
       cancelled = true;
     };
-  }, [activeBranchId, room.id, currentUserId, ownUserIds]);
+  }, [activeBranchId, room.id]);
 
   useEffect(() => {
     void pollMessages();
@@ -668,7 +653,9 @@ export function ChatRoomView({
     }
 
     if (stickToBottomRef.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      messagesEndRef.current?.scrollIntoView({
+        behavior: prefersInstantScroll() ? "auto" : "smooth",
+      });
     }
   }, [messages.length]);
 
@@ -1258,7 +1245,10 @@ export function ChatRoomView({
   const scrollToMessage = (messageId: string) => {
     const el = document.getElementById(`msg-${messageId}`);
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.scrollIntoView({
+        behavior: prefersInstantScroll() ? "auto" : "smooth",
+        block: "center",
+      });
       setHighlightedId(messageId);
       window.setTimeout(() => setHighlightedId(null), 2000);
     }
