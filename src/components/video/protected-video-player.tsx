@@ -108,6 +108,10 @@ export function ProtectedVideoPlayer({
 
   const chapterMarkers = useMemoChapterMarkers(duration);
 
+  const revealControls = useCallback(() => {
+    setShowControls(true);
+  }, []);
+
   const logViolation = useCallback(
     (type: ProtectionViolationType) => {
       onProtectionViolation?.(type, lessonId);
@@ -247,7 +251,7 @@ export function ProtectedVideoPlayer({
 
     const container = containerRef.current;
     container?.addEventListener("mousemove", resetTimer);
-    container?.addEventListener("touchstart", resetTimer);
+    container?.addEventListener("touchstart", resetTimer, { passive: true });
     resetTimer();
 
     return () => {
@@ -274,6 +278,14 @@ export function ProtectedVideoPlayer({
       setIsPlaying(false);
     }
   }, [playbackError]);
+
+  const handleVideoAreaTap = useCallback(() => {
+    if (isPlaying) {
+      revealControls();
+      return;
+    }
+    togglePlay();
+  }, [isPlaying, revealControls, togglePlay]);
 
   const handleVideoError = useCallback(() => {
     const video = videoRef.current;
@@ -318,13 +330,17 @@ export function ProtectedVideoPlayer({
     onTimeUpdate?.(video.currentTime);
   }, [onTimeUpdate]);
 
-  const handleLoadedMetadata = useCallback(() => {
+  const syncDuration = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
     if (Number.isFinite(video.duration) && video.duration > 0) {
       setDuration(video.duration);
     }
   }, []);
+
+  const handleLoadedMetadata = useCallback(() => {
+    syncDuration();
+  }, [syncDuration]);
 
   const seekTo = useCallback(
     (clientX: number) => {
@@ -351,17 +367,17 @@ export function ProtectedVideoPlayer({
       video.currentTime = next;
       setCurrentTime(next);
       onTimeUpdate?.(next);
-      setShowControls(true);
+      revealControls();
     },
-    [duration, onTimeUpdate]
+    [duration, onTimeUpdate, revealControls]
   );
 
   const handleProgressPointer = useCallback(
     (clientX: number) => {
       seekTo(clientX);
-      setShowControls(true);
+      revealControls();
     },
-    [seekTo]
+    [revealControls, seekTo]
   );
 
   const toggleMute = useCallback(() => {
@@ -466,11 +482,11 @@ export function ProtectedVideoPlayer({
         preload="metadata"
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
+        onDurationChange={syncDuration}
         onError={handleVideoError}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}
-        onClick={togglePlay}
       />
 
       {isBlurred && isProtected && (
@@ -503,19 +519,33 @@ export function ProtectedVideoPlayer({
         </Badge>
       )}
 
+      {isPlaying && (
+        <button
+          type="button"
+          data-play-overlay
+          onClick={handleVideoAreaTap}
+          className="absolute inset-x-0 top-0 bottom-24 z-10 cursor-default bg-transparent"
+          aria-label="Tampilkan kontrol video"
+        />
+      )}
+
       <div
+        data-video-controls
         className={cn(
           "absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-black/90 via-black/50 to-transparent px-3 pb-3 pt-10 transition-opacity duration-300 sm:px-4",
-          showControls || !isPlaying
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0"
+          showControls || !isPlaying ? "opacity-100" : "opacity-0"
         )}
+        onPointerDown={revealControls}
       >
         <div
           ref={progressRef}
-          className="group/progress relative mb-3 h-3 cursor-pointer touch-none rounded-full bg-white/20 sm:h-1.5"
-          onClick={(e) => handleProgressPointer(e.clientX)}
+          className="group/progress relative mb-3 flex min-h-11 cursor-pointer touch-none items-center sm:min-h-0 sm:h-1.5"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleProgressPointer(e.clientX);
+          }}
           onPointerDown={(e) => {
+            e.stopPropagation();
             isScrubbingRef.current = true;
             progressRef.current?.setPointerCapture(e.pointerId);
             handleProgressPointer(e.clientX);
@@ -537,18 +567,20 @@ export function ProtectedVideoPlayer({
           aria-valuemax={duration}
           aria-valuenow={currentTime}
         >
-          <div
-            className="absolute inset-y-0 left-0 rounded-full bg-foreground/90 transition-all"
-            style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
-          />
-          {chapterMarkers.map((marker) => (
+          <div className="relative h-3 w-full rounded-full bg-white/20 sm:h-1.5">
             <div
-              key={marker.label}
-              className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/60"
-              style={{ left: `${marker.percent}%` }}
-              title={marker.label}
+              className="absolute inset-y-0 left-0 rounded-full bg-foreground/90 transition-all"
+              style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
             />
-          ))}
+            {chapterMarkers.map((marker) => (
+              <div
+                key={marker.label}
+                className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/60"
+                style={{ left: `${marker.percent}%` }}
+                title={marker.label}
+              />
+            ))}
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -559,7 +591,7 @@ export function ProtectedVideoPlayer({
               seekBy(-10);
             }}
             onPointerDown={(e) => e.stopPropagation()}
-            className="min-h-9 min-w-9 rounded-md px-1.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-2 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
             aria-label="Mundur 10 detik"
           >
             -10s
@@ -571,7 +603,7 @@ export function ProtectedVideoPlayer({
               e.stopPropagation();
               togglePlay();
             }}
-            className="rounded-md p-1.5 text-white transition-colors hover:bg-white/10"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-white transition-colors hover:bg-white/10"
             aria-label={isPlaying ? "Jeda" : "Putar"}
           >
             {isPlaying ? <Pause className="size-5" /> : <Play className="size-5" />}
@@ -584,7 +616,7 @@ export function ProtectedVideoPlayer({
               seekBy(10);
             }}
             onPointerDown={(e) => e.stopPropagation()}
-            className="min-h-9 min-w-9 rounded-md px-1.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-2 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
             aria-label="Maju 10 detik"
           >
             +10s
@@ -668,17 +700,19 @@ export function ProtectedVideoPlayer({
         <>
           <button
             type="button"
-            onClick={togglePlay}
-            className="absolute inset-x-0 top-0 bottom-20 z-10 bg-black/20 transition-opacity hover:bg-black/30"
+            data-play-overlay
+            onClick={handleVideoAreaTap}
+            className="absolute inset-x-0 top-0 bottom-24 z-10 bg-black/20 transition-opacity hover:bg-black/30"
             aria-label="Putar video"
           />
           <button
             type="button"
+            data-play-overlay
             onClick={(e) => {
               e.stopPropagation();
               togglePlay();
             }}
-            className="absolute left-1/2 top-1/2 z-20 flex size-16 -translate-x-1/2 -translate-y-[calc(50%+1.5rem)] items-center justify-center rounded-full bg-white/15 backdrop-blur-sm transition-transform hover:scale-105 sm:-translate-y-1/2"
+            className="absolute left-1/2 top-1/2 z-20 flex size-16 -translate-x-1/2 -translate-y-[calc(50%+2rem)] items-center justify-center rounded-full bg-white/15 backdrop-blur-sm transition-transform hover:scale-105 sm:-translate-y-1/2"
             aria-label="Putar video"
           >
             <Play className="size-8 text-white" />
@@ -700,5 +734,5 @@ function useMemoChapterMarkers(duration: number) {
     { percent: 25, label: "Bab 1" },
     { percent: 50, label: "Bab 2" },
     { percent: 75, label: "Bab 3" },
-  ].filter((m) => duration > 0);
+  ].filter(() => duration > 0);
 }
