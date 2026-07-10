@@ -77,6 +77,8 @@ export function getMessageGroupMeta(
 
   const withPrev = isGroupedWithPrevious(previous, current);
   const withNext = isGroupedWithNext(current, next);
+  /** Replies always show the author header so the avatar sits beside the name, not the quote. */
+  const isReply = Boolean(current.replyTo);
 
   let position: MessageGroupPosition;
   if (!withPrev && !withNext) position = "standalone";
@@ -89,8 +91,8 @@ export function getMessageGroupMeta(
 
   return {
     position,
-    showAvatar: isEnd,
-    showName: isStart,
+    showAvatar: isEnd || isReply,
+    showName: isStart || isReply,
     showTime: isEnd,
     isGroupedWithPrev: withPrev,
     isGroupedWithNext: withNext,

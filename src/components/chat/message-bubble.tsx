@@ -454,66 +454,95 @@ export function MessageBubble({
     </div>
   );
 
-  const avatarSlot = !isOwn ? (
-    <div className="flex w-8 shrink-0 items-start justify-center sm:w-9">
-      {group.showAvatar ? (
-        <ChatUserAvatar
-          userId={author.id}
-          name={author.name}
-          initials={author.initials}
-          avatarUrl={author.avatarUrl}
-          size="sm"
-        />
-      ) : (
-        <span className="size-8" aria-hidden />
+  const avatarColumnClass = "w-8 shrink-0 sm:w-9";
+  const avatarSpacer = <span className="block size-8 sm:size-9" aria-hidden />;
+
+  const avatarNode = (
+    <ChatUserAvatar
+      userId={author.id}
+      name={author.name}
+      initials={author.initials}
+      avatarUrl={author.avatarUrl}
+      size="sm"
+    />
+  );
+
+  const bubbleShell = (
+    <div
+      className={cn(
+        "w-fit max-w-full px-3.5 py-2.5 shadow-sm",
+        groupBubbleRadiusClasses(group.position, isOwn),
+        (message.type === "poll" || message.type === "signal") && "w-full",
+        isOwn
+          ? "bg-primary/20 text-foreground ring-1 ring-primary/25"
+          : "bg-muted/70 text-foreground ring-1 ring-border/50",
+        isAnnouncement && !isOwn && "bg-accent/10 ring-accent/25",
+        isAnnouncement && isOwn && "ring-accent/30"
       )}
+    >
+      {bubbleBody}
+      {attachmentsAndEmbeds}
     </div>
-  ) : null;
+  );
+
+  const contentColumnClass = cn(
+    "min-w-0 max-w-[min(100%,32rem)]",
+    isOwn ? "flex flex-col items-end" : "flex flex-col items-start",
+    (message.type === "poll" || message.type === "signal") &&
+      "w-full sm:w-[min(100%,32rem)]"
+  );
+
+  const showOthersHeader =
+    !isOwn && (group.showName || group.showAvatar);
 
   return (
     <article
       id={`msg-${message.id}`}
       className={cn(
-        "group relative flex w-full items-start gap-2.5 px-2 sm:gap-3 sm:px-3",
+        "group relative w-full px-2 sm:px-3",
         group.isGroupedWithPrev ? "pt-0.5" : "pt-2",
         group.isGroupedWithNext ? "pb-0.5" : "pb-2",
-        isOwn ? "flex-row-reverse justify-start" : "flex-row justify-start",
         isReplyTarget && "rounded-xl bg-accent/5",
         className
       )}
     >
-      {avatarSlot}
-
-      <div
-        className={cn(
-          "min-w-0 max-w-[min(100%,32rem)]",
-          isOwn ? "flex flex-col items-end" : "flex flex-col items-start",
-          (message.type === "poll" || message.type === "signal") &&
-            "w-full sm:w-[min(100%,32rem)]"
-        )}
-      >
-        {metaRow}
-
-        <div
-          className={cn(
-            "w-fit max-w-full px-3.5 py-2.5 shadow-sm",
-            groupBubbleRadiusClasses(group.position, isOwn),
-            (message.type === "poll" || message.type === "signal") && "w-full",
-            isOwn
-              ? "bg-primary/20 text-foreground ring-1 ring-primary/25"
-              : "bg-muted/70 text-foreground ring-1 ring-border/50",
-            isAnnouncement && !isOwn && "bg-accent/10 ring-accent/25",
-            isAnnouncement && isOwn && "ring-accent/30"
-          )}
-        >
+      {isOwn ? (
+        <div className={cn(contentColumnClass, "ml-auto")}>
+          {metaRow}
           {replyPreview}
-          {bubbleBody}
-          {attachmentsAndEmbeds}
+          {bubbleShell}
+          {reactionsRow}
+          {actionRow}
         </div>
+      ) : (
+        <>
+          {showOthersHeader && (
+            <div className="flex items-start gap-2.5 sm:gap-3">
+              <div className={cn(avatarColumnClass, "flex justify-center")}>
+                {group.showAvatar ? avatarNode : avatarSpacer}
+              </div>
+              <div className="min-h-8 min-w-0 flex-1">
+                {group.showName ? metaRow : null}
+              </div>
+            </div>
+          )}
 
-        {reactionsRow}
-        {actionRow}
-      </div>
+          <div
+            className={cn(
+              "flex gap-2.5 sm:gap-3",
+              showOthersHeader && group.showName && "mt-0.5"
+            )}
+          >
+            <div className={avatarColumnClass}>{avatarSpacer}</div>
+            <div className={contentColumnClass}>
+              {replyPreview}
+              {bubbleShell}
+              {reactionsRow}
+              {actionRow}
+            </div>
+          </div>
+        </>
+      )}
     </article>
   );
 }
