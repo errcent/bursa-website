@@ -595,19 +595,13 @@ export async function joinMentorHubIfEligible(input: {
     };
   }
 
-  const created = await db.chatRoomMember.createMany({
-    data: [
-      {
-        roomId: room.id,
-        userId: input.userId,
-        role: ChatMemberRole.MEMBER,
-      },
-    ],
-    skipDuplicates: true,
+  await db.chatRoomMember.create({
+    data: {
+      roomId: room.id,
+      userId: input.userId,
+      role: ChatMemberRole.MEMBER,
+    },
   });
-  if (created.count === 0) {
-    return { ok: true, roomId: room.id };
-  }
 
   await postSubscriptionJoinSystemMessage({
     roomId: room.id,

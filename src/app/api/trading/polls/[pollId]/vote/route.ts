@@ -156,7 +156,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       };
     });
 
-    if ("error" in result) {
+    if ("error" in result && typeof result.error === "string") {
       return jsonError(result.error, result.status);
     }
 
