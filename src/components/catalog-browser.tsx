@@ -24,17 +24,11 @@ import {
 } from "@/components/ui/sheet";
 import { CourseCard } from "@/components/course-card";
 import { MentorCard } from "@/components/mentor-card";
-import { Reveal } from "@/components/motion/reveal";
-import {
-  mentorGetScrollPerView,
-  SCROLL_CAROUSEL_GAP,
-  ScrollCarousel,
-} from "@/components/scroll-carousel";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { SnapCollapse, SnapPresence } from "@/components/motion/snap";
 import { SearchDropdown } from "@/components/search/search-dropdown";
 import { SearchPlaceholderMarquee } from "@/components/search/search-placeholder-marquee";
 import { useMyLearning } from "@/hooks/use-my-learning";
-import { useMobileLayout } from "@/hooks/use-mobile-layout";
 import {
   clearRecentSearches,
   detectSearchIntent,
@@ -267,8 +261,6 @@ type CatalogCourseRowProps = {
 };
 
 function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCourseRowProps) {
-  const isMobile = useMobileLayout();
-
   if (courses.length === 0) return null;
 
   return (
@@ -280,19 +272,14 @@ function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCo
         )}
       </h3>
       <div className="catalog-row-bleed">
-        <ScrollCarousel
-          ariaLabel={title}
-          fixedItemWidth={isMobile ? "var(--catalog-card-width)" : undefined}
-          gap={isMobile ? 8 : SCROLL_CAROUSEL_GAP}
-        >
+        <div className="catalog-row-scroll">
           {courses.map((course) => {
             const learning = enrollmentBySlug.get(course.slug);
             return (
               <CourseCard
                 key={course.slug}
                 course={course}
-                variant={isMobile ? "poster" : "default"}
-                className="w-full"
+                variant="poster"
                 enrollment={
                   learning
                     ? {
@@ -306,15 +293,13 @@ function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCo
               />
             );
           })}
-        </ScrollCarousel>
+        </div>
       </div>
     </section>
   );
 }
 
 function CatalogMentorRow({ title, mentors, count }: { title: string; mentors: Mentor[]; count?: number }) {
-  const isMobile = useMobileLayout();
-
   if (mentors.length === 0) return null;
 
   return (
@@ -326,22 +311,11 @@ function CatalogMentorRow({ title, mentors, count }: { title: string; mentors: M
         )}
       </h3>
       <div className="catalog-row-bleed">
-        <ScrollCarousel
-          ariaLabel={title}
-          getPerView={mentorGetScrollPerView}
-          fixedItemWidth={isMobile ? "var(--catalog-mentor-card-width)" : undefined}
-          mobilePeekRatio={0.72}
-          gap={isMobile ? 8 : SCROLL_CAROUSEL_GAP}
-        >
+        <div className="catalog-row-scroll catalog-row-scroll--mentor">
           {mentors.map((mentor) => (
-            <MentorCard
-              key={mentor.slug}
-              mentor={mentor}
-              variant={isMobile ? "compact" : "default"}
-              className="w-full"
-            />
+            <MentorCard key={mentor.slug} mentor={mentor} variant="compact" />
           ))}
-        </ScrollCarousel>
+        </div>
       </div>
     </section>
   );
@@ -587,6 +561,18 @@ export function CatalogBrowser({
     ].filter((row) => row.mentors.length > 0);
   }, [mentors, showGroupedMentorRows]);
 
+  function courseEnrollment(slug: string) {
+    const learning = enrollmentBySlug.get(slug);
+    return learning
+      ? {
+          progressPercent: learning.progressPercent,
+          completedLessons: learning.completedLessons,
+          totalLessons: learning.totalLessons,
+          lastLessonId: learning.lastLessonId,
+        }
+      : null;
+  }
+
   return (
     <div className="flex flex-col gap-6 md:gap-10">
       <Reveal>
@@ -782,7 +768,7 @@ export function CatalogBrowser({
             seed={11}
             className="relative z-0 block"
           >
-            <h2 className="mb-3 font-heading text-lg font-semibold tracking-tight md:mb-4">
+            <h2 className="mb-3 hidden font-heading text-lg font-semibold tracking-tight md:mb-4 md:block">
               {resultHeading ?? (
                 filteredCourses.length > 0
                   ? `${filteredCourses.length} kelas ditemukan`
@@ -795,28 +781,41 @@ export function CatalogBrowser({
               )}
             </h2>
             {filteredCourses.length > 0 ? (
-              <div className="catalog-section">
-                {showGroupedCourseRows && groupedCourseRows ? (
-                  groupedCourseRows.map((row) => (
+              <>
+                <div className="catalog-section md:hidden">
+                  {showGroupedCourseRows && groupedCourseRows ? (
+                    groupedCourseRows.map((row) => (
+                      <CatalogCourseRow
+                        key={row.title}
+                        title={row.title}
+                        courses={row.courses}
+                        enrollmentBySlug={enrollmentBySlug}
+                      />
+                    ))
+                  ) : (
                     <CatalogCourseRow
-                      key={row.title}
-                      title={row.title}
-                      courses={row.courses}
+                      title={
+                        resultHeading ??
+                        `${filteredCourses.length} kelas ditemukan`
+                      }
+                      courses={filteredCourses}
+                      count={filteredCourses.length}
                       enrollmentBySlug={enrollmentBySlug}
                     />
-                  ))
-                ) : (
-                  <CatalogCourseRow
-                    title={
-                      resultHeading ??
-                      `${filteredCourses.length} kelas ditemukan`
-                    }
-                    courses={filteredCourses}
-                    count={filteredCourses.length}
-                    enrollmentBySlug={enrollmentBySlug}
-                  />
-                )}
-              </div>
+                  )}
+                </div>
+                <Stagger className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filteredCourses.map((course) => (
+                    <StaggerItem key={course.slug}>
+                      <CourseCard
+                        course={course}
+                        className="w-full"
+                        enrollment={courseEnrollment(course.slug)}
+                      />
+                    </StaggerItem>
+                  ))}
+                </Stagger>
+              </>
             ) : (
               <div className="surface-card flex flex-col items-center gap-3 border-dashed py-16 text-center">
                 <p className="text-sm text-muted-foreground">
@@ -853,7 +852,7 @@ export function CatalogBrowser({
             seed={19}
             className="relative z-0 block"
           >
-            <h2 className="mb-3 font-heading text-lg font-semibold tracking-tight md:mb-4">
+            <h2 className="mb-3 hidden font-heading text-lg font-semibold tracking-tight md:mb-4 md:block">
               {resultHeading ?? (
                 filteredMentors.length > 0
                   ? `${filteredMentors.length} mentor ditemukan`
@@ -866,26 +865,35 @@ export function CatalogBrowser({
               )}
             </h2>
             {filteredMentors.length > 0 ? (
-              <div className="catalog-section">
-                {showGroupedMentorRows && groupedMentorRows ? (
-                  groupedMentorRows.map((row) => (
+              <>
+                <div className="catalog-section md:hidden">
+                  {showGroupedMentorRows && groupedMentorRows ? (
+                    groupedMentorRows.map((row) => (
+                      <CatalogMentorRow
+                        key={row.title}
+                        title={row.title}
+                        mentors={row.mentors}
+                      />
+                    ))
+                  ) : (
                     <CatalogMentorRow
-                      key={row.title}
-                      title={row.title}
-                      mentors={row.mentors}
+                      title={
+                        resultHeading ??
+                        `${filteredMentors.length} mentor ditemukan`
+                      }
+                      mentors={filteredMentors}
+                      count={filteredMentors.length}
                     />
-                  ))
-                ) : (
-                  <CatalogMentorRow
-                    title={
-                      resultHeading ??
-                      `${filteredMentors.length} mentor ditemukan`
-                    }
-                    mentors={filteredMentors}
-                    count={filteredMentors.length}
-                  />
-                )}
-              </div>
+                  )}
+                </div>
+                <Stagger className="hidden gap-4 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+                  {filteredMentors.map((mentor) => (
+                    <StaggerItem key={mentor.slug}>
+                      <MentorCard mentor={mentor} className="w-full" />
+                    </StaggerItem>
+                  ))}
+                </Stagger>
+              </>
             ) : (
               <div className="surface-card flex flex-col items-center gap-2 border-dashed py-16 text-center">
                 <p className="text-sm text-muted-foreground">
