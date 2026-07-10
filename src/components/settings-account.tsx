@@ -164,14 +164,15 @@ export function SettingsAccount() {
                 </p>
               </div>
             </div>
-            <Button
-              size="lg"
-              variant="outline"
-              className="min-h-11 w-full shrink-0 sm:w-auto"
-              render={<Link href="/profil" />}
+            <Link
+              href="/profil"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "min-h-11 w-full shrink-0 sm:w-auto"
+              )}
             >
               {common.editProfile}
-            </Button>
+            </Link>
           </div>
 
           <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-start sm:justify-between">
@@ -187,14 +188,15 @@ export function SettingsAccount() {
                 </p>
               </div>
             </div>
-            <Button
-              size="lg"
-              variant="outline"
-              className="min-h-11 w-full shrink-0 sm:w-auto"
-              render={<Link href="/profil" />}
+            <Link
+              href="/profil"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "min-h-11 w-full shrink-0 sm:w-auto"
+              )}
             >
               {common.editProfile}
-            </Button>
+            </Link>
           </div>
 
           <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-start sm:justify-between">

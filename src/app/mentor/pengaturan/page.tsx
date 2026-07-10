@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { useAuth } from "@/components/auth-provider";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { canMutateMentor } from "@/lib/auth/roles";
+import { cn } from "@/lib/utils";
 
 export default function MentorSettingsPage() {
   const { session } = useAuth();
@@ -38,9 +39,12 @@ export default function MentorSettingsPage() {
             Ubah foto profil, nama pengguna, dan bio dasar di pengaturan akun.
           </p>
         </div>
-        <Button size="sm" variant="outline" render={<Link href="/profil" />}>
+        <Link
+          href="/profil"
+          className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+        >
           Edit profil
-        </Button>
+        </Link>
       </div>
 
       <form onSubmit={handleSave} className="surface-card space-y-5 p-5">

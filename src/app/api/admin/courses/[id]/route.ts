@@ -159,6 +159,8 @@ export async function PATCH(request: Request, context: RouteContext) {
       },
     });
 
+    revalidateCatalog();
+
     return NextResponse.json(mapCourse(course));
   } catch (error) {
     console.error(error);
@@ -192,6 +194,8 @@ export async function DELETE(request: Request, context: RouteContext) {
         entityId: id,
       },
     });
+
+    revalidateCatalog();
 
     return NextResponse.json({ ok: true });
   } catch (error) {

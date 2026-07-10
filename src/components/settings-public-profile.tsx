@@ -4,7 +4,8 @@ import Link from "next/link";
 import { UserRound } from "lucide-react";
 
 import { useLanguage } from "@/components/language-provider";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function SettingsPublicProfile() {
   const { messages } = useLanguage();
@@ -16,10 +17,13 @@ export function SettingsPublicProfile() {
         <p className="text-sm font-medium">{t.title}</p>
         <p className="mt-1 text-xs text-muted-foreground">{t.description}</p>
       </div>
-      <Button size="lg" variant="outline" className="min-h-11 shrink-0" render={<Link href="/profil" />}>
+      <Link
+        href="/profil"
+        className={cn(buttonVariants({ variant: "outline", size: "lg" }), "min-h-11 shrink-0")}
+      >
         <UserRound className="size-3.5" />
         {t.editButton}
-      </Button>
+      </Link>
     </div>
   );
 }
