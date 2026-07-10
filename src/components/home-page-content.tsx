@@ -50,6 +50,13 @@ const paths = [
   },
 ];
 
+function scrollToPopularClasses() {
+  document.getElementById("kelas-unggulan")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+}
+
 const proofPoints = [
   {
     step: "01",
@@ -115,7 +122,7 @@ export function HomePageContent() {
                   size="lg"
                   variant="outline"
                   className="h-12 w-full rounded-full border-border/70 bg-card/40 px-7 text-sm sm:h-11 sm:w-auto"
-                  render={<Link href="#kelas-unggulan" />}
+                  onClick={scrollToPopularClasses}
                 >
                   Lihat kelas populer dulu
                 </Button>
@@ -189,14 +196,14 @@ export function HomePageContent() {
                   <motion.div
                     className={
                       path.tone === "primary"
-                        ? "surface-card-hover flex h-full flex-col gap-4 border-accent/25 bg-accent-soft/35 p-5 sm:p-8"
-                        : "surface-card-hover flex h-full flex-col gap-4 p-5 sm:p-8"
+                        ? "landing-path-card surface-card-hover flex h-full flex-col border-accent/25 bg-accent-soft/35 p-4 sm:gap-4 sm:p-8"
+                        : "landing-path-card surface-card-hover flex h-full flex-col p-4 sm:gap-4 sm:p-8"
                     }
                     whileHover={{ y: -2 }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <Check className={path.tone === "primary" ? "size-5 text-accent" : "size-5 text-accent/75"} />
-                    <h3 className="font-heading text-xl font-semibold">{path.title}</h3>
+                    <h3 className="font-heading text-lg font-semibold sm:text-xl">{path.title}</h3>
                     <p className="flex-1 text-sm leading-relaxed text-muted-foreground">
                       {path.description}
                     </p>
@@ -231,7 +238,7 @@ export function HomePageContent() {
             <Stagger className="grid gap-3.5 sm:gap-4 md:grid-cols-3">
               {proofPoints.map((item) => (
                 <StaggerItem key={item.step}>
-                  <motion.div className="surface-card h-full p-5 sm:p-6" whileHover={{ y: -2 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
+                  <motion.div className="landing-proof-card surface-card h-full p-4 sm:p-6" whileHover={{ y: -2 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
                     <p className="font-mono text-xs text-accent/70">{item.step}</p>
                     <h3 className="mt-2 font-heading text-base font-semibold">{item.title}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
