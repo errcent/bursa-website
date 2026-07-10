@@ -54,11 +54,11 @@ function CheckEmailContent() {
       )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <Button asChild variant="outline" className="h-11">
-          <Link href="/lupa-password">Kirim ulang tautan</Link>
+        <Button variant="outline" className="h-11" render={<Link href="/lupa-password" />}>
+          Kirim ulang tautan
         </Button>
-        <Button asChild className="h-11 btn-primary">
-          <Link href="/masuk">Kembali ke masuk</Link>
+        <Button className="h-11 btn-primary" render={<Link href="/masuk" />}>
+          Kembali ke masuk
         </Button>
       </div>
     </div>

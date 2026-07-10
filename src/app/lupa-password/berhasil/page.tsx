@@ -27,8 +27,8 @@ export default function ResetSuccessPage() {
           masuk ulang.
         </p>
 
-        <Button asChild className="h-11 w-full btn-primary">
-          <Link href="/masuk">Masuk ke akun</Link>
+        <Button className="h-11 w-full btn-primary" render={<Link href="/masuk" />}>
+          Masuk ke akun
         </Button>
 
         <Link href="/" className="link-muted">
