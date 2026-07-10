@@ -27,15 +27,19 @@ export function CourseCard({
   course,
   className,
   enrollment,
+  variant = "default",
 }: {
   course: Course;
   className?: string;
   /** When set, card is treated as purchased/enrolled (progress under thumbnail). */
   enrollment?: CourseCardEnrollment | null;
+  /** Poster = compact Netflix-style tile for mobile horizontal rows. */
+  variant?: "default" | "poster";
 }) {
   const mentor = getMentorBySlug(course.mentorSlug);
   const Icon = instrumentIcon[course.instrument];
   const enrolled = Boolean(enrollment);
+  const isPoster = variant === "poster";
   const progressPercent = Math.min(
     100,
     Math.max(0, enrollment?.progressPercent ?? 0)
@@ -44,6 +48,54 @@ export function CourseCard({
     enrolled && enrollment?.lastLessonId
       ? `/belajar/${course.slug}/${enrollment.lastLessonId}`
       : `/kelas/${course.slug}`;
+
+  if (isPoster) {
+    return (
+      <Link
+        href={href}
+        className={cn(
+          "course-card-poster group flex w-full flex-col overflow-hidden rounded-lg border border-border/80 bg-card",
+          enrolled && "ring-1 ring-accent/25",
+          className
+        )}
+      >
+        <div className="relative flex aspect-[2/3] items-center justify-center overflow-hidden bg-gradient-to-br from-surface-2 to-background">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,var(--glow),transparent_60%)] opacity-50" />
+          <Icon
+            className="size-7 text-foreground/20 transition-transform duration-300 ease-out group-hover:scale-105"
+            strokeWidth={1.5}
+          />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
+            <PlayCircle className="size-7 text-foreground/90" />
+          </div>
+          <div className="absolute left-1.5 top-1.5 scale-90 origin-top-left">
+            <LevelBadge level={course.level} />
+          </div>
+          {enrolled && (
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/95 via-background/70 to-transparent px-1.5 pb-1.5 pt-6">
+              <Progress
+                value={progressPercent}
+                className="gap-0 [&_[data-slot=progress-indicator]]:bg-accent [&_[data-slot=progress-track]]:h-1 [&_[data-slot=progress-track]]:bg-muted/80"
+                aria-label={`Progress ${progressPercent}% selesai`}
+              />
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col gap-0.5 px-1.5 py-1.5">
+          <h3 className="line-clamp-2 font-heading text-[11px] font-medium leading-tight">
+            {course.title}
+          </h3>
+          <p className="line-clamp-1 text-[10px] text-muted-foreground">
+            {enrolled
+              ? progressPercent >= 100
+                ? "Selesai"
+                : `${progressPercent}% · Lanjutkan`
+              : formatRupiah(course.price)}
+          </p>
+        </div>
+      </Link>
+    );
+  }
 
   return (
     <Link

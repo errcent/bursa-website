@@ -8,7 +8,45 @@ import { StarRating } from "@/components/star-rating";
 import type { Mentor } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-export function MentorCard({ mentor, className }: { mentor: Mentor; className?: string }) {
+export function MentorCard({
+  mentor,
+  className,
+  variant = "default",
+}: {
+  mentor: Mentor;
+  className?: string;
+  /** Compact tile for mobile horizontal mentor rows. */
+  variant?: "default" | "compact";
+}) {
+  if (variant === "compact") {
+    return (
+      <Link
+        href={`/instruktur/${mentor.slug}`}
+        className={cn(
+          "group flex w-full flex-col items-center gap-2 rounded-lg border border-border/80 bg-card p-2.5 text-center",
+          className
+        )}
+      >
+        <Avatar className="size-14 border border-border bg-surface-2 shadow-[0_0_12px_var(--glow)] transition-all duration-300 ease-out group-hover:border-accent/30">
+          {mentor.avatarUrl ? (
+            <AvatarImage
+              src={mentor.avatarUrl}
+              alt={`Foto ${mentor.name}`}
+              className="object-cover object-top"
+            />
+          ) : null}
+          <AvatarFallback className="bg-surface-2 font-heading text-sm font-medium">
+            {mentor.initials}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex w-full flex-col gap-0.5">
+          <h3 className="line-clamp-1 font-heading text-[11px] font-medium">{mentor.name}</h3>
+          <p className="line-clamp-1 text-[10px] text-muted-foreground">{mentor.title}</p>
+        </div>
+      </Link>
+    );
+  }
+
   return (
     <Link
       href={`/instruktur/${mentor.slug}`}

@@ -354,6 +354,21 @@
     mask-image: radial-gradient(ellipse 85% 70% at 50% 40%, black, transparent 85%);
   }
 
+  .catalog-scroll-carousel {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .catalog-scroll-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  .catalog-scroll-carousel-item {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
   .testimonial-tilt-row {
     scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
@@ -461,6 +476,85 @@
     .hero-horizon-track,
     .hero-horizon-track-slow {
       opacity: 0.65;
+    }
+
+    /* ── Catalog mobile (Netflix-style) ── */
+    :root {
+      --catalog-container-px: 1.25rem;
+      --catalog-card-width: 8.75rem;
+      --catalog-row-gap: 1.25rem;
+      --catalog-section-gap: 1.5rem;
+    }
+
+    .katalog-hero-compact {
+      @apply py-7;
+    }
+    .katalog-hero-compact .page-hero-title {
+      font-size: clamp(1.375rem, 6vw, 1.75rem);
+      line-height: 1.2;
+      max-width: 20ch;
+    }
+    .katalog-hero-compact .eyebrow {
+      @apply mb-1.5 text-[10px];
+    }
+
+    .catalog-filter-compact.surface-card {
+      @apply gap-2.5 rounded-xl p-3;
+    }
+
+    .catalog-section {
+      @apply flex flex-col;
+      gap: var(--catalog-section-gap);
+    }
+
+    .catalog-row {
+      @apply flex flex-col gap-1.5;
+    }
+
+    .catalog-row-title {
+      @apply font-heading text-sm font-bold tracking-tight text-foreground;
+    }
+
+    .catalog-row-count {
+      @apply ml-1.5 text-xs font-normal text-muted-foreground;
+    }
+
+    .catalog-row-bleed {
+      margin-left: calc(-1 * var(--catalog-container-px));
+      margin-right: calc(-1 * var(--catalog-container-px));
+      padding-left: var(--catalog-container-px);
+      padding-right: var(--catalog-container-px);
+    }
+
+    .catalog-row-scroll {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 0.125rem;
+    }
+    .catalog-row-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .catalog-row-scroll > * {
+      flex-shrink: 0;
+      scroll-snap-align: start;
+      width: var(--catalog-card-width);
+    }
+
+    .course-card-poster.surface-card-hover:hover {
+      transform: scale(1.03);
+    }
+  }
+
+  @media (max-width: 430px) {
+    :root {
+      --catalog-card-width: 7.5rem;
+      --catalog-row-gap: 1rem;
+      --catalog-section-gap: 1.25rem;
     }
   }
 

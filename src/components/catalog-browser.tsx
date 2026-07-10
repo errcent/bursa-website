@@ -11,9 +11,24 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { CourseCard } from "@/components/course-card";
 import { MentorCard } from "@/components/mentor-card";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import {
+  mentorGetScrollPerView,
+  ScrollCarousel,
+} from "@/components/scroll-carousel";
 import { SnapCollapse, SnapPresence } from "@/components/motion/snap";
 import { SearchDropdown } from "@/components/search/search-dropdown";
 import { SearchPlaceholderMarquee } from "@/components/search/search-placeholder-marquee";
@@ -31,6 +46,7 @@ import {
 } from "@/lib/search/engine";
 import { cn } from "@/lib/utils";
 import type { Course, Instrument, Level, Mentor } from "@/lib/types";
+import type { LearningCourseProgress } from "@/hooks/use-my-learning";
 
 const instrumentOptions: (Instrument | "Semua")[] = ["Semua", "Saham", "Crypto", "Forex"];
 const levelOptions: (Level | "Semua")[] = ["Semua", "Pemula", "Menengah", "Mahir"];
@@ -72,14 +88,23 @@ function buildCatalogQueryString(
   return params.toString();
 }
 
+const sortOptions: { key: SortMode; label: string }[] = [
+  { key: "populer", label: "Paling populer" },
+  { key: "rating", label: "Rating tertinggi" },
+  { key: "harga-rendah", label: "Harga terendah" },
+  { key: "harga-tinggi", label: "Harga tertinggi" },
+];
+
 function Chip({
   active,
   children,
   onClick,
+  className,
 }: {
   active: boolean;
   children: React.ReactNode;
   onClick: () => void;
+  className?: string;
 }) {
   return (
     <motion.button
@@ -89,14 +114,117 @@ function Chip({
       whileHover={{ y: -1 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all duration-300 ease-out",
+        "shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all duration-300 ease-out",
         active
           ? "border-primary/30 bg-primary text-primary-foreground shadow-[0_0_18px_var(--glow)]"
-          : "border-border bg-transparent text-muted-foreground hover:border-accent/30 hover:text-foreground"
+          : "border-border bg-transparent text-muted-foreground hover:border-accent/30 hover:text-foreground",
+        className
       )}
     >
       {children}
     </motion.button>
+  );
+}
+
+function countActiveFilters(
+  instrument: Instrument | "Semua",
+  level: Level | "Semua",
+  sort: SortMode,
+  view: ViewMode
+): number {
+  let count = 0;
+  if (instrument !== "Semua") count++;
+  if (view === "kelas") {
+    if (level !== "Semua") count++;
+    if (sort !== "populer") count++;
+  }
+  return count;
+}
+
+function CatalogFilterPanels({
+  view,
+  instrument,
+  level,
+  sort,
+  onInstrumentChange,
+  onLevelChange,
+  onSortChange,
+  showLabels,
+  touchFriendly,
+}: {
+  view: ViewMode;
+  instrument: Instrument | "Semua";
+  level: Level | "Semua";
+  sort: SortMode;
+  onInstrumentChange: (value: Instrument | "Semua") => void;
+  onLevelChange: (value: Level | "Semua") => void;
+  onSortChange: (value: SortMode) => void;
+  showLabels: boolean;
+  touchFriendly?: boolean;
+}) {
+  const chipClass = touchFriendly ? "min-h-11 px-4" : undefined;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="-mx-1 flex flex-wrap items-center gap-2 px-1 sm:flex-nowrap sm:overflow-x-auto">
+        {showLabels && (
+          <span className="flex w-full shrink-0 items-center gap-1.5 text-xs font-medium text-muted-foreground sm:w-auto sm:pr-1">
+            <SlidersHorizontal className="size-3.5" />
+            Instrumen
+          </span>
+        )}
+        {instrumentOptions.map((opt) => (
+          <Chip
+            key={opt}
+            active={instrument === opt}
+            onClick={() => onInstrumentChange(opt)}
+            className={chipClass}
+          >
+            {opt}
+          </Chip>
+        ))}
+      </div>
+
+      {view === "kelas" && (
+        <>
+          <div className="-mx-1 flex flex-wrap items-center gap-2 px-1 sm:flex-nowrap sm:overflow-x-auto">
+            {showLabels && (
+              <span className="w-full shrink-0 text-xs font-medium text-muted-foreground sm:w-auto sm:pr-1">
+                Level
+              </span>
+            )}
+            {levelOptions.map((opt) => (
+              <Chip
+                key={opt}
+                active={level === opt}
+                onClick={() => onLevelChange(opt)}
+                className={chipClass}
+              >
+                {opt}
+              </Chip>
+            ))}
+          </div>
+
+          <div className="-mx-1 flex flex-wrap items-center gap-2 px-1 sm:flex-nowrap sm:overflow-x-auto">
+            {showLabels && (
+              <span className="w-full shrink-0 text-xs font-medium text-muted-foreground sm:w-auto sm:pr-1">
+                Urutkan
+              </span>
+            )}
+            {sortOptions.map((opt) => (
+              <Chip
+                key={opt.key}
+                active={sort === opt.key}
+                onClick={() => onSortChange(opt.key)}
+                className={chipClass}
+              >
+                {opt.label}
+              </Chip>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -129,6 +257,74 @@ function matchesMentorQuery(mentor: Mentor, tokens: string[]): boolean {
   return tokens.every((t) => haystack.includes(t));
 }
 
+type CatalogCourseRowProps = {
+  title: string;
+  courses: Course[];
+  count?: number;
+  enrollmentBySlug: Map<string, LearningCourseProgress>;
+};
+
+function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCourseRowProps) {
+  if (courses.length === 0) return null;
+
+  return (
+    <section className="catalog-row" aria-label={title}>
+      <h3 className="catalog-row-title">
+        {title}
+        {count !== undefined && (
+          <span className="catalog-row-count">{count}</span>
+        )}
+      </h3>
+      <div className="catalog-row-bleed">
+        <div className="catalog-row-scroll">
+          {courses.map((course) => {
+            const learning = enrollmentBySlug.get(course.slug);
+            return (
+              <CourseCard
+                key={course.slug}
+                course={course}
+                variant="poster"
+                enrollment={
+                  learning
+                    ? {
+                        progressPercent: learning.progressPercent,
+                        completedLessons: learning.completedLessons,
+                        totalLessons: learning.totalLessons,
+                        lastLessonId: learning.lastLessonId,
+                      }
+                    : null
+                }
+              />
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CatalogMentorRow({ title, mentors, count }: { title: string; mentors: Mentor[]; count?: number }) {
+  if (mentors.length === 0) return null;
+
+  return (
+    <section className="catalog-row" aria-label={title}>
+      <h3 className="catalog-row-title">
+        {title}
+        {count !== undefined && (
+          <span className="catalog-row-count">{count}</span>
+        )}
+      </h3>
+      <div className="catalog-row-bleed">
+        <div className="catalog-row-scroll">
+          {mentors.map((mentor) => (
+            <MentorCard key={mentor.slug} mentor={mentor} variant="compact" />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function CatalogBrowser({
   courses,
   mentors,
@@ -147,6 +343,7 @@ export function CatalogBrowser({
   const [query, setQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
@@ -279,6 +476,17 @@ export function CatalogBrowser({
     // URL is cleared by the outbound sync effect — avoid a parallel replace race.
   }
 
+  function resetSheetFilters() {
+    setInstrument("Semua");
+    setLevel("Semua");
+    setSort("populer");
+  }
+
+  const activeFilterCount = useMemo(
+    () => countActiveFilters(instrument, level, sort, view),
+    [instrument, level, sort, view]
+  );
+
   const filteredCourses = useMemo(() => {
     const base = courses.filter((course) => {
       if (instrument !== "Semua" && course.instrument !== instrument) return false;
@@ -307,12 +515,74 @@ export function CatalogBrowser({
     ? `Hasil untuk "${debouncedQuery.trim()}"`
     : null;
 
+  const showGroupedCourseRows = useMemo(
+    () =>
+      !debouncedQuery.trim() &&
+      instrument === "Semua" &&
+      level === "Semua" &&
+      sort === "populer",
+    [debouncedQuery, instrument, level, sort]
+  );
+
+  const groupedCourseRows = useMemo(() => {
+    if (!showGroupedCourseRows) return null;
+
+    const popular = [...courses]
+      .sort((a, b) => b.studentsCount - a.studentsCount)
+      .slice(0, 10);
+
+    const byInstrument = (inst: Instrument) =>
+      courses.filter((c) => c.instrument === inst);
+
+    return [
+      { title: "Paling Populer", courses: popular },
+      { title: "Saham", courses: byInstrument("Saham") },
+      { title: "Crypto", courses: byInstrument("Crypto") },
+      { title: "Forex", courses: byInstrument("Forex") },
+    ].filter((row) => row.courses.length > 0);
+  }, [courses, showGroupedCourseRows]);
+
+  const showGroupedMentorRows = useMemo(
+    () => !debouncedQuery.trim() && instrument === "Semua",
+    [debouncedQuery, instrument]
+  );
+
+  const groupedMentorRows = useMemo(() => {
+    if (!showGroupedMentorRows) return null;
+
+    const topRated = [...mentors]
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, 8);
+
+    const byInstrument = (inst: Instrument) =>
+      mentors.filter((m) => m.instruments.includes(inst));
+
+    return [
+      { title: "Mentor Terbaik", mentors: topRated },
+      { title: "Saham", mentors: byInstrument("Saham") },
+      { title: "Crypto", mentors: byInstrument("Crypto") },
+      { title: "Forex", mentors: byInstrument("Forex") },
+    ].filter((row) => row.mentors.length > 0);
+  }, [mentors, showGroupedMentorRows]);
+
+  function courseEnrollment(slug: string) {
+    const learning = enrollmentBySlug.get(slug);
+    return learning
+      ? {
+          progressPercent: learning.progressPercent,
+          completedLessons: learning.completedLessons,
+          totalLessons: learning.totalLessons,
+          lastLessonId: learning.lastLessonId,
+        }
+      : null;
+  }
+
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-6 md:gap-10">
       <Reveal>
         <motion.div
             className={cn(
-              "surface-card flex flex-col gap-4 bg-card p-4 sm:p-5",
+              "surface-card catalog-filter-compact flex flex-col gap-2.5 bg-card p-3 md:gap-4 md:p-5",
               searchOpen && "relative z-40"
             )}
             transition={{ duration: 0.35, ease: easeOut }}
@@ -406,60 +676,92 @@ export function CatalogBrowser({
               />
             </div>
 
-            <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pt-1">
-              <span className="flex items-center gap-1.5 pr-1 text-xs font-medium text-muted-foreground">
-                <SlidersHorizontal className="size-3.5" />
-                Instrumen:
-              </span>
-              {instrumentOptions.map((opt) => (
-                <Chip
-                  key={opt}
-                  active={instrument === opt}
-                  onClick={() => setInstrument(opt)}
+            <div className="md:hidden">
+              <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
+                <SheetTrigger
+                  render={
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="min-h-11 w-full justify-between gap-2 rounded-2xl px-4"
+                      aria-label={
+                        activeFilterCount > 0
+                          ? `Filter, ${activeFilterCount} aktif`
+                          : "Filter katalog"
+                      }
+                    />
+                  }
                 >
-                  {opt}
-                </Chip>
-              ))}
+                  <span className="flex items-center gap-2">
+                    <SlidersHorizontal className="size-4" />
+                    Filter
+                  </span>
+                  {activeFilterCount > 0 ? (
+                    <Badge variant="accent" className="min-w-5 justify-center px-1.5">
+                      {activeFilterCount}
+                    </Badge>
+                  ) : null}
+                </SheetTrigger>
+                <SheetContent
+                  side="bottom"
+                  className="max-h-[85dvh] gap-0 overflow-y-auto rounded-t-2xl border-border/60 px-0 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2"
+                >
+                  <SheetHeader className="border-b border-border/60 px-4 pb-3 text-left">
+                    <SheetTitle className="font-heading text-lg">Filter</SheetTitle>
+                    <SheetDescription className="sr-only">
+                      Atur instrumen, level, dan urutan katalog
+                    </SheetDescription>
+                  </SheetHeader>
+
+                  <div className="px-4 py-4">
+                    <CatalogFilterPanels
+                      view={view}
+                      instrument={instrument}
+                      level={level}
+                      sort={sort}
+                      onInstrumentChange={setInstrument}
+                      onLevelChange={setLevel}
+                      onSortChange={setSort}
+                      showLabels
+                      touchFriendly
+                    />
+                  </div>
+
+                  <SheetFooter className="flex-row gap-2 border-t border-border/60 px-4 pt-4">
+                    {activeFilterCount > 0 ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="min-h-11 flex-1"
+                        onClick={resetSheetFilters}
+                      >
+                        Reset
+                      </Button>
+                    ) : null}
+                    <Button
+                      type="button"
+                      className="min-h-11 flex-1"
+                      onClick={() => setFilterSheetOpen(false)}
+                    >
+                      Terapkan
+                    </Button>
+                  </SheetFooter>
+                </SheetContent>
+              </Sheet>
             </div>
 
-            <AnimatePresence initial={false}>
-              {view === "kelas" && (
-                <SnapCollapse key="kelas-filters" seed={3}>
-                  <div className="flex flex-col gap-3">
-                    <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1">
-                      <span className="pr-1 text-xs font-medium text-muted-foreground">Level:</span>
-                      {levelOptions.map((opt) => (
-                        <Chip
-                          key={opt}
-                          active={level === opt}
-                          onClick={() => setLevel(opt)}
-                        >
-                          {opt}
-                        </Chip>
-                      ))}
-                    </div>
-
-                    <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1">
-                      <span className="pr-1 text-xs font-medium text-muted-foreground">Urutkan:</span>
-                      {[
-                        { key: "populer", label: "Paling populer" },
-                        { key: "rating", label: "Rating tertinggi" },
-                        { key: "harga-rendah", label: "Harga terendah" },
-                        { key: "harga-tinggi", label: "Harga tertinggi" },
-                      ].map((opt) => (
-                        <Chip
-                          key={opt.key}
-                          active={sort === opt.key}
-                          onClick={() => setSort(opt.key as SortMode)}
-                        >
-                          {opt.label}
-                        </Chip>
-                      ))}
-                    </div>
-                  </div>
-                </SnapCollapse>
-              )}
-            </AnimatePresence>
+            <div className="hidden md:block">
+              <CatalogFilterPanels
+                view={view}
+                instrument={instrument}
+                level={level}
+                sort={sort}
+                onInstrumentChange={setInstrument}
+                onLevelChange={setLevel}
+                onSortChange={setSort}
+                showLabels
+              />
+            </div>
           </motion.div>
       </Reveal>
 
@@ -470,7 +772,7 @@ export function CatalogBrowser({
             seed={11}
             className="relative z-0 block"
           >
-            <h2 className="mb-4 font-heading text-lg font-semibold tracking-tight">
+            <h2 className="mb-3 hidden font-heading text-lg font-semibold tracking-tight md:mb-4 md:block">
               {resultHeading ?? (
                 filteredCourses.length > 0
                   ? `${filteredCourses.length} kelas ditemukan`
@@ -483,29 +785,41 @@ export function CatalogBrowser({
               )}
             </h2>
             {filteredCourses.length > 0 ? (
-              <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {filteredCourses.map((course) => {
-                  const learning = enrollmentBySlug.get(course.slug);
-                  return (
+              <>
+                <div className="catalog-section md:hidden">
+                  {showGroupedCourseRows && groupedCourseRows ? (
+                    groupedCourseRows.map((row) => (
+                      <CatalogCourseRow
+                        key={row.title}
+                        title={row.title}
+                        courses={row.courses}
+                        enrollmentBySlug={enrollmentBySlug}
+                      />
+                    ))
+                  ) : (
+                    <CatalogCourseRow
+                      title={
+                        resultHeading ??
+                        `${filteredCourses.length} kelas ditemukan`
+                      }
+                      courses={filteredCourses}
+                      count={filteredCourses.length}
+                      enrollmentBySlug={enrollmentBySlug}
+                    />
+                  )}
+                </div>
+                <Stagger className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filteredCourses.map((course) => (
                     <StaggerItem key={course.slug}>
                       <CourseCard
                         course={course}
                         className="w-full"
-                        enrollment={
-                          learning
-                            ? {
-                                progressPercent: learning.progressPercent,
-                                completedLessons: learning.completedLessons,
-                                totalLessons: learning.totalLessons,
-                                lastLessonId: learning.lastLessonId,
-                              }
-                            : null
-                        }
+                        enrollment={courseEnrollment(course.slug)}
                       />
                     </StaggerItem>
-                  );
-                })}
-              </Stagger>
+                  ))}
+                </Stagger>
+              </>
             ) : (
               <div className="surface-card flex flex-col items-center gap-3 border-dashed py-16 text-center">
                 <p className="text-sm text-muted-foreground">
@@ -542,7 +856,7 @@ export function CatalogBrowser({
             seed={19}
             className="relative z-0 block"
           >
-            <h2 className="mb-4 font-heading text-lg font-semibold tracking-tight">
+            <h2 className="mb-3 hidden font-heading text-lg font-semibold tracking-tight md:mb-4 md:block">
               {resultHeading ?? (
                 filteredMentors.length > 0
                   ? `${filteredMentors.length} mentor ditemukan`
@@ -555,13 +869,35 @@ export function CatalogBrowser({
               )}
             </h2>
             {filteredMentors.length > 0 ? (
-              <Stagger className="grid gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-                {filteredMentors.map((mentor) => (
-                  <StaggerItem key={mentor.slug}>
-                    <MentorCard mentor={mentor} className="w-full" />
-                  </StaggerItem>
-                ))}
-              </Stagger>
+              <>
+                <div className="catalog-section md:hidden">
+                  {showGroupedMentorRows && groupedMentorRows ? (
+                    groupedMentorRows.map((row) => (
+                      <CatalogMentorRow
+                        key={row.title}
+                        title={row.title}
+                        mentors={row.mentors}
+                      />
+                    ))
+                  ) : (
+                    <CatalogMentorRow
+                      title={
+                        resultHeading ??
+                        `${filteredMentors.length} mentor ditemukan`
+                      }
+                      mentors={filteredMentors}
+                      count={filteredMentors.length}
+                    />
+                  )}
+                </div>
+                <Stagger className="hidden gap-4 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+                  {filteredMentors.map((mentor) => (
+                    <StaggerItem key={mentor.slug}>
+                      <MentorCard mentor={mentor} className="w-full" />
+                    </StaggerItem>
+                  ))}
+                </Stagger>
+              </>
             ) : (
               <div className="surface-card flex flex-col items-center gap-2 border-dashed py-16 text-center">
                 <p className="text-sm text-muted-foreground">

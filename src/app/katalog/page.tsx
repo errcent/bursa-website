@@ -48,7 +48,7 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
       <SiteNavbar />
       <main className="has-mobile-sticky-cta flex-1 pb-6">
         <KatalogHero query={initialQuery} />
-        <div className="container-page py-8 sm:py-10">
+        <div className="container-page py-4 sm:py-10">
           <Suspense fallback={null}>
             <CatalogBrowser
               courses={courses}
