@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion, type HTMLMotionProps, useReducedMotion } from "motion/react";
 
 import {
@@ -31,21 +32,33 @@ export function Reveal({
   ...props
 }: RevealProps) {
   const prefersReducedMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    const apply = () => setIsMobile(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   if (prefersReducedMotion) {
     return <div className={cn(className)}>{children}</div>;
   }
+
+  const motionY = isMobile ? Math.min(y, 14) : y;
+  const motionBlur = isMobile ? "blur(4px)" : "blur(10px)";
 
   return (
     <motion.div
       className={cn(className)}
       initial={{
         opacity: 0,
-        y,
+        y: motionY,
         x,
         scale: scale === 1 ? 0.94 : scale,
-        filter: "blur(10px) brightness(1.14)",
-        rotate: -0.4,
+        filter: `${motionBlur} brightness(1.14)`,
+        rotate: isMobile ? 0 : -0.4,
       }}
       whileInView={{
         opacity: 1,

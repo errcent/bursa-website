@@ -76,12 +76,12 @@ export function HomePageContent() {
   return (
     <>
       <SiteNavbar />
-      <main className="flex-1 overflow-hidden">
+      <main className="has-mobile-sticky-cta flex-1 overflow-x-hidden">
         {/* Hero — AtomAI centered layout */}
-        <section className="hero-cinematic relative min-h-[74vh] border-b border-border/60 sm:min-h-[84vh]">
+        <section className="hero-cinematic relative min-h-[min(74vh,720px)] border-b border-border/60 sm:min-h-[84vh]">
           <HeroLivingBackground />
 
-          <div className="container-page relative z-10 flex min-h-[74vh] flex-col items-center justify-center px-5 pb-14 pt-24 text-center sm:min-h-[84vh] sm:px-8 sm:pb-16 sm:pt-28">
+          <div className="container-page relative z-10 flex min-h-[min(74vh,720px)] flex-col items-center justify-center px-4 pb-12 pt-20 text-center sm:min-h-[84vh] sm:px-8 sm:pb-16 sm:pt-28">
             <RevealText delay={0.05}>
               <span className="badge-pill mb-6 inline-flex items-center gap-2">
                 <span className="size-1.5 rounded-full bg-accent" aria-hidden />
@@ -100,11 +100,11 @@ export function HomePageContent() {
               </p>
             </RevealText>
             <RevealText delay={0.32}>
-              <div className="mt-8 flex flex-col items-center justify-center gap-3">
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <div className="mt-8 flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
+                <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     size="lg"
-                    className="h-12 rounded-full px-8 btn-primary"
+                    className="btn-primary h-12 w-full rounded-full px-8 sm:w-auto"
                     render={<Link href="/katalog" />}
                   >
                     Lihat Katalog
@@ -114,7 +114,7 @@ export function HomePageContent() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-11 rounded-full border-border/70 bg-card/40 px-7 text-sm"
+                  className="h-12 w-full rounded-full border-border/70 bg-card/40 px-7 text-sm sm:h-11 sm:w-auto"
                   render={<Link href="#kelas-unggulan" />}
                 >
                   Lihat kelas populer dulu
@@ -122,9 +122,26 @@ export function HomePageContent() {
               </div>
             </RevealText>
 
-            {/* Instrument strip — AtomAI logo-row analogue */}
-            <Reveal delay={0.45} className="mt-14 w-full max-w-2xl">
-              <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
+            {/* Instrument strip — marquee on mobile, centered row on desktop */}
+            <Reveal delay={0.45} className="mt-10 w-full max-w-2xl sm:mt-14">
+              <div className="logo-marquee md:hidden">
+                <div className="logo-marquee-track gap-8 px-4">
+                  {[...instruments, ...instruments].map((item, i) => {
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={`${item.name}-${i}`}
+                        href={item.href}
+                        className="logo-strip-item inline-flex shrink-0 items-center gap-2 whitespace-nowrap"
+                      >
+                        <Icon className="size-4" strokeWidth={1.5} />
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="hidden flex-wrap items-center justify-center gap-x-10 gap-y-3 md:flex">
                 {instruments.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -166,14 +183,14 @@ export function HomePageContent() {
                 Bisa mulai dari topik atau dari mentor. Hasilnya tetap: kelas yang paling pas untukmu.
               </p>
             </Reveal>
-            <Stagger className="grid gap-5 md:grid-cols-2">
+            <Stagger className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
               {paths.map((path) => (
                 <StaggerItem key={path.title}>
                   <motion.div
                     className={
                       path.tone === "primary"
-                        ? "surface-card-hover flex h-full flex-col gap-4 border-accent/25 bg-accent-soft/35 p-7 sm:p-8"
-                        : "surface-card-hover flex h-full flex-col gap-4 p-7 sm:p-8"
+                        ? "surface-card-hover flex h-full flex-col gap-4 border-accent/25 bg-accent-soft/35 p-5 sm:p-8"
+                        : "surface-card-hover flex h-full flex-col gap-4 p-5 sm:p-8"
                     }
                     whileHover={{ y: -2 }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}

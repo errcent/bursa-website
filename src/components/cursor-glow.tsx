@@ -30,7 +30,7 @@ export function CursorGlow() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[1] transition-opacity duration-500"
+      className="pointer-events-none fixed inset-0 z-[1] hidden transition-opacity duration-500 md:block"
       style={{
         background: `radial-gradient(520px circle at ${pos.x}px ${pos.y}px, rgba(163, 163, 163, 0.04), transparent 65%)`,
       }}

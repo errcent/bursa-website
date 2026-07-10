@@ -5,6 +5,12 @@ import { Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 import { Reveal } from "@/components/motion/reveal";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 
 const footerColumns = [
@@ -59,7 +65,7 @@ function FooterLinkColumns() {
   return (
     <>
       {footerColumns.map((col) => (
-        <div key={col.title} className="flex flex-col gap-3">
+        <div key={col.title} className="hidden flex-col gap-3 md:flex">
           <h4 className="font-heading text-sm font-medium">{col.title}</h4>
           <ul className="flex flex-col gap-2">
             {col.links.map((link) => {
@@ -84,7 +90,7 @@ function FooterLinkColumns() {
                     href={link.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "text-sm transition-colors",
+                      "inline-flex min-h-11 items-center text-sm transition-colors md:min-h-0",
                       active
                         ? "text-foreground opacity-100"
                         : "text-muted-foreground opacity-60 hover:text-foreground hover:opacity-100"
@@ -99,6 +105,55 @@ function FooterLinkColumns() {
         </div>
       ))}
     </>
+  );
+}
+
+function FooterLinkColumnsMobile() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  return (
+    <Accordion className="md:hidden">
+      {footerColumns.map((col) => (
+        <AccordionItem key={col.title} value={col.title}>
+          <AccordionTrigger className="footer-accordion-trigger py-0 hover:no-underline">
+            {col.title}
+          </AccordionTrigger>
+          <AccordionContent className="pb-3">
+            <ul className="flex flex-col gap-1">
+              {col.links.map((link) => {
+                if (link.href === "#") {
+                  return (
+                    <li key={link.label}>
+                      <span className="flex min-h-11 items-center text-sm text-muted-foreground/45">
+                        {link.label}
+                      </span>
+                    </li>
+                  );
+                }
+                const active = isFooterLinkActive(pathname, link.href, searchParams);
+                return (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "flex min-h-11 items-center text-sm transition-colors",
+                        active
+                          ? "text-foreground"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   );
 }
 
@@ -165,7 +220,7 @@ export function SiteFooter() {
         </div>
       ) : null}
 
-      <div className="container-page grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="container-page grid gap-8 py-12 sm:gap-10 sm:py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="flex flex-col gap-4">
           <span className="font-heading text-xl font-semibold tracking-tight">Bursa</span>
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
@@ -179,6 +234,7 @@ export function SiteFooter() {
         </div>
 
         <Suspense fallback={<FooterLinkColumnsFallback />}>
+          <FooterLinkColumnsMobile />
           <FooterLinkColumns />
         </Suspense>
       </div>

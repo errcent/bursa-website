@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
 import { CursorGlow } from "@/components/cursor-glow";
 import { PreloaderGate } from "@/components/preloader-gate";
+import { StickyBottomCta } from "@/components/sticky-bottom-cta";
 
 import { SearchSeoJsonLd } from "@/components/search/search-seo-jsonld";
 
@@ -54,7 +55,7 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
-      <body className="flex min-h-full flex-col bg-background text-foreground">
+      <body className="flex min-h-full flex-col overflow-x-hidden bg-background text-foreground">
         <SearchSeoJsonLd />
         <Script id="bursa-intro-pending" strategy="beforeInteractive">
           {`(function(){try{if(!sessionStorage.getItem("bursa-intro-seen")){document.documentElement.classList.add("intro-pending")}}catch(e){}})();`}
@@ -62,7 +63,10 @@ export default function RootLayout({
         <ThemeProvider>
           <CursorGlow />
           <PreloaderGate>
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider>
+              {children}
+              <StickyBottomCta />
+            </AuthProvider>
           </PreloaderGate>
         </ThemeProvider>
       </body>

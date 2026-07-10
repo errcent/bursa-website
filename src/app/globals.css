@@ -403,11 +403,107 @@
   }
 
   .nav-shell {
-    @apply sticky top-0 z-50 px-4 pt-3 sm:px-6 sm:pt-4;
+    @apply sticky top-0 z-50 px-3 pt-2 sm:px-6 sm:pt-4;
   }
   .nav-glass {
-    @apply rounded-2xl border border-border bg-card/90 backdrop-blur-xl;
+    @apply rounded-xl border border-border bg-card/90 backdrop-blur-xl sm:rounded-2xl;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  /* ── Mobile design tokens & layout ── */
+  @media (max-width: 768px) {
+    :root {
+      --hero-horizon-speed: 120s;
+      --hero-mesh-speed: 36s;
+      --hero-wave-speed: 64s;
+      --grid-opacity: 0.03;
+    }
+
+    .page-hero-title {
+      font-size: clamp(1.75rem, 7.2vw, 2rem);
+      line-height: 1.15;
+      max-width: 18ch;
+    }
+
+    .section-title {
+      font-size: clamp(1.375rem, 5.5vw, 1.5rem);
+      line-height: 1.25;
+    }
+
+    .section-copy {
+      font-size: 0.9375rem;
+      line-height: 1.55;
+    }
+
+    .section-spacious {
+      @apply py-12;
+    }
+    .section-tight {
+      @apply py-10;
+    }
+    .section-loose {
+      @apply py-14;
+    }
+
+    .surface-card,
+    .surface-card-hover {
+      @apply p-5;
+    }
+
+    .testimonial-showcase {
+      @apply py-12;
+    }
+
+    .hero-living-mesh {
+      opacity: 0.55;
+    }
+
+    .hero-horizon-track,
+    .hero-horizon-track-slow {
+      opacity: 0.65;
+    }
+  }
+
+  .logo-marquee {
+    @apply relative overflow-hidden;
+    mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  }
+  .logo-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: logo-marquee 22s linear infinite;
+  }
+  .logo-marquee-track:hover {
+    animation-play-state: paused;
+  }
+  @keyframes logo-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .mobile-nav-item {
+    @apply flex min-h-12 w-full items-center rounded-xl px-4 text-[15px] font-medium transition-colors;
+  }
+
+  .footer-accordion-trigger {
+    @apply flex min-h-14 w-full items-center justify-between py-3 text-left font-heading text-sm font-medium;
+  }
+
+  .faq-accordion-trigger {
+    @apply min-h-14 items-center py-3;
+  }
+
+  .has-mobile-sticky-cta {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  }
+  @media (min-width: 768px) {
+    .has-mobile-sticky-cta {
+      padding-bottom: 0;
+    }
   }
   .footer-glass {
     @apply border-t border-border bg-surface/60;

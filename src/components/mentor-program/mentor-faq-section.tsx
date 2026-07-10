@@ -20,7 +20,7 @@ export function MentorFaqSection() {
       <Accordion className="mt-6">
         {mentorFaqs.map((faq, index) => (
           <AccordionItem key={faq.question} value={`faq-${index}`}>
-            <AccordionTrigger className="text-left text-sm font-medium">
+            <AccordionTrigger className="faq-accordion-trigger text-left text-sm font-medium">
               {faq.question}
             </AccordionTrigger>
             <AccordionContent className="text-sm leading-relaxed text-muted-foreground">

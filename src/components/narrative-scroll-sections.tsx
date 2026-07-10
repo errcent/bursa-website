@@ -66,7 +66,7 @@ function NarrativeBlock({
       <div className="container-page">
         <div
           className={cn(
-            "grid items-center gap-8 lg:grid-cols-2 lg:gap-14",
+            "grid items-center gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-14",
             reverse && "lg:[&>*:first-child]:order-2 lg:[&>*:last-child]:order-1"
           )}
         >
@@ -190,11 +190,16 @@ function LearningPathsVisual() {
 
 function LearnAnywhereVisual() {
   return (
-    <div className="surface-card bg-card/60 p-6 sm:p-8">
-      <p className="mb-6 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+    <div className="surface-card bg-card/60 p-5 sm:p-8">
+      <p className="mb-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground sm:mb-6">
         Studi lintas perangkat
       </p>
-      <DeviceOrbit />
+      <div className="hidden md:block">
+        <DeviceOrbit />
+      </div>
+      <p className="rounded-xl border border-border/50 bg-surface/30 px-4 py-3 text-center text-sm text-muted-foreground md:hidden">
+        Materi dan progres belajar dapat diakses dari ponsel atau desktop kapan saja.
+      </p>
 
       <div className="mt-8 grid grid-cols-1 gap-3 border-t border-border/50 pt-6 sm:grid-cols-3">
         <div className="text-center">
@@ -280,11 +285,11 @@ export function NarrativeClosingCta() {
               : "Bandingkan kurikulum, level, dan profil mentor. Daftar gratis untuk simpan progres belajar."}
           </p>
 
-          <div className="mt-8 flex flex-col items-center justify-center gap-3">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          <div className="mt-8 flex w-full max-w-sm flex-col gap-3 sm:mx-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
+            <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 size="lg"
-                className="h-12 rounded-full px-8 btn-primary"
+                className="btn-primary h-12 w-full rounded-full px-8 sm:w-auto"
                 render={<Link href="/katalog" />}
               >
                 Lihat Katalog

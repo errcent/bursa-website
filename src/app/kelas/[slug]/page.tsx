@@ -158,7 +158,9 @@ export default async function CourseDetailPage({
                 <Accordion>
                   {faqs.map((faq, i) => (
                     <AccordionItem key={faq.question} value={`faq-${i}`} className="px-3">
-                      <AccordionTrigger>{faq.question}</AccordionTrigger>
+                      <AccordionTrigger className="faq-accordion-trigger">
+                        {faq.question}
+                      </AccordionTrigger>
                       <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
                     </AccordionItem>
                   ))}

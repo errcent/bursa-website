@@ -71,9 +71,9 @@ export function SiteNavbar() {
         transition={{ duration: 0.5, ease: easeOut }}
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
-        <div className="flex h-14 items-center justify-between gap-2 px-4 sm:h-[3.75rem] sm:gap-4 sm:px-6">
+        <div className="flex h-14 min-h-14 items-center justify-between gap-2 px-3 sm:h-[3.75rem] sm:gap-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-4 sm:gap-8">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex shrink-0 items-center gap-2">
               <span className="font-heading text-lg font-semibold tracking-tight sm:text-xl">
                 Bursa
               </span>
@@ -113,7 +113,7 @@ export function SiteNavbar() {
           <div className="flex items-center gap-1 sm:gap-2">
             {roleLinks.length > 0 && (
               <nav
-                className="hidden items-center gap-1 border-l border-border/60 pl-2 sm:flex"
+                className="hidden items-center gap-1 border-l border-border/60 pl-2 lg:flex"
                 aria-label="Akses role"
               >
                 {roleLinks.map((link) => {
@@ -137,82 +137,119 @@ export function SiteNavbar() {
                 })}
               </nav>
             )}
-            <Suspense fallback={<AuthSkeleton />}>
-              <SiteNavAuth />
-            </Suspense>
+            <div className="hidden lg:contents">
+              <Suspense fallback={<AuthSkeleton />}>
+                <SiteNavAuth />
+              </Suspense>
+            </div>
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger
                 render={
                   <Button
                     variant="ghost"
-                    size="icon-sm"
-                    className="lg:hidden"
+                    size="icon"
+                    className="size-11 shrink-0 lg:hidden"
                     aria-label="Buka menu navigasi"
                   />
                 }
               >
-                <Menu className="size-4" />
+                <Menu className="size-5" />
               </SheetTrigger>
-              <SheetContent side="right" className="w-[85vw] max-w-[320px] p-0 lg:hidden">
-                <SheetHeader className="border-b border-border pb-3">
-                  <SheetTitle>Menu</SheetTitle>
-                  <SheetDescription>Akses cepat halaman utama.</SheetDescription>
+              <SheetContent
+                side="right"
+                className="flex h-[100dvh] w-full max-w-none flex-col border-0 bg-background/98 p-0 backdrop-blur-xl sm:max-w-[min(100vw,400px)] lg:hidden"
+              >
+                <SheetHeader className="border-b border-border/60 px-5 py-4 text-left">
+                  <SheetTitle className="font-heading text-lg">Menu Bursa</SheetTitle>
+                  <SheetDescription className="sr-only">
+                    Navigasi utama dan aksi cepat
+                  </SheetDescription>
                 </SheetHeader>
-                <div className="flex flex-col gap-3 p-4">
+
+                <div className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-4">
                   {!isKatalog && (
-                    <Suspense fallback={<SearchSkeleton />}>
+                    <Suspense fallback={<SearchSkeleton className="mb-2" />}>
                       <SiteNavSearch
-                        className="w-full xl:hidden"
+                        className="mb-2 w-full"
                         onNavigate={() => setMenuOpen(false)}
                       />
                     </Suspense>
                   )}
-                  {navLinks.map((link) => {
-                    const active = isNavLinkActive(pathname, link.href, link.exact);
-                    return (
-                      <SheetClose
-                        key={link.label}
-                        render={
-                          <Button
-                            variant="ghost"
-                            className={cn(
-                              "h-11 w-full justify-start text-sm",
-                              active
-                                ? "bg-muted/60 text-foreground"
-                                : "text-muted-foreground opacity-70"
-                            )}
-                            render={<Link href={link.href} />}
-                          />
-                        }
-                      >
-                        {link.label}
-                      </SheetClose>
-                    );
-                  })}
-                  {roleLinks.length > 0 && (
-                    <div className="border-t border-border pt-3">
-                      <p className="mb-2 px-1 text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
-                        Akses role
-                      </p>
-                      {roleLinks.map((link) => (
+
+                  <div className="mb-3 grid gap-2">
+                    <SheetClose
+                      render={
+                        <Link
+                          href="/katalog"
+                          className="btn-primary flex min-h-12 items-center justify-center rounded-xl text-[15px] font-medium"
+                        />
+                      }
+                    >
+                      Mulai Belajar
+                    </SheetClose>
+                    <SheetClose
+                      render={
+                        <Link
+                          href="/daftar"
+                          className="flex min-h-12 items-center justify-center rounded-xl border border-border/70 bg-card/50 text-[15px] font-medium"
+                        />
+                      }
+                    >
+                      Daftar Gratis
+                    </SheetClose>
+                  </div>
+
+                  <nav className="flex flex-col gap-1" aria-label="Navigasi mobile">
+                    {navLinks.map((link) => {
+                      const active = isNavLinkActive(pathname, link.href, link.exact);
+                      return (
                         <SheetClose
-                          key={link.href}
+                          key={link.label}
                           render={
-                            <Button
-                              variant="ghost"
-                              className="h-11 w-full justify-start gap-2 text-sm"
-                              render={<Link href={link.href} />}
+                            <Link
+                              href={link.href}
+                              aria-current={active ? "page" : undefined}
+                              className={cn(
+                                "mobile-nav-item",
+                                active
+                                  ? "bg-muted text-foreground"
+                                  : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                              )}
                             />
                           }
                         >
-                          <RoleLinkIcon href={link.href} />
                           {link.label}
                         </SheetClose>
-                      ))}
+                      );
+                    })}
+                  </nav>
+
+                  {roleLinks.length > 0 && (
+                    <div className="mt-4 border-t border-border/60 pt-4">
+                      <p className="mb-2 px-2 text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
+                        Akses role
+                      </p>
+                      <div className="flex flex-col gap-1">
+                        {roleLinks.map((link) => (
+                          <SheetClose
+                            key={link.href}
+                            render={
+                              <Link
+                                href={link.href}
+                                className="mobile-nav-item gap-2 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                              />
+                            }
+                          >
+                            <RoleLinkIcon href={link.href} />
+                            {link.label}
+                          </SheetClose>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
-                <div className="mt-auto border-t border-border p-4">
+
+                <div className="mt-auto border-t border-border/60 p-4">
                   <Suspense fallback={<AuthSkeleton mobile />}>
                     <SiteNavAuth mobileMenu />
                   </Suspense>

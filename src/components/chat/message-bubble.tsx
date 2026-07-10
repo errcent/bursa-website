@@ -454,9 +454,8 @@ export function MessageBubble({
     </div>
   );
 
-  // Others: avatar on last/standalone (WhatsApp). Own: no avatar column.
   const avatarSlot = !isOwn ? (
-    <div className="mt-0.5 flex w-8 shrink-0 justify-center sm:w-9">
+    <div className="flex w-8 shrink-0 items-start justify-center sm:w-9">
       {group.showAvatar ? (
         <ChatUserAvatar
           userId={author.id}
@@ -475,7 +474,7 @@ export function MessageBubble({
     <article
       id={`msg-${message.id}`}
       className={cn(
-        "group relative flex w-full gap-2.5 px-2 sm:gap-3 sm:px-3",
+        "group relative flex w-full items-start gap-2.5 px-2 sm:gap-3 sm:px-3",
         group.isGroupedWithPrev ? "pt-0.5" : "pt-2",
         group.isGroupedWithNext ? "pb-0.5" : "pb-2",
         isOwn ? "flex-row-reverse justify-start" : "flex-row justify-start",

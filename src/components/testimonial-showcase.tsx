@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Star } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
@@ -162,6 +163,22 @@ export function TestimonialShowcase({
   className,
 }: TestimonialShowcaseProps) {
   const deckItems = reviews.slice(0, 3);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      const cardWidth = el.firstElementChild?.clientWidth ?? 1;
+      const index = Math.round(el.scrollLeft / Math.max(cardWidth, 1));
+      setActiveIndex(Math.min(Math.max(index, 0), deckItems.length - 1));
+    };
+
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [deckItems.length]);
 
   return (
     <section className={cn("testimonial-showcase relative overflow-x-hidden", className)}>
@@ -185,13 +202,16 @@ export function TestimonialShowcase({
 
         <Stagger className="space-y-6 sm:space-y-8">
           <StaggerItem>
-            <div className="testimonial-tilt-row -mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:overflow-visible sm:px-0">
-              <div className="flex min-w-min items-stretch justify-center sm:min-w-0 sm:w-full">
+            <div
+              ref={scrollRef}
+              className="testimonial-tilt-row -mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:overflow-visible sm:px-0"
+            >
+              <div className="flex min-w-min items-stretch justify-start gap-3 sm:min-w-0 sm:w-full sm:justify-center">
                 {deckItems.map((review, index) => (
                   <div
                     key={review.name}
                     className={cn(
-                      "px-0.5 sm:px-0 sm:flex-1",
+                      "shrink-0 sm:flex-1",
                       index > 0 && "sm:-ml-3 md:-ml-4"
                     )}
                   >
@@ -199,6 +219,17 @@ export function TestimonialShowcase({
                   </div>
                 ))}
               </div>
+            </div>
+            <div className="mt-4 flex justify-center gap-2 sm:hidden" aria-hidden>
+              {deckItems.map((review, index) => (
+                <span
+                  key={`dot-${review.name}`}
+                  className={cn(
+                    "size-2 rounded-full transition-colors",
+                    index === activeIndex ? "bg-accent" : "bg-muted-foreground/35"
+                  )}
+                />
+              ))}
             </div>
           </StaggerItem>
 
