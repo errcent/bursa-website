@@ -11,8 +11,11 @@ import {
   type InfiniteCarouselSlideProps,
 } from "@/components/infinite-carousel";
 import { Button } from "@/components/ui/button";
+import { useMobileLayout } from "@/hooks/use-mobile-layout";
 import type { Course } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+const LANDING_CAROUSEL_GAP = 10;
 
 interface CourseCarouselProps {
   courses: Course[];
@@ -27,7 +30,8 @@ function CourseCarouselSlide({
   x,
   reducedMotion,
   gap,
-}: InfiniteCarouselSlideProps & { course: Course }) {
+  variant,
+}: InfiniteCarouselSlideProps & { course: Course; variant?: "default" | "poster" }) {
   const stride = itemWidth + gap;
 
   const scale = useTransform(x, (latest) => {
@@ -49,29 +53,33 @@ function CourseCarouselSlide({
   return (
     <motion.div
       style={{
-        width: itemWidth > 0 ? itemWidth : undefined,
         scale,
         opacity,
       }}
-      className="origin-center will-change-transform"
+      className="w-full origin-center will-change-transform"
       onPointerDown={(e) => e.stopPropagation()}
     >
-      <CourseCard course={course} className="w-full" />
+      <CourseCard course={course} variant={variant} className="w-full" />
     </motion.div>
   );
 }
 
 export function CourseCarousel({ courses, className }: CourseCarouselProps) {
+  const isMobile = useMobileLayout();
   const carousel = useInfiniteCarousel({
     items: courses,
     ariaLabel: "Kelas unggulan",
+    fixedItemWidth: isMobile ? "var(--landing-course-card-width)" : null,
+    gap: isMobile ? LANDING_CAROUSEL_GAP : undefined,
   });
 
   if (courses.length === 0) return null;
 
+  const cardVariant = isMobile ? "poster" : "default";
+
   return (
     <div className={cn("relative", className)}>
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="eyebrow mb-2">Pilihan kelas</p>
           <h2 className="section-title sm:text-3xl">Kelas populer</h2>
@@ -105,17 +113,19 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
         </div>
       </div>
 
-      <InfiniteCarouselViewport
-        carousel={carousel}
-        getItemKey={(course, i) => `${course.slug}-${i}`}
-        getDotLabel={(i) => `Ke kelas ${i + 1}`}
-        liveRegionLabel={(index, course) =>
-          `Kelas ${index + 1} dari ${courses.length}: ${course.title}`
-        }
-        renderSlide={(course, slideProps) => (
-          <CourseCarouselSlide course={course} {...slideProps} />
-        )}
-      />
+      <div className={cn(isMobile && "landing-carousel-bleed")}>
+        <InfiniteCarouselViewport
+          carousel={carousel}
+          getItemKey={(course, i) => `${course.slug}-${i}`}
+          getDotLabel={(i) => `Ke kelas ${i + 1}`}
+          liveRegionLabel={(index, course) =>
+            `Kelas ${index + 1} dari ${courses.length}: ${course.title}`
+          }
+          renderSlide={(course, slideProps) => (
+            <CourseCarouselSlide course={course} variant={cardVariant} {...slideProps} />
+          )}
+        />
+      </div>
     </div>
   );
 }

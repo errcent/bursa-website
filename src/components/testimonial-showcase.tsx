@@ -49,7 +49,7 @@ function TiltedReviewCard({ review, index }: { review: Review; index: number }) 
   const cardInner = (
     <div
       className={cn(
-        "testimonial-tilt-card surface-card flex h-full min-h-[168px] flex-col p-5 sm:min-h-[180px] sm:p-6",
+        "testimonial-tilt-card surface-card flex h-full min-h-0 flex-col p-4 sm:min-h-[180px] sm:p-6",
         "border-border/80 bg-card/90 shadow-[0_4px_24px_rgba(0,0,0,0.18),0_0_0_1px_rgba(163,163,163,0.04)]",
         "transition-[border-color,box-shadow] duration-300",
         "group-hover:border-[rgba(163,163,163,0.22)]",
@@ -80,7 +80,7 @@ function TiltedReviewCard({ review, index }: { review: Review; index: number }) 
   if (prefersReducedMotion) {
     return (
       <div
-        className="testimonial-tilt-item group h-full w-[min(82vw,280px)] shrink-0 sm:w-auto sm:min-w-0 sm:flex-1"
+        className="testimonial-tilt-item group h-full shrink-0 sm:w-auto sm:min-w-0 sm:flex-1"
         style={{
           zIndex: layout.zIndex,
           transform: `rotate(${layout.rotate}deg)`,
@@ -94,7 +94,7 @@ function TiltedReviewCard({ review, index }: { review: Review; index: number }) 
 
   return (
     <motion.div
-      className="testimonial-tilt-item group h-full w-[min(82vw,280px)] shrink-0 sm:w-auto sm:min-w-0 sm:flex-1"
+      className="testimonial-tilt-item group h-full shrink-0 sm:w-auto sm:min-w-0 sm:flex-1"
       style={{ zIndex: layout.zIndex, transformOrigin: layout.origin }}
       initial={false}
       animate={{ rotate: layout.rotate }}
@@ -116,7 +116,7 @@ function FeaturedFounderResponseCard({ response }: { response: string }) {
   const card = (
     <div
       className={cn(
-        "testimonial-featured-card surface-card relative overflow-hidden px-6 py-7 text-center sm:px-10 sm:py-8",
+        "testimonial-featured-card surface-card relative overflow-hidden px-4 py-6 text-center sm:px-10 sm:py-8",
         "border-border/80 bg-card/90 shadow-[0_4px_32px_rgba(0,0,0,0.22),0_0_0_1px_rgba(163,163,163,0.05)]",
         "transition-[border-color,box-shadow,transform] duration-300",
         "hover:border-[rgba(163,163,163,0.22)]",

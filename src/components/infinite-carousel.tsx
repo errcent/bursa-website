@@ -54,6 +54,8 @@ export interface UseInfiniteCarouselOptions<T> {
   items: T[];
   ariaLabel: string;
   getPerView?: (width: number) => number;
+  /** When set, each slide uses this CSS width (e.g. var(--landing-course-card-width)). */
+  fixedItemWidth?: string | null;
   gap?: number;
   autoScrollPxPerSec?: number;
 }
@@ -62,6 +64,7 @@ export function useInfiniteCarousel<T>({
   items,
   ariaLabel,
   getPerView = defaultGetPerView,
+  fixedItemWidth = null,
   gap = DEFAULT_CAROUSEL_GAP,
   autoScrollPxPerSec = DEFAULT_AUTO_SCROLL_PX_PER_SEC,
 }: UseInfiniteCarouselOptions<T>) {
@@ -119,9 +122,22 @@ export function useInfiniteCarousel<T>({
 
     const measure = () => {
       const containerWidth = el.clientWidth;
-      const perView = getPerView(containerWidth);
-      const itemWidth =
-        containerWidth > 0 ? (containerWidth - gap * (perView - 1)) / perView : 0;
+
+      let itemWidth = 0;
+      let perView = 1;
+
+      if (fixedItemWidth) {
+        const firstCard = el.querySelector<HTMLElement>("[data-carousel-card]");
+        itemWidth = firstCard?.offsetWidth ?? 0;
+        perView =
+          itemWidth > 0 && containerWidth > 0
+            ? Math.max(1, (containerWidth + gap) / (itemWidth + gap))
+            : 1;
+      } else {
+        perView = getPerView(containerWidth);
+        itemWidth =
+          containerWidth > 0 ? (containerWidth - gap * (perView - 1)) / perView : 0;
+      }
 
       setLayout({ containerWidth, itemWidth, perView });
       setWidthRef.current =
@@ -132,7 +148,7 @@ export function useInfiniteCarousel<T>({
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [gap, getPerView, items.length]);
+  }, [fixedItemWidth, gap, getPerView, items.length]);
 
   useEffect(() => {
     const syncVisibility = () => {
@@ -270,6 +286,7 @@ export function useInfiniteCarousel<T>({
     duplicated,
     layout,
     gap,
+    fixedItemWidth,
     x,
     activeIndex,
     paused,
@@ -314,6 +331,7 @@ export function InfiniteCarouselViewport<T>({
     duplicated,
     layout,
     gap,
+    fixedItemWidth,
     x,
     activeIndex,
     paused,
@@ -393,7 +411,18 @@ export function InfiniteCarouselViewport<T>({
             whileTap={prefersReducedMotion ? undefined : { cursor: "grabbing" }}
           >
             {duplicated.map((item, i) => (
-              <div key={getItemKey(item, i)} data-carousel-card className="shrink-0">
+              <div
+                key={getItemKey(item, i)}
+                data-carousel-card
+                className="shrink-0"
+                style={
+                  fixedItemWidth
+                    ? { width: fixedItemWidth }
+                    : layout.itemWidth > 0
+                      ? { width: layout.itemWidth }
+                      : undefined
+                }
+              >
                 {renderSlide(item, {
                   index: i,
                   itemWidth: layout.itemWidth,

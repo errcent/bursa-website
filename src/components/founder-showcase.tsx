@@ -58,7 +58,7 @@ function TiltedResponseCard({
   const cardInner = (
     <div
       className={cn(
-        "testimonial-tilt-card surface-card flex h-full min-h-[168px] flex-col p-5 sm:min-h-[180px] sm:p-6",
+        "testimonial-tilt-card surface-card flex h-full min-h-0 flex-col p-4 sm:min-h-[180px] sm:p-6",
         "border-border/80 bg-card/90 shadow-[0_4px_24px_rgba(0,0,0,0.18),0_0_0_1px_rgba(163,163,163,0.04)]",
         "transition-[border-color,box-shadow] duration-300",
         "group-hover:border-[rgba(163,163,163,0.22)]",
@@ -93,7 +93,7 @@ function TiltedResponseCard({
   if (prefersReducedMotion) {
     return (
       <div
-        className="testimonial-tilt-item group h-full w-[min(82vw,280px)] shrink-0 sm:w-auto sm:min-w-0 sm:flex-1"
+        className="testimonial-tilt-item group h-full shrink-0 sm:w-auto sm:min-w-0 sm:flex-1"
         style={{
           zIndex: layout.zIndex,
           transform: `rotate(${layout.rotate}deg)`,
@@ -107,7 +107,7 @@ function TiltedResponseCard({
 
   return (
     <motion.div
-      className="testimonial-tilt-item group h-full w-[min(82vw,280px)] shrink-0 sm:w-auto sm:min-w-0 sm:flex-1"
+      className="testimonial-tilt-item group h-full shrink-0 sm:w-auto sm:min-w-0 sm:flex-1"
       style={{ zIndex: layout.zIndex, transformOrigin: layout.origin }}
       initial={false}
       animate={{ rotate: layout.rotate }}

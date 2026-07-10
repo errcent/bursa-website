@@ -23,11 +23,11 @@ export function MentorCard({
       <Link
         href={`/instruktur/${mentor.slug}`}
         className={cn(
-          "group flex w-full flex-col items-center gap-2 rounded-lg border border-border/80 bg-card p-2.5 text-center",
+          "mentor-card-compact group flex w-full flex-col items-center gap-2 rounded-lg border border-border/80 bg-card p-2.5 text-center",
           className
         )}
       >
-        <Avatar className="size-14 border border-border bg-surface-2 shadow-[0_0_12px_var(--glow)] transition-all duration-300 ease-out group-hover:border-accent/30">
+        <Avatar className="mentor-card-compact-avatar size-11 border border-border bg-surface-2 shadow-[0_0_12px_var(--glow)] transition-all duration-300 ease-out group-hover:border-accent/30 sm:size-14">
           {mentor.avatarUrl ? (
             <AvatarImage
               src={mentor.avatarUrl}

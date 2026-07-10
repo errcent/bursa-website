@@ -90,16 +90,16 @@ function VerificationVisual() {
   const verifyRate = Math.round((verifiedMentors.length / mentors.length) * 100);
 
   return (
-    <div className="surface-card bg-card/60 p-6 sm:p-8">
+    <div className="narrative-visual-card surface-card bg-card/60 p-4 sm:p-8">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-        <div className="rounded-xl border border-border/60 bg-surface/40 p-4">
+        <div className="narrative-stat-tile rounded-xl border border-border/60 bg-surface/40 p-4">
           <ShieldCheck className="size-4 text-accent" aria-hidden />
-          <p className="stat-value mt-2 text-[1.7rem] sm:text-3xl">{mentors.length}</p>
+          <p className="narrative-stat-value stat-value mt-2 text-xl sm:text-3xl">{mentors.length}</p>
           <p className="stat-label">Mentor di katalog</p>
         </div>
-        <div className="rounded-xl border border-accent/20 bg-accent-soft/30 p-4">
+        <div className="narrative-stat-tile rounded-xl border border-accent/20 bg-accent-soft/30 p-4">
           <Users2 className="size-4 text-accent" aria-hidden />
-          <p className="stat-value mt-2 text-[1.7rem] sm:text-3xl">{verifiedMentors.length}</p>
+          <p className="narrative-stat-value stat-value mt-2 text-xl sm:text-3xl">{verifiedMentors.length}</p>
           <p className="stat-label">Sudah terverifikasi</p>
         </div>
       </div>
@@ -143,7 +143,7 @@ function LearningPathsVisual() {
   const maxTrack = Math.max(...learningPathTracks.map((item) => item.count), 1);
 
   return (
-    <div className="surface-card bg-card/60 p-6 sm:p-8">
+    <div className="narrative-visual-card surface-card bg-card/60 p-4 sm:p-8">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
           Peta minat belajar pengguna
@@ -169,16 +169,16 @@ function LearningPathsVisual() {
       </div>
 
       <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-border/60 bg-surface/30 p-3.5">
-          <p className="font-heading text-lg font-semibold tracking-tight">{totalModules}</p>
+        <div className="narrative-stat-tile rounded-xl border border-border/60 bg-surface/30 p-4">
+          <p className="narrative-stat-value font-heading text-base font-semibold tracking-tight sm:text-lg">{totalModules}</p>
           <p className="stat-label">Total modul terstruktur</p>
         </div>
-        <div className="rounded-xl border border-border/60 bg-surface/30 p-3.5">
-          <p className="font-heading text-lg font-semibold tracking-tight">{Math.round(totalDurationHours)}j</p>
+        <div className="narrative-stat-tile rounded-xl border border-border/60 bg-surface/30 p-4">
+          <p className="narrative-stat-value font-heading text-base font-semibold tracking-tight sm:text-lg">{Math.round(totalDurationHours)}j</p>
           <p className="stat-label">Durasi belajar</p>
         </div>
-        <div className="rounded-xl border border-border/60 bg-surface/30 p-3.5">
-          <p className="font-heading text-lg font-semibold tracking-tight">{mentors.length}</p>
+        <div className="narrative-stat-tile rounded-xl border border-border/60 bg-surface/30 p-4">
+          <p className="narrative-stat-value font-heading text-base font-semibold tracking-tight sm:text-lg">{mentors.length}</p>
           <p className="stat-label">Mentor aktif</p>
         </div>
       </div>
@@ -190,7 +190,7 @@ function LearningPathsVisual() {
 
 function LearnAnywhereVisual() {
   return (
-    <div className="surface-card bg-card/60 p-5 sm:p-8">
+    <div className="narrative-visual-card surface-card bg-card/60 p-4 sm:p-8">
       <p className="mb-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground sm:mb-6">
         Studi lintas perangkat
       </p>
@@ -201,17 +201,17 @@ function LearnAnywhereVisual() {
         Materi dan progres belajar dapat diakses dari ponsel atau desktop kapan saja.
       </p>
 
-      <div className="mt-8 grid grid-cols-1 gap-3 border-t border-border/50 pt-6 sm:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 gap-3 border-t border-border/50 pt-5 sm:mt-8 sm:grid-cols-3 sm:pt-6">
         <div className="text-center">
-          <p className="font-heading text-lg font-semibold sm:text-xl">24/7</p>
+          <p className="narrative-stat-value font-heading text-base font-semibold sm:text-xl">24/7</p>
           <p className="stat-label mt-0.5">Akses materi</p>
         </div>
         <div className="text-center">
-          <p className="font-heading text-lg font-semibold sm:text-xl">{totalModules}</p>
+          <p className="narrative-stat-value font-heading text-base font-semibold sm:text-xl">{totalModules}</p>
           <p className="stat-label mt-0.5">Modul</p>
         </div>
         <div className="text-center">
-          <p className="font-heading text-lg font-semibold sm:text-xl">{totalDurationHours}j</p>
+          <p className="narrative-stat-value font-heading text-base font-semibold sm:text-xl">{totalDurationHours}j</p>
           <p className="stat-label mt-0.5">Konten video</p>
         </div>
       </div>

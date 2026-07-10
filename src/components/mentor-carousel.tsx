@@ -9,8 +9,11 @@ import {
 } from "@/components/infinite-carousel";
 import { MentorCard } from "@/components/mentor-card";
 import { Button } from "@/components/ui/button";
+import { useMobileLayout } from "@/hooks/use-mobile-layout";
 import type { Mentor } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+const LANDING_CAROUSEL_GAP = 10;
 
 interface MentorCarouselProps {
   mentors: Mentor[];
@@ -26,18 +29,23 @@ function mentorGetPerView(width: number) {
 }
 
 export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
+  const isMobile = useMobileLayout();
   const carousel = useInfiniteCarousel({
     items: mentors,
     ariaLabel: "Mentor di platform",
     getPerView: mentorGetPerView,
+    fixedItemWidth: isMobile ? "var(--landing-mentor-card-width)" : null,
+    gap: isMobile ? LANDING_CAROUSEL_GAP : undefined,
     autoScrollPxPerSec: 36,
   });
 
   if (mentors.length === 0) return null;
 
+  const cardVariant = isMobile ? "compact" : "default";
+
   return (
     <div className={cn("relative", className)}>
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="eyebrow mb-2">Mentor</p>
           <h2 className="section-title sm:text-3xl">Mentor terverifikasi</h2>
@@ -74,23 +82,24 @@ export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
         </div>
       </div>
 
-      <InfiniteCarouselViewport
-        carousel={carousel}
-        getItemKey={(mentor, i) => `${mentor.slug}-${i}`}
-        getDotLabel={(i) => `Ke mentor ${i + 1}`}
-        liveRegionLabel={(index, mentor) =>
-          `Mentor ${index + 1} dari ${mentors.length}: ${mentor.name}`
-        }
-        renderSlide={(mentor, { itemWidth }) => (
-          <div
-            style={{ width: itemWidth > 0 ? itemWidth : undefined }}
-            className="h-full"
-            onPointerDown={(e) => e.stopPropagation()}
-          >
-            <MentorCard mentor={mentor} className="h-full" />
-          </div>
-        )}
-      />
+      <div className={cn(isMobile && "landing-carousel-bleed")}>
+        <InfiniteCarouselViewport
+          carousel={carousel}
+          getItemKey={(mentor, i) => `${mentor.slug}-${i}`}
+          getDotLabel={(i) => `Ke mentor ${i + 1}`}
+          liveRegionLabel={(index, mentor) =>
+            `Mentor ${index + 1} dari ${mentors.length}: ${mentor.name}`
+          }
+          renderSlide={(mentor) => (
+            <div
+              className="h-full w-full"
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              <MentorCard mentor={mentor} variant={cardVariant} className="h-full w-full" />
+            </div>
+          )}
+        />
+      </div>
     </div>
   );
 }

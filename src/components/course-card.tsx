@@ -85,7 +85,7 @@ export function CourseCard({
           <h3 className="line-clamp-2 font-heading text-[11px] font-medium leading-tight">
             {course.title}
           </h3>
-          <p className="line-clamp-1 text-[10px] text-muted-foreground">
+          <p className="course-card-poster-meta line-clamp-1 text-[10px] text-muted-foreground">
             {enrolled
               ? progressPercent >= 100
                 ? "Selesai"
