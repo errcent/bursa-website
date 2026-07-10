@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { articles } from "@/lib/articles/content";
 import { courses, mentors } from "@/lib/mock-data";
 import { searchAll } from "@/lib/search/engine";
 
@@ -125,6 +126,8 @@ export function getSitemapEntries() {
     { url: "/katalog", priority: 0.9, changeFrequency: "daily" as const },
     { url: "/komunitas", priority: 0.8, changeFrequency: "daily" as const },
     { url: "/jadi-mentor", priority: 0.7, changeFrequency: "monthly" as const },
+    { url: "/artikel", priority: 0.6, changeFrequency: "weekly" as const },
+    { url: "/bantuan", priority: 0.5, changeFrequency: "monthly" as const },
     { url: "/syarat-dan-ketentuan", priority: 0.3, changeFrequency: "monthly" as const },
     { url: "/kebijakan-privasi", priority: 0.3, changeFrequency: "monthly" as const },
     { url: "/masuk", priority: 0.3, changeFrequency: "monthly" as const },
@@ -143,6 +146,12 @@ export function getSitemapEntries() {
     changeFrequency: "weekly" as const,
   }));
 
+  const articlePages = articles.map((a) => ({
+    url: `/artikel/${a.slug}`,
+    priority: 0.5,
+    changeFrequency: "monthly" as const,
+  }));
+
   const searchPages = [
     "fundamental saham",
     "swing trading",
@@ -156,5 +165,5 @@ export function getSitemapEntries() {
     changeFrequency: "weekly" as const,
   }));
 
-  return [...staticPages, ...coursePages, ...mentorPages, ...searchPages];
+  return [...staticPages, ...coursePages, ...mentorPages, ...articlePages, ...searchPages];
 }
