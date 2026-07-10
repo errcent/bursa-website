@@ -24,7 +24,6 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
-import { calculateCheckoutBreakdown } from "@/lib/pricing";
 import { formatRupiah } from "@/lib/mock-data";
 import type { Course, Mentor } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -48,7 +47,6 @@ export function CheckoutForm({
   const [selectedMethod, setSelectedMethod] = useState<(typeof paymentMethods)[number]["id"]>("gopay");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const breakdown = calculateCheckoutBreakdown(course.price);
   const learnHref = `/belajar/${course.slug}/l1`;
 
   async function handleSimulatePayment() {
@@ -185,9 +183,7 @@ export function CheckoutForm({
       <Card className="border-border bg-card lg:sticky lg:top-24">
         <CardHeader>
           <CardTitle>Ringkasan Pesanan</CardTitle>
-          <CardDescription>
-            Pembayaran langsung ke mentor (bukan per modul) — platform mengambil komisi transaksi.
-          </CardDescription>
+          <CardDescription>Pembayaran sekali untuk akses kelas selamanya.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="rounded-xl border border-border bg-surface/50 p-4">
@@ -205,16 +201,8 @@ export function CheckoutForm({
 
           <div className="flex flex-col gap-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Biaya belajar ke mentor</span>
-              <span>{formatRupiah(breakdown.coursePrice)}</span>
-            </div>
-            <div className="flex justify-between text-muted-foreground">
-              <span>Komisi platform ({breakdown.commissionRatePercent}%)</span>
-              <span>− {formatRupiah(breakdown.platformFee)}</span>
-            </div>
-            <div className="flex justify-between text-emerald">
-              <span>Mentor menerima</span>
-              <span>{formatRupiah(breakdown.mentorPayout)}</span>
+              <span className="text-muted-foreground">Harga kelas</span>
+              <span>{formatRupiah(course.price)}</span>
             </div>
           </div>
 
@@ -223,14 +211,9 @@ export function CheckoutForm({
           <div className="flex items-center justify-between">
             <span className="font-heading font-medium">Total dibayar</span>
             <span className="text-xl font-semibold font-mono tabular-nums">
-              {formatRupiah(breakdown.coursePrice)}
+              {formatRupiah(course.price)}
             </span>
           </div>
-
-          <p className="rounded-lg border border-border bg-surface/40 p-3 text-xs leading-relaxed text-muted-foreground">
-            Komisi {breakdown.commissionRatePercent}% digunakan untuk infrastruktur platform, review
-            konten kelas, dan dukungan teknis. Harga yang Anda bayar = harga yang ditetapkan mentor.
-          </p>
         </CardContent>
       </Card>
     </div>

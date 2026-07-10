@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getSession } from "@/lib/auth/client";
-import { calculateCheckoutBreakdown } from "@/lib/pricing";
 import { formatRupiah, getCourseBySlug, getMentorBySlug } from "@/lib/mock-data";
 import { enrollUser } from "@/lib/video/protection";
 
@@ -69,7 +68,6 @@ export function CheckoutSuccessClient({ courseSlug }: { courseSlug: string }) {
     );
   }
 
-  const breakdown = calculateCheckoutBreakdown(course.price);
   const orderId = `DEMO-${course.slug.slice(0, 12).toUpperCase().replace(/-/g, "")}`;
 
   return (
@@ -111,16 +109,8 @@ export function CheckoutSuccessClient({ courseSlug }: { courseSlug: string }) {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Total dibayar</span>
                     <span className="font-medium font-mono tabular-nums">
-                      {formatRupiah(breakdown.coursePrice)}
+                      {formatRupiah(course.price)}
                     </span>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Komisi platform ({breakdown.commissionRatePercent}%)</span>
-                    <span>{formatRupiah(breakdown.platformFee)}</span>
-                  </div>
-                  <div className="flex justify-between text-emerald">
-                    <span>Mentor menerima</span>
-                    <span>{formatRupiah(breakdown.mentorPayout)}</span>
                   </div>
                 </div>
 
