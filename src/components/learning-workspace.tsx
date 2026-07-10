@@ -15,11 +15,13 @@ import { useAuth } from "@/components/auth-provider";
 import { LessonNotesPanel } from "@/components/video/lesson-notes-panel";
 import { LessonQaPanel } from "@/components/video/lesson-qa-panel";
 import { LessonPreviewThumb } from "@/components/video/lesson-preview-thumb";
+import { MentorVideoBar } from "@/components/video/mentor-video-bar";
 import { ProtectedVideoPlayer } from "@/components/video/protected-video-player";
 import { ResizableVideoStage } from "@/components/video/resizable-video-stage";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getMentorBySlug } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import type { Course } from "@/lib/types";
 import type { ProtectionViolationType } from "@/lib/video/protection";
@@ -38,6 +40,7 @@ export function LearningWorkspace({
   currentLessonId: string;
 }) {
   const { session } = useAuth();
+  const mentor = useMemo(() => getMentorBySlug(course.mentorSlug), [course.mentorSlug]);
   const allLessons = useMemo(() => course.modules.flatMap((m) => m.lessons), [course]);
   const currentLesson =
     allLessons.find((l) => l.id === currentLessonId) ?? allLessons[0];
@@ -262,6 +265,7 @@ export function LearningWorkspace({
             onTimeUpdate={setPlayheadSeconds}
             onProtectionViolation={handleProtectionViolation}
           />
+          {mentor ? <MentorVideoBar mentor={mentor} className="mt-3" /> : null}
         </ResizableVideoStage>
 
         {nextLesson && nextLessonContext && (

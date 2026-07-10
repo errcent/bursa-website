@@ -116,7 +116,11 @@ export function CourseDetailHero({
           trailerActive && "lg:order-1 lg:mx-auto lg:w-full lg:max-w-5xl"
         )}
       >
-        <CourseTrailerPlayer title={course.title} onPlaybackChange={setTrailerActive} />
+        <CourseTrailerPlayer
+          title={course.title}
+          mentor={mentor}
+          onPlaybackChange={setTrailerActive}
+        />
         <div className={cn("surface-card p-5", trailerActive && "lg:mx-auto lg:w-full lg:max-w-md")}>
           {enrolled ? (
             <>

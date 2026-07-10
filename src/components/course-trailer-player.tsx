@@ -3,17 +3,23 @@
 import { useCallback, useRef, useState } from "react";
 import { Maximize2, Minimize2, Pause, Play, PlayCircle } from "lucide-react";
 
+import {
+  MentorVideoBar,
+  type MentorVideoBarMentor,
+} from "@/components/video/mentor-video-bar";
 import { DEMO_VIDEO_URL } from "@/lib/video/demo";
 import { cn } from "@/lib/utils";
 
 interface CourseTrailerPlayerProps {
   title: string;
+  mentor?: MentorVideoBarMentor | null;
   className?: string;
   onPlaybackChange?: (active: boolean) => void;
 }
 
 export function CourseTrailerPlayer({
   title,
+  mentor,
   className,
   onPlaybackChange,
 }: CourseTrailerPlayerProps) {
@@ -113,6 +119,8 @@ export function CourseTrailerPlayer({
           </div>
         )}
       </div>
+
+      {mentor ? <MentorVideoBar mentor={mentor} className="mt-3" /> : null}
     </div>
   );
 }
