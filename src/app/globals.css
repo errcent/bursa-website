@@ -354,19 +354,72 @@
     mask-image: radial-gradient(ellipse 85% 70% at 50% 40%, black, transparent 85%);
   }
 
+  :root {
+    --catalog-container-px: 1.25rem;
+    --catalog-card-width: 8.75rem;
+    --catalog-mentor-card-width: 6.5rem;
+    --catalog-row-gap: 1.25rem;
+    --catalog-section-gap: 1.5rem;
+  }
+
+  .catalog-section {
+    @apply flex flex-col;
+    gap: var(--catalog-section-gap);
+  }
+
+  .catalog-row {
+    @apply flex flex-col gap-1.5;
+  }
+
+  .catalog-row-title {
+    @apply font-heading text-sm font-bold tracking-tight text-foreground md:text-base;
+  }
+
+  .catalog-row-count {
+    @apply ml-1.5 text-xs font-normal text-muted-foreground;
+  }
+
+  .catalog-row-bleed {
+    margin-left: calc(-1 * var(--catalog-container-px));
+    margin-right: calc(-1 * var(--catalog-container-px));
+    padding-left: var(--catalog-container-px);
+    padding-right: var(--catalog-container-px);
+  }
+
   .catalog-scroll-carousel {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
     scrollbar-width: none;
+    touch-action: pan-x pan-y;
+    scroll-padding-inline: var(--catalog-container-px);
   }
   .catalog-scroll-carousel::-webkit-scrollbar {
     display: none;
   }
   .catalog-scroll-carousel-item {
     scroll-snap-align: start;
-    scroll-snap-stop: always;
+    scroll-snap-stop: normal;
+  }
+
+  @media (min-width: 640px) {
+    :root {
+      --catalog-container-px: 2rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    :root {
+      --catalog-container-px: 2.5rem;
+    }
+  }
+  @media (max-width: 430px) {
+    :root {
+      --catalog-card-width: 7.5rem;
+      --catalog-mentor-card-width: 5.75rem;
+      --catalog-row-gap: 1rem;
+      --catalog-section-gap: 1.25rem;
+    }
   }
 
   .testimonial-tilt-row {
@@ -479,13 +532,6 @@
     }
 
     /* ── Catalog mobile (Netflix-style) ── */
-    :root {
-      --catalog-container-px: 1.25rem;
-      --catalog-card-width: 8.75rem;
-      --catalog-row-gap: 1.25rem;
-      --catalog-section-gap: 1.5rem;
-    }
-
     .katalog-hero-compact {
       @apply py-7;
     }
@@ -502,49 +548,6 @@
       @apply gap-2.5 rounded-xl p-3;
     }
 
-    .catalog-section {
-      @apply flex flex-col;
-      gap: var(--catalog-section-gap);
-    }
-
-    .catalog-row {
-      @apply flex flex-col gap-1.5;
-    }
-
-    .catalog-row-title {
-      @apply font-heading text-sm font-bold tracking-tight text-foreground;
-    }
-
-    .catalog-row-count {
-      @apply ml-1.5 text-xs font-normal text-muted-foreground;
-    }
-
-    .catalog-row-bleed {
-      margin-left: calc(-1 * var(--catalog-container-px));
-      margin-right: calc(-1 * var(--catalog-container-px));
-      padding-left: var(--catalog-container-px);
-      padding-right: var(--catalog-container-px);
-    }
-
-    .catalog-row-scroll {
-      display: flex;
-      gap: 0.5rem;
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      padding-bottom: 0.125rem;
-    }
-    .catalog-row-scroll::-webkit-scrollbar {
-      display: none;
-    }
-    .catalog-row-scroll > * {
-      flex-shrink: 0;
-      scroll-snap-align: start;
-      width: var(--catalog-card-width);
-    }
-
     .course-card-poster.surface-card-hover:hover {
       transform: scale(1.03);
     }
@@ -553,6 +556,7 @@
   @media (max-width: 430px) {
     :root {
       --catalog-card-width: 7.5rem;
+      --catalog-mentor-card-width: 5.75rem;
       --catalog-row-gap: 1rem;
       --catalog-section-gap: 1.25rem;
     }

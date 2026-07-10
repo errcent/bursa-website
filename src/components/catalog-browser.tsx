@@ -24,9 +24,10 @@ import {
 } from "@/components/ui/sheet";
 import { CourseCard } from "@/components/course-card";
 import { MentorCard } from "@/components/mentor-card";
-import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import { Reveal } from "@/components/motion/reveal";
 import {
   mentorGetScrollPerView,
+  SCROLL_CAROUSEL_GAP,
   ScrollCarousel,
 } from "@/components/scroll-carousel";
 import { SnapCollapse, SnapPresence } from "@/components/motion/snap";
@@ -264,7 +265,24 @@ type CatalogCourseRowProps = {
   enrollmentBySlug: Map<string, LearningCourseProgress>;
 };
 
+function useCatalogLayout() {
+  const [layout, setLayout] = useState<"mobile" | "desktop">("desktop");
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () => setLayout(mq.matches ? "mobile" : "desktop");
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  return layout;
+}
+
 function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCourseRowProps) {
+  const layout = useCatalogLayout();
+  const isMobile = layout === "mobile";
+
   if (courses.length === 0) return null;
 
   return (
@@ -276,14 +294,19 @@ function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCo
         )}
       </h3>
       <div className="catalog-row-bleed">
-        <div className="catalog-row-scroll">
+        <ScrollCarousel
+          ariaLabel={title}
+          fixedItemWidth={isMobile ? "var(--catalog-card-width)" : undefined}
+          gap={isMobile ? 8 : SCROLL_CAROUSEL_GAP}
+        >
           {courses.map((course) => {
             const learning = enrollmentBySlug.get(course.slug);
             return (
               <CourseCard
                 key={course.slug}
                 course={course}
-                variant="poster"
+                variant={isMobile ? "poster" : "default"}
+                className="w-full"
                 enrollment={
                   learning
                     ? {
@@ -297,13 +320,16 @@ function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCo
               />
             );
           })}
-        </div>
+        </ScrollCarousel>
       </div>
     </section>
   );
 }
 
 function CatalogMentorRow({ title, mentors, count }: { title: string; mentors: Mentor[]; count?: number }) {
+  const layout = useCatalogLayout();
+  const isMobile = layout === "mobile";
+
   if (mentors.length === 0) return null;
 
   return (
@@ -315,11 +341,22 @@ function CatalogMentorRow({ title, mentors, count }: { title: string; mentors: M
         )}
       </h3>
       <div className="catalog-row-bleed">
-        <div className="catalog-row-scroll">
+        <ScrollCarousel
+          ariaLabel={title}
+          getPerView={mentorGetScrollPerView}
+          fixedItemWidth={isMobile ? "var(--catalog-mentor-card-width)" : undefined}
+          mobilePeekRatio={0.72}
+          gap={isMobile ? 8 : SCROLL_CAROUSEL_GAP}
+        >
           {mentors.map((mentor) => (
-            <MentorCard key={mentor.slug} mentor={mentor} variant="compact" />
+            <MentorCard
+              key={mentor.slug}
+              mentor={mentor}
+              variant={isMobile ? "compact" : "default"}
+              className="w-full"
+            />
           ))}
-        </div>
+        </ScrollCarousel>
       </div>
     </section>
   );
@@ -772,7 +809,7 @@ export function CatalogBrowser({
             seed={11}
             className="relative z-0 block"
           >
-            <h2 className="mb-3 hidden font-heading text-lg font-semibold tracking-tight md:mb-4 md:block">
+            <h2 className="mb-3 font-heading text-lg font-semibold tracking-tight md:mb-4">
               {resultHeading ?? (
                 filteredCourses.length > 0
                   ? `${filteredCourses.length} kelas ditemukan`
@@ -785,41 +822,28 @@ export function CatalogBrowser({
               )}
             </h2>
             {filteredCourses.length > 0 ? (
-              <>
-                <div className="catalog-section md:hidden">
-                  {showGroupedCourseRows && groupedCourseRows ? (
-                    groupedCourseRows.map((row) => (
-                      <CatalogCourseRow
-                        key={row.title}
-                        title={row.title}
-                        courses={row.courses}
-                        enrollmentBySlug={enrollmentBySlug}
-                      />
-                    ))
-                  ) : (
+              <div className="catalog-section">
+                {showGroupedCourseRows && groupedCourseRows ? (
+                  groupedCourseRows.map((row) => (
                     <CatalogCourseRow
-                      title={
-                        resultHeading ??
-                        `${filteredCourses.length} kelas ditemukan`
-                      }
-                      courses={filteredCourses}
-                      count={filteredCourses.length}
+                      key={row.title}
+                      title={row.title}
+                      courses={row.courses}
                       enrollmentBySlug={enrollmentBySlug}
                     />
-                  )}
-                </div>
-                <Stagger className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {filteredCourses.map((course) => (
-                    <StaggerItem key={course.slug}>
-                      <CourseCard
-                        course={course}
-                        className="w-full"
-                        enrollment={courseEnrollment(course.slug)}
-                      />
-                    </StaggerItem>
-                  ))}
-                </Stagger>
-              </>
+                  ))
+                ) : (
+                  <CatalogCourseRow
+                    title={
+                      resultHeading ??
+                      `${filteredCourses.length} kelas ditemukan`
+                    }
+                    courses={filteredCourses}
+                    count={filteredCourses.length}
+                    enrollmentBySlug={enrollmentBySlug}
+                  />
+                )}
+              </div>
             ) : (
               <div className="surface-card flex flex-col items-center gap-3 border-dashed py-16 text-center">
                 <p className="text-sm text-muted-foreground">
