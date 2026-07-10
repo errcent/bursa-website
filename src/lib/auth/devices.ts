@@ -1,4 +1,5 @@
-/** Prototype device-session store (localStorage). Production: persist DeviceSession in DB and enforce server-side. */
+/** Prototype device-session store (localStorage). Production: persist DeviceSession in DB and enforce server-side.
+ *  Max 2 simultaneous devices per account — enforced on login in registerDeviceOnLogin(). */
 
 export const MAX_DEVICES_PER_ACCOUNT = 2;
 
