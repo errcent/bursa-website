@@ -25,8 +25,10 @@ import {
 import type { ChatMember, PendingAttachment } from "@/lib/chat/types";
 
 const MAX_CHARS = 2000;
+/** Narrow phones (≤430px) — short placeholder, hide helper chrome */
+const CHAT_COMPACT_QUERY = "(max-width: 430px)";
 /** Match textarea min-height so action buttons align with the input row */
-const INPUT_ROW_CONTROL = "size-10 shrink-0";
+const INPUT_ROW_CONTROL = "size-9 shrink-0 sm:size-10";
 
 type SuggestionMode = "ticker" | "mention" | null;
 
@@ -103,23 +105,19 @@ export function ChatInput({
   void slowTick;
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
+    const mq = window.matchMedia(CHAT_COMPACT_QUERY);
     const apply = () => setCompactUi(mq.matches);
     apply();
     mq.addEventListener("change", apply);
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  const resolvedPlaceholder =
-    compactUi && placeholder.length > 24
-      ? placeholder.includes("1 arah")
-        ? "Hanya baca"
-        : placeholder.includes("2 arah")
-          ? "Ketik pesan..."
-          : placeholder.includes("$TICKER")
-            ? "Ketik pesan..."
-            : placeholder.slice(0, 22) + "…"
-      : placeholder;
+  const resolvedPlaceholder = compactUi ? "Ketik pesan..." : placeholder;
+
+  const resolvedReadOnlyMessage = compactUi
+    ? "Hanya baca"
+    : (readOnlyMessage ??
+      "Cabang ini hanya baca — hanya mentor yang dapat mengirim pesan.");
 
   useEffect(() => {
     if (!replyTo && replyFocusKey === 0) return;
@@ -298,17 +296,21 @@ export function ChatInput({
 
   if (readOnly) {
     return (
-      <div className={cn("border-t border-border/60 bg-muted/20 px-4 py-3 text-center text-sm text-muted-foreground", className)}>
-        {readOnlyMessage ??
-          "Cabang ini hanya baca — hanya mentor yang dapat mengirim pesan."}
+      <div
+        className={cn(
+          "border-t border-border/60 bg-muted/20 px-4 py-2 text-center text-sm text-muted-foreground sm:py-3",
+          className
+        )}
+      >
+        {resolvedReadOnlyMessage}
       </div>
     );
   }
 
   return (
-    <div className={cn("border-t border-border/60 bg-background/80 p-3 backdrop-blur-sm", className)}>
+    <div className={cn("border-t border-border/60 bg-background/80 p-2 backdrop-blur-sm sm:p-3", className)}>
       {slowModeSeconds && slowModeSeconds > 0 && (
-        <div className="mb-2 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+        <div className="mb-2 hidden items-center gap-1.5 text-[11px] text-muted-foreground sm:flex">
           <Clock className="size-3" />
           {isSlowModeBlocked ? (
             <span>Mode lambat aktif — tunggu {slowModeRemaining} detik</span>
@@ -382,7 +384,7 @@ export function ChatInput({
       )}
 
       <div className="flex items-end gap-2">
-        <div className="flex h-10 shrink-0 items-center gap-0.5">
+        <div className="flex h-9 shrink-0 items-center gap-0.5 sm:h-10">
           {isMentor && (
             <Button
               type="button"
@@ -453,12 +455,12 @@ export function ChatInput({
             rows={1}
             className={cn(
               authInputClassName,
-              "min-h-10 max-h-32 resize-none py-2.5 pr-16"
+              "min-h-9 max-h-32 resize-none py-2 pr-2 sm:min-h-10 sm:py-2.5 sm:pr-16"
             )}
           />
           <span
             className={cn(
-              "absolute right-2 bottom-2.5 font-mono text-[10px]",
+              "absolute right-2 bottom-2 hidden font-mono text-[10px] sm:bottom-2.5 sm:block",
               nearLimit ? "text-destructive" : "text-muted-foreground"
             )}
           >
