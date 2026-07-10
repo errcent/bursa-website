@@ -1,36 +1,100 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 
-const MARKETING_PATHS = ["/", "/katalog"];
+/** Only these marketing pages may show the sticky CTA. */
+const ALLOWED_PATHS = ["/", "/katalog"] as const;
 
-function shouldShow(pathname: string) {
-  return MARKETING_PATHS.some(
+/** App / auth / checkout routes — always hide, even if allowlist logic changes. */
+const HIDDEN_PATH_PREFIXES = [
+  "/komunitas",
+  "/belajar",
+  "/dashboard",
+  "/admin",
+  "/masuk",
+  "/daftar",
+  "/login",
+  "/checkout",
+  "/pengaturan",
+  "/mentor",
+  "/developer",
+  "/kelas",
+  "/instruktur",
+  "/jadi-mentor",
+] as const;
+
+function isHiddenPath(pathname: string) {
+  return HIDDEN_PATH_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
+function isAllowedPath(pathname: string) {
+  return ALLOWED_PATHS.some(
     (path) => pathname === path || (path !== "/" && pathname.startsWith(`${path}/`))
+  );
+}
+
+function shouldShow(pathname: string | null) {
+  if (!pathname) return false;
+  if (isHiddenPath(pathname)) return false;
+  return isAllowedPath(pathname);
+}
+
+function hasOpenOverlay() {
+  if (typeof document === "undefined") return false;
+  return Boolean(
+    document.querySelector('[data-slot="sheet-content"][data-open]') ||
+      document.querySelector("dialog[open]")
   );
 }
 
 /** Mobile-only sticky CTA after scrolling past the hero. */
 export function StickyBottomCta() {
   const pathname = usePathname();
-  const [visible, setVisible] = useState(false);
+  const allowed = shouldShow(pathname);
+  const [scrolledPastHero, setScrolledPastHero] = useState(false);
+  const [overlayOpen, setOverlayOpen] = useState(false);
+
+  useLayoutEffect(() => {
+    if (!allowed) {
+      setScrolledPastHero(false);
+    }
+  }, [allowed, pathname]);
 
   useEffect(() => {
-    if (!shouldShow(pathname)) {
-      setVisible(false);
-      return;
-    }
+    if (!allowed) return;
 
-    const onScroll = () => setVisible(window.scrollY > 400);
+    const onScroll = () => setScrolledPastHero(window.scrollY > 400);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [pathname]);
+  }, [allowed, pathname]);
 
-  if (!shouldShow(pathname) || !visible) return null;
+  useEffect(() => {
+    if (!allowed) {
+      setOverlayOpen(false);
+      return;
+    }
+
+    const syncOverlay = () => setOverlayOpen(hasOpenOverlay());
+
+    syncOverlay();
+    const observer = new MutationObserver(syncOverlay);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-open", "open"],
+    });
+
+    return () => observer.disconnect();
+  }, [allowed, pathname]);
+
+  if (!allowed || !scrolledPastHero || overlayOpen) return null;
 
   return (
     <div
