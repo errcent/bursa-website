@@ -27,15 +27,18 @@ export function WatchlistMiniSparkline({
 
   if (points.length < 2) return null;
 
-  const max = Math.max(...points);
-  const min = Math.min(...points);
-  const range = max - min || 1;
-  const stepX = width / (points.length - 1);
+  const finitePoints = points.filter((value) => Number.isFinite(value));
+  if (finitePoints.length < 2) return null;
 
-  const coords = points.map((value, i) => {
+  const max = Math.max(...finitePoints);
+  const min = Math.min(...finitePoints);
+  const range = max - min || 1;
+  const stepX = width / (finitePoints.length - 1);
+
+  const coords = finitePoints.map((value, i) => {
     const x = i * stepX;
     const y = height - padY - ((value - min) / range) * (height - padY * 2);
-    return { x, y };
+    return { x, y: Number.isFinite(y) ? y : height / 2 };
   });
 
   const line = coords.map((c) => `${c.x},${c.y}`).join(" ");
@@ -46,7 +49,7 @@ export function WatchlistMiniSparkline({
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className={cn("h-7 w-14 shrink-0 sm:w-[4.5rem]", className)}
+      className={cn("h-7 w-12 shrink-0 sm:w-[4.5rem]", className)}
       preserveAspectRatio="none"
       role="img"
       aria-label={label}

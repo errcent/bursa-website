@@ -6,8 +6,11 @@ import { Eye, Plus, Trash2, TrendingDown, TrendingUp } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { WatchlistMiniSparkline } from "@/components/watchlist-mini-sparkline";
 import { Button } from "@/components/ui/button";
+import { ensurePrismaUser } from "@/lib/auth/client";
 import { getWatchlistDayMove } from "@/lib/watchlist-sparkline";
 import { cn } from "@/lib/utils";
+
+const TICKER_PATTERN = /^[A-Za-z0-9.\-/=]+$/;
 
 type WatchlistItem = {
   id: string;
@@ -53,12 +56,17 @@ export function DashboardWatchlist() {
     setError(null);
 
     try {
+      await ensurePrismaUser(session);
       const res = await fetch(`/api/me/watchlist?${authQuery()}`, {
         cache: "no-store",
         headers: authHeaders(),
       });
-      if (!res.ok) throw new Error("failed");
-      const data = (await res.json()) as { items?: WatchlistItem[] };
+      const data = (await res.json()) as { items?: WatchlistItem[]; error?: string };
+      if (!res.ok) {
+        setItems([]);
+        setError(data.error ?? "Gagal memuat watchlist.");
+        return;
+      }
       setItems(data.items ?? []);
     } catch {
       setItems([]);
@@ -66,11 +74,51 @@ export function DashboardWatchlist() {
     } finally {
       setLoading(false);
     }
-  }, [session?.userId, session?.email, authQuery, authHeaders]);
+  }, [session, authQuery, authHeaders]);
 
   useEffect(() => {
-    void loadItems();
-  }, [loadItems]);
+    let cancelled = false;
+
+    void (async () => {
+      if (!session?.userId && !session?.email) {
+        if (!cancelled) {
+          setItems([]);
+          setLoading(false);
+        }
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        await ensurePrismaUser(session);
+        const res = await fetch(`/api/me/watchlist?${authQuery()}`, {
+          cache: "no-store",
+          headers: authHeaders(),
+        });
+        const data = (await res.json()) as { items?: WatchlistItem[]; error?: string };
+        if (cancelled) return;
+        if (!res.ok) {
+          setItems([]);
+          setError(data.error ?? "Gagal memuat watchlist.");
+          return;
+        }
+        setItems(data.items ?? []);
+      } catch {
+        if (!cancelled) {
+          setItems([]);
+          setError("Gagal memuat watchlist.");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session, authQuery, authHeaders]);
 
   async function handleAdd(e: FormEvent) {
     e.preventDefault();
@@ -79,7 +127,11 @@ export function DashboardWatchlist() {
       setError("Ticker wajib diisi.");
       return;
     }
-    if (items.some((item) => item.ticker === symbol)) {
+    if (!TICKER_PATTERN.test(symbol)) {
+      setError("Ticker hanya boleh huruf, angka, dan . - / =");
+      return;
+    }
+    if (items.some((item) => item.ticker.toUpperCase() === symbol)) {
       setError(`${symbol} sudah ada di watchlist.`);
       return;
     }
@@ -88,6 +140,7 @@ export function DashboardWatchlist() {
     setError(null);
 
     try {
+      if (session) await ensurePrismaUser(session);
       const res = await fetch("/api/me/watchlist", {
         method: "POST",
         headers: authHeaders(),
@@ -97,7 +150,6 @@ export function DashboardWatchlist() {
           name: session?.name,
           role: session?.role,
           ticker: symbol,
-          // API defaults instrument to SAHAM when omitted
           notes: notes.trim() || undefined,
         }),
       });
@@ -105,15 +157,16 @@ export function DashboardWatchlist() {
       const data = (await res.json()) as { item?: WatchlistItem; error?: string };
       if (!res.ok) {
         setError(data.error ?? "Gagal menambah ticker.");
+        if (res.status === 409) {
+          await loadItems();
+        }
         return;
       }
 
-      if (data.item) {
-        setItems((prev) => [data.item!, ...prev]);
-      }
       setTicker("");
       setNotes("");
       setShowForm(false);
+      await loadItems();
     } catch {
       setError("Gagal menambah ticker.");
     } finally {
@@ -126,7 +179,7 @@ export function DashboardWatchlist() {
     setError(null);
 
     try {
-      const res = await fetch(`/api/me/watchlist/${id}`, {
+      const res = await fetch(`/api/me/watchlist/${id}?${authQuery()}`, {
         method: "DELETE",
         headers: authHeaders(),
         body: JSON.stringify({
@@ -152,7 +205,7 @@ export function DashboardWatchlist() {
   }
 
   return (
-    <div className="surface-card p-5">
+    <div className="surface-card min-w-0 overflow-hidden p-5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-heading flex items-center gap-2 text-sm font-medium">
           <Eye className="size-4 text-accent" />
@@ -226,6 +279,15 @@ export function DashboardWatchlist() {
 
       {loading ? (
         <p className="py-4 text-center text-sm text-muted-foreground">Memuat watchlist…</p>
+      ) : error && items.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 py-6 text-center">
+          <p className="max-w-[240px] text-sm text-muted-foreground">
+            Watchlist tidak dapat dimuat. Periksa koneksi lalu coba lagi.
+          </p>
+          <Button size="sm" variant="outline" onClick={() => void loadItems()}>
+            Coba lagi
+          </Button>
+        </div>
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-6 text-center">
           <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-accent-soft via-surface-2 to-background">
@@ -246,39 +308,23 @@ export function DashboardWatchlist() {
         <ul className="flex flex-col gap-3">
           {items.map((item) => {
             const day = getWatchlistDayMove(item.ticker);
-            const up = day.changePct >= 0;
+            const up = day.changePct > 0;
+            const flat = day.changePct === 0;
 
             return (
               <li
                 key={item.id}
-                className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-2 text-sm"
+                className="grid grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_auto] items-center gap-x-2 gap-y-1.5 text-sm sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] sm:grid-rows-1"
               >
-                <div className="min-w-0 flex-1">
+                <div className="col-start-1 row-start-1 min-w-0">
                   <p className="truncate font-mono font-medium">{item.ticker}</p>
                   {item.notes ? (
                     <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{item.notes}</p>
                   ) : (
-                    <p className="mt-0.5 font-mono text-xs text-muted-foreground">{day.priceLabel}</p>
+                    <p className="mt-0.5 truncate font-mono text-xs text-muted-foreground">
+                      {day.priceLabel}
+                    </p>
                   )}
-                </div>
-
-                <WatchlistMiniSparkline
-                  points={day.points}
-                  positive={up}
-                  label={`${item.ticker} pergerakan hari ini (ilustratif)`}
-                />
-
-                <div className="w-[4.25rem] shrink-0 text-right">
-                  <p
-                    className={cn(
-                      "flex items-center justify-end gap-0.5 text-xs tabular-nums",
-                      up ? "text-profit" : "text-loss"
-                    )}
-                  >
-                    {up ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
-                    {up && day.changePct > 0 ? "+" : ""}
-                    {day.changePct.toFixed(2)}%
-                  </p>
                 </div>
 
                 <Button
@@ -287,10 +333,36 @@ export function DashboardWatchlist() {
                   aria-label={`Hapus ${item.ticker}`}
                   disabled={removingId === item.id}
                   onClick={() => void handleRemove(item.id)}
-                  className="shrink-0 text-muted-foreground hover:text-destructive"
+                  className="col-start-2 row-start-1 shrink-0 text-muted-foreground hover:text-destructive sm:col-start-4"
                 >
                   <Trash2 className="size-3.5" />
                 </Button>
+
+                <WatchlistMiniSparkline
+                  points={day.points}
+                  positive={up || flat}
+                  label={`${item.ticker} pergerakan hari ini (ilustratif)`}
+                  className="col-start-1 row-start-2 sm:col-start-2 sm:row-start-1"
+                />
+
+                <div className="col-start-2 row-start-2 w-14 shrink-0 text-right sm:col-start-3 sm:row-start-1 sm:w-[4.25rem]">
+                  <p
+                    className={cn(
+                      "flex items-center justify-end gap-0.5 text-xs tabular-nums",
+                      flat ? "text-muted-foreground" : up ? "text-profit" : "text-loss"
+                    )}
+                  >
+                    {!flat ? (
+                      up ? (
+                        <TrendingUp className="size-3" />
+                      ) : (
+                        <TrendingDown className="size-3" />
+                      )
+                    ) : null}
+                    {up && day.changePct > 0 ? "+" : ""}
+                    {day.changePct.toFixed(2)}%
+                  </p>
+                </div>
               </li>
             );
           })}

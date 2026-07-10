@@ -16,7 +16,8 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
     const rawBody = (await request.json().catch(() => ({}))) as Record<string, unknown>;
-    const body = deleteWatchlistItemSchema.parse(rawBody);
+    const parsed = deleteWatchlistItemSchema.safeParse(rawBody);
+    const body = parsed.success ? parsed.data : {};
 
     const headerEmail = request.headers.get("x-user-email")?.trim().toLowerCase();
     const email =

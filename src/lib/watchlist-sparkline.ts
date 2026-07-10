@@ -53,6 +53,7 @@ function formatPrice(base: number, ticker: string): string {
  * Build a consistent intraday sparkline + % change for a ticker.
  */
 export function getWatchlistDayMove(ticker: string, pointCount = 24): WatchlistDayMove {
+  const safeCount = Math.max(2, pointCount);
   const seed = hashTicker(ticker);
   const rand = mulberry32(seed);
 
@@ -61,18 +62,18 @@ export function getWatchlistDayMove(ticker: string, pointCount = 24): WatchlistD
 
   const points: number[] = [];
   let value = 100;
-  for (let i = 0; i < pointCount; i++) {
+  for (let i = 0; i < safeCount; i++) {
     const noise = (rand() - 0.5) * 2 * volatility;
     const meanReversion = (100 - value) * 0.02;
     value = value * (1 + drift + noise + meanReversion);
+    if (!Number.isFinite(value) || value <= 0) value = 100;
     points.push(value);
   }
 
   const open = points[0] ?? 100;
   const close = points[points.length - 1] ?? open;
-  const changePct = ((close - open) / open) * 100;
+  const changePct = open === 0 ? 0 : ((close - open) / open) * 100;
 
-  // Display price: hash → plausible level for UI (not real market data)
   const priceBase = 500 + (seed % 9500) + rand() * 80;
   const priceNow = priceBase * (close / 100);
 
