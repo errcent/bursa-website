@@ -472,7 +472,7 @@ export function ChatInput({
         </Button>
       </div>
 
-      <p className="mt-1.5 hidden text-[10px] text-muted-foreground sm:block">
+      <p className="mt-1.5 hidden truncate text-[10px] text-muted-foreground sm:block">
         Enter kirim · Shift+Enter baris baru · $ ticker · @ sebut pengguna
         {isMentor ? " · Tombol chart = entry posisi · Tombol grafik = buat polling" : ""}
       </p>
