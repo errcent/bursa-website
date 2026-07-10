@@ -21,6 +21,7 @@ const HIDDEN_PATH_PREFIXES = [
   "/login",
   "/checkout",
   "/pengaturan",
+  "/profil",
   "/mentor",
   "/developer",
   "/kelas",

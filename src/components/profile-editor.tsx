@@ -1,11 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Loader2, Settings } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ROLE_LABELS } from "@/lib/auth/roles";
+import type { UserRole } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 
 type ProfilePayload = {
@@ -35,7 +39,18 @@ function normalizeBio(value: string) {
   return value.trim();
 }
 
-export function SettingsProfile() {
+function roleBadgeVariant(role: UserRole): "accent" | "secondary" | "default" {
+  switch (role) {
+    case "mentor":
+      return "accent";
+    case "admin":
+      return "default";
+    default:
+      return "secondary";
+  }
+}
+
+export function ProfileEditor() {
   const { session, isLoading, updateLocalProfile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -265,13 +280,21 @@ export function SettingsProfile() {
   const canSave = isDirty && !saving && !loadingProfile;
 
   return (
-    <section id="profil" className="scroll-mt-24">
-      <h2 className="section-title">Profil</h2>
-      <p className="section-copy mt-1">
-        Foto, nama pengguna, dan bio yang tampil di komunitas dan dashboard.
-      </p>
+    <div className="space-y-6">
+      <div className="surface-card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge variant={roleBadgeVariant(session.role)} className="rounded-full px-3 py-1 text-xs">
+            {ROLE_LABELS[session.role]}
+          </Badge>
+          <p className="text-xs text-muted-foreground">{session.email}</p>
+        </div>
+        <Button size="sm" variant="outline" render={<Link href="/pengaturan" />}>
+          <Settings className="size-3.5" />
+          Pengaturan akun
+        </Button>
+      </div>
 
-      <form onSubmit={handleSave} className="surface-card mt-6 space-y-5 p-5">
+      <form onSubmit={handleSave} className="surface-card space-y-5 p-5">
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
           <div className="relative">
             <Avatar className="!size-20">
@@ -316,7 +339,7 @@ export function SettingsProfile() {
         </div>
 
         <label className="block space-y-1.5">
-          <span className="text-xs font-medium text-muted-foreground">Nama pengguna</span>
+          <span className="text-xs font-medium text-muted-foreground">Nama tampilan</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -358,7 +381,7 @@ export function SettingsProfile() {
                 Menyimpan…
               </>
             ) : (
-              "Simpan"
+              "Simpan profil"
             )}
           </Button>
           {message && (
@@ -373,6 +396,6 @@ export function SettingsProfile() {
           )}
         </div>
       </form>
-    </section>
+    </div>
   );
 }

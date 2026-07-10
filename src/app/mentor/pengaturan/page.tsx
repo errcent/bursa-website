@@ -38,7 +38,7 @@ export default function MentorSettingsPage() {
             Ubah foto profil, nama pengguna, dan bio dasar di pengaturan akun.
           </p>
         </div>
-        <Button size="sm" variant="outline" render={<Link href="/pengaturan#profil" />}>
+        <Button size="sm" variant="outline" render={<Link href="/profil" />}>
           Edit profil
         </Button>
       </div>

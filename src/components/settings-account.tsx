@@ -33,28 +33,37 @@ export function SettingsAccount() {
   }
 
   return (
-    <section className="surface-card p-5">
-      <h2 className="section-title text-base">Akun</h2>
-      <dl className="mt-4 flex flex-col gap-3 text-sm">
-        <div className="flex justify-between gap-4 border-b border-border/60 pb-3">
-          <dt className="text-muted-foreground">Nama</dt>
-          <dd className="text-right font-heading font-medium">{session.name}</dd>
-        </div>
-        <div className="flex justify-between gap-4 border-b border-border/60 pb-3">
-          <dt className="text-muted-foreground">Email</dt>
-          <dd className="text-right font-mono text-xs">{session.email}</dd>
-        </div>
-        <div className="flex justify-between gap-4">
-          <dt className="text-muted-foreground">Peran</dt>
-          <dd className="text-right text-sm capitalize">{session.role}</dd>
-        </div>
-      </dl>
-      <p className="mt-4 text-xs text-muted-foreground">
-        Edit foto, nama pengguna, dan bio di bagian Profil di atas. Email tidak dapat diubah di sini.
+    <section>
+      <h2 className="section-title">Akun</h2>
+      <p className="section-copy mt-1">
+        Informasi login dan keamanan akunmu.
       </p>
-      <Button size="sm" variant="outline" className="mt-4" render={<Link href="/pengaturan#profil" />}>
-        Edit profil
-      </Button>
+
+      <div className="surface-card mt-6 space-y-4 p-5">
+        <dl className="flex flex-col gap-3 text-sm">
+          <div className="flex flex-col gap-1 border-b border-border/60 pb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <dt className="text-muted-foreground">Email</dt>
+            <dd className="font-mono text-xs sm:text-right">{session.email}</dd>
+          </div>
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <dt className="text-muted-foreground">Kata sandi</dt>
+            <dd className="flex flex-wrap items-center gap-3 sm:justify-end">
+              <span className="font-mono text-xs tracking-widest text-muted-foreground">
+                ••••••••
+              </span>
+              <Button size="sm" variant="outline" disabled className="opacity-60">
+                Ubah kata sandi
+              </Button>
+            </dd>
+          </div>
+        </dl>
+        <p className="text-xs text-muted-foreground">
+          Perubahan email dan kata sandi akan tersedia segera. Edit profil publik di halaman profil.
+        </p>
+        <Button size="sm" variant="outline" render={<Link href="/profil" />}>
+          Edit profil
+        </Button>
+      </div>
     </section>
   );
 }

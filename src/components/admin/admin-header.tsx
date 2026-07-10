@@ -9,6 +9,7 @@ import {
   LogOut,
   Settings,
   Shield,
+  UserRound,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -118,7 +119,11 @@ export function AdminHeader({ segments }: { segments: string[] }) {
                   {link.label}
                 </DropdownMenuItem>
               ))}
-              <DropdownMenuItem render={<Link href="/pengaturan#profil" />}>
+              <DropdownMenuItem render={<Link href="/profil" />}>
+                <UserRound className="size-4" />
+                Profil
+              </DropdownMenuItem>
+              <DropdownMenuItem render={<Link href="/pengaturan" />}>
                 <Settings className="size-4" />
                 Pengaturan
               </DropdownMenuItem>

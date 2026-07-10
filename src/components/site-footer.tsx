@@ -27,6 +27,7 @@ const footerColumns = [
     title: "Platform",
     links: [
       { label: "Dashboard", href: "/dashboard" },
+      { label: "Profil", href: "/profil" },
       { label: "Pengaturan", href: "/pengaturan" },
       { label: "Jadi Mentor", href: "/jadi-mentor" },
     ],
