@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
+import { useLanguage } from "@/components/language-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -252,6 +253,9 @@ function AddPaymentSheet({
 
 export function SettingsPayment() {
   const { session, isLoading } = useAuth();
+  const { messages } = useLanguage();
+  const t = messages.settings.payment;
+  const common = messages.common;
   const [billing, setBilling] = useState<BillingTransaction[]>([]);
   const [billingLoading, setBillingLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
@@ -322,17 +326,15 @@ export function SettingsPayment() {
   if (!session) {
     return (
       <section className="surface-card p-5">
-        <h2 className="section-title text-base">Pembayaran</h2>
-        <p className="section-copy mt-2">
-          Masuk untuk melihat metode pembayaran tersimpan dan riwayat transaksi.
-        </p>
+        <h2 className="section-title text-base">{t.title}</h2>
+        <p className="section-copy mt-2">{t.signedOutDescription}</p>
         <Button
           size="sm"
           variant="outline"
           className="mt-4"
           render={<Link href={buildLoginHref("/pengaturan")} />}
         >
-          Masuk
+          {common.signIn}
         </Button>
       </section>
     );
@@ -342,10 +344,8 @@ export function SettingsPayment() {
     <section>
       <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="section-title">Pembayaran</h2>
-          <p className="section-copy mt-1">
-            Metode pembayaran tersimpan dan riwayat tagihan kelas.
-          </p>
+          <h2 className="section-title">{t.title}</h2>
+          <p className="section-copy mt-1">{t.description}</p>
         </div>
         <Badge
           variant="outline"
