@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 
 import { useAdminToast } from "@/components/admin/admin-toast";
 import { DataTable, type DataTableColumn } from "@/components/admin/data-table";
@@ -28,7 +28,7 @@ const emptyForm: MentorFormInput = {
   philosophy: "",
   instruments: ["Saham"],
   yearsExperience: 1,
-  verified: false,
+  verified: true,
   availableFor1on1: false,
 };
 
@@ -41,6 +41,7 @@ export default function AdminMentorsPage() {
   const [editing, setEditing] = useState<AdminMentor | null>(null);
   const [form, setForm] = useState<MentorFormInput>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [verifyingId, setVerifyingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -98,12 +99,23 @@ export default function AdminMentorsPage() {
   }
 
   async function toggleVerified(mentor: AdminMentor) {
+    const nextVerified = !mentor.verified;
+    setVerifyingId(mentor.id);
+    setMentors((prev) =>
+      prev.map((m) => (m.id === mentor.id ? { ...m, verified: nextVerified } : m))
+    );
+
     try {
-      await updateMentor(mentor.id, { verified: !mentor.verified });
-      toast(mentor.verified ? "Verifikasi dicabut." : "Mentor diverifikasi.");
-      await load();
+      const { data } = await updateMentor(mentor.id, { verified: nextVerified });
+      setMentors((prev) => prev.map((m) => (m.id === mentor.id ? data : m)));
+      toast(nextVerified ? "Mentor diverifikasi." : "Verifikasi dicabut.");
     } catch {
+      setMentors((prev) =>
+        prev.map((m) => (m.id === mentor.id ? { ...m, verified: mentor.verified } : m))
+      );
       toast("Gagal mengubah status verifikasi.", "error");
+    } finally {
+      setVerifyingId(null);
     }
   }
 
@@ -160,8 +172,22 @@ export default function AdminMentorsPage() {
       header: "Aksi",
       render: (row) => (
         <div className="flex items-center gap-1">
-          <Button size="xs" variant="outline" onClick={() => toggleVerified(row)}>
-            {row.verified ? "Cabut" : "Verifikasi"}
+          <Button
+            size="xs"
+            variant="outline"
+            disabled={verifyingId === row.id}
+            onClick={() => toggleVerified(row)}
+          >
+            {verifyingId === row.id ? (
+              <>
+                <Loader2 className="size-3 animate-spin" />
+                Memproses...
+              </>
+            ) : row.verified ? (
+              "Cabut"
+            ) : (
+              "Verifikasi"
+            )}
           </Button>
           <Button size="icon-sm" variant="ghost" onClick={() => openEdit(row)}>
             <Pencil className="size-3.5" />

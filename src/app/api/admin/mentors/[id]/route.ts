@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { mapMentor, requireAdmin, unauthorized } from "@/lib/admin/server";
+import { revalidateCatalog } from "@/lib/catalog/server";
 import type { MentorFormInput } from "@/lib/admin/types";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -46,11 +47,6 @@ export async function PATCH(request: Request, context: RouteContext) {
       });
     }
 
-    const updated = await db.mentorProfile.findUniqueOrThrow({
-      where: { id },
-      include: { user: true },
-    });
-
     await db.adminAuditLog.create({
       data: {
         adminId: admin.id,
@@ -60,6 +56,16 @@ export async function PATCH(request: Request, context: RouteContext) {
         changes: input as Prisma.InputJsonValue,
       },
     });
+
+    const updated =
+      input.name || input.email
+        ? await db.mentorProfile.findUniqueOrThrow({
+            where: { id },
+            include: { user: true },
+          })
+        : profile;
+
+    revalidateCatalog();
 
     return NextResponse.json(mapMentor(updated));
   } catch (error) {
@@ -90,6 +96,8 @@ export async function DELETE(request: Request, context: RouteContext) {
         entityId: id,
       },
     });
+
+    revalidateCatalog();
 
     return NextResponse.json({ ok: true });
   } catch (error) {
