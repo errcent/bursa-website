@@ -5,6 +5,7 @@ import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { SettingsAccount } from "@/components/settings-account";
 import { SettingsHero } from "@/components/settings-hero";
+import { SettingsPayment } from "@/components/settings-payment";
 import { ThemeSelector } from "@/components/theme-selector";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -43,6 +44,10 @@ export default function SettingsPage() {
             <Separator className="my-10 opacity-60" />
 
             <SettingsAccount />
+
+            <Separator className="my-10 opacity-60" />
+
+            <SettingsPayment />
 
             <Separator className="my-10 opacity-60" />
 

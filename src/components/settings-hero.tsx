@@ -10,7 +10,7 @@ export function SettingsHero() {
           <p className="eyebrow mb-2">Preferensi</p>
           <h1 className="page-hero-title text-gradient">Pengaturan</h1>
           <p className="section-copy mt-2 max-w-lg">
-            Kelola akun, keamanan, dan preferensi tampilan platform.
+            Kelola akun, pembayaran, keamanan, dan preferensi tampilan platform.
           </p>
         </Reveal>
       </div>
