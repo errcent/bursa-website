@@ -39,3 +39,21 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local video uploads
+/public/uploads/videos/*
+!/public/uploads/videos/.gitkeep
+
+# local avatar uploads
+/public/uploads/avatars/*
+!/public/uploads/avatars/.gitkeep
+
+# local sqlite / prisma artifacts
+/prisma/*.db
+/prisma/*.db-journal
+
+# local scratch / tooling output
+.video-frames/
+_check_out.txt
+_tsc_exit.txt
+_tsc_filtered.txt

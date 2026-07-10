@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "ChatRoom" ADD COLUMN "isLive" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "ChatRoom" ADD COLUMN "liveStartedAt" DATETIME;
+ALTER TABLE "ChatRoom" ADD COLUMN "liveTitle" TEXT;

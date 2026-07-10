@@ -1,0 +1,2 @@
+-- MessageType.SYSTEM (SQLite stores enums as TEXT; no ALTER needed for existing rows)
+-- New value: SYSTEM — centered join / system notices in chat.
