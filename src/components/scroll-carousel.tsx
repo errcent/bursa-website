@@ -41,6 +41,14 @@ export function landingCourseGetScrollPerView(width: number) {
   return 1;
 }
 
+/** Katalog grouped rows on desktop — tighter than landing carousels. */
+export function catalogCourseGetScrollPerView(width: number) {
+  if (width >= 1280) return 4;
+  if (width >= 768) return 3;
+  if (width >= 640) return 2;
+  return 1;
+}
+
 export type ScrollCarouselHandle = {
   scrollByStep: (direction: -1 | 1) => void;
 };

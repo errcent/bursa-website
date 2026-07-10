@@ -406,6 +406,13 @@
     scroll-snap-stop: normal;
   }
 
+  @media (min-width: 768px) {
+    /* Poster/compact tiles are mobile-only; never stretch full row width on desktop. */
+    .catalog-row-scroll {
+      display: none;
+    }
+  }
+
   @media (max-width: 767px) {
     .catalog-row-scroll {
       display: flex;
