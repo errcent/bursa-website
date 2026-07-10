@@ -1,8 +1,7 @@
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { persistAvatar } from "@/lib/avatar-storage";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
 import { db } from "@/lib/db";
 
@@ -20,6 +19,10 @@ function extForType(type: string) {
  * POST /api/me/avatar — multipart upload for profile photo.
  * Form fields: file (required), userId?, email?, name?, role?
  * Also accepts x-user-email / x-user-id headers.
+ *
+ * On Vercel/serverless the image is stored as a data URL in the database
+ * (filesystem under public/ is read-only). Locally files are written to
+ * public/uploads/avatars/.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -62,14 +65,8 @@ export async function POST(request: NextRequest) {
     }
 
     const ext = extForType(file.type);
-    const safeName = `${user.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "avatars");
-    await mkdir(uploadDir, { recursive: true });
-
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(uploadDir, safeName), buffer);
-
-    const avatarUrl = `/uploads/avatars/${safeName}`;
+    const { avatarUrl, storage } = await persistAvatar(user.id, buffer, file.type, ext);
 
     const updated = await db.user.update({
       where: { id: user.id },
@@ -79,6 +76,7 @@ export async function POST(request: NextRequest) {
     return jsonOk(
       {
         avatarUrl,
+        storage,
         profile: {
           id: updated.id,
           email: updated.email,
@@ -91,6 +89,9 @@ export async function POST(request: NextRequest) {
       201
     );
   } catch (error) {
+    if (error instanceof Error && error.message.includes("Body exceeded")) {
+      return jsonError("Ukuran foto maksimal 2 MB.", 413);
+    }
     return handleApiError(error);
   }
 }
