@@ -5,6 +5,7 @@ import { ArrowRight, PenLine } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import { ScrollCarousel } from "@/components/scroll-carousel";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import type { FounderProfile, FounderResponse } from "@/lib/types";
@@ -214,15 +215,25 @@ export function FounderShowcase({
 
         <Stagger className="space-y-6 sm:space-y-8">
           <StaggerItem>
-            <div className="testimonial-tilt-row -mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:overflow-visible sm:px-0">
-              <div className="flex min-w-min items-stretch justify-center sm:min-w-0 sm:w-full">
+            <div className="sm:hidden">
+              <ScrollCarousel
+                ariaLabel="Jawaban dari founder"
+                naturalItemWidth
+                hideArrows
+                gap={12}
+                viewportClassName="landing-scroll-carousel testimonial-scroll-carousel"
+              >
+                {deckItems.map((item, index) => (
+                  <TiltedResponseCard key={item.id} item={item} founder={founder} index={index} />
+                ))}
+              </ScrollCarousel>
+            </div>
+            <div className="testimonial-tilt-row hidden sm:block sm:mx-0 sm:px-0">
+              <div className="flex min-w-0 w-full items-stretch justify-center">
                 {deckItems.map((item, index) => (
                   <div
                     key={item.id}
-                    className={cn(
-                      "px-0.5 sm:px-0 sm:flex-1",
-                      index > 0 && "-ml-4 sm:-ml-7 md:-ml-8"
-                    )}
+                    className={cn("sm:flex-1", index > 0 && "sm:-ml-7 md:-ml-8")}
                   >
                     <TiltedResponseCard item={item} founder={founder} index={index} />
                   </div>

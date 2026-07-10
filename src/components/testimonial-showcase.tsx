@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { ArrowRight, Star } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import { ScrollCarousel } from "@/components/scroll-carousel";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { Review } from "@/lib/types";
 import { cn, formatRating } from "@/lib/utils";
@@ -163,22 +164,7 @@ export function TestimonialShowcase({
   className,
 }: TestimonialShowcaseProps) {
   const deckItems = reviews.slice(0, 3);
-  const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const onScroll = () => {
-      const cardWidth = el.firstElementChild?.clientWidth ?? 1;
-      const index = Math.round(el.scrollLeft / Math.max(cardWidth, 1));
-      setActiveIndex(Math.min(Math.max(index, 0), deckItems.length - 1));
-    };
-
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
-  }, [deckItems.length]);
 
   return (
     <section className={cn("testimonial-showcase relative overflow-x-hidden", className)}>
@@ -202,18 +188,26 @@ export function TestimonialShowcase({
 
         <Stagger className="space-y-6 sm:space-y-8">
           <StaggerItem>
-            <div
-              ref={scrollRef}
-              className="testimonial-tilt-row -mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:overflow-visible sm:px-0"
-            >
-              <div className="flex min-w-min items-stretch justify-start gap-3 sm:min-w-0 sm:w-full sm:justify-center">
+            <div className="sm:hidden">
+              <ScrollCarousel
+                ariaLabel="Ulasan pengalaman belajar"
+                naturalItemWidth
+                hideArrows
+                gap={12}
+                viewportClassName="landing-scroll-carousel testimonial-scroll-carousel"
+                onActiveIndexChange={setActiveIndex}
+              >
+                {deckItems.map((review, index) => (
+                  <TiltedReviewCard key={review.name} review={review} index={index} />
+                ))}
+              </ScrollCarousel>
+            </div>
+            <div className="testimonial-tilt-row hidden sm:block sm:mx-0 sm:px-0">
+              <div className="flex min-w-0 w-full items-stretch justify-center">
                 {deckItems.map((review, index) => (
                   <div
                     key={review.name}
-                    className={cn(
-                      "shrink-0 sm:flex-1",
-                      index > 0 && "sm:-ml-3 md:-ml-4"
-                    )}
+                    className={cn("sm:flex-1", index > 0 && "sm:-ml-3 md:-ml-4")}
                   >
                     <TiltedReviewCard review={review} index={index} />
                   </div>

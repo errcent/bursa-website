@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useRef } from "react";
 
-import {
-  InfiniteCarouselViewport,
-  useInfiniteCarousel,
-} from "@/components/infinite-carousel";
 import { MentorCard } from "@/components/mentor-card";
+import {
+  SCROLL_CAROUSEL_GAP,
+  ScrollCarousel,
+  mentorGetScrollPerView,
+  type ScrollCarouselHandle,
+} from "@/components/scroll-carousel";
 import { Button } from "@/components/ui/button";
 import { useMobileLayout } from "@/hooks/use-mobile-layout";
 import type { Mentor } from "@/lib/types";
@@ -20,24 +23,9 @@ interface MentorCarouselProps {
   className?: string;
 }
 
-function mentorGetPerView(width: number) {
-  if (width >= 1280) return 6;
-  if (width >= 1024) return 4;
-  if (width >= 768) return 3;
-  if (width >= 640) return 2;
-  return 1;
-}
-
 export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
   const isMobile = useMobileLayout();
-  const carousel = useInfiniteCarousel({
-    items: mentors,
-    ariaLabel: "Mentor di platform",
-    getPerView: mentorGetPerView,
-    fixedItemWidth: isMobile ? "var(--landing-mentor-card-width)" : null,
-    gap: isMobile ? LANDING_CAROUSEL_GAP : undefined,
-    autoScrollPxPerSec: 36,
-  });
+  const carouselRef = useRef<ScrollCarouselHandle>(null);
 
   if (mentors.length === 0) return null;
 
@@ -65,7 +53,7 @@ export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
             variant="outline"
             size="icon-sm"
             className="rounded-full"
-            onClick={() => carousel.nudge(1)}
+            onClick={() => carouselRef.current?.scrollByStep(-1)}
             aria-label="Mentor sebelumnya"
           >
             <ArrowLeft className="size-4" />
@@ -74,7 +62,7 @@ export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
             variant="outline"
             size="icon-sm"
             className="rounded-full"
-            onClick={() => carousel.nudge(-1)}
+            onClick={() => carouselRef.current?.scrollByStep(1)}
             aria-label="Mentor berikutnya"
           >
             <ArrowRight className="size-4" />
@@ -83,22 +71,19 @@ export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
       </div>
 
       <div className={cn(isMobile && "landing-carousel-bleed")}>
-        <InfiniteCarouselViewport
-          carousel={carousel}
-          getItemKey={(mentor, i) => `${mentor.slug}-${i}`}
-          getDotLabel={(i) => `Ke mentor ${i + 1}`}
-          liveRegionLabel={(index, mentor) =>
-            `Mentor ${index + 1} dari ${mentors.length}: ${mentor.name}`
-          }
-          renderSlide={(mentor) => (
-            <div
-              className="h-full w-full"
-              onPointerDown={(e) => e.stopPropagation()}
-            >
-              <MentorCard mentor={mentor} variant={cardVariant} className="h-full w-full" />
-            </div>
-          )}
-        />
+        <ScrollCarousel
+          ref={carouselRef}
+          ariaLabel="Mentor di platform"
+          hideArrows
+          viewportClassName="landing-scroll-carousel"
+          getPerView={mentorGetScrollPerView}
+          fixedItemWidth={isMobile ? "var(--landing-mentor-card-width)" : undefined}
+          gap={isMobile ? LANDING_CAROUSEL_GAP : SCROLL_CAROUSEL_GAP}
+        >
+          {mentors.map((mentor) => (
+            <MentorCard key={mentor.slug} mentor={mentor} variant={cardVariant} className="h-full w-full" />
+          ))}
+        </ScrollCarousel>
       </div>
     </div>
   );

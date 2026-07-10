@@ -2,9 +2,11 @@
 
 import {
   Children,
+  forwardRef,
   isValidElement,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useLayoutEffect,
   useRef,
   useState,
@@ -33,27 +35,51 @@ export function mentorGetScrollPerView(width: number) {
   return 2;
 }
 
+export function landingCourseGetScrollPerView(width: number) {
+  if (width >= 1024) return 3;
+  if (width >= 640) return 2;
+  return 1;
+}
+
+export type ScrollCarouselHandle = {
+  scrollByStep: (direction: -1 | 1) => void;
+};
+
 interface ScrollCarouselProps {
   children: ReactNode;
   ariaLabel: string;
   className?: string;
+  viewportClassName?: string;
   getPerView?: (width: number) => number;
   /** Fraction of container width per item when only one card is shown (mobile peek). */
   mobilePeekRatio?: number;
   /** When set, each slide uses this CSS width instead of a computed per-view width. */
   fixedItemWidth?: string;
+  /** Let each child define its own width (measured from layout). */
+  naturalItemWidth?: boolean;
   gap?: number;
+  /** Hide built-in edge arrow buttons (e.g. when using external header controls). */
+  hideArrows?: boolean;
+  onActiveIndexChange?: (index: number) => void;
 }
 
-export function ScrollCarousel({
-  children,
-  ariaLabel,
-  className,
-  getPerView = defaultGetScrollPerView,
-  mobilePeekRatio = 0.86,
-  fixedItemWidth,
-  gap = SCROLL_CAROUSEL_GAP,
-}: ScrollCarouselProps) {
+export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselProps>(
+  function ScrollCarousel(
+    {
+      children,
+      ariaLabel,
+      className,
+      viewportClassName,
+      getPerView = defaultGetScrollPerView,
+      mobilePeekRatio = 0.86,
+      fixedItemWidth,
+      naturalItemWidth = false,
+      gap = SCROLL_CAROUSEL_GAP,
+      hideArrows = false,
+      onActiveIndexChange,
+    },
+    ref
+  ) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -69,14 +95,21 @@ export function ScrollCarousel({
     const { scrollLeft, scrollWidth, clientWidth } = el;
     setCanScrollLeft(scrollLeft > 2);
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 2);
-  }, []);
+
+    if (onActiveIndexChange) {
+      const firstItem = el.querySelector<HTMLElement>("[data-scroll-carousel-item]");
+      const stride = firstItem ? firstItem.offsetWidth + gap : clientWidth;
+      const index = Math.round(scrollLeft / Math.max(stride, 1));
+      onActiveIndexChange(Math.min(Math.max(index, 0), childItems.length - 1));
+    }
+  }, [childItems.length, gap, onActiveIndexChange]);
 
   useLayoutEffect(() => {
     const el = viewportRef.current;
     if (!el) return;
 
     const measure = () => {
-      if (fixedItemWidth) {
+      if (fixedItemWidth || naturalItemWidth) {
         const firstItem = el.querySelector<HTMLElement>("[data-scroll-carousel-item]");
         setItemWidth(firstItem?.offsetWidth ?? null);
         return;
@@ -98,7 +131,15 @@ export function ScrollCarousel({
     });
     ro.observe(el);
     return () => ro.disconnect();
-  }, [fixedItemWidth, gap, getPerView, mobilePeekRatio, updateScrollState, childItems.length]);
+  }, [
+    fixedItemWidth,
+    gap,
+    getPerView,
+    mobilePeekRatio,
+    naturalItemWidth,
+    updateScrollState,
+    childItems.length,
+  ]);
 
   useEffect(() => {
     const el = viewportRef.current;
@@ -125,6 +166,8 @@ export function ScrollCarousel({
     [gap, itemWidth]
   );
 
+  useImperativeHandle(ref, () => ({ scrollByStep }), [scrollByStep]);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "ArrowLeft") {
@@ -140,7 +183,7 @@ export function ScrollCarousel({
 
   if (childItems.length === 0) return null;
 
-  const showArrows = canScrollLeft || canScrollRight;
+  const showArrows = !hideArrows && (canScrollLeft || canScrollRight);
 
   return (
     <div className={cn("group/scroll-carousel relative", className)}>
@@ -157,7 +200,7 @@ export function ScrollCarousel({
         </>
       )}
 
-      {canScrollLeft && (
+      {showArrows && canScrollLeft && (
         <Button
           type="button"
           variant="outline"
@@ -170,7 +213,7 @@ export function ScrollCarousel({
         </Button>
       )}
 
-      {canScrollRight && (
+      {showArrows && canScrollRight && (
         <Button
           type="button"
           variant="outline"
@@ -191,7 +234,8 @@ export function ScrollCarousel({
         aria-label={ariaLabel}
         className={cn(
           "catalog-scroll-carousel outline-none",
-          "focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          "focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          viewportClassName
         )}
       >
         <div className="flex pb-1" style={{ gap }}>
@@ -200,10 +244,14 @@ export function ScrollCarousel({
               key={child.key ?? undefined}
               data-scroll-carousel-item
               className="catalog-scroll-carousel-item shrink-0 snap-start"
-              style={{
-                width: fixedItemWidth ?? (itemWidth !== null ? itemWidth : undefined),
-                flexBasis: fixedItemWidth,
-              }}
+              style={
+                naturalItemWidth
+                  ? undefined
+                  : {
+                      width: fixedItemWidth ?? (itemWidth !== null ? itemWidth : undefined),
+                      flexBasis: fixedItemWidth,
+                    }
+              }
             >
               {child}
             </div>
@@ -212,4 +260,4 @@ export function ScrollCarousel({
       </div>
     </div>
   );
-}
+});

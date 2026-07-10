@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { motion, useTransform } from "motion/react";
+import { useRef } from "react";
 
 import { CourseCard } from "@/components/course-card";
 import {
-  InfiniteCarouselViewport,
-  useInfiniteCarousel,
-  type InfiniteCarouselSlideProps,
-} from "@/components/infinite-carousel";
+  SCROLL_CAROUSEL_GAP,
+  ScrollCarousel,
+  landingCourseGetScrollPerView,
+  type ScrollCarouselHandle,
+} from "@/components/scroll-carousel";
 import { Button } from "@/components/ui/button";
 import { useMobileLayout } from "@/hooks/use-mobile-layout";
 import type { Course } from "@/lib/types";
@@ -22,56 +23,9 @@ interface CourseCarouselProps {
   className?: string;
 }
 
-function CourseCarouselSlide({
-  course,
-  index,
-  itemWidth,
-  containerWidth,
-  x,
-  reducedMotion,
-  gap,
-  variant,
-}: InfiniteCarouselSlideProps & { course: Course; variant?: "default" | "poster" }) {
-  const stride = itemWidth + gap;
-
-  const scale = useTransform(x, (latest) => {
-    if (reducedMotion || containerWidth <= 0 || itemWidth <= 0) return 1;
-    const itemCenter = index * stride + itemWidth / 2 + latest;
-    const dist = Math.abs(itemCenter - containerWidth / 2);
-    const t = Math.min(dist / (containerWidth * 0.52), 1);
-    return 1 - t * 0.06;
-  });
-
-  const opacity = useTransform(x, (latest) => {
-    if (reducedMotion || containerWidth <= 0 || itemWidth <= 0) return 1;
-    const itemCenter = index * stride + itemWidth / 2 + latest;
-    const dist = Math.abs(itemCenter - containerWidth / 2);
-    const t = Math.min(dist / (containerWidth * 0.58), 1);
-    return 1 - t * 0.2;
-  });
-
-  return (
-    <motion.div
-      style={{
-        scale,
-        opacity,
-      }}
-      className="w-full origin-center will-change-transform"
-      onPointerDown={(e) => e.stopPropagation()}
-    >
-      <CourseCard course={course} variant={variant} className="w-full" />
-    </motion.div>
-  );
-}
-
 export function CourseCarousel({ courses, className }: CourseCarouselProps) {
   const isMobile = useMobileLayout();
-  const carousel = useInfiniteCarousel({
-    items: courses,
-    ariaLabel: "Kelas unggulan",
-    fixedItemWidth: isMobile ? "var(--landing-course-card-width)" : null,
-    gap: isMobile ? LANDING_CAROUSEL_GAP : undefined,
-  });
+  const carouselRef = useRef<ScrollCarouselHandle>(null);
 
   if (courses.length === 0) return null;
 
@@ -96,7 +50,7 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
             variant="outline"
             size="icon-sm"
             className="rounded-full"
-            onClick={() => carousel.nudge(1)}
+            onClick={() => carouselRef.current?.scrollByStep(-1)}
             aria-label="Kelas sebelumnya"
           >
             <ArrowLeft className="size-4" />
@@ -105,7 +59,7 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
             variant="outline"
             size="icon-sm"
             className="rounded-full"
-            onClick={() => carousel.nudge(-1)}
+            onClick={() => carouselRef.current?.scrollByStep(1)}
             aria-label="Kelas berikutnya"
           >
             <ArrowRight className="size-4" />
@@ -114,17 +68,19 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
       </div>
 
       <div className={cn(isMobile && "landing-carousel-bleed")}>
-        <InfiniteCarouselViewport
-          carousel={carousel}
-          getItemKey={(course, i) => `${course.slug}-${i}`}
-          getDotLabel={(i) => `Ke kelas ${i + 1}`}
-          liveRegionLabel={(index, course) =>
-            `Kelas ${index + 1} dari ${courses.length}: ${course.title}`
-          }
-          renderSlide={(course, slideProps) => (
-            <CourseCarouselSlide course={course} variant={cardVariant} {...slideProps} />
-          )}
-        />
+        <ScrollCarousel
+          ref={carouselRef}
+          ariaLabel="Kelas unggulan"
+          hideArrows
+          viewportClassName="landing-scroll-carousel"
+          getPerView={landingCourseGetScrollPerView}
+          fixedItemWidth={isMobile ? "var(--landing-course-card-width)" : undefined}
+          gap={isMobile ? LANDING_CAROUSEL_GAP : SCROLL_CAROUSEL_GAP}
+        >
+          {courses.map((course) => (
+            <CourseCard key={course.slug} course={course} variant={cardVariant} className="w-full" />
+          ))}
+        </ScrollCarousel>
       </div>
     </div>
   );
