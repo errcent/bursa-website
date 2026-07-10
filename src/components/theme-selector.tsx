@@ -5,30 +5,30 @@ import { Monitor, Moon, Sun } from "lucide-react";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 
+import { useLanguage } from "@/components/language-provider";
 import { cn } from "@/lib/utils";
 
-const options = [
-  {
-    value: "dark",
-    label: "Gelap",
-    icon: Moon,
-    description: "Default — slate navy dengan aksen lavender",
-  },
-  { value: "light", label: "Terang", icon: Sun, description: "Lebih terang untuk membaca lama" },
-  { value: "system", label: "Sistem", icon: Monitor, description: "Ikuti preferensi perangkat" },
-] as const;
+const optionValues = ["dark", "light", "system"] as const;
 
 export function ThemeSelector({ className }: { className?: string }) {
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const { messages } = useLanguage();
+  const t = messages.settings.theme;
   const [mounted, setMounted] = useState(false);
+
+  const options = [
+    { value: "dark" as const, label: t.dark, icon: Moon, description: t.darkDescription },
+    { value: "light" as const, label: t.light, icon: Sun, description: t.lightDescription },
+    { value: "system" as const, label: t.system, icon: Monitor, description: t.systemDescription },
+  ];
 
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
     return (
       <div className={cn("grid gap-3 sm:grid-cols-3", className)}>
-        {options.map((opt) => (
-          <div key={opt.value} className="h-28 animate-pulse rounded-2xl bg-muted" />
+        {optionValues.map((value) => (
+          <div key={value} className="h-28 animate-pulse rounded-2xl bg-muted" />
         ))}
       </div>
     );
@@ -58,7 +58,9 @@ export function ThemeSelector({ className }: { className?: string }) {
             <div className="flex w-full items-center justify-between">
               <Icon className="size-5 text-muted-foreground" />
               {selected && (
-                <span className="badge-pill border-accent/30 py-0.5 text-[10px]">Aktif</span>
+                <span className="badge-pill border-accent/30 py-0.5 text-[10px]">
+                  {messages.common.active}
+                </span>
               )}
             </div>
             <div>
@@ -78,9 +80,9 @@ export function ThemeSelector({ className }: { className?: string }) {
       })}
       {resolvedTheme && (
         <p className="col-span-full text-xs text-muted-foreground">
-          Tema aktif:{" "}
+          {t.activeTheme}:{" "}
           <span className="text-foreground">
-            {resolvedTheme === "dark" ? "Gelap" : "Terang"}
+            {resolvedTheme === "dark" ? t.resolvedDark : t.resolvedLight}
           </span>
         </p>
       )}

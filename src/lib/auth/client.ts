@@ -1,3 +1,4 @@
+import { registerDeviceOnLogin, touchDeviceSession } from "./devices";
 import type { AuthSession, LoginInput, RegisterInput, StoredUser, UserRole } from "./types";
 
 const USERS_KEY = "bursa-users";
@@ -179,6 +180,7 @@ export function getSession(): AuthSession | null {
       avatarUrl: session.avatarUrl ?? null,
       bio: session.bio ?? null,
     };
+    touchDeviceSession(cachedSession.userId);
     cachedSessionRaw = raw;
     return cachedSession;
   } catch {
@@ -222,6 +224,10 @@ export function login(input: LoginInput): { ok: true; session: AuthSession } | {
   }
 
   const session = toSession(user);
+  const deviceResult = registerDeviceOnLogin(session.userId);
+  if (!deviceResult.ok) {
+    return { ok: false, error: deviceResult.error };
+  }
   setSession(session);
   // Heal missing Prisma rows for older localStorage-only accounts.
   void ensurePrismaUser(session);
@@ -260,6 +266,10 @@ export function register(
 
   writeUsers([...users, newUser]);
   const session = toSession(newUser);
+  const deviceResult = registerDeviceOnLogin(session.userId);
+  if (!deviceResult.ok) {
+    return { ok: false, error: deviceResult.error };
+  }
   setSession(session);
   // Fire-and-forget: create matching Prisma User so chat/enroll APIs work immediately.
   void ensurePrismaUser(session);
@@ -361,6 +371,13 @@ export function updateLocalProfile(input: {
   };
   setSession(nextSession);
   return nextSession;
+}
+
+/** Member-since date from local auth store (mock / client-side accounts). */
+export function getStoredUserCreatedAt(email: string): string | null {
+  if (!isBrowser()) return null;
+  const user = readUsers().find((u) => u.email === email.trim().toLowerCase());
+  return user?.createdAt ?? null;
 }
 
 export function getDemoCredentials() {
