@@ -168,7 +168,7 @@ export default function AdminPendapatanPage() {
       header: "Komisi platform",
       sortable: true,
       render: (row) => (
-        <span className="text-emerald-400">{formatRupiah(row.platformFee)}</span>
+        <span className="text-emerald">{formatRupiah(row.platformFee)}</span>
       ),
     },
     {
@@ -222,7 +222,7 @@ export default function AdminPendapatanPage() {
       header: "Komisi platform",
       sortable: true,
       render: (row) => (
-        <span className="text-emerald-400">{formatRupiah(row.platformFee)}</span>
+        <span className="text-emerald">{formatRupiah(row.platformFee)}</span>
       ),
     },
     {
@@ -262,7 +262,7 @@ export default function AdminPendapatanPage() {
       header: "Komisi platform",
       sortable: true,
       render: (row) => (
-        <span className="text-emerald-400">{formatRupiah(row.platformFee)}</span>
+        <span className="text-emerald">{formatRupiah(row.platformFee)}</span>
       ),
     },
     {
@@ -304,11 +304,11 @@ export default function AdminPendapatanPage() {
             Rincian asal usul pendapatan platform (komisi{" "}
             {report.commissionRatePercent}% dari harga kelas).
             {source === "mock" && (
-              <span className="ml-2 text-amber-400">(mode demo — API tidak tersedia)</span>
+              <span className="ml-2 text-amber">(mode demo — API tidak tersedia)</span>
             )}
           </p>
         </div>
-        <div className="flex flex-wrap gap-1 rounded-lg border border-white/10 bg-[#0f1117] p-1">
+        <div className="flex flex-wrap gap-1 rounded-lg border border-border bg-background p-1">
           {periodButtons.map((btn) => (
             <button
               key={btn.id}
@@ -327,7 +327,7 @@ export default function AdminPendapatanPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-amber-100/90">
+      <div className="rounded-xl border border-amber/20 bg-amber/5 px-4 py-3 text-sm text-foreground">
         {report.note}
         {period !== "all" && (
           <span className="ml-1 text-muted-foreground">

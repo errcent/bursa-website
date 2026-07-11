@@ -304,11 +304,11 @@ export default function AdminChangeRequestsPage() {
 
             <div>
               <p className="mb-2 text-muted-foreground">Perbandingan field</p>
-              <div className="overflow-hidden rounded-lg border border-white/10">
-                <div className="grid grid-cols-[1fr_1fr_1fr] gap-px bg-white/10 text-xs font-medium text-muted-foreground">
-                  <div className="bg-black/40 px-3 py-2">Field</div>
-                  <div className="bg-black/40 px-3 py-2">Saat diajukan</div>
-                  <div className="bg-black/40 px-3 py-2">Usulan</div>
+              <div className="overflow-hidden rounded-lg border border-border">
+                <div className="grid grid-cols-[1fr_1fr_1fr] gap-px bg-border text-xs font-medium text-muted-foreground">
+                  <div className="bg-muted px-3 py-2">Field</div>
+                  <div className="bg-muted px-3 py-2">Saat diajukan</div>
+                  <div className="bg-muted px-3 py-2">Usulan</div>
                 </div>
                 {previewDiff.length === 0 ? (
                   <p className="px-3 py-3 text-muted-foreground">Tidak ada payload.</p>
@@ -316,17 +316,17 @@ export default function AdminChangeRequestsPage() {
                   previewDiff.map((row) => (
                     <div
                       key={row.key}
-                      className="grid grid-cols-[1fr_1fr_1fr] gap-px bg-white/10 text-sm"
+                      className="grid grid-cols-[1fr_1fr_1fr] gap-px bg-border text-sm"
                     >
-                      <div className="bg-black/30 px-3 py-2 text-muted-foreground">
+                      <div className="bg-muted/60 px-3 py-2 text-muted-foreground">
                         {fieldLabel(row.key)}
                       </div>
-                      <div className="break-all bg-black/30 px-3 py-2">
+                      <div className="break-all bg-muted/60 px-3 py-2">
                         {formatValue(row.before)}
                       </div>
                       <div
-                        className={`break-all bg-black/30 px-3 py-2 ${
-                          row.changed ? "font-medium text-amber-300" : ""
+                        className={`break-all bg-muted/60 px-3 py-2 ${
+                          row.changed ? "font-medium text-amber" : ""
                         }`}
                       >
                         {formatValue(row.after)}
@@ -340,13 +340,13 @@ export default function AdminChangeRequestsPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <p className="mb-1 text-muted-foreground">Snapshot JSON</p>
-                <pre className="max-h-40 overflow-auto rounded-lg border border-white/8 bg-black/30 p-3 text-xs">
+                <pre className="max-h-40 overflow-auto rounded-lg border border-border bg-muted p-3 text-xs">
                   {JSON.stringify(preview.currentSnapshot, null, 2) ?? "null"}
                 </pre>
               </div>
               <div>
                 <p className="mb-1 text-muted-foreground">Usulan JSON</p>
-                <pre className="max-h-40 overflow-auto rounded-lg border border-white/8 bg-black/30 p-3 text-xs">
+                <pre className="max-h-40 overflow-auto rounded-lg border border-border bg-muted p-3 text-xs">
                   {JSON.stringify(preview.proposedData, null, 2) ?? "null"}
                 </pre>
               </div>
@@ -364,7 +364,7 @@ export default function AdminChangeRequestsPage() {
                 </label>
                 {useEdit && (
                   <textarea
-                    className="mt-2 min-h-40 w-full rounded-lg border border-white/10 bg-black/30 p-3 font-mono text-xs"
+                    className="mt-2 min-h-40 w-full rounded-lg border border-border bg-muted p-3 font-mono text-xs"
                     value={editJson}
                     onChange={(e) => setEditJson(e.target.value)}
                   />
@@ -375,7 +375,7 @@ export default function AdminChangeRequestsPage() {
             <label className="block">
               <span className="mb-1 block text-muted-foreground">Catatan admin</span>
               <textarea
-                className="min-h-20 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2"
+                className="min-h-20 w-full rounded-lg border border-border bg-muted px-3 py-2"
                 value={adminNote}
                 onChange={(e) => setAdminNote(e.target.value)}
                 disabled={preview.status !== "pending"}
@@ -386,7 +386,7 @@ export default function AdminChangeRequestsPage() {
             {preview.appliedData != null && (
               <div>
                 <p className="mb-1 text-muted-foreground">Data yang diterapkan</p>
-                <pre className="max-h-40 overflow-auto rounded-lg border border-white/8 bg-black/30 p-3 text-xs">
+                <pre className="max-h-40 overflow-auto rounded-lg border border-border bg-muted p-3 text-xs">
                   {JSON.stringify(preview.appliedData, null, 2)}
                 </pre>
               </div>

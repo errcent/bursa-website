@@ -38,14 +38,14 @@ export function FormModal({
     <dialog
       ref={dialogRef}
       className={cn(
-        "fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[#161a24] p-0 text-foreground shadow-2xl backdrop:bg-black/60",
+        "fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-card p-0 text-foreground shadow-2xl backdrop:bg-background/60",
         size === "md" && "max-w-lg",
         size === "lg" && "max-w-2xl",
         size === "xl" && "max-w-4xl"
       )}
       onClose={onClose}
     >
-      <div className="flex items-start justify-between border-b border-white/8 px-5 py-4">
+      <div className="flex items-start justify-between border-b border-border px-5 py-4">
         <div>
           <h2 className="font-heading text-lg font-semibold">{title}</h2>
           {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
@@ -55,7 +55,7 @@ export function FormModal({
         </Button>
       </div>
       <div className="max-h-[70vh] overflow-y-auto px-5 py-4">{children}</div>
-      {footer && <div className="border-t border-white/8 px-5 py-4">{footer}</div>}
+      {footer && <div className="border-t border-border px-5 py-4">{footer}</div>}
     </dialog>
   );
 }

@@ -69,7 +69,7 @@ export default function AdminUsersPage() {
         <select
           value={row.role}
           onChange={(e) => changeRole(row, e.target.value as AdminUserRole)}
-          className="rounded-lg border border-white/10 bg-[#0f1117] px-2 py-1 text-sm"
+          className="rounded-lg border border-border bg-background px-2 py-1 text-sm"
         >
           {ROLES.map((r) => (
             <option key={r} value={r}>
@@ -123,7 +123,7 @@ export default function AdminUsersPage() {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value as AdminUserRole | "all")}
-            className="h-9 rounded-lg border border-white/10 bg-[#0f1117] px-3 text-sm"
+            className="h-9 rounded-lg border border-border bg-background px-3 text-sm"
           >
             <option value="all">Semua peran</option>
             {ROLES.map((r) => (

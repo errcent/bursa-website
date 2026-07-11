@@ -35,7 +35,7 @@ export default function MentorDashboardPage() {
         </div>
         <div className="surface-card p-5">
           <p className="text-xs text-muted-foreground">Status profil</p>
-          <p className="mt-1 font-heading text-lg font-semibold text-emerald-500">Aktif</p>
+          <p className="mt-1 font-heading text-lg font-semibold text-emerald">Aktif</p>
         </div>
       </div>
 

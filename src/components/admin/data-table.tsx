@@ -74,8 +74,8 @@ export function DataTable<T>({
   }
 
   return (
-    <div className="rounded-xl border border-white/8 bg-[#161a24]">
-      <div className="flex flex-col gap-3 border-b border-white/8 p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="surface-card overflow-hidden p-0">
+      <div className="flex flex-col gap-3 border-b border-border p-4 sm:flex-row sm:items-center sm:justify-between">
         <input
           type="search"
           value={query}
@@ -84,7 +84,7 @@ export function DataTable<T>({
             setPage(0);
           }}
           placeholder={searchPlaceholder}
-          className="h-9 w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 text-sm outline-none focus:border-primary/50 sm:max-w-xs"
+          className="h-9 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-primary/50 sm:max-w-xs"
         />
         {toolbar}
       </div>
@@ -92,7 +92,7 @@ export function DataTable<T>({
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead>
-            <tr className="border-b border-white/8 text-xs text-muted-foreground">
+            <tr className="border-b border-border text-xs text-muted-foreground">
               {columns.map((col) => (
                 <th key={col.key} className={cn("px-4 py-3 font-medium", col.className)}>
                   {col.sortable ? (
@@ -122,7 +122,7 @@ export function DataTable<T>({
               pageData.map((row) => (
                 <tr
                   key={getRowId(row)}
-                  className="border-b border-white/5 transition-colors hover:bg-white/[0.02]"
+                  className="border-b border-border/60 transition-colors hover:bg-muted/40"
                 >
                   {columns.map((col) => (
                     <td key={col.key} className={cn("px-4 py-3 align-middle", col.className)}>

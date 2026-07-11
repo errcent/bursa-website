@@ -241,13 +241,13 @@ export default function AdminBranchChangeRequestsPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <p className="mb-1 text-muted-foreground">Snapshot</p>
-                <pre className="max-h-40 overflow-auto rounded-lg border border-white/8 bg-black/30 p-3 text-xs">
+                <pre className="max-h-40 overflow-auto rounded-lg border border-border bg-muted p-3 text-xs">
                   {JSON.stringify(preview.currentSnapshot, null, 2) ?? "null"}
                 </pre>
               </div>
               <div>
                 <p className="mb-1 text-muted-foreground">Usulan</p>
-                <pre className="max-h-40 overflow-auto rounded-lg border border-white/8 bg-black/30 p-3 text-xs">
+                <pre className="max-h-40 overflow-auto rounded-lg border border-border bg-muted p-3 text-xs">
                   {JSON.stringify(preview.proposedData, null, 2) ?? "null"}
                 </pre>
               </div>
@@ -264,7 +264,7 @@ export default function AdminBranchChangeRequestsPage() {
                 </label>
                 {useEdit && (
                   <textarea
-                    className="mt-2 min-h-40 w-full rounded-lg border border-white/10 bg-black/30 p-3 font-mono text-xs"
+                    className="mt-2 min-h-40 w-full rounded-lg border border-border bg-muted p-3 font-mono text-xs"
                     value={editJson}
                     onChange={(e) => setEditJson(e.target.value)}
                   />
@@ -274,7 +274,7 @@ export default function AdminBranchChangeRequestsPage() {
             <label className="block">
               <span className="mb-1 block text-muted-foreground">Catatan admin</span>
               <textarea
-                className="min-h-20 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2"
+                className="min-h-20 w-full rounded-lg border border-border bg-muted px-3 py-2"
                 value={adminNote}
                 onChange={(e) => setAdminNote(e.target.value)}
                 disabled={preview.status !== "pending"}

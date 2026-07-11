@@ -251,7 +251,7 @@ export default function AdminMentorsPage() {
               required
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
             />
           </label>
           <label className="space-y-1 text-sm">
@@ -261,7 +261,7 @@ export default function AdminMentorsPage() {
               type="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
             />
           </label>
           <label className="space-y-1 text-sm">
@@ -272,7 +272,7 @@ export default function AdminMentorsPage() {
               min={1}
               value={form.yearsExperience}
               onChange={(e) => setForm({ ...form, yearsExperience: Number(e.target.value) })}
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
             />
           </label>
           <label className="space-y-1 text-sm sm:col-span-2">
@@ -281,7 +281,7 @@ export default function AdminMentorsPage() {
               required
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
             />
           </label>
           <label className="space-y-1 text-sm sm:col-span-2">
@@ -291,7 +291,7 @@ export default function AdminMentorsPage() {
               rows={3}
               value={form.bio}
               onChange={(e) => setForm({ ...form, bio: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
             />
           </label>
           <label className="space-y-1 text-sm sm:col-span-2">
@@ -300,7 +300,7 @@ export default function AdminMentorsPage() {
               rows={2}
               value={form.philosophy}
               onChange={(e) => setForm({ ...form, philosophy: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
             />
           </label>
           <fieldset className="space-y-2 sm:col-span-2">
@@ -346,7 +346,7 @@ export default function AdminMentorsPage() {
                 value={form.sessionPrice ?? ""}
                 onChange={(e) => setForm({ ...form, sessionPrice: e.target.value })}
                 placeholder="Rp750.000 / 45 menit"
-                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2"
               />
             </label>
           )}

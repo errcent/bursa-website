@@ -280,7 +280,7 @@ export default function AdminCoursesPage() {
                 required
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2"
               />
             </label>
             <label className="space-y-1 text-sm sm:col-span-2">
@@ -290,7 +290,7 @@ export default function AdminCoursesPage() {
                 rows={2}
                 value={form.shortDescription}
                 onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
-                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2"
               />
             </label>
             <label className="space-y-1 text-sm">
@@ -299,7 +299,7 @@ export default function AdminCoursesPage() {
                 required
                 value={form.mentorId}
                 onChange={(e) => setForm({ ...form, mentorId: e.target.value })}
-                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2"
               >
                 {mentors.map((m) => (
                   <option key={m.id} value={m.id}>
@@ -315,7 +315,7 @@ export default function AdminCoursesPage() {
                 type="number"
                 value={form.price}
                 onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
-                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2"
               />
             </label>
             <label className="space-y-1 text-sm">
@@ -323,7 +323,7 @@ export default function AdminCoursesPage() {
               <select
                 value={form.level}
                 onChange={(e) => setForm({ ...form, level: e.target.value as Level })}
-                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2"
               >
                 {LEVELS.map((l) => (
                   <option key={l} value={l}>
@@ -337,7 +337,7 @@ export default function AdminCoursesPage() {
               <select
                 value={form.instrument}
                 onChange={(e) => setForm({ ...form, instrument: e.target.value as Instrument })}
-                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2"
               >
                 {INSTRUMENTS.map((i) => (
                   <option key={i} value={i}>
@@ -353,7 +353,7 @@ export default function AdminCoursesPage() {
                 min={1}
                 value={form.durationHours}
                 onChange={(e) => setForm({ ...form, durationHours: Number(e.target.value) })}
-                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2"
               />
             </label>
             <label className="flex items-center gap-2 text-sm sm:col-span-2">
@@ -366,7 +366,7 @@ export default function AdminCoursesPage() {
             </label>
             <div className="space-y-2 text-sm sm:col-span-2">
               <span>Thumbnail Kelas</span>
-              <div className="flex flex-col gap-3 rounded-lg border border-white/8 bg-[#0f1117] p-3 sm:flex-row sm:items-start">
+              <div className="flex flex-col gap-3 rounded-lg border border-border bg-muted/60 p-3 sm:flex-row sm:items-start">
                 <CourseThumbnail
                   course={{
                     slug: previewSlug,
@@ -385,9 +385,9 @@ export default function AdminCoursesPage() {
                       })
                     }
                     placeholder="/courses/slug.svg atau /uploads/courses/..."
-                    className="w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-xs"
+                    className="w-full rounded-lg border border-border bg-transparent px-3 py-2 text-xs"
                   />
-                  <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs hover:bg-white/5">
+                  <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs hover:bg-muted/60">
                     <ImageIcon className="size-3.5" />
                     {uploadingThumbnail ? "Mengunggah..." : "Unggah gambar"}
                     <input
@@ -412,7 +412,7 @@ export default function AdminCoursesPage() {
           </div>
 
           {editing ? (
-            <div className="rounded-lg border border-white/8 p-4">
+            <div className="rounded-lg border border-border p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="font-heading text-sm font-medium">Kurikulum</h3>
@@ -434,7 +434,7 @@ export default function AdminCoursesPage() {
               </div>
             </div>
           ) : (
-            <div className="rounded-lg border border-white/8 p-4">
+            <div className="rounded-lg border border-border p-4">
               <div className="mb-3 flex items-center justify-between gap-2">
                 <div>
                   <h3 className="font-heading text-sm font-medium">Modul & Lesson awal</h3>
@@ -465,12 +465,12 @@ export default function AdminCoursesPage() {
               </div>
               <div className="space-y-4">
                 {form.modules.map((mod, mi) => (
-                  <div key={mi} className="rounded-lg bg-[#0f1117] p-3">
+                  <div key={mi} className="rounded-lg bg-muted/60 p-3">
                     <div className="mb-2 flex gap-2">
                       <input
                         value={mod.title}
                         onChange={(e) => updateModule(mi, e.target.value)}
-                        className="w-full rounded border border-white/10 bg-transparent px-2 py-1 text-sm font-medium"
+                        className="w-full rounded border border-border bg-transparent px-2 py-1 text-sm font-medium"
                       />
                       <Button
                         type="button"
@@ -491,7 +491,7 @@ export default function AdminCoursesPage() {
                         <input
                           value={lesson.title}
                           onChange={(e) => updateLesson(mi, li, "title", e.target.value)}
-                          className="min-w-0 flex-1 rounded border border-white/10 bg-transparent px-2 py-1 text-sm"
+                          className="min-w-0 flex-1 rounded border border-border bg-transparent px-2 py-1 text-sm"
                           placeholder="Judul lesson"
                         />
                         <input
@@ -499,7 +499,7 @@ export default function AdminCoursesPage() {
                           min={1}
                           value={lesson.durationMinutes}
                           onChange={(e) => updateLesson(mi, li, "durationMinutes", e.target.value)}
-                          className="w-24 rounded border border-white/10 bg-transparent px-2 py-1 text-sm"
+                          className="w-24 rounded border border-border bg-transparent px-2 py-1 text-sm"
                           placeholder="Menit"
                         />
                         <Button

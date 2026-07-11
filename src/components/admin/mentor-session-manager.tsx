@@ -176,7 +176,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/10 bg-[#12151d] p-5">
+      <div className="surface-card p-5">
         <h2 className="font-heading text-base font-semibold">Pengaturan Sesi</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Centang untuk mengaktifkan fitur &quot;Tanya sesi 1-on-1&quot; di profil mentor.
@@ -188,7 +188,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
               checked={availableFor1on1}
               disabled={toggling}
               onChange={toggle1on1}
-              className="size-4 rounded border-white/20"
+              className="size-4 rounded border-border"
             />
             <span>
               Tersedia untuk sesi 1-on-1
@@ -202,7 +202,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
                 value={sessionPrice}
                 onChange={(e) => setSessionPrice(e.target.value)}
                 placeholder="Rp750.000 / 45 menit"
-                className="flex-1 rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2 text-sm"
+                className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
               />
               <Button size="sm" variant="outline" onClick={saveSessionPrice}>
                 Simpan
@@ -212,7 +212,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/10 bg-[#12151d] p-5">
+      <div className="surface-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="font-heading text-base font-semibold">Slot Tersedia</h2>
@@ -241,7 +241,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[520px] text-left text-sm">
               <thead>
-                <tr className="border-b border-white/10 text-xs text-muted-foreground">
+                <tr className="border-b border-border text-xs text-muted-foreground">
                   <th className="pb-2 pr-4 font-medium">Tanggal</th>
                   <th className="pb-2 pr-4 font-medium">Waktu</th>
                   <th className="pb-2 pr-4 font-medium">Status</th>
@@ -251,7 +251,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
               </thead>
               <tbody>
                 {slots.map((slot) => (
-                  <tr key={slot.id} className="border-b border-white/5">
+                  <tr key={slot.id} className="border-b border-border/60">
                     <td className="py-3 pr-4">{formatSlotDate(slot.startAt)}</td>
                     <td className="py-3 pr-4">{formatSlotRange(slot.startAt, slot.endAt)}</td>
                     <td className="py-3 pr-4">
@@ -309,7 +309,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
               type="date"
               value={form.date}
               onChange={(e) => setForm({ ...form, date: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
             />
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -320,7 +320,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
                 type="time"
                 value={form.startTime}
                 onChange={(e) => setForm({ ...form, startTime: e.target.value })}
-                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2"
               />
             </label>
             <label className="space-y-1 text-sm">
@@ -330,7 +330,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
                 type="time"
                 value={form.endTime}
                 onChange={(e) => setForm({ ...form, endTime: e.target.value })}
-                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2"
               />
             </label>
           </div>
@@ -340,7 +340,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
               value={form.notes ?? ""}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
               placeholder="Contoh: Zoom, topik diskusi umum"
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
             />
           </label>
         </form>

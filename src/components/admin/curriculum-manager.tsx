@@ -321,7 +321,7 @@ export function CurriculumManager({ courseId }: Props) {
         <div className="space-y-4">
           {course.modules.map((mod, mi) => (
             <section key={mod.id ?? mi} className="surface-card overflow-hidden">
-              <div className="flex flex-wrap items-center gap-2 border-b border-white/8 bg-[#12151d]/60 px-4 py-3">
+              <div className="flex flex-wrap items-center gap-2 border-b border-border bg-surface/60 px-4 py-3">
                 <GripVertical className="size-4 text-muted-foreground" />
                 <div className="min-w-0 flex-1">
                   <h2 className="font-heading text-sm font-semibold">{mod.title}</h2>
@@ -474,7 +474,7 @@ export function CurriculumManager({ courseId }: Props) {
               required
               value={moduleTitle}
               onChange={(e) => setModuleTitle(e.target.value)}
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
             />
           </label>
         </form>
@@ -504,7 +504,7 @@ export function CurriculumManager({ courseId }: Props) {
               required
               value={lessonForm.title}
               onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
             />
           </label>
           <label className="block space-y-1 text-sm">
@@ -513,7 +513,7 @@ export function CurriculumManager({ courseId }: Props) {
               rows={3}
               value={lessonForm.description ?? ""}
               onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
               placeholder="Ringkasan materi lesson (opsional)"
             />
           </label>
@@ -528,7 +528,7 @@ export function CurriculumManager({ courseId }: Props) {
                 onChange={(e) =>
                   setLessonForm({ ...lessonForm, durationMinutes: Number(e.target.value) })
                 }
-                className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2"
               />
             </label>
             {editingLesson && (
@@ -537,7 +537,7 @@ export function CurriculumManager({ courseId }: Props) {
                 <select
                   value={lessonForm.moduleId ?? lessonModuleId ?? ""}
                   onChange={(e) => setLessonForm({ ...lessonForm, moduleId: e.target.value })}
-                  className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2"
                 >
                   {course.modules.map((mod) => (
                     <option key={mod.id} value={mod.id}>
@@ -554,7 +554,7 @@ export function CurriculumManager({ courseId }: Props) {
               type="url"
               value={lessonForm.videoUrl ?? ""}
               onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2"
               placeholder="https://... atau /uploads/videos/..."
             />
             <span className="text-xs text-muted-foreground">
@@ -566,7 +566,7 @@ export function CurriculumManager({ courseId }: Props) {
             <input
               type="file"
               accept="video/mp4,video/webm,video/quicktime"
-              className="w-full rounded-lg border border-white/10 bg-[#0f1117] px-3 py-2 text-sm file:mr-3 file:rounded file:border-0 file:bg-primary/20 file:px-2 file:py-1 file:text-primary"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm file:mr-3 file:rounded file:border-0 file:bg-primary/20 file:px-2 file:py-1 file:text-primary"
               onChange={async (e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;

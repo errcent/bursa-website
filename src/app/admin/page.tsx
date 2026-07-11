@@ -65,7 +65,7 @@ export default function AdminDashboardPage() {
           <p className="text-sm text-muted-foreground">
             Ringkasan operasional platform Bursa.
             {source === "mock" && (
-              <span className="ml-2 text-amber-400">(mode demo — API tidak tersedia)</span>
+              <span className="ml-2 text-amber">(mode demo — API tidak tersedia)</span>
             )}
           </p>
         </div>
@@ -124,13 +124,13 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      <section className="rounded-xl border border-white/8 bg-[#161a24] p-5">
+      <section className="surface-card p-5">
         <h2 className="mb-4 font-heading text-sm font-semibold">Aktivitas Terbaru</h2>
         <ul className="space-y-3">
           {stats.recentActivity.map((item) => (
             <li
               key={item.id}
-              className="flex items-start justify-between gap-4 border-b border-white/5 pb-3 last:border-0 last:pb-0"
+              className="flex items-start justify-between gap-4 border-b border-border/60 pb-3 last:border-0 last:pb-0"
             >
               <div>
                 <p className="text-sm">{item.description}</p>

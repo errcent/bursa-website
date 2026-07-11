@@ -172,7 +172,7 @@ export default function AdminModerationPage() {
           <div className="space-y-4 text-sm">
             <div>
               <p className="text-xs text-muted-foreground uppercase">Pratinjau Konten</p>
-              <p className="mt-1 rounded-lg bg-[#0f1117] p-3">{preview.contentPreview}</p>
+              <p className="mt-1 rounded-lg bg-muted/60 p-3">{preview.contentPreview}</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
@@ -200,7 +200,7 @@ export default function AdminModerationPage() {
                 </p>
                 <ul className="space-y-2">
                   {preview.history.map((h) => (
-                    <li key={h.id} className="flex justify-between rounded bg-[#0f1117] px-3 py-2">
+                    <li key={h.id} className="flex justify-between rounded bg-muted/60 px-3 py-2">
                       <span>
                         {h.action} — {h.actor}
                       </span>

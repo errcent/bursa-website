@@ -24,7 +24,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0f1117]">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <p className="text-sm text-muted-foreground">Memverifikasi akses admin...</p>
       </div>
     );

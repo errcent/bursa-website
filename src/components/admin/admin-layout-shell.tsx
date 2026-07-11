@@ -15,7 +15,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
   return (
     <AdminGuard>
       <AdminToastProvider>
-        <div className="admin-panel flex min-h-screen flex-col bg-[#0f1117] text-foreground">
+        <div className="flex min-h-screen flex-col bg-background text-foreground">
           <QcBanner panelLabel="Admin Panel" />
           <div className="flex min-h-0 flex-1">
             <AdminSidebar />

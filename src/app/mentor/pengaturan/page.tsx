@@ -99,7 +99,7 @@ export default function MentorSettingsPage() {
             <Button type="submit" size="sm">
               Simpan pengaturan
             </Button>
-            {saved && <span className="text-xs text-emerald-500">Tersimpan (prototype lokal).</span>}
+            {saved && <span className="text-xs text-emerald">Tersimpan (prototype lokal).</span>}
           </div>
         )}
       </form>

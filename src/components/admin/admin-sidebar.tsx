@@ -34,8 +34,8 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-60 shrink-0 border-r border-white/8 bg-[#12151d] lg:flex lg:flex-col">
-      <div className="border-b border-white/8 px-5 py-5">
+    <aside className="hidden w-60 shrink-0 border-r border-border bg-surface/40 lg:flex lg:flex-col">
+      <div className="border-b border-border px-5 py-5">
         <Link href="/admin" className="block">
           <p className="font-heading text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase">
             Bursa
@@ -55,7 +55,7 @@ export function AdminSidebar() {
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 active
                   ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
               )}
             >
               <Icon className="size-4 shrink-0" />
@@ -64,7 +64,7 @@ export function AdminSidebar() {
           );
         })}
       </nav>
-      <div className="border-t border-white/8 p-4">
+      <div className="border-t border-border p-4">
         <Link href="/" className="text-xs text-muted-foreground hover:text-foreground">
           ← Kembali ke situs
         </Link>

@@ -207,7 +207,7 @@ export default function AdminChatRoomsPage() {
       )}
 
       {collabRooms.length > 0 && (
-        <div className="space-y-3 rounded-xl border border-white/8 bg-[#161a24] p-4">
+        <div className="space-y-3 surface-card p-4">
           <div className="flex flex-wrap items-center gap-2">
             <MessageSquare className="size-4 text-primary" />
             <h2 className="font-heading text-sm font-semibold">Kolaborasi per mentor</h2>
@@ -232,7 +232,7 @@ export default function AdminChatRoomsPage() {
                       className={`w-full rounded-lg border px-3 py-2 text-left transition-colors ${
                         selected
                           ? "border-primary/40 bg-primary/10"
-                          : "border-white/8 bg-black/20 hover:border-white/15"
+                          : "border border-border bg-muted/60 hover:border-border"
                       }`}
                     >
                       <p className="truncate text-sm font-medium">{room.mentorName}</p>
@@ -308,7 +308,7 @@ export default function AdminChatRoomsPage() {
           <label className="block text-sm">
             <span className="mb-1 block text-muted-foreground">Nama</span>
             <input
-              className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2"
+              className="w-full rounded-lg border border-border bg-muted px-3 py-2"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               required
@@ -317,7 +317,7 @@ export default function AdminChatRoomsPage() {
           <label className="block text-sm">
             <span className="mb-1 block text-muted-foreground">Jenis ruang</span>
             <select
-              className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2"
+              className="w-full rounded-lg border border-border bg-muted px-3 py-2"
               value={form.roomKind ?? "mentor_community"}
               onChange={(e) => {
                 const roomKind = e.target.value as ChatRoomFormInput["roomKind"];
@@ -337,7 +337,7 @@ export default function AdminChatRoomsPage() {
             <label className="block text-sm">
               <span className="mb-1 block text-muted-foreground">Mentor</span>
               <select
-                className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2"
+                className="w-full rounded-lg border border-border bg-muted px-3 py-2"
                 value={form.mentorId}
                 onChange={(e) => setForm((f) => ({ ...f, mentorId: e.target.value }))}
                 required
@@ -353,7 +353,7 @@ export default function AdminChatRoomsPage() {
           <label className="block text-sm">
             <span className="mb-1 block text-muted-foreground">Tier</span>
             <select
-              className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2"
+              className="w-full rounded-lg border border-border bg-muted px-3 py-2"
               value={form.tier}
               onChange={(e) =>
                 setForm((f) => ({ ...f, tier: e.target.value as ChatRoomTierLabel }))
@@ -369,7 +369,7 @@ export default function AdminChatRoomsPage() {
           <label className="block text-sm">
             <span className="mb-1 block text-muted-foreground">Deskripsi</span>
             <textarea
-              className="min-h-20 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2"
+              className="min-h-20 w-full rounded-lg border border-border bg-muted px-3 py-2"
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
             />
@@ -402,7 +402,7 @@ export default function AdminChatRoomsPage() {
       >
         <ul className="space-y-2 text-sm">
           {members.map((m) => (
-            <li key={m.id} className="flex justify-between border-b border-white/5 py-2">
+            <li key={m.id} className="flex justify-between border-b border-border/60 py-2">
               <span>
                 {m.name}{" "}
                 <span className="text-xs text-muted-foreground">({m.email})</span>

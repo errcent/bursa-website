@@ -7,7 +7,7 @@ export default function AdminSettingsPage() {
           Konfigurasi global platform akan tersedia di sini.
         </p>
       </div>
-      <div className="rounded-xl border border-white/8 bg-[#161a24] p-6 text-sm text-muted-foreground">
+      <div className="surface-card p-6 text-sm text-muted-foreground">
         <p>Maintenance mode, batas chat room per mentor, dan preferensi proteksi konten dapat dikelola dari modul ini pada iterasi berikutnya.</p>
       </div>
     </div>

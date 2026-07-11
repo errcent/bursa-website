@@ -15,7 +15,7 @@ export function StatCard({ label, value, hint, icon: Icon, trend, className }: S
   return (
     <div
       className={cn(
-        "rounded-xl border border-white/8 bg-[#161a24] p-4 shadow-sm",
+        "surface-card p-4",
         className
       )}
     >

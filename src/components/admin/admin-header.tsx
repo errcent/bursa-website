@@ -57,7 +57,7 @@ export function AdminHeader({ segments }: { segments: string[] }) {
   const roleLinks = getRoleNavLinks(session?.role);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-white/8 bg-[#0f1117]/90 backdrop-blur-md">
+    <header className="sticky top-0 z-20 border-b border-border bg-card/90 backdrop-blur-md">
       <div className="flex h-14 items-center justify-between gap-4 px-4 sm:px-6">
         <nav aria-label="Breadcrumb" className="min-w-0">
           <ol className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -94,7 +94,7 @@ export function AdminHeader({ segments }: { segments: string[] }) {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger
-              className="relative z-30 flex size-9 items-center justify-center rounded-full border border-white/15 outline-none hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-ring"
+              className="relative z-30 flex size-9 items-center justify-center rounded-full border border-border outline-none hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={`Menu akun ${session?.name ?? "admin"}`}
             >
               <Avatar className="size-8 pointer-events-none">
