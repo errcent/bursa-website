@@ -54,18 +54,6 @@ export interface Course {
   moduleCount?: number;
 }
 
-export interface FounderProfile {
-  name: string;
-  role: string;
-  initials: string;
-}
-
-export interface FounderResponse {
-  id: string;
-  topic: string;
-  response: string;
-}
-
 export interface Review {
   name: string;
   initials: string;

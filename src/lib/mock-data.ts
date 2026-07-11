@@ -1,4 +1,4 @@
-import type { Course, FounderProfile, FounderResponse, Mentor, Review } from "./types";
+import type { Course, Mentor, Review } from "./types";
 import { defaultCourseThumbnailPath } from "./courses/thumbnails";
 
 /**
@@ -369,39 +369,6 @@ export const courses: Course[] = [
         ],
       },
     ],
-  },
-];
-
-export const founder: FounderProfile = {
-  name: "Galih Wirawan",
-  role: "Founder, Bursa",
-  initials: "GW",
-};
-
-export const founderManifesto =
-  "Trading itu skill yang bisa dipelajari — tapi prosesnya harus jujur. Bursa saya bangun buat kamu yang mau belajar dengan benar: struktur jelas, mentor terverifikasi, tanpa janji palsu. Kalau itu yang kamu cari, welcome.";
-
-export const featuredFounderResponse =
-  "Terima kasih untuk semua masukan di fase beta. Kami terus membangun platform belajar trading yang transparan: edukasi terstruktur, mentor terverifikasi, dan keputusan trading tetap di tangan kamu.";
-
-export const founderResponses: FounderResponse[] = [
-  {
-    id: "why-bursa",
-    topic: "Mengapa Bursa ada",
-    response:
-      "Saya bukan mau bikin platform yang janji cuan cepat. Bursa ada karena saya lihat terlalu banyak pemula belajar dari potongan konten random — tanpa struktur, tanpa konteks, dan sering dari orang yang cuma jual mimpi.",
-  },
-  {
-    id: "what-not",
-    topic: "Apa yang Bursa bukan",
-    response:
-      "Bursa bukan broker atau aplikasi trading langsung, dan bukan shortcut ke profit. Ini tempat belajar proses — baca chart, pahami risiko, dan bangun kebiasaan trading yang masuk akal.",
-  },
-  {
-    id: "hope",
-    topic: "Harapan saya ke kamu",
-    response:
-      "Kalau kamu datang ke sini, saya harap kamu siap belajar pelan-pelan. Trading itu skill, bukan lotre. Platform ini saya bangun supaya kamu punya jalur yang jelas — bukan lagi scroll sampai bingung.",
   },
 ];
 
