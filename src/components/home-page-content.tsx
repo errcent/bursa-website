@@ -83,7 +83,6 @@ export function HomePageContent({
             <div className="mx-auto flex max-w-3xl flex-col items-center text-center lg:mx-0 lg:items-start lg:text-left">
               <RevealText delay={0.05}>
                 <span className="badge-pill mb-6 inline-flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-accent" aria-hidden />
                   <HeroTyping text={heroBadgeText} />
                 </span>
               </RevealText>
