@@ -7,6 +7,7 @@ import { AuthProvider } from "@/components/auth-provider";
 import { NextAuthProvider } from "@/components/next-auth-provider";
 import { LanguageProvider } from "@/components/language-provider";
 import { CursorGlow } from "@/components/cursor-glow";
+import { NavbarRouteTracker } from "@/components/navbar-route-tracker";
 import { PreloaderGate } from "@/components/preloader-gate";
 import { StickyBottomCta } from "@/components/sticky-bottom-cta";
 
@@ -65,6 +66,7 @@ export default function RootLayout({
         <ThemeProvider>
           <CursorGlow />
           <PreloaderGate>
+            <NavbarRouteTracker />
             <NextAuthProvider>
               <AuthProvider>
                 <LanguageProvider>

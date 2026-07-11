@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import { usePathname } from "next/navigation";
+import { shouldPlayNavbarIntro } from "@/lib/nav/navbar-intro-state";
 import { Code2, GraduationCap, LayoutDashboard, Menu, Shield } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
@@ -66,15 +67,17 @@ export function SiteNavbar() {
   const { session } = useAuth();
   const isKatalog = pathname === "/katalog";
   const [menuOpen, setMenuOpen] = useState(false);
+  const [playIntro] = useState(() => shouldPlayNavbarIntro(pathname, false));
   const roleLinks = getRoleNavLinks(session?.role);
+  const animateIntro = playIntro && !prefersReducedMotion;
 
   return (
     <div className="nav-shell">
       <motion.header
         className="nav-glass"
-        initial={prefersReducedMotion ? false : { y: -16, opacity: 0 }}
+        initial={animateIntro ? { y: -16, opacity: 0 } : false}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: easeOut }}
+        transition={animateIntro ? { duration: 0.5, ease: easeOut } : { duration: 0 }}
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
         <div className="flex h-14 min-h-14 items-center justify-between gap-2 px-3 sm:h-[3.75rem] sm:gap-4 sm:px-5">
