@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+import { DeveloperDocsNav } from "@/components/developer/docs-nav";
+import { DOC_NAV_SECTIONS } from "@/lib/developer-docs/sections";
+
 export const metadata = {
   title: "Developer Documentation",
   description:
@@ -44,53 +47,28 @@ function Strong({ children }: { children: React.ReactNode }) {
   return <strong className="text-foreground">{children}</strong>;
 }
 
-const TOC: [string, string][] = [
-  ["arsitektur", "1. Arsitektur"],
-  ["roles", "2. Empat role"],
-  ["auth", "3. Auth & bridge"],
-  ["chat", "4. Sistem chat"],
-  ["kursus", "5. Kursus & usulan"],
-  ["enrollment", "6. Enrollment & hub"],
-  ["belajar", "7. Learning"],
-  ["pendapatan", "8. Pendapatan"],
-  ["routes", "9. Routes & API"],
-  ["setup", "10. Setup lokal"],
-  ["privasi", "11. Privasi chat"],
-  ["demo", "12. Akun test"],
-  ["qc", "Alur QC"],
-];
-
 export default function DeveloperDocsPage() {
   return (
-    <div className="mx-auto max-w-3xl space-y-10">
-      <div>
+    <div className="mx-auto max-w-6xl">
+      <div className="mb-6">
         <p className="eyebrow mb-2">Onboarding</p>
         <h1 className="font-heading text-3xl font-semibold tracking-tight">
           Developer Documentation
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
           Panduan lengkap agar developer baru memahami bagaimana website Bursa disusun: stack,
-          role, auth, chat, kursus, enrollment, learning, pendapatan, API, setup lokal, dan
-          batasan privasi yang wajib dihormati.
+          role, auth, chat, kursus, enrollment, learning, pendapatan, API reference, konvensi
+          error, environment variables, pembayaran, setup lokal, dan batasan privasi yang wajib
+          dihormati. Gunakan kotak pencarian di samping (atau menu &ldquo;Daftar isi&rdquo; di
+          mobile) untuk melompat ke bagian yang dicari.
         </p>
       </div>
 
-      <nav className="surface-card p-4">
-        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Daftar isi
-        </p>
-        <ul className="grid gap-1 text-sm sm:grid-cols-2">
-          {TOC.map(([id, label]) => (
-            <li key={id}>
-              <a href={`#${id}`} className="text-foreground/90 hover:text-primary">
-                {label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <div className="gap-8 lg:flex">
+        <DeveloperDocsNav sections={DOC_NAV_SECTIONS} />
 
-      {/* ── 1. Architecture ───────────────────────────────────────── */}
+        <div className="min-w-0 flex-1 space-y-10 lg:max-w-3xl">
+          {/* ── 1. Architecture ───────────────────────────────────────── */}
       <DocSection id="arsitektur" title="1. Arsitektur overview">
         <p>
           Aplikasi hidup di folder <Code>Website/</Code>. Ini adalah prototype lanjutan: frontend
@@ -117,7 +95,10 @@ export default function DeveloperDocsPage() {
               </tr>
               <tr className="border-t border-border">
                 <td className="px-3 py-2 text-foreground">Database</td>
-                <td className="px-3 py-2">Prisma 6 + SQLite (dev) → PostgreSQL (rencana prod)</td>
+                <td className="px-3 py-2">
+                  Prisma 6 + PostgreSQL (Neon) — dipakai untuk dev &amp; prod, lihat{" "}
+                  <Code>prisma/schema.prisma</Code>
+                </td>
               </tr>
               <tr className="border-t border-border">
                 <td className="px-3 py-2 text-foreground">Validasi</td>
@@ -682,8 +663,412 @@ export default function DeveloperDocsPage() {
         </DocSub>
       </DocSection>
 
-      {/* ── 10. Setup ─────────────────────────────────────────────── */}
-      <DocSection id="setup" title="10. Setup lokal">
+      {/* ── 10. API reference ─────────────────────────────────────── */}
+      <DocSection id="api-reference" title="10. API reference lengkap">
+        <p>
+          Semua endpoint di bawah adalah route handler Next.js App Router (
+          <Code>src/app/api/**/route.ts</Code>). Kecuali disebutkan lain, identitas dikirim lewat
+          header <Code>x-user-email</Code> (bridge localStorage → Prisma, lihat §3). Body divalidasi
+          dengan Zod (<Code>src/lib/validations</Code>, <Code>lib/auth/validation.ts</Code>).
+        </p>
+
+        <DocSub title="Auth (/api/auth/*)">
+          <div className="overflow-x-auto rounded-lg border border-border">
+            <table className="w-full min-w-[36rem] text-left text-xs">
+              <thead className="bg-muted/50 text-foreground">
+                <tr>
+                  <th className="px-3 py-2 font-medium">Endpoint</th>
+                  <th className="px-3 py-2 font-medium">Auth</th>
+                  <th className="px-3 py-2 font-medium">Keterangan</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["POST /api/auth/register", "Publik", "Daftar learner baru. Rate limit 3/jam per IP. 409 jika email/username/phone duplikat."],
+                  ["POST /api/auth/login", "Publik", "identifier (email/username/phone) + password. Rate limit 5/menit. Pesan error generik (anti-enumeration)."],
+                  ["POST /api/auth/forgot-password", "Publik", "Selalu balas pesan generik yang sama baik email ada atau tidak. Rate limit 3/jam."],
+                  ["GET /api/auth/reset-password", "Publik", "?token= — validasi token reset sebelum menampilkan form."],
+                  ["POST /api/auth/reset-password", "Publik", "token + password baru. Rate limit 5/menit."],
+                  ["GET /api/auth/check-username", "Publik", "?username= — { available: boolean } untuk form daftar/edit profil."],
+                  ["GET /api/auth/oauth-status", "Publik", "{ google: boolean } — apakah Google OAuth dikonfigurasi (env terisi)."],
+                  ["GET /api/auth/oauth-bridge", "NextAuth session", "Menjembatani sesi Google OAuth ke auth prototype client (localStorage)."],
+                  ["* /api/auth/[...nextauth]", "—", "Handler NextAuth.js (Google provider), lihat src/auth.ts."],
+                  ["POST /api/auth/ensure-user", "x-user-email (atau body)", "Bridge akun localStorage-only → baris Prisma (dipanggil setelah login/daftar)."],
+                ].map(([ep, auth, desc]) => (
+                  <tr key={ep} className="border-t border-border">
+                    <td className="px-3 py-2 font-mono text-foreground">{ep}</td>
+                    <td className="px-3 py-2">{auth}</td>
+                    <td className="px-3 py-2">{desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </DocSub>
+
+        <DocSub title="Profil & akun (/api/me/*)">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <Code>GET/PUT /api/me/profile</Code> — profil dasar (nama, bio, dsb.)
+            </li>
+            <li>
+              <Code>POST /api/me/avatar</Code> — upload avatar (multipart form-data)
+            </li>
+            <li>
+              <Code>GET /api/me/learning</Code> — ringkasan kelas yang sedang dipelajari
+            </li>
+            <li>
+              <Code>GET /api/me/transactions</Code> — riwayat transaksi pembelian
+            </li>
+            <li>
+              <Code>GET/POST /api/me/watchlist</Code>, <Code>DELETE .../[id]</Code> — watchlist
+              ticker saham/crypto/forex; body <Code>{"{ ticker, instrument, notes? }"}</Code>
+            </li>
+            <li>
+              <Code>GET/POST /api/me/playlists</Code>, <Code>GET/PUT/DELETE .../[slug]</Code> —
+              koleksi lesson/course kustom milik user
+            </li>
+          </ul>
+        </DocSub>
+
+        <DocSub title="Kursus & pembelajaran (/api/courses/[courseSlug]/*)">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <Code>POST /api/courses/[courseSlug]/enroll</Code> — enroll + healing hub membership
+              (§6); <Code>GET</Code> untuk cek status enroll
+            </li>
+            <li>
+              <Code>GET/POST /api/courses/[courseSlug]/progress</Code> — progres per lesson
+            </li>
+            <li>
+              <Code>GET/POST /api/courses/[courseSlug]/reviews</Code> — rating + komentar (unik per
+              user/course)
+            </li>
+            <li>
+              <Code>GET/POST .../lessons/[lessonId]/notes</Code>,{" "}
+              <Code>PUT/DELETE .../notes/[noteId]</Code> — catatan bertimestamp video
+            </li>
+            <li>
+              <Code>GET/POST .../lessons/[lessonId]/questions</Code>,{" "}
+              <Code>.../questions/[questionId]</Code>, <Code>.../like</Code>,{" "}
+              <Code>.../replies</Code> — Q&amp;A per lesson (pin, like, balasan)
+            </li>
+          </ul>
+        </DocSub>
+
+        <DocSub title="Video">
+          <p>
+            <Code>POST /api/video/playback-token</Code> — body{" "}
+            <Code>{"{ userId?, email?, courseId, lessonId, isPreview? }"}</Code>. Preview gratis
+            (modul pertama, atau flag <Code>isPreviewGratis</Code>) tidak butuh login; konten
+            berbayar butuh <Code>userId</Code> + enrollment terverifikasi (localStorage atau
+            Prisma). Balasan berisi token bertanggal-kedaluwarsa + <Code>videoUrl</Code>.
+          </p>
+        </DocSub>
+
+        <DocSub title="Chat (/api/chat/rooms/*) & trading">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <Code>GET/POST /api/chat/rooms</Code>, <Code>GET .../[roomId]</Code>,{" "}
+              <Code>POST .../join</Code>, <Code>GET .../members</Code>,{" "}
+              <Code>DELETE .../members/[userId]</Code>
+            </li>
+            <li>
+              <Code>GET/POST .../[roomId]/messages</Code>,{" "}
+              <Code>PATCH/DELETE .../messages/[messageId]</Code>,{" "}
+              <Code>POST .../messages/[messageId]/react</Code>
+            </li>
+            <li>
+              <Code>POST .../[roomId]/read</Code> — update <Code>lastReadAt</Code> (unread counter)
+            </li>
+            <li>
+              <Code>GET .../[roomId]/live</Code> — polling endpoint untuk pesan baru (bukan
+              WebSocket)
+            </li>
+            <li>
+              <Code>GET/POST /api/trading/polls</Code>,{" "}
+              <Code>POST .../[pollId]/vote</Code> — polling di dalam chat
+            </li>
+            <li>
+              <Code>GET/POST /api/trading/signals</Code> — kartu sinyal trading (entry/target/SL)
+            </li>
+          </ul>
+        </DocSub>
+
+        <DocSub title="Sesi 1-on-1 mentor (booking)">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <Code>GET /api/mentors/[slug]/availability-slots</Code> — publik; daftar slot terbuka
+              (belum dibooking, di masa depan) jika <Code>mentor.availableFor1on1</Code>
+            </li>
+            <li>
+              <Code>POST /api/mentors/[slug]/availability-slots/[slotId]/book</Code> — butuh
+              identitas (email); menandai slot <Code>isBooked</Code>, 409 jika sudah dibooking, 410
+              jika sudah lewat waktu. Prototype: tidak ada pembayaran terpisah untuk sesi.
+            </li>
+            <li>
+              Admin kelola slot: <Code>GET/POST /api/admin/mentors/[id]/availability-slots</Code>,{" "}
+              <Code>PATCH/DELETE .../availability-slots/[slotId]</Code> (butuh{" "}
+              <Code>requireAdmin</Code>)
+            </li>
+          </ul>
+        </DocSub>
+
+        <DocSub title="Admin (/api/admin/*) — requireAdmin, kecuali disebut lain">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <Code>/api/admin/courses</Code> (+ <Code>[id]</Code>, <Code>modules</Code>,{" "}
+              <Code>modules/[moduleId]/lessons</Code>, <Code>curriculum</Code>) — CRUD kurikulum
+            </li>
+            <li>
+              <Code>/api/admin/uploads/thumbnail</Code>,{" "}
+              <Code>/api/admin/uploads/video</Code> — multipart upload ke{" "}
+              <Code>public/uploads/*</Code> (thumbnail: JPG/PNG/WebP/SVG, maks 5 MB)
+            </li>
+            <li>
+              <Code>/api/admin/mentors</Code> (+ <Code>[id]</Code>) — CRUD profil mentor
+            </li>
+            <li>
+              <Code>/api/admin/users</Code> (+ <Code>[id]</Code>) — kelola user &amp; role
+            </li>
+            <li>
+              <Code>/api/admin/chat-rooms</Code> (+ <Code>[id]</Code>,{" "}
+              <Code>[id]/members</Code>) — kelola room &amp; keanggotaan
+            </li>
+            <li>
+              <Code>/api/admin/moderation</Code> (+ <Code>[id]</Code>) — antrian moderasi konten
+              dilaporkan
+            </li>
+            <li>
+              <Code>/api/admin/change-requests</Code>,{" "}
+              <Code>/api/admin/branch-change-requests</Code> (+ <Code>[id]</Code>) — approve/reject
+              usulan mentor (§5, §4)
+            </li>
+            <li>
+              <Code>GET /api/admin/pendapatan</Code> — laporan revenue (§8);{" "}
+              <Code>GET /api/admin/stats</Code> — ringkasan dashboard (total user, mentor, course,
+              enrollment, revenue, room aktif, moderasi pending, aktivitas terbaru)
+            </li>
+            <li>
+              <Code>/api/admin/collaboration-chat</Code> — chat kolaborasi staf admin↔mentor
+              (<Code>isStaffCollaboration</Code>)
+            </li>
+            <li>
+              <Code>requireAdminPanel</Code> (admin + developer, read) vs. <Code>requireAdmin</Code>{" "}
+              (admin saja, mutasi) — lihat <Code>lib/admin/server.ts</Code>
+            </li>
+          </ul>
+        </DocSub>
+
+        <DocSub title="Mentor (/api/mentor/*) — role MENTOR">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <Code>/api/mentor/profile</Code>, <Code>/api/mentor/courses</Code>
+            </li>
+            <li>
+              <Code>/api/mentor/change-requests</Code>,{" "}
+              <Code>/api/mentor/branch-change-requests</Code> — ajukan usulan (§5, §4)
+            </li>
+            <li>
+              <Code>/api/mentor/chat-rooms</Code>,{" "}
+              <Code>/api/mentor/collaboration-chat</Code> — hub sendiri + chat staf privat
+            </li>
+            <li>
+              <Code>POST /api/mentor/applications</Code> — publik; formulir pendaftaran calon
+              mentor (bukan mentor login), lihat <Code>lib/mentor-program/applications.ts</Code>
+            </li>
+          </ul>
+        </DocSub>
+      </DocSection>
+
+      {/* ── 11. Error handling & conventions ──────────────────────── */}
+      <DocSection id="konvensi-error" title="11. Error handling & konvensi API">
+        <p>
+          Konvensi umum ada di <Code>lib/api-utils.ts</Code>: <Code>jsonOk(data, status?)</Code>{" "}
+          untuk respons sukses dan <Code>jsonError(message, status?)</Code> →{" "}
+          <Code>{"{ error: message }"}</Code> untuk gagal. <Code>handleApiError(error)</Code>{" "}
+          dipanggil di blok <Code>catch</Code> hampir semua route dan menstandardkan mapping error.
+        </p>
+
+        <div className="overflow-x-auto rounded-lg border border-border">
+          <table className="w-full min-w-[30rem] text-left text-xs">
+            <thead className="bg-muted/50 text-foreground">
+              <tr>
+                <th className="px-3 py-2 font-medium">Status</th>
+                <th className="px-3 py-2 font-medium">Kapan dipakai</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["400", "Payload tidak lengkap/salah bentuk (non-Zod)"],
+                ["401", "Belum autentikasi (x-user-email hilang, sesi OAuth tidak ada)"],
+                ["403", "Autentikasi ok tapi tidak diizinkan (bukan admin/mentor, cabang privat)"],
+                ["404", "Entity tidak ditemukan (mentor, course, room, slot, dsb.)"],
+                ["409", "Konflik (email/username dipakai, slot sudah dibooking)"],
+                ["410", "Slot/resource sudah kedaluwarsa (mis. slot booking sudah lewat)"],
+                ["422", "Validasi Zod gagal — pesan diambil dari ZodError.issues"],
+                ["429", "Rate limit terlampaui (lihat checkRateLimit di bawah)"],
+                ["500", "Error server tak terduga / Prisma"],
+              ].map(([code, desc]) => (
+                <tr key={code} className="border-t border-border">
+                  <td className="px-3 py-2 font-mono text-foreground">{code}</td>
+                  <td className="px-3 py-2">{desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <DocSub title="Rate limiting (prototype, in-memory)">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <Code>lib/auth/rate-limit.ts</Code> — sliding window sederhana per key (in-memory
+              Map), key biasanya <Code>{"`aksi:${ip}`"}</Code> dari <Code>clientIp(request)</Code>
+            </li>
+            <li>Register: 3/jam · Login: 5/menit · Forgot/reset password: 3/jam &amp; 5/menit</li>
+            <li>
+              <Strong>Catatan produksi</Strong>: in-memory tidak scale di multi-instance (Vercel
+              serverless) — rencana pindah ke Redis (<Code>@upstash/ratelimit</Code>) sebelum go
+              live sungguhan
+            </li>
+          </ul>
+        </DocSub>
+
+        <DocSub title="Validasi & keamanan">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              Body divalidasi Zod sebelum diproses; error Zod otomatis jadi status 422 lewat{" "}
+              <Code>handleApiError</Code>
+            </li>
+            <li>
+              Password di-hash bcrypt cost 12 (<Code>lib/auth/password-policy.ts</Code>); pesan
+              login gagal generik (tidak membedakan email salah vs password salah — OWASP A07)
+            </li>
+            <li>
+              Reset password: token disimpan sebagai hash saja (<Code>PasswordResetToken</Code>),
+              single-use, ada <Code>expiresAt</Code>/<Code>usedAt</Code>
+            </li>
+            <li>
+              Error Prisma umum (P2002 duplikat, P2003 referensi tidak valid, P2022 kolom belum
+              migrasi) sudah dipetakan ke pesan yang manusiawi di <Code>handleApiError</Code>
+            </li>
+          </ul>
+        </DocSub>
+      </DocSection>
+
+      {/* ── 12. Environment variables & deployment ────────────────── */}
+      <DocSection id="env-deploy" title="12. Environment variables & deployment">
+        <p>
+          Lihat <Code>.env.example</Code> di root <Code>Website/</Code> untuk template lengkap.
+          Database wajib PostgreSQL (Neon direkomendasikan) — <Strong>SQLite tidak berjalan di
+          Vercel</Strong>, jadi gunakan Neon (atau Postgres lain) juga untuk dev lokal.
+        </p>
+
+        <div className="overflow-x-auto rounded-lg border border-border">
+          <table className="w-full min-w-[32rem] text-left text-xs">
+            <thead className="bg-muted/50 text-foreground">
+              <tr>
+                <th className="px-3 py-2 font-medium">Variabel</th>
+                <th className="px-3 py-2 font-medium">Wajib?</th>
+                <th className="px-3 py-2 font-medium">Keterangan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["DATABASE_URL", "Ya", "Neon pooled connection string (host mengandung -pooler)"],
+                ["DIRECT_URL", "Ya", "Neon direct connection — dipakai prisma migrate deploy"],
+                ["NEXTAUTH_SECRET / AUTH_SECRET", "Opsional*", "Wajib jika ingin login Google aktif; generate: npx auth secret"],
+                ["NEXTAUTH_URL", "Opsional*", "URL publik situs, tanpa trailing slash (mis. https://bursa.example.com)"],
+                ["GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET", "Opsional*", "OAuth 2.0 Client dari Google Cloud Console — tanpa ini, tombol Google disembunyikan (oauth-status)"],
+              ].map(([name, req, desc]) => (
+                <tr key={name} className="border-t border-border">
+                  <td className="px-3 py-2 font-mono text-foreground">{name}</td>
+                  <td className="px-3 py-2">{req}</td>
+                  <td className="px-3 py-2">{desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs">
+          *Opsional untuk build/prototype, tapi tanpa keempatnya alur &ldquo;Lanjutkan dengan
+          Google&rdquo; tidak berfungsi.
+        </p>
+
+        <DocSub title="Build & deploy (Vercel)">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              Build command project: <Code>prisma generate &amp;&amp; prisma migrate deploy &amp;&amp;
+              next build</Code> (lihat <Code>package.json</Code> → <Code>scripts.build</Code>) —
+              migrasi Prisma otomatis dijalankan setiap deploy
+            </li>
+            <li>
+              Set <Code>DATABASE_URL</Code> + <Code>DIRECT_URL</Code> (dan variabel Google OAuth
+              jika dipakai) di Vercel Project Settings → Environment Variables sebelum deploy
+              pertama
+            </li>
+            <li>
+              <Code>postinstall</Code> menjalankan <Code>prisma generate</Code> otomatis saat{" "}
+              <Code>npm install</Code>
+            </li>
+            <li>
+              Setelah deploy, verifikasi lewat halaman ini (
+              <Code>/developer/docs</Code>) dan QC Hub (<Code>/developer</Code>) sebelum
+              mengumumkan rilis ke tim
+            </li>
+          </ul>
+        </DocSub>
+      </DocSection>
+
+      {/* ── 13. Payment / checkout ─────────────────────────────────── */}
+      <DocSection id="pembayaran" title="13. Pembayaran & checkout (mock)">
+        <p>
+          Checkout saat ini adalah <Strong>simulasi</Strong> (<Code>checkout-form.tsx</Code>) —
+          tidak ada payment gateway sungguhan yang terhubung. Memilih metode pembayaran lalu
+          &ldquo;bayar&rdquo; langsung membuat <Code>Enrollment</Code> + <Code>Transaction</Code>{" "}
+          status <Code>COMPLETED</Code> (§6), tanpa redirect ke provider eksternal.
+        </p>
+
+        <DocSub title="Metode pembayaran yang ditampilkan (lib/payment/methods.ts)">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>E-wallet: GoPay, OVO, DANA</li>
+            <li>Transfer Virtual Account (BCA, Mandiri, BNI, BRI, dll.)</li>
+            <li>Kartu Kredit/Debit (Visa, Mastercard, JCB)</li>
+            <li>QRIS</li>
+          </ul>
+        </DocSub>
+
+        <DocSub title="Belum ada — jangan asumsikan sudah terhubung">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <Strong>Tidak ada webhook pembayaran</Strong> — tidak ada route{" "}
+              <Code>/api/webhooks/*</Code> atau callback dari payment gateway di codebase saat ini
+            </li>
+            <li>
+              Integrasi Midtrans (atau gateway Indonesia lain) masih rencana — komentar di{" "}
+              <Code>lib/payment/methods.ts</Code> menyebut &ldquo;selaras dengan integrasi Midtrans
+              (P3)&rdquo; sebagai fase mendatang, belum diimplementasikan
+            </li>
+            <li>
+              Saat mengimplementasikan gateway sungguhan: tambahkan endpoint webhook terpisah yang
+              memverifikasi signature dari provider, lalu update <Code>Transaction.status</Code>{" "}
+              (dan hindari mempercayai status dari client)
+            </li>
+          </ul>
+        </DocSub>
+
+        <DocSub title="Booking sesi 1-on-1 mentor">
+          <p>
+            Booking slot mentor (§10, &ldquo;Sesi 1-on-1 mentor&rdquo;) juga{" "}
+            <Strong>tidak</Strong> memicu pembayaran terpisah di API — slot langsung ditandai{" "}
+            <Code>isBooked</Code> saat learner booking. <Code>sessionPrice</Code> di profil mentor
+            saat ini hanya label informasi di UI.
+          </p>
+        </DocSub>
+      </DocSection>
+
+      {/* ── 14. Setup ─────────────────────────────────────────────── */}
+      <DocSection id="setup" title="14. Setup lokal">
         <p>
           Kerjakan dari folder <Code>Website/</Code>. Pastikan Node.js terpasang.
         </p>
@@ -692,9 +1077,15 @@ export default function DeveloperDocsPage() {
             <Code>npm install</Code>
           </li>
           <li>
-            Siapkan <Code>.env</Code> / <Code>.env.local</Code> dengan{" "}
-            <Code>DATABASE_URL</Code> (SQLite file, mis.{" "}
-            <Code>file:./dev.db</Code>)
+            Salin <Code>.env.example</Code> → <Code>.env</Code> (atau <Code>.env.local</Code>) dan
+            isi <Code>DATABASE_URL</Code> + <Code>DIRECT_URL</Code> dengan connection string Neon
+            PostgreSQL (§12) — buat project gratis di{" "}
+            <Link
+              href="https://neon.tech"
+              className="text-primary underline-offset-2 hover:underline"
+            >
+              neon.tech
+            </Link>
           </li>
           <li>
             <Code>npm run db:generate</Code> — generate Prisma Client
@@ -767,8 +1158,8 @@ export default function DeveloperDocsPage() {
         </DocSub>
       </DocSection>
 
-      {/* ── 11. Privacy ───────────────────────────────────────────── */}
-      <DocSection id="privasi" title="11. Aturan privasi (wajib)">
+      {/* ── 15. Privacy ───────────────────────────────────────────── */}
+      <DocSection id="privasi" title="15. Aturan privasi (wajib)">
         <p>
           Privasi chat mentor ada di <Strong>cabang (branch)</Strong>, bukan “room privat”
           terpisah untuk hub. Aturan di <Code>lib/chat/access.ts</Code> dan{" "}
@@ -803,8 +1194,8 @@ export default function DeveloperDocsPage() {
         </ul>
       </DocSection>
 
-      {/* ── 12. Demo accounts ─────────────────────────────────────── */}
-      <DocSection id="demo" title="12. Akun test">
+      {/* ── 16. Demo accounts ─────────────────────────────────────── */}
+      <DocSection id="demo" title="16. Akun test">
         <p>
           Di-seed lewat <Code>prisma/seed.ts</Code> dan juga di-seed ke localStorage client.
           Password default kecuali disebutkan: <Code>password123</Code>.
@@ -884,6 +1275,8 @@ export default function DeveloperDocsPage() {
           .
         </p>
       </DocSection>
+        </div>
+      </div>
     </div>
   );
 }

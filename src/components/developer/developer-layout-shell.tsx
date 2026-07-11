@@ -56,11 +56,11 @@ export function DeveloperLayoutShell({ children }: { children: React.ReactNode }
               >
                 <Menu className="size-4" />
               </SheetTrigger>
-              <SheetContent side="left" className="w-[280px] p-0 lg:hidden">
+              <SheetContent side="left" className="flex w-[280px] flex-col p-0 lg:hidden">
                 <SheetHeader className="border-b border-border">
                   <SheetTitle>Developer</SheetTitle>
                 </SheetHeader>
-                <nav className="flex flex-col gap-1 p-3">
+                <nav className="flex flex-1 flex-col gap-1 p-3">
                   {mobileLinks.map((link) => (
                     <SheetClose
                       key={link.href}
@@ -81,6 +81,18 @@ export function DeveloperLayoutShell({ children }: { children: React.ReactNode }
                     </SheetClose>
                   ))}
                 </nav>
+                <div className="border-t border-border p-4">
+                  <SheetClose
+                    render={
+                      <Link
+                        href="/"
+                        className="text-xs text-muted-foreground hover:text-foreground"
+                      />
+                    }
+                  >
+                    ← Kembali ke situs
+                  </SheetClose>
+                </div>
               </SheetContent>
             </Sheet>
           </header>
