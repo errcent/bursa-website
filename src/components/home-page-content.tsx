@@ -11,7 +11,7 @@ import { PricingModelComparison } from "@/components/home/pricing-model-comparis
 import { TrustVerificationSection } from "@/components/home/trust-verification-section";
 import { HeroLivingBackground } from "@/components/hero-living-bg";
 import { HeroTyping } from "@/components/motion/hero-typing";
-import { MentorCarousel } from "@/components/mentor-carousel";
+import { MentorLandingSection } from "@/components/mentor-landing-section";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { HomeFaqSection } from "@/components/home/home-faq-section";
@@ -68,10 +68,6 @@ export function HomePageContent({
   const featuredCourses = [...courses]
     .sort((a, b) => b.studentsCount - a.studentsCount)
     .slice(0, 6);
-
-  const featuredMentors = [...mentors]
-    .sort((a, b) => b.studentsCount - a.studentsCount)
-    .slice(0, 8);
 
   const totalStudents = courses.reduce((sum, course) => sum + course.studentsCount, 0);
   const heroBadgeText = "Platform Belajar Trading #1 di Indonesia";
@@ -189,10 +185,10 @@ export function HomePageContent({
           </div>
         </section>
 
-        {/* Mentor stage */}
+        {/* Mentor landing — group photo hero */}
         <section className="section-loose border-b border-border/60">
           <div className="container-page">
-            <MentorCarousel mentors={featuredMentors} />
+            <MentorLandingSection mentors={mentors} />
           </div>
         </section>
 

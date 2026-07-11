@@ -455,8 +455,8 @@
       max-width: 20rem;
     }
     .catalog-row-scroll--mentor > * {
-      width: var(--carousel-peek-item-width);
-      max-width: 14rem;
+      width: 34%;
+      max-width: 8.5rem;
     }
 
     .katalog-hero-compact {
@@ -473,10 +473,6 @@
 
     .catalog-filter-compact.surface-card {
       @apply gap-2.5 rounded-xl p-3;
-    }
-
-    .course-card-poster.surface-card-hover:hover {
-      transform: scale(1.03);
     }
   }
 
@@ -529,218 +525,109 @@
     background-color: var(--accent);
   }
 
-  /* Mentor Stage — overlapping cutout lineup, always-on captions, no card chrome. */
-  .mentor-stage-section {
+  /* Mentor landing — group photo hero with bottom fade into page background. */
+  .mentor-landing-section {
+    position: relative;
+  }
+
+  .mentor-landing-hero {
     position: relative;
     isolation: isolate;
-    background: radial-gradient(ellipse 65% 55% at 50% 100%, var(--glow), transparent 72%);
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    min-height: clamp(18rem, 52vw, 28rem);
+    border-radius: var(--radius-2xl);
+    background: #050505;
   }
-  .mentor-stage-section::before {
-    content: "";
+
+  .mentor-landing-photo {
+    object-fit: cover;
+    object-position: center 18%;
+  }
+
+  .mentor-landing-fade {
     pointer-events: none;
     position: absolute;
-    left: 50%;
-    bottom: 0;
-    z-index: 0;
-    width: min(64rem, 92%);
-    height: 60%;
-    transform: translateX(-50%);
-    background: radial-gradient(ellipse 60% 100% at 50% 100%, var(--glow-strong), transparent 75%);
-    opacity: 0.7;
-  }
-
-  .mentor-stage-stats {
-    @apply inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground;
-  }
-
-  .mentor-stage {
-    position: relative;
-    overflow: hidden;
-    margin-left: calc(-1 * var(--landing-container-px));
-    margin-right: calc(-1 * var(--landing-container-px));
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-    mask-image: linear-gradient(
-      to right,
-      transparent,
-      black 6%,
-      black 94%,
-      transparent
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to bottom,
+      rgba(5, 5, 5, 0.08) 0%,
+      rgba(5, 5, 5, 0.02) 28%,
+      transparent 42%,
+      color-mix(in oklch, var(--background) 18%, transparent) 62%,
+      color-mix(in oklch, var(--background) 72%, transparent) 82%,
+      var(--background) 100%
     );
   }
 
-  .mentor-stage-track {
-    display: flex;
-    width: max-content;
-    align-items: flex-start;
-    animation: mentor-stage-ltr 56s linear infinite;
-    will-change: transform;
-  }
-
-  .mentor-stage-item {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-shrink: 0;
-    width: clamp(6.75rem, 19vw, 9.5rem);
-    margin-left: clamp(-1.2rem, -3.2vw, -1.7rem);
-    padding-top: 0.25rem;
-  }
-
-  .mentor-stage-item:first-child {
-    margin-left: 0;
-  }
-
-  .mentor-stage-item:hover,
-  .mentor-stage-item:focus-visible {
-    z-index: 4 !important;
-  }
-
-  .mentor-stage-item:hover .mentor-stage-figure,
-  .mentor-stage-item:focus-visible .mentor-stage-figure {
-    transform: translateY(-6px) scale(1.05);
-    filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.3)) blur(0px);
-    opacity: 1;
-  }
-
-  .mentor-stage-figure {
-    position: relative;
-    display: flex;
-    height: clamp(9.5rem, 26vw, 13.5rem);
-    width: 100%;
-    align-items: flex-end;
-    justify-content: center;
-    pointer-events: none;
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease, opacity 0.4s ease;
-  }
-
-  /* Depth-of-field: only the stage center is at full clarity; the wings recede. */
-  .mentor-stage-figure[data-depth="0"] {
-    transform: scale(1);
-    opacity: 1;
-    filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.28)) blur(0px);
-  }
-
-  .mentor-stage-figure[data-depth="1"] {
-    transform: scale(0.96);
-    opacity: 0.96;
-    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.22)) blur(0.4px);
-  }
-
-  .mentor-stage-figure[data-depth="2"] {
-    transform: scale(0.92);
-    opacity: 0.9;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.18)) blur(0.75px);
-  }
-
-  .mentor-stage-cutout {
-    height: 100%;
-    width: 100%;
-    object-fit: contain;
-    object-position: bottom center;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .mentor-stage-cutout.is-loaded {
-    opacity: 1;
-  }
-
-  .mentor-stage-skeleton {
+  .mentor-landing-header {
     position: absolute;
-    inset: 8% 12% 0 12%;
+    inset-inline: 0;
+    top: 0;
+    z-index: 2;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px 999px 0.75rem 0.75rem;
-    background: linear-gradient(160deg, var(--surface-2), var(--card));
-    font-family: var(--font-heading);
-    font-size: clamp(1.25rem, 3.4vw, 1.75rem);
-    font-weight: 600;
-    color: var(--muted-foreground);
-  }
-
-  .mentor-stage-item:has(.mentor-stage-cutout.is-loaded) .mentor-stage-skeleton {
-    display: none;
-  }
-
-  .mentor-stage-cutout.is-loading ~ .mentor-stage-skeleton {
-    animation: mentor-stage-pulse 1.4s ease-in-out infinite;
-  }
-
-  /* Always-visible caption — legible on mobile without hover, unlike a tooltip. */
-  .mentor-stage-caption {
-    position: relative;
-    z-index: 5;
-    display: flex;
-    width: 100%;
-    max-width: 7.25rem;
+    max-width: 42rem;
     flex-direction: column;
     align-items: center;
-    gap: 0.05rem;
-    margin-top: 0.5rem;
+    padding: clamp(1.75rem, 5vw, 3rem) clamp(1.25rem, 4vw, 2rem) 0;
+    margin-inline: auto;
     text-align: center;
   }
 
-  .mentor-stage-name {
-    max-width: 100%;
+  .mentor-landing-eyebrow {
+    @apply mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-accent;
+  }
+
+  .mentor-landing-title {
     font-family: var(--font-heading);
-    font-size: 0.75rem;
+    font-size: clamp(1.625rem, 4vw, 2rem);
     font-weight: 600;
-    color: var(--foreground);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: #f5f5f5;
   }
 
-  .mentor-stage-credential {
-    max-width: 100%;
-    font-size: 0.6875rem;
-    font-weight: 400;
-    color: var(--muted-foreground);
+  .mentor-landing-copy {
+    @apply mt-2 max-w-lg text-sm leading-relaxed sm:text-base;
+    color: rgba(245, 245, 245, 0.78);
   }
 
-  @keyframes mentor-stage-ltr {
-    from {
-      transform: translateX(-50%);
+  .mentor-landing-stats {
+    @apply mt-3 inline-flex items-center gap-1.5 text-xs font-medium;
+    color: rgba(245, 245, 245, 0.72);
+  }
+
+  .mentor-landing-cta {
+    @apply mt-4 inline-flex items-center gap-1 text-sm font-medium transition-colors;
+    color: #f5f5f5;
+  }
+
+  .mentor-landing-cta:hover {
+    color: var(--accent);
+  }
+
+  .mentor-landing-cta:focus-visible {
+    @apply rounded-sm outline-2 outline-offset-4 outline-ring;
+  }
+
+  @media (min-width: 640px) {
+    .mentor-landing-hero {
+      aspect-ratio: 21 / 9;
     }
-    to {
-      transform: translateX(0);
+
+    .mentor-landing-photo {
+      object-position: center 22%;
     }
   }
 
-  @keyframes mentor-stage-pulse {
-    0%, 100% {
-      opacity: 0.6;
-    }
-    50% {
-      opacity: 1;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .mentor-stage-track {
-      animation: none;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      width: 100%;
-      max-width: 100%;
-      padding-inline: var(--landing-container-px);
-      scrollbar-width: none;
-    }
-
-    .mentor-stage-track::-webkit-scrollbar {
-      display: none;
-    }
-
-    .mentor-stage-item {
-      scroll-snap-align: start;
-      margin-left: -0.75rem;
-    }
-
-    .mentor-stage-figure[data-depth="1"],
-    .mentor-stage-figure[data-depth="2"] {
-      transform: none;
-      opacity: 1;
-      filter: none;
+  @media (min-width: 1024px) {
+    .mentor-landing-header {
+      align-items: flex-start;
+      text-align: left;
+      margin-inline: 0;
+      padding-inline: clamp(2rem, 4vw, 3rem);
     }
   }
 
@@ -901,15 +788,6 @@
       line-height: 1.55;
     }
 
-    .mentor-card-compact .mentor-card-compact-avatar {
-      width: 2.75rem;
-      height: 2.75rem;
-    }
-
-    .course-card-poster h3 {
-      font-size: 0.625rem;
-    }
-
     .badge-pill,
     .badge-muted {
       white-space: normal;
@@ -944,10 +822,6 @@
 
     .catalog-filter-compact.surface-card {
       @apply gap-2.5 rounded-xl p-3;
-    }
-
-    .course-card-poster.surface-card-hover:hover {
-      transform: scale(1.03);
     }
   }
 
