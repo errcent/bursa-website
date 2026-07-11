@@ -8,16 +8,14 @@ import { CatalogBrowserSkeleton } from "@/components/catalog-browser-skeleton";
 import { CatalogDataLoader } from "@/components/catalog-data-loader";
 import { KatalogHero } from "@/components/katalog-hero";
 import { buildSearchMetadata, buildSearchResultsJsonLd } from "@/lib/search/seo";
-import type { Instrument } from "@/lib/types";
 
 export const revalidate = 60;
 
-const validInstruments: Instrument[] = ["Saham", "Crypto", "Forex"];
 const validViews = ["kelas", "instruktur"] as const;
 type CatalogView = (typeof validViews)[number];
 
 interface KatalogPageProps {
-  searchParams: Promise<{ instrumen?: string; q?: string; view?: string }>;
+  searchParams: Promise<{ q?: string; view?: string }>;
 }
 
 export async function generateMetadata({ searchParams }: KatalogPageProps): Promise<Metadata> {
@@ -27,9 +25,6 @@ export async function generateMetadata({ searchParams }: KatalogPageProps): Prom
 
 export default async function KatalogPage({ searchParams }: KatalogPageProps) {
   const params = await searchParams;
-  const initialInstrument = validInstruments.includes(params.instrumen as Instrument)
-    ? (params.instrumen as Instrument)
-    : "Semua";
   const initialQuery = params.q?.trim() ?? "";
   const initialView: CatalogView = validViews.includes(params.view as CatalogView)
     ? (params.view as CatalogView)
@@ -49,11 +44,10 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
       )}
       <SiteNavbar />
       <main className="has-mobile-sticky-cta flex-1 overflow-x-clip pb-6">
-        <KatalogHero query={initialQuery} />
+        <KatalogHero />
         <div className="container-page py-4 sm:py-10">
           <Suspense fallback={<CatalogBrowserSkeleton />}>
             <CatalogDataLoader
-              initialInstrument={initialInstrument}
               initialQuery={initialQuery}
               initialView={initialView}
             />

@@ -18,9 +18,7 @@ const footerColumns = [
     title: "Jelajahi",
     links: [
       { label: "Semua Kelas", href: "/katalog" },
-      { label: "Saham", href: "/katalog?instrumen=Saham" },
-      { label: "Crypto", href: "/katalog?instrumen=Crypto" },
-      { label: "Forex", href: "/katalog?instrumen=Forex" },
+      { label: "Mentor", href: "/katalog?view=instruktur" },
     ],
   },
   {
@@ -43,19 +41,18 @@ const footerColumns = [
   },
 ];
 
-/** Mirrors navbar `isNavLinkActive`, plus query matching for catalog instrument links. */
+/** Mirrors navbar `isNavLinkActive` for footer links. */
 function isFooterLinkActive(pathname: string, href: string, searchParams: URLSearchParams) {
   const url = new URL(href, "http://localhost");
   const hrefPath = url.pathname;
-  const hrefInstrumen = url.searchParams.get("instrumen");
+  const hrefView = url.searchParams.get("view");
 
-  if (hrefInstrumen) {
-    return pathname === hrefPath && searchParams.get("instrumen") === hrefInstrumen;
+  if (hrefView) {
+    return pathname === hrefPath && searchParams.get("view") === hrefView;
   }
 
-  // Plain /katalog is active only when no instrument filter is applied.
   if (hrefPath === "/katalog") {
-    return pathname === "/katalog" && !searchParams.get("instrumen");
+    return pathname === "/katalog" && searchParams.get("view") !== "instruktur";
   }
 
   return pathname === hrefPath || pathname.startsWith(`${hrefPath}/`);

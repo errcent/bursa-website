@@ -130,6 +130,10 @@ interface SearchDropdownProps {
   onActiveIndexChange: (index: number) => void;
   onRemoveRecent?: (query: string) => void;
   onClearRecent?: () => void;
+  /** When true, panel only renders query results — no empty-state suggestions. */
+  queryOnly?: boolean;
+  /** Hide the "view all results" footer action (e.g. on catalog page). */
+  hideViewAll?: boolean;
   className?: string;
 }
 
@@ -149,6 +153,8 @@ export function SearchDropdown({
   onActiveIndexChange,
   onRemoveRecent,
   onClearRecent,
+  queryOnly = false,
+  hideViewAll = false,
   className,
 }: SearchDropdownProps) {
   const hasQuery = query.trim().length > 0;
@@ -319,18 +325,20 @@ export function SearchDropdown({
                       </div>
                     )}
 
-                    <div className="mt-1 border-t border-border px-3 py-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          onSelect(`/katalog?q=${encodeURIComponent(query)}`, query)
-                        }
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-muted py-2.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-                      >
-                        <Search className="size-3.5" />
-                        Lihat semua hasil untuk &ldquo;{query}&rdquo;
-                      </button>
-                    </div>
+                    {!hideViewAll ? (
+                      <div className="mt-1 border-t border-border px-3 py-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onSelect(`/katalog?q=${encodeURIComponent(query)}`, query)
+                          }
+                          className="flex w-full items-center justify-center gap-2 rounded-xl bg-muted py-2.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                        >
+                          <Search className="size-3.5" />
+                          Lihat semua hasil untuk &ldquo;{query}&rdquo;
+                        </button>
+                      </div>
+                    ) : null}
                   </>
                 ) : (
                   <div className="px-4 py-8 text-center">
@@ -352,7 +360,7 @@ export function SearchDropdown({
                     </div>
                   </div>
                 )
-              ) : (
+              ) : queryOnly ? null : (
                 <>
                   {recentSearches.length > 0 && (
                     <div>

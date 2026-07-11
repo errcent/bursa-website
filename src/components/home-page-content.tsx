@@ -21,9 +21,9 @@ import { reviews } from "@/lib/mock-data";
 import type { Course, Mentor } from "@/lib/types";
 
 const instruments = [
-  { name: "Saham", href: "/katalog?instrumen=Saham", icon: LineChart },
-  { name: "Crypto", href: "/katalog?instrumen=Crypto", icon: Bitcoin },
-  { name: "Forex", href: "/katalog?instrumen=Forex", icon: ArrowLeftRight },
+  { name: "Saham", href: "/katalog", icon: LineChart },
+  { name: "Crypto", href: "/katalog", icon: Bitcoin },
+  { name: "Forex", href: "/katalog", icon: ArrowLeftRight },
 ] as const;
 
 /** Scroll to #kelas-unggulan; explicit offset so repeat clicks still work when the section is partially in view. */
