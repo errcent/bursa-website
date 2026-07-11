@@ -525,6 +525,28 @@
     background-color: var(--accent);
   }
 
+  /** Thin enrollment progress bar on course card thumbnails. */
+  .course-thumbnail-progress {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 15;
+    height: 3px;
+    background: color-mix(in oklch, var(--foreground) 14%, transparent);
+    pointer-events: none;
+  }
+
+  .course-thumbnail-progress__fill {
+    height: 100%;
+    border-radius: 0 2px 0 0;
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklch, var(--accent) 88%, transparent),
+      color-mix(in oklch, var(--emerald) 72%, transparent)
+    );
+    transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   /* Mentor landing — copy stacked above group photo with bottom fade into page background. */
   .mentor-landing-section {
     display: flex;

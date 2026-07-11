@@ -15,6 +15,7 @@ import { InstrumentBadge } from "@/components/instrument-badge";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useMyLearning } from "@/hooks/use-my-learning";
 import { subscribeLearningChange } from "@/lib/learning/events";
 import { courses, formatRupiah } from "@/lib/mock-data";
 import type { Instrument } from "@/lib/types";
@@ -51,6 +52,7 @@ const EMPTY_SUMMARY: LearningSummary = {
 
 function DashboardBody() {
   const { session } = useAuth();
+  const { bySlug: enrollmentBySlug } = useMyLearning();
   const [learning, setLearning] = useState<LearningPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -173,6 +175,7 @@ function DashboardBody() {
                                 course={{ slug: course.slug, thumbnailUrl: course.thumbnailUrl ?? undefined }}
                                 className="absolute inset-0"
                                 alt={course.title}
+                                progressPercent={course.progressPercent}
                               />
                             </div>
                             <div className="min-w-0 flex-1">
@@ -227,16 +230,25 @@ function DashboardBody() {
                   <h2 className="section-title mb-4">Rekomendasi Lanjutan</h2>
                 </Reveal>
                 <Stagger className="flex gap-3 overflow-x-auto pb-2 sm:gap-4">
-                  {courses.slice(0, 3).map((course) => (
+                  {courses.slice(0, 3).map((course) => {
+                    const enrolled = enrollmentBySlug.get(course.slug);
+                    return (
                     <StaggerItem key={course.slug} className="w-56 shrink-0 sm:w-64">
                       <Link
-                        href={`/kelas/${course.slug}`}
-                        className="surface-card-hover flex h-full flex-col overflow-hidden"
+                        href={
+                          enrolled?.lastLessonId
+                            ? `/belajar/${course.slug}/${enrolled.lastLessonId}`
+                            : `/kelas/${course.slug}`
+                        }
+                        className="surface-card-hover flex h-full flex-col overflow-hidden rounded-xl"
                       >
                         <CourseThumbnail
                           course={course}
                           className="aspect-[16/10] w-full"
                           alt={course.title}
+                          progressPercent={
+                            enrolled ? enrolled.progressPercent : undefined
+                          }
                         />
                         <div className="flex flex-col gap-2 p-4">
                           <InstrumentBadge instrument={course.instrument} className="w-fit" />
@@ -249,7 +261,8 @@ function DashboardBody() {
                         </div>
                       </Link>
                     </StaggerItem>
-                  ))}
+                    );
+                  })}
                 </Stagger>
               </section>
             </div>

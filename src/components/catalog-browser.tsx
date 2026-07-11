@@ -24,6 +24,7 @@ import { SnapPresence } from "@/components/motion/snap";
 import { SearchDropdown } from "@/components/search/search-dropdown";
 import { SearchPlaceholderMarquee } from "@/components/search/search-placeholder-marquee";
 import { useMyLearning } from "@/hooks/use-my-learning";
+import { courseEnrollmentFromLearning } from "@/lib/learning/enrollment";
 import {
   getPopularCourses,
   getPopularMentors,
@@ -63,19 +64,6 @@ type CatalogCourseRowProps = {
   count?: number;
   enrollmentBySlug: Map<string, LearningCourseProgress>;
 };
-
-function courseEnrollmentFromLearning(
-  learning: LearningCourseProgress | undefined
-) {
-  return learning
-    ? {
-        progressPercent: learning.progressPercent,
-        completedLessons: learning.completedLessons,
-        totalLessons: learning.totalLessons,
-        lastLessonId: learning.lastLessonId,
-      }
-    : null;
-}
 
 function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCourseRowProps) {
   if (courses.length === 0) return null;

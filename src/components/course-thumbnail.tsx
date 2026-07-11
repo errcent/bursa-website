@@ -13,6 +13,8 @@ type CourseThumbnailProps = {
   /** Adds a bottom gradient scrim so overlaid text stays legible (catalog/carousel cards). */
   withScrim?: boolean;
   alt?: string;
+  /** 0–100 shows a thin progress bar at the thumbnail bottom; omit to hide. */
+  progressPercent?: number;
 };
 
 export function CourseThumbnail({
@@ -21,7 +23,13 @@ export function CourseThumbnail({
   className,
   withScrim = false,
   alt,
+  progressPercent,
 }: CourseThumbnailProps) {
+  const clampedProgress =
+    progressPercent != null
+      ? Math.min(100, Math.max(0, progressPercent))
+      : null;
+
   return (
     <div className={cn("relative overflow-hidden bg-surface-2", className)}>
       {mentor ? (
@@ -44,6 +52,21 @@ export function CourseThumbnail({
           aria-hidden
           className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/85 via-black/35 to-transparent"
         />
+      )}
+      {clampedProgress != null && (
+        <div
+          className="course-thumbnail-progress"
+          role="progressbar"
+          aria-valuenow={clampedProgress}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Progress kelas"
+        >
+          <div
+            className="course-thumbnail-progress__fill"
+            style={{ width: `${clampedProgress}%` }}
+          />
+        </div>
       )}
     </div>
   );
