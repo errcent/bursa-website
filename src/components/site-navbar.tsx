@@ -41,8 +41,6 @@ const navLinks: {
   { href: "/", label: "Beranda", exact: true },
   { href: "/katalog", label: "Katalog", prefetch: true },
   { href: "/komunitas", label: "Komunitas" },
-  { href: "/tentang-kami", label: "Tentang Kami" },
-  { href: "/bantuan", label: "Bantuan" },
 ];
 
 function isNavLinkActive(pathname: string, href: string, exact = false) {
