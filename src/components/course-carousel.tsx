@@ -128,7 +128,7 @@ export function CourseCarousel({ courses, className, totalStudents }: CourseCaro
             <CourseCard
               key={course.slug}
               course={course}
-              variant="poster"
+              className="w-full"
               isBestseller={index === 0}
             />
           ))}

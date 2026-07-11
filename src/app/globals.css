@@ -424,7 +424,7 @@
   }
 
   @media (min-width: 768px) {
-    /* Poster/compact tiles are mobile-only; never stretch full row width on desktop. */
+    /* Mobile horizontal peek rows; desktop uses ScrollCarousel instead. */
     .catalog-row-scroll {
       display: none;
     }

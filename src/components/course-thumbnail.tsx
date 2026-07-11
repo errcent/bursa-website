@@ -1,45 +1,49 @@
 "use client";
 
-import { Play } from "lucide-react";
-
+import { MentorPhoto, type MentorPhotoSubject } from "@/components/mentor-photo";
 import { resolveCourseThumbnailUrl } from "@/lib/courses/thumbnails";
 import type { Course } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type CourseThumbnailProps = {
   course: Pick<Course, "slug" | "thumbnailUrl">;
+  /** When set, renders the mentor's themed backdrop + cutout instead of the generic instrument SVG art. */
+  mentor?: MentorPhotoSubject | null;
   className?: string;
-  /** Show a subtle preview-available cue in the corner on hover (catalog cards). */
-  showPlayOverlay?: boolean;
+  /** Adds a bottom gradient scrim so overlaid text stays legible (catalog/carousel cards). */
+  withScrim?: boolean;
   alt?: string;
 };
 
 export function CourseThumbnail({
   course,
+  mentor,
   className,
-  showPlayOverlay = false,
+  withScrim = false,
   alt,
 }: CourseThumbnailProps) {
-  const src = resolveCourseThumbnailUrl(course);
-
   return (
     <div className={cn("relative overflow-hidden bg-surface-2", className)}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt={alt ?? "Thumbnail kelas"}
-        className="absolute inset-0 size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-        loading="lazy"
-        decoding="async"
-      />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,var(--glow),transparent_60%)] opacity-30" />
-      {showPlayOverlay && (
-        <span
-          className="absolute bottom-2 right-2 flex size-6 items-center justify-center rounded-full bg-background/70 text-foreground/85 opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-300 ease-out group-hover:opacity-100"
+      {mentor ? (
+        <MentorPhoto mentor={mentor} className="absolute inset-0" />
+      ) : (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={resolveCourseThumbnailUrl(course)}
+            alt={alt ?? "Thumbnail kelas"}
+            className="absolute inset-0 size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+            loading="lazy"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,var(--glow),transparent_60%)] opacity-30" />
+        </>
+      )}
+      {withScrim && (
+        <div
           aria-hidden
-        >
-          <Play className="size-3 fill-current" />
-        </span>
+          className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/85 via-black/35 to-transparent"
+        />
       )}
     </div>
   );

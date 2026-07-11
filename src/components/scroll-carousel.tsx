@@ -29,20 +29,37 @@ export function peekGetScrollPerView(_width: number) {
 }
 
 export const defaultGetScrollPerView = peekGetScrollPerView;
-export const mentorGetScrollPerView = peekGetScrollPerView;
-export const catalogCourseGetScrollPerView = peekGetScrollPerView;
 
 /**
- * Responsive multi-up density for the desktop "Kelas populer" carousel:
- * ~2.4 cards at md, ~3.4 at lg, ~4.2 at xl (container width, not viewport —
- * the carousel sits inside a max-width container so it caps out around 1152px).
+ * Responsive multi-up density for desktop course carousels (landing "Kelas
+ * populer" + catalog instrument rows): ~2.4 cards at md, ~3.4 at lg, ~4.2 at
+ * xl (container width, not viewport — carousels sit inside a max-width
+ * container that caps out around 1152px). These functions are only ever
+ * wired up to the `hidden md:block` desktop carousel branch — mobile uses a
+ * separate CSS peek layout — so there is no "1 per view" case here.
  */
-export function landingCourseGetScrollPerView(width: number) {
+export function courseCarouselGetScrollPerView(width: number) {
   if (width >= 1100) return 4.2;
   if (width >= 900) return 3.4;
   if (width >= 620) return 2.4;
-  return 1;
+  return 1.6;
 }
+
+export const landingCourseGetScrollPerView = courseCarouselGetScrollPerView;
+export const catalogCourseGetScrollPerView = courseCarouselGetScrollPerView;
+
+/**
+ * Mentor tiles are narrower/simpler than course cards, so more fit per row:
+ * ~3.2 at md, ~4.2 at lg, ~5.2 at xl. Also desktop-only, same reasoning as above.
+ */
+export function mentorCarouselGetScrollPerView(width: number) {
+  if (width >= 1100) return 5.2;
+  if (width >= 900) return 4.2;
+  if (width >= 620) return 3.2;
+  return 2.2;
+}
+
+export const mentorGetScrollPerView = mentorCarouselGetScrollPerView;
 
 export type ScrollCarouselHandle = {
   scrollByStep: (direction: -1 | 1) => void;

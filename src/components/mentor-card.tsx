@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Users } from "lucide-react";
+import { BadgeCheck } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { StarRating } from "@/components/star-rating";
+import { MentorPhoto } from "@/components/mentor-photo";
 import type { Mentor } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -18,72 +17,54 @@ export function MentorCard({
   /** Compact tile for mobile horizontal mentor rows. */
   variant?: "default" | "compact";
 }) {
-  if (variant === "compact") {
-    return (
-      <Link
-        href={`/instruktur/${mentor.slug}`}
-        className={cn(
-          "mentor-card-compact group flex w-full flex-col items-center gap-2 rounded-lg border border-border/80 bg-card p-2.5 text-center",
-          className
-        )}
-      >
-        <Avatar className="mentor-card-compact-avatar size-11 border border-border bg-surface-2 shadow-[0_0_12px_var(--glow)] transition-all duration-300 ease-out group-hover:border-accent/30 sm:size-14">
-          {mentor.avatarUrl ? (
-            <AvatarImage
-              src={mentor.avatarUrl}
-              alt={`Foto ${mentor.name}`}
-              className="object-cover object-top"
-            />
-          ) : null}
-          <AvatarFallback className="bg-surface-2 font-heading text-sm font-medium">
-            {mentor.initials}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex w-full flex-col gap-0.5">
-          <h3 className="line-clamp-1 font-heading text-[11px] font-medium">{mentor.name}</h3>
-          <p className="line-clamp-1 text-[10px] text-muted-foreground">{mentor.title}</p>
-        </div>
-      </Link>
-    );
-  }
+  const isCompact = variant === "compact";
 
   return (
     <Link
       href={`/instruktur/${mentor.slug}`}
       className={cn(
-        "surface-card-hover group flex h-full w-full flex-col items-center gap-4 p-5 text-center",
+        "@container group relative block w-full overflow-hidden rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         className
       )}
     >
-      <div className="relative flex items-center justify-center pt-1">
+      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl">
+        <MentorPhoto mentor={mentor} className="absolute inset-0" />
+
         <div
           aria-hidden
-          className="absolute inset-0 scale-110 rounded-full bg-[radial-gradient(circle,var(--glow)_0%,transparent_70%)] opacity-70 transition-opacity duration-300 group-hover:opacity-100"
+          className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/85 via-black/35 to-transparent"
         />
-        <Avatar className="relative size-24 border border-border bg-surface-2 shadow-[0_0_20px_var(--glow)] transition-all duration-300 ease-out group-hover:scale-105 group-hover:border-accent/30 group-hover:shadow-[0_0_28px_var(--glow-strong)] sm:size-28">
-          {mentor.avatarUrl ? (
-            <AvatarImage
-              src={mentor.avatarUrl}
-              alt={`Foto ${mentor.name}`}
-              className="object-cover object-top"
-            />
-          ) : null}
-          <AvatarFallback className="bg-surface-2 font-heading text-lg font-medium sm:text-xl">
-            {mentor.initials}
-          </AvatarFallback>
-        </Avatar>
-      </div>
-      <div className="flex flex-col items-center gap-1">
-        <h3 className="font-heading text-sm font-medium">{mentor.name}</h3>
-        <p className="line-clamp-2 text-xs text-muted-foreground">{mentor.title}</p>
-      </div>
-      <p className="text-xs text-muted-foreground">{mentor.instruments.join(" · ")}</p>
-      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-        <StarRating rating={mentor.rating} />
-        <span className="flex items-center gap-1">
-          <Users className="size-3.5" />
-          {mentor.studentsCount.toLocaleString("id-ID")}
-        </span>
+
+        {mentor.verified && (
+          <span
+            className={cn(
+              "absolute inline-flex items-center justify-center rounded-full bg-accent/20 text-accent backdrop-blur-sm",
+              isCompact ? "right-1.5 top-1.5 size-4" : "right-2 top-2 size-5"
+            )}
+            title="Mentor terverifikasi"
+          >
+            <BadgeCheck className={isCompact ? "size-2.5" : "size-3"} />
+          </span>
+        )}
+
+        <div className={cn("absolute inset-x-0 bottom-0", isCompact ? "p-1.5" : "p-2.5")}>
+          <h3
+            className={cn(
+              "line-clamp-1 font-heading font-semibold text-white",
+              isCompact ? "text-[11px]" : "text-sm @[180px]:text-base"
+            )}
+          >
+            {mentor.name}
+          </h3>
+          <p
+            className={cn(
+              "line-clamp-1 font-light text-white/70",
+              isCompact ? "mt-0.5 text-[9px]" : "mt-0.5 text-[11px]"
+            )}
+          >
+            {mentor.title}
+          </p>
+        </div>
       </div>
     </Link>
   );

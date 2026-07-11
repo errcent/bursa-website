@@ -1,21 +1,15 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-function CatalogCardSkeleton({ aspect = "2/3" }: { aspect?: "2/3" | "square" }) {
+function CatalogCardSkeleton({ compact = false }: { compact?: boolean }) {
   return (
     <div
       className={
-        aspect === "2/3"
-          ? "flex w-[42vw] max-w-[9.5rem] shrink-0 flex-col overflow-hidden rounded-lg border border-border/60 sm:w-36"
-          : "flex w-full flex-col overflow-hidden rounded-lg border border-border/60"
+        compact
+          ? "flex w-[var(--carousel-peek-item-width)] max-w-[20rem] shrink-0 flex-col overflow-hidden rounded-xl border border-border/60"
+          : "flex w-full flex-col overflow-hidden rounded-xl border border-border/60"
       }
     >
-      <Skeleton
-        className={aspect === "2/3" ? "aspect-[2/3] w-full rounded-none" : "aspect-[4/3] w-full rounded-none"}
-      />
-      <div className="space-y-2 p-3">
-        <Skeleton className="h-3 w-4/5" />
-        <Skeleton className="h-2.5 w-1/2" />
-      </div>
+      <Skeleton className="aspect-[16/10] w-full rounded-none" />
     </div>
   );
 }
@@ -43,13 +37,13 @@ export function CatalogBrowserSkeleton() {
         <div className="catalog-row-bleed md:hidden">
           <div className="catalog-row-scroll">
             {Array.from({ length: 4 }).map((_, i) => (
-              <CatalogCardSkeleton key={i} />
+              <CatalogCardSkeleton key={i} compact />
             ))}
           </div>
         </div>
         <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <CatalogCardSkeleton key={i} aspect="square" />
+            <CatalogCardSkeleton key={i} />
           ))}
         </div>
       </div>

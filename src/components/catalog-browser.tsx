@@ -297,7 +297,7 @@ function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCo
             <CourseCard
               key={course.slug}
               course={course}
-              variant="poster"
+              className="w-full"
               enrollment={courseEnrollmentFromLearning(enrollmentBySlug.get(course.slug))}
             />
           ))}
@@ -852,7 +852,7 @@ export function CatalogBrowser({
                       enrollmentBySlug={enrollmentBySlug}
                     />
                   </div>
-                  <Stagger className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  <Stagger className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
                     {filteredCourses.map((course) => (
                       <StaggerItem key={course.slug}>
                         <CourseCard
