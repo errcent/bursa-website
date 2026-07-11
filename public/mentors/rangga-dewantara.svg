@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 340" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="body-rangga" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#262a42"/>
+      <stop offset="55%" stop-color="#454869"/>
+      <stop offset="100%" stop-color="#7376a3"/>
+    </linearGradient>
+    <radialGradient id="sheen-rangga" cx="42%" cy="24%" r="60%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shadow-rangga" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.34"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="120" cy="322" rx="80" ry="13" fill="url(#shadow-rangga)"/>
+
+  <path d="M34,332 C34,228 53,186 82,165 C61,145 59,110 74,83 C89,57 151,57 166,83 C181,110 179,145 158,165 C187,186 206,228 206,332 Z" fill="url(#body-rangga)"/>
+  <path d="M34,332 C34,228 53,186 82,165 C61,145 59,110 74,83 C89,57 151,57 166,83 C181,110 179,145 158,165 C187,186 206,228 206,332 Z" fill="url(#sheen-rangga)"/>
+
+  <circle cx="120" cy="82" r="52" fill="url(#body-rangga)"/>
+  <circle cx="120" cy="82" r="52" fill="url(#sheen-rangga)"/>
+
+  <path d="M88,194 L152,194 L156,214 L84,214 Z" fill="#181a2c" opacity="0.38"/>
+</svg>

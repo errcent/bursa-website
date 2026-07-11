@@ -16,6 +16,7 @@ export const mentors: Mentor[] = [
     title: "Value Investing & Analisis Fundamental Saham",
     initials: "AW",
     avatarUrl: "/mentors/andra-wicaksono.png",
+    cutoutUrl: "/mentors/andra-wicaksono.svg",
     instruments: ["Saham"],
     verified: true,
     licenseLabel: "Terdaftar WPPE-OJK No. 09231",
@@ -36,6 +37,7 @@ export const mentors: Mentor[] = [
     title: "Crypto & On-Chain Analysis",
     initials: "KA",
     avatarUrl: "/mentors/kirana-ayu.png",
+    cutoutUrl: "/mentors/kirana-ayu.svg",
     instruments: ["Crypto"],
     verified: true,
     licenseLabel: "Sertifikasi Kompetensi Aset Kripto — Bappebti",
@@ -56,6 +58,7 @@ export const mentors: Mentor[] = [
     title: "Forex & Analisis Makro Global",
     initials: "FN",
     avatarUrl: "/mentors/fajar-nugroho.png",
+    cutoutUrl: "/mentors/fajar-nugroho.svg",
     instruments: ["Forex"],
     verified: true,
     licenseLabel: "Eks Institutional Trading Desk 12 Tahun",
@@ -75,6 +78,7 @@ export const mentors: Mentor[] = [
     title: "Swing Trading & Analisis Teknikal Saham",
     initials: "MP",
     avatarUrl: "/mentors/melati-putri.png",
+    cutoutUrl: "/mentors/melati-putri.svg",
     instruments: ["Saham"],
     verified: true,
     licenseLabel: "Terdaftar WPPE-OJK No. 11487",
@@ -95,6 +99,7 @@ export const mentors: Mentor[] = [
     title: "Crypto Trading & Risk Management",
     initials: "BS",
     avatarUrl: "/mentors/bimo-satrio.png",
+    cutoutUrl: "/mentors/bimo-satrio.svg",
     instruments: ["Crypto"],
     verified: false,
     yearsExperience: 5,
@@ -113,6 +118,7 @@ export const mentors: Mentor[] = [
     title: "Fundamental & Valuasi Saham Lanjutan",
     initials: "RD",
     avatarUrl: "/mentors/rangga-dewantara.png",
+    cutoutUrl: "/mentors/rangga-dewantara.svg",
     instruments: ["Saham"],
     verified: true,
     licenseLabel: "Terdaftar WPPE-OJK No. 07765",
@@ -367,7 +373,7 @@ export const courses: Course[] = [
 ];
 
 export const founder: FounderProfile = {
-  name: "gw",
+  name: "Galih Wirawan",
   role: "Founder, Bursa",
   initials: "GW",
 };
@@ -407,6 +413,8 @@ export const reviews: Review[] = [
     comment:
       "Saya benar-benar pemula. Materinya runtut dan mudah diikuti. Saya juga tidak didorong langsung trading pakai uang asli.",
     date: "2 minggu lalu",
+    courseTag: "Fundamental Saham untuk Pemula",
+    mentorTag: "Andra Wicaksono, CFA",
   },
   {
     name: "Rian H.",
@@ -415,6 +423,8 @@ export const reviews: Review[] = [
     comment:
       "Saya pernah ikut kelas online yang isinya rangkuman umum saja. Di sini ada latihan per modul, jadi belajarnya lebih terarah.",
     date: "1 bulan lalu",
+    courseTag: "Membaca Data On-Chain untuk Keputusan Trading Crypto",
+    mentorTag: "Kirana Ayu",
   },
   {
     name: "Nadia F.",
@@ -423,6 +433,8 @@ export const reviews: Review[] = [
     comment:
       "Kontennya bagus dan tidak menjual janji profit. Fokusnya edukasi proses. Ke depan akan lebih kuat jika studi kasusnya ditambah.",
     date: "1 bulan lalu",
+    courseTag: "Forex untuk Pemula: Membaca Narasi Makro",
+    mentorTag: "Fajar Nugroho",
   },
 ];
 

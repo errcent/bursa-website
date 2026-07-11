@@ -29,7 +29,7 @@ export function InstrumentBadge({
 const levelStyle: Record<Level, string> = {
   Pemula: "border-emerald/30 bg-emerald/10 text-emerald",
   Menengah: "border-border bg-secondary text-foreground/90",
-  Mahir: "border-loss/30 bg-loss/10 text-loss",
+  Mahir: "border-amber/30 bg-amber/10 text-amber",
 };
 
 export function LevelBadge({ level, className }: { level: Level; className?: string }) {

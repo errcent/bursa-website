@@ -5,7 +5,6 @@ import {
   ListVideo,
   Newspaper,
   Settings,
-  UserRound,
 } from "lucide-react";
 
 import type { RoleNavLink } from "@/lib/auth/roles";
@@ -26,7 +25,6 @@ const ACCOUNT_SECTIONS: AccountMenuSection[] = [
   {
     label: "Akun",
     items: [
-      { href: "/profil", label: "Profil", icon: UserRound, description: "Identitas & bio" },
       {
         href: "/dashboard",
         label: "Dashboard",

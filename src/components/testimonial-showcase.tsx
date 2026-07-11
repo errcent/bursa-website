@@ -39,8 +39,12 @@ const cardTransition = { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const };
 
 interface TestimonialShowcaseProps {
   reviews: Review[];
-  founderResponse: string;
   className?: string;
+}
+
+function average(values: number[]): number {
+  if (values.length === 0) return 0;
+  return values.reduce((sum, v) => sum + v, 0) / values.length;
 }
 
 function TiltedReviewCard({ review, index }: { review: Review; index: number }) {
@@ -67,6 +71,16 @@ function TiltedReviewCard({ review, index }: { review: Review; index: number }) 
       <p className="line-clamp-4 flex-1 text-sm leading-relaxed text-muted-foreground/95">
         {review.comment}
       </p>
+      {review.courseTag || review.mentorTag ? (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {review.courseTag ? (
+            <span className="badge-muted truncate">{review.courseTag}</span>
+          ) : null}
+          {review.mentorTag ? (
+            <span className="badge-muted truncate">{review.mentorTag}</span>
+          ) : null}
+        </div>
+      ) : null}
       <footer className="mt-4 flex items-center gap-2 border-t border-border/50 pt-3">
         <Avatar className="size-7 border border-border/80 bg-surface-2">
           <AvatarFallback className="bg-surface-2 text-[10px] font-medium">
@@ -111,60 +125,13 @@ function TiltedReviewCard({ review, index }: { review: Review; index: number }) 
   );
 }
 
-function FeaturedFounderResponseCard({ response }: { response: string }) {
-  const prefersReducedMotion = useReducedMotion();
-
-  const card = (
-    <div
-      className={cn(
-        "testimonial-featured-card surface-card relative overflow-hidden px-4 py-6 text-center sm:px-10 sm:py-8",
-        "border-border/80 bg-card/90 shadow-[0_4px_32px_rgba(0,0,0,0.22),0_0_0_1px_rgba(163,163,163,0.05)]",
-        "transition-[border-color,box-shadow,transform] duration-300",
-        "hover:border-[rgba(163,163,163,0.22)]",
-        "hover:shadow-[0_0_0_1px_rgba(163,163,163,0.06),0_20px_56px_rgba(0,0,0,0.48),0_0_28px_rgba(163,163,163,0.08)]"
-      )}
-    >
-      <span
-        className="pointer-events-none absolute left-1/2 top-3 -translate-x-1/2 font-serif text-5xl leading-none text-foreground/15 sm:text-6xl"
-        aria-hidden
-      >
-        &ldquo;
-      </span>
-      <blockquote className="relative mx-auto max-w-2xl">
-        <p className="font-heading text-base font-medium leading-relaxed sm:text-lg">
-          {response}
-        </p>
-        <footer className="mt-5">
-          <cite className="not-italic font-mono text-xs tracking-wide text-muted-foreground">
-            — Founder Bursa
-          </cite>
-        </footer>
-      </blockquote>
-    </div>
-  );
-
-  if (prefersReducedMotion) {
-    return card;
-  }
-
-  return (
-    <motion.div
-      initial={false}
-      whileHover={{ y: -4 }}
-      transition={cardTransition}
-    >
-      {card}
-    </motion.div>
-  );
-}
-
 export function TestimonialShowcase({
   reviews,
-  founderResponse,
   className,
 }: TestimonialShowcaseProps) {
   const deckItems = reviews.slice(0, 3);
   const [activeIndex, setActiveIndex] = useState(0);
+  const avgRating = average(reviews.map((r) => r.rating));
 
   return (
     <section className={cn("testimonial-showcase relative overflow-x-hidden", className)}>
@@ -173,6 +140,17 @@ export function TestimonialShowcase({
           <div className="max-w-2xl">
             <p className="eyebrow mb-2">Testimoni</p>
             <h2 className="section-title sm:text-3xl">Ulasan pengalaman belajar</h2>
+            {avgRating > 0 ? (
+              <div className="mt-2 flex items-center gap-2">
+                <span className="flex items-center gap-1 text-sm font-semibold">
+                  <Star className="size-4 fill-foreground text-foreground" />
+                  {formatRating(avgRating)}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  dari {reviews.length} ulasan pengguna beta
+                </span>
+              </div>
+            ) : null}
             <p className="section-copy mt-2 max-w-lg">
               Ulasan pengguna beta tentang materi dan proses belajar, bukan klaim hasil trading.
             </p>
@@ -225,10 +203,6 @@ export function TestimonialShowcase({
                 />
               ))}
             </div>
-          </StaggerItem>
-
-          <StaggerItem>
-            <FeaturedFounderResponseCard response={founderResponse} />
           </StaggerItem>
         </Stagger>
       </div>

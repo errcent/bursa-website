@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 340" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="body-melati" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6e3a50"/>
+      <stop offset="55%" stop-color="#a8657f"/>
+      <stop offset="100%" stop-color="#d6a3b6"/>
+    </linearGradient>
+    <radialGradient id="sheen-melati" cx="42%" cy="22%" r="60%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shadow-melati" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="120" cy="322" rx="66" ry="13" fill="url(#shadow-melati)"/>
+
+  <circle cx="120" cy="150" r="16" fill="url(#body-melati)"/>
+
+  <path d="M50,330 C50,240 64,198 88,175 C68,155 66,120 80,94 C94,68 146,68 160,94 C174,120 172,155 152,175 C176,198 190,240 190,330 Z" fill="url(#body-melati)"/>
+  <path d="M50,330 C50,240 64,198 88,175 C68,155 66,120 80,94 C94,68 146,68 160,94 C174,120 172,155 152,175 C176,198 190,240 190,330 Z" fill="url(#sheen-melati)"/>
+
+  <circle cx="120" cy="92" r="47" fill="url(#body-melati)"/>
+  <circle cx="120" cy="92" r="47" fill="url(#sheen-melati)"/>
+  <path d="M76,72 C92,48 148,48 164,72 C170,86 168,104 160,116 C161,88 148,74 120,72 C92,74 79,88 80,116 C72,104 70,86 76,72 Z" fill="url(#body-melati)" opacity="0.94"/>
+
+  <path d="M96,200 L144,200 L147,215 L93,215 Z" fill="#4a1f30" opacity="0.28"/>
+</svg>

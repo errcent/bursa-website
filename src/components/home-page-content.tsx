@@ -1,30 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowLeftRight,
-  ArrowRight,
-  Bitcoin,
-  Check,
-  LineChart,
-} from "lucide-react";
+import { ArrowLeftRight, ArrowRight, Bitcoin, LineChart } from "lucide-react";
 import { motion } from "motion/react";
 
 import { CourseCarousel } from "@/components/course-carousel";
+import { CurriculumPreviewSection } from "@/components/home/curriculum-preview-section";
+import { ClosingCtaSection } from "@/components/home/closing-cta-section";
+import { PricingModelComparison } from "@/components/home/pricing-model-comparison";
+import { TrustVerificationSection } from "@/components/home/trust-verification-section";
+import { FounderStorySection } from "@/components/founder-story-section";
 import { HeroLivingBackground } from "@/components/hero-living-bg";
 import { HeroTyping } from "@/components/motion/hero-typing";
 import { MentorCarousel } from "@/components/mentor-carousel";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
-import {
-  NarrativeClosingCta,
-  NarrativeScrollSections,
-} from "@/components/narrative-scroll-sections";
 import { HomeFaqSection } from "@/components/home/home-faq-section";
 import { TestimonialShowcase } from "@/components/testimonial-showcase";
 import { Button } from "@/components/ui/button";
+import { DeviceOrbit } from "@/components/ui/orbit-visuals";
 import { Reveal, RevealText, Stagger, StaggerItem } from "@/components/motion/reveal";
-import { featuredFounderResponse, reviews } from "@/lib/mock-data";
+import { founder, founderManifesto, founderResponses, reviews } from "@/lib/mock-data";
+import { formatRating } from "@/lib/utils";
 import type { Course, Mentor } from "@/lib/types";
 
 const instruments = [
@@ -32,25 +29,6 @@ const instruments = [
   { name: "Crypto", href: "/katalog?instrumen=Crypto", icon: Bitcoin },
   { name: "Forex", href: "/katalog?instrumen=Forex", icon: ArrowLeftRight },
 ] as const;
-
-const paths = [
-  {
-    title: "Mulai dari topik",
-    description:
-      "Pilih instrumen dan level dulu. Lalu lihat kelas yang paling relevan untuk target belajarmu.",
-    href: "/katalog",
-    cta: "Buka katalog kelas",
-    tone: "primary",
-  },
-  {
-    title: "Mulai dari mentor",
-    description:
-      "Lihat profil dan spesialisasi mentor. Pilih kelas dari pengajar yang paling cocok dengan tujuan belajarmu.",
-    href: "/katalog?view=instruktur",
-    cta: "Buka katalog mentor",
-    tone: "secondary",
-  },
-];
 
 /** Scroll to #kelas-unggulan; explicit offset so repeat clicks still work when the section is partially in view. */
 function scrollToPopularClasses() {
@@ -82,9 +60,13 @@ const proofPoints = [
 export function HomePageContent({
   courses,
   mentors,
+  curriculumCourse,
+  curriculumMentor,
 }: {
   courses: Course[];
   mentors: Mentor[];
+  curriculumCourse?: Course | null;
+  curriculumMentor?: Mentor | null;
 }) {
   const featuredCourses = [...courses]
     .sort((a, b) => b.studentsCount - a.studentsCount)
@@ -94,66 +76,75 @@ export function HomePageContent({
     .sort((a, b) => b.studentsCount - a.studentsCount)
     .slice(0, 8);
 
+  const totalStudents = courses.reduce((sum, course) => sum + course.studentsCount, 0);
+  const verifiedMentorsCount = mentors.filter((m) => m.verified).length;
+  const avgCourseRating =
+    courses.length > 0 ? courses.reduce((sum, c) => sum + c.rating, 0) / courses.length : 0;
+  const heroTrustStat =
+    avgCourseRating > 0
+      ? `${verifiedMentorsCount}+ mentor terverifikasi · rating ${formatRating(avgCourseRating)}/5`
+      : `${verifiedMentorsCount}+ mentor terverifikasi`;
+
   return (
     <>
       <SiteNavbar />
       <main className="has-mobile-sticky-cta flex-1 overflow-x-clip">
-        {/* Hero — AtomAI centered layout */}
-        <section className="hero-cinematic relative min-h-[min(74vh,720px)] border-b border-border/60 sm:min-h-[84vh]">
+        {/* Hero — content-proportional height, two-column on desktop with a visual proof panel */}
+        <section className="hero-cinematic relative border-b border-border/60">
           <HeroLivingBackground />
 
-          <div className="container-page relative z-10 flex min-h-[min(74vh,720px)] flex-col items-center justify-center px-4 pb-12 pt-20 text-center sm:min-h-[84vh] sm:px-8 sm:pb-16 sm:pt-28">
-            <RevealText delay={0.05}>
-              <span className="badge-pill mb-6 inline-flex items-center gap-2">
-                <span className="size-1.5 rounded-full bg-accent" aria-hidden />
-                <HeroTyping text="Platform edukasi trading #1 di Indonesia" />
-              </span>
-            </RevealText>
-            <RevealText delay={0.12}>
-              <h1 className="page-hero-title text-gradient mx-auto max-w-4xl">
-                Belajar trading bareng mentor terverifikasi
-              </h1>
-            </RevealText>
-            <RevealText delay={0.22}>
-              <p className="section-copy mx-auto mt-5 max-w-xl sm:text-base">
-                Pilih kelas saham, crypto, atau forex sesuai levelmu.
-                Materi terstruktur, bayar per kelas tanpa langganan.
-              </p>
-            </RevealText>
-            <RevealText delay={0.32}>
-              <div className="mt-8 flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
-                <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          <div className="container-page relative z-10 grid gap-10 px-4 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:py-24">
+            <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+              <RevealText delay={0.05}>
+                <span className="badge-pill mb-6 inline-flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-accent" aria-hidden />
+                  <HeroTyping text={heroTrustStat} />
+                </span>
+              </RevealText>
+              <RevealText delay={0.12}>
+                <h1 className="page-hero-title text-gradient mx-auto max-w-4xl lg:mx-0">
+                  Belajar trading bareng mentor terverifikasi
+                </h1>
+              </RevealText>
+              <RevealText delay={0.22}>
+                <p className="section-copy mx-auto mt-5 max-w-xl sm:text-base lg:mx-0">
+                  Pilih kelas saham, crypto, atau forex sesuai levelmu.
+                  Materi terstruktur, bayar per kelas tanpa langganan.
+                </p>
+              </RevealText>
+              <RevealText delay={0.32}>
+                <div className="mt-8 flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center lg:justify-start">
+                  <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button
+                      size="lg"
+                      className="btn-primary h-12 w-full rounded-full px-8 sm:w-auto"
+                      render={<Link href="/katalog" />}
+                    >
+                      Lihat Katalog
+                      <ArrowRight className="size-4" />
+                    </Button>
+                  </motion.div>
                   <Button
                     size="lg"
-                    className="btn-primary h-12 w-full rounded-full px-8 sm:w-auto"
-                    render={<Link href="/katalog" />}
+                    variant="outline"
+                    className="h-12 w-full rounded-full border-border/70 bg-card/40 px-7 text-sm sm:h-11 sm:w-auto"
+                    onClick={scrollToPopularClasses}
                   >
-                    Lihat Katalog
-                    <ArrowRight className="size-4" />
+                    Lihat kelas populer dulu
                   </Button>
-                </motion.div>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 w-full rounded-full border-border/70 bg-card/40 px-7 text-sm sm:h-11 sm:w-auto"
-                  onClick={scrollToPopularClasses}
-                >
-                  Lihat kelas populer dulu
-                </Button>
-              </div>
-            </RevealText>
+                </div>
+              </RevealText>
 
-            {/* Instrument strip — marquee on mobile, centered row on desktop */}
-            <Reveal delay={0.45} className="mt-10 w-full max-w-2xl sm:mt-14">
-              <div className="logo-marquee md:hidden">
-                <div className="logo-marquee-track gap-8 px-4">
-                  {[...instruments, ...instruments].map((item, i) => {
+              {/* Instrument pills — static, wrapped; no auto-scrolling marquee */}
+              <Reveal delay={0.45} className="mt-10 w-full sm:mt-14">
+                <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 lg:justify-start">
+                  {instruments.map((item) => {
                     const Icon = item.icon;
                     return (
                       <Link
-                        key={`${item.name}-${i}`}
+                        key={item.name}
                         href={item.href}
-                        className="logo-strip-item inline-flex shrink-0 items-center gap-2 whitespace-nowrap"
+                        className="logo-strip-item inline-flex items-center gap-2"
                       >
                         <Icon className="size-4" strokeWidth={1.5} />
                         {item.name}
@@ -161,22 +152,12 @@ export function HomePageContent({
                     );
                   })}
                 </div>
-              </div>
-              <div className="hidden flex-wrap items-center justify-center gap-x-10 gap-y-3 md:flex">
-                {instruments.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="logo-strip-item inline-flex items-center gap-2"
-                    >
-                      <Icon className="size-4" strokeWidth={1.5} />
-                      {item.name}
-                    </Link>
-                  );
-                })}
-              </div>
+              </Reveal>
+            </div>
+
+            {/* Visual proof — dashboard/device preview so the hero isn't text-only */}
+            <Reveal delay={0.3} className="w-full">
+              <DeviceOrbit className="lg:min-h-[24rem]" />
             </Reveal>
           </div>
         </section>
@@ -187,59 +168,14 @@ export function HomePageContent({
           className="section-tight scroll-mt-24 border-b border-border/60"
         >
           <div className="container-page">
-            <CourseCarousel courses={featuredCourses} />
+            <CourseCarousel courses={featuredCourses} totalStudents={totalStudents} />
           </div>
         </section>
 
-        {/* Scroll narrative — trust story as vertical sections */}
-        <NarrativeScrollSections courses={courses} mentors={mentors} />
+        {/* Trust & Verification — real aggregate stats from the catalog */}
+        <TrustVerificationSection courses={courses} mentors={mentors} />
 
-        {/* Two paths */}
-        <section className="section-spacious border-b border-border/60">
-          <div className="container-page">
-            <Reveal className="mb-10 max-w-2xl">
-              <p className="eyebrow mb-3">Rute belajar</p>
-              <h2 className="section-title sm:text-3xl">Pilih cara masuk ke katalog</h2>
-              <p className="section-copy mt-2">
-                Bisa mulai dari topik atau dari mentor. Hasilnya tetap: kelas yang paling pas untukmu.
-              </p>
-            </Reveal>
-            <Stagger className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
-              {paths.map((path) => (
-                <StaggerItem key={path.title}>
-                  <motion.div
-                    className={
-                      path.tone === "primary"
-                        ? "landing-path-card surface-card-hover flex h-full flex-col border-accent/25 bg-accent-soft/35 p-4 sm:gap-4 sm:p-8"
-                        : "landing-path-card surface-card-hover flex h-full flex-col p-4 sm:gap-4 sm:p-8"
-                    }
-                    whileHover={{ y: -2 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <Check className={path.tone === "primary" ? "size-5 text-accent" : "size-5 text-accent/75"} />
-                    <h3 className="font-heading text-lg font-semibold sm:text-xl">{path.title}</h3>
-                    <p className="flex-1 text-sm leading-relaxed text-muted-foreground">
-                      {path.description}
-                    </p>
-                    <Link
-                      href={path.href}
-                      className={
-                        path.tone === "primary"
-                          ? "inline-flex w-fit items-center gap-1 rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/85"
-                          : "link-accent inline-flex w-fit items-center gap-1 text-sm"
-                      }
-                    >
-                      {path.cta}
-                      <ArrowRight className="size-4" />
-                    </Link>
-                  </motion.div>
-                </StaggerItem>
-              ))}
-            </Stagger>
-          </div>
-        </section>
-
-        {/* How it works */}
+        {/* How it works — absorbs pricing transparency (pay-per-class, no subscription) */}
         <section className="section-muted section-tight border-b border-border/60">
           <div className="container-page">
             <Reveal className="mb-10 max-w-2xl">
@@ -262,37 +198,32 @@ export function HomePageContent({
                 </StaggerItem>
               ))}
             </Stagger>
+
+            <PricingModelComparison />
           </div>
         </section>
 
-        {/* Mentors */}
+        {/* Mentor stage */}
         <section className="section-loose border-b border-border/60">
           <div className="container-page">
             <MentorCarousel mentors={featuredMentors} />
           </div>
         </section>
 
-        {/* Testimonials + founder response */}
-        <TestimonialShowcase reviews={reviews} founderResponse={featuredFounderResponse} />
+        {/* Curriculum preview — sample module/syllabus snippet */}
+        <CurriculumPreviewSection course={curriculumCourse ?? null} mentor={curriculumMentor ?? null} />
+
+        {/* Testimonials */}
+        <TestimonialShowcase reviews={reviews} />
+
+        {/* Founder story — manifesto pull-quote + photo, not a tilt deck */}
+        <FounderStorySection founder={founder} manifesto={founderManifesto} responses={founderResponses} />
 
         {/* FAQ */}
         <HomeFaqSection />
 
-        {/* Closing CTA */}
-        <NarrativeClosingCta />
-
-        {/* Disclaimer */}
-        <section className="border-t border-border/60">
-          <div className="container-page py-9 sm:py-10">
-            <Reveal>
-              <p className="mx-auto max-w-3xl text-center text-xs leading-relaxed text-muted-foreground/90">
-                Bursa adalah platform edukasi, bukan broker atau aplikasi eksekusi trading.
-                Materi membantu kamu memahami riset dan manajemen risiko. Keputusan investasi
-                sepenuhnya ada pada kamu, dan trading tetap berisiko kehilangan modal.
-              </p>
-            </Reveal>
-          </div>
-        </section>
+        {/* Single closing CTA */}
+        <ClosingCtaSection />
       </main>
       <SiteFooter />
     </>

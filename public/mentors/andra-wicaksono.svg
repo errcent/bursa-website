@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 340" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="body-andra" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4b4f7a"/>
+      <stop offset="55%" stop-color="#6b6ea8"/>
+      <stop offset="100%" stop-color="#9799c6"/>
+    </linearGradient>
+    <radialGradient id="sheen-andra" cx="42%" cy="24%" r="60%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shadow-andra" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="120" cy="322" rx="76" ry="13" fill="url(#shadow-andra)"/>
+
+  <path d="M40,332 C40,232 57,190 84,169 C64,149 62,114 77,88 C92,62 148,62 163,88 C178,114 176,149 156,169 C183,190 200,232 200,332 Z" fill="url(#body-andra)"/>
+  <path d="M40,332 C40,232 57,190 84,169 C64,149 62,114 77,88 C92,62 148,62 163,88 C178,114 176,149 156,169 C183,190 200,232 200,332 Z" fill="url(#sheen-andra)"/>
+
+  <circle cx="120" cy="86" r="50" fill="url(#body-andra)"/>
+  <circle cx="120" cy="86" r="50" fill="url(#sheen-andra)"/>
+
+  <path d="M92,196 L148,196 L152,214 L88,214 Z" fill="#2e3048" opacity="0.35"/>
+</svg>

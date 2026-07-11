@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 340" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="body-fajar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#204048"/>
+      <stop offset="55%" stop-color="#3f7178"/>
+      <stop offset="100%" stop-color="#7ba9ad"/>
+    </linearGradient>
+    <radialGradient id="sheen-fajar" cx="42%" cy="24%" r="60%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shadow-fajar" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="120" cy="322" rx="78" ry="13" fill="url(#shadow-fajar)"/>
+
+  <path d="M36,332 C36,230 54,188 82,167 C62,147 60,112 75,86 C90,60 150,60 165,86 C180,112 178,147 158,167 C186,188 204,230 204,332 Z" fill="url(#body-fajar)"/>
+  <path d="M36,332 C36,230 54,188 82,167 C62,147 60,112 75,86 C90,60 150,60 165,86 C180,112 178,147 158,167 C186,188 204,230 204,332 Z" fill="url(#sheen-fajar)"/>
+
+  <circle cx="120" cy="84" r="51" fill="url(#body-fajar)"/>
+  <circle cx="120" cy="84" r="51" fill="url(#sheen-fajar)"/>
+
+  <path d="M90,194 L150,194 L154,213 L86,213 Z" fill="#12282d" opacity="0.35"/>
+</svg>

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { CourseCard } from "@/components/course-card";
 import {
   SCROLL_CAROUSEL_GAP,
   ScrollCarousel,
   landingCourseGetScrollPerView,
+  peekGetScrollPerView,
   type ScrollCarouselHandle,
 } from "@/components/scroll-carousel";
 import { Button } from "@/components/ui/button";
@@ -16,27 +17,22 @@ import { useMobileLayout } from "@/hooks/use-mobile-layout";
 import type { Course } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const LANDING_CAROUSEL_GAP = 10;
+const LANDING_MOBILE_GAP = 10;
 
 interface CourseCarouselProps {
   courses: Course[];
   className?: string;
+  /** Total students across the full catalog, surfaced as a real stat in the header. */
+  totalStudents?: number;
 }
 
-function readScrollState(el: HTMLElement) {
-  const { scrollLeft, scrollWidth, clientWidth } = el;
-  return {
-    canScrollLeft: scrollLeft > 2,
-    canScrollRight: scrollLeft < scrollWidth - clientWidth - 2,
-  };
-}
-
-export function CourseCarousel({ courses, className }: CourseCarouselProps) {
+export function CourseCarousel({ courses, className, totalStudents }: CourseCarouselProps) {
   const isMobile = useMobileLayout();
   const desktopCarouselRef = useRef<ScrollCarouselHandle>(null);
-  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const mobileCarouselRef = useRef<ScrollCarouselHandle>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const applyScrollState = useCallback(
     (state: { canScrollLeft: boolean; canScrollRight: boolean }) => {
@@ -46,40 +42,28 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
     []
   );
 
-  const syncMobileScrollState = useCallback(() => {
-    const el = mobileScrollRef.current;
-    if (!el) return;
-    applyScrollState(readScrollState(el));
-  }, [applyScrollState]);
-
-  useLayoutEffect(() => {
-    if (!isMobile) return;
-    syncMobileScrollState();
-    const el = mobileScrollRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(syncMobileScrollState);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [isMobile, syncMobileScrollState, courses.length]);
-
   const scrollByStep = useCallback(
     (direction: -1 | 1) => {
-      if (isMobile) {
-        const el = mobileScrollRef.current;
-        if (!el) return;
-        const first = el.firstElementChild as HTMLElement | null;
-        const stride = first
-          ? first.offsetWidth + LANDING_CAROUSEL_GAP
-          : el.clientWidth * 0.8;
-        el.scrollBy({ left: direction * stride, behavior: "smooth" });
-        return;
-      }
-      desktopCarouselRef.current?.scrollByStep(direction);
+      const handle = isMobile ? mobileCarouselRef.current : desktopCarouselRef.current;
+      handle?.scrollByStep(direction);
+    },
+    [isMobile]
+  );
+
+  const scrollToIndex = useCallback(
+    (index: number) => {
+      const handle = isMobile ? mobileCarouselRef.current : desktopCarouselRef.current;
+      handle?.scrollToIndex(index);
     },
     [isMobile]
   );
 
   if (courses.length === 0) return null;
+
+  const studentStat =
+    totalStudents !== undefined && totalStudents > 0
+      ? `${totalStudents.toLocaleString("id-ID")}+`
+      : null;
 
   return (
     <div className={cn("relative min-w-0", className)}>
@@ -88,7 +72,13 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
           <p className="eyebrow mb-2">Pilihan kelas</p>
           <h2 className="section-title sm:text-3xl">Kelas populer</h2>
           <p className="section-copy mt-2 max-w-lg">
-            Kelas yang paling sering dipilih siswa.
+            Kelas yang paling sering dipilih siswa
+            {studentStat && (
+              <>
+                {" "}
+                — dipercaya <span className="font-medium text-foreground">{studentStat} siswa</span> aktif belajar di Bursa.
+              </>
+            )}
           </p>
           <Link href="/katalog" className="link-accent mt-3 inline-flex items-center gap-1 text-sm">
             Lihat semua kelas
@@ -120,16 +110,29 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
       </div>
 
       <div className="landing-carousel-bleed md:hidden">
-        <div
-          ref={mobileScrollRef}
-          className="catalog-row-scroll landing-course-row-scroll"
-          aria-label="Kelas unggulan"
-          onScroll={syncMobileScrollState}
+        <ScrollCarousel
+          ref={mobileCarouselRef}
+          ariaLabel="Kelas unggulan"
+          hideArrows
+          viewportClassName="landing-scroll-carousel"
+          getPerView={peekGetScrollPerView}
+          gap={LANDING_MOBILE_GAP}
+          onScrollStateChange={(state) => {
+            if (isMobile) applyScrollState(state);
+          }}
+          onActiveIndexChange={(index) => {
+            if (isMobile) setActiveIndex(index);
+          }}
         >
-          {courses.map((course) => (
-            <CourseCard key={course.slug} course={course} variant="poster" />
+          {courses.map((course, index) => (
+            <CourseCard
+              key={course.slug}
+              course={course}
+              variant="poster"
+              isBestseller={index === 0}
+            />
           ))}
-        </div>
+        </ScrollCarousel>
       </div>
 
       <div className="landing-carousel-bleed hidden min-w-0 md:block">
@@ -143,12 +146,42 @@ export function CourseCarousel({ courses, className }: CourseCarouselProps) {
           onScrollStateChange={(state) => {
             if (!isMobile) applyScrollState(state);
           }}
+          onActiveIndexChange={(index) => {
+            if (!isMobile) setActiveIndex(index);
+          }}
         >
-          {courses.map((course) => (
-            <CourseCard key={course.slug} course={course} className="w-full" />
+          {courses.map((course, index) => (
+            <CourseCard
+              key={course.slug}
+              course={course}
+              className="w-full"
+              isBestseller={index === 0}
+            />
           ))}
         </ScrollCarousel>
       </div>
+
+      {courses.length > 1 && (
+        <div className="mt-5 flex items-center justify-center gap-3 sm:mt-6">
+          <div className="flex items-center gap-1.5" role="tablist" aria-label="Navigasi kelas populer">
+            {courses.map((course, index) => (
+              <button
+                key={course.slug}
+                type="button"
+                role="tab"
+                aria-selected={index === activeIndex}
+                aria-current={index === activeIndex}
+                aria-label={`Ke kelas ${index + 1}: ${course.title}`}
+                onClick={() => scrollToIndex(index)}
+                className="carousel-dot"
+              />
+            ))}
+          </div>
+          <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+            {activeIndex + 1}/{courses.length}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

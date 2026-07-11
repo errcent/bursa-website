@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-import { Reveal } from "@/components/motion/reveal";
+import { RiskDisclaimer } from "@/components/risk-disclaimer";
 import {
   Accordion,
   AccordionContent,
@@ -27,6 +27,7 @@ const footerColumns = [
     title: "Platform",
     links: [
       { label: "Tentang Kami", href: "/tentang-kami" },
+      { label: "Pusat Bantuan", href: "/bantuan" },
       { label: "Dashboard", href: "/dashboard" },
       { label: "Profil", href: "/profil" },
       { label: "Pengaturan", href: "/pengaturan" },
@@ -193,34 +194,9 @@ function FooterLinkColumnsFallback() {
 }
 
 export function SiteFooter() {
-  const pathname = usePathname();
-  const showCatalogCta = pathname !== "/katalog";
-
   return (
     <footer className="footer-glass relative mt-auto overflow-hidden">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
-
-      {showCatalogCta ? (
-        <div className="relative border-b border-border/60">
-          <Reveal className="container-page py-12 text-center sm:py-14">
-            <p className="eyebrow mb-3">Mulai belajar hari ini</p>
-            <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
-              Siap bangun proses belajar trading yang terstruktur?
-            </h2>
-            <p className="section-copy mx-auto mt-3 max-w-lg">
-              Jelajahi katalog kelas dan mentor, lalu pilih sesuai kebutuhan belajar kamu.
-            </p>
-            <div className="mt-6">
-              <Link
-                href="/katalog"
-                className="btn-primary inline-flex h-11 items-center justify-center rounded-full px-7 text-sm font-medium transition-transform hover:scale-[1.02] active:scale-[0.98]"
-              >
-                Buka katalog kelas
-              </Link>
-            </div>
-          </Reveal>
-        </div>
-      ) : null}
 
       <div className="container-page grid gap-8 py-12 sm:gap-10 sm:py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="flex flex-col gap-4">
@@ -228,10 +204,6 @@ export function SiteFooter() {
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
             Platform edukasi trading untuk saham, crypto, dan forex dengan katalog mentor, kelas,
             dan proses belajar yang terstruktur.
-          </p>
-          <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">
-            Setiap konten kelas ditinjau tim kami sebelum dipublikasikan. Materi bersifat edukasi,
-            bukan rekomendasi investasi.
           </p>
         </div>
 
@@ -243,11 +215,8 @@ export function SiteFooter() {
 
       <div className="border-t border-border/60">
         <div className="container-page flex flex-col gap-3 py-6 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} Bursa Trading Academy. Prototype internal.</p>
-          <p className="max-w-2xl md:text-right">
-            Trading dan investasi mengandung risiko kerugian modal. Keputusan sepenuhnya tanggung
-            jawab pengguna.
-          </p>
+          <p>© {new Date().getFullYear()} Bursa Trading Academy. Seluruh hak cipta dilindungi.</p>
+          <RiskDisclaimer variant="compact" />
         </div>
       </div>
     </footer>

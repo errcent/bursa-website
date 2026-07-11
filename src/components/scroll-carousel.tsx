@@ -30,11 +30,23 @@ export function peekGetScrollPerView(_width: number) {
 
 export const defaultGetScrollPerView = peekGetScrollPerView;
 export const mentorGetScrollPerView = peekGetScrollPerView;
-export const landingCourseGetScrollPerView = peekGetScrollPerView;
 export const catalogCourseGetScrollPerView = peekGetScrollPerView;
+
+/**
+ * Responsive multi-up density for the desktop "Kelas populer" carousel:
+ * ~2.4 cards at md, ~3.4 at lg, ~4.2 at xl (container width, not viewport —
+ * the carousel sits inside a max-width container so it caps out around 1152px).
+ */
+export function landingCourseGetScrollPerView(width: number) {
+  if (width >= 1100) return 4.2;
+  if (width >= 900) return 3.4;
+  if (width >= 620) return 2.4;
+  return 1;
+}
 
 export type ScrollCarouselHandle = {
   scrollByStep: (direction: -1 | 1) => void;
+  scrollToIndex: (index: number) => void;
 };
 
 interface ScrollCarouselProps {
@@ -169,7 +181,24 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
     [gap, itemWidth]
   );
 
-  useImperativeHandle(ref, () => ({ scrollByStep }), [scrollByStep]);
+  const scrollToIndex = useCallback(
+    (index: number) => {
+      const el = viewportRef.current;
+      if (!el) return;
+
+      const firstItem = el.querySelector<HTMLElement>("[data-scroll-carousel-item]");
+      const stride = firstItem
+        ? firstItem.offsetWidth + gap
+        : itemWidth !== null
+          ? itemWidth + gap
+          : el.clientWidth * 0.8;
+
+      el.scrollTo({ left: stride * index, behavior: "smooth" });
+    },
+    [gap, itemWidth]
+  );
+
+  useImperativeHandle(ref, () => ({ scrollByStep, scrollToIndex }), [scrollByStep, scrollToIndex]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLDivElement>) => {
@@ -186,18 +215,25 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
 
   if (childItems.length === 0) return null;
 
-  const showArrows = !hideArrows && (canScrollLeft || canScrollRight);
+  const canScrollAny = canScrollLeft || canScrollRight;
+  const showArrows = !hideArrows && canScrollAny;
 
   return (
     <div className={cn("group/scroll-carousel relative w-full min-w-0 max-w-full", className)}>
-      {showArrows && (
+      {canScrollAny && (
         <>
           <div
-            className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-12 bg-gradient-to-r from-background via-background/85 to-transparent sm:block sm:w-16"
+            className={cn(
+              "pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-8 bg-gradient-to-r from-background via-background/80 to-transparent transition-opacity duration-200 sm:block sm:w-16",
+              canScrollLeft ? "opacity-100" : "opacity-0"
+            )}
             aria-hidden
           />
           <div
-            className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-12 bg-gradient-to-l from-background via-background/85 to-transparent sm:block sm:w-16"
+            className={cn(
+              "pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-8 bg-gradient-to-l from-background via-background/80 to-transparent transition-opacity duration-200 sm:block sm:w-16",
+              canScrollRight ? "opacity-100" : "opacity-0"
+            )}
             aria-hidden
           />
         </>

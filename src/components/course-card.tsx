@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { BadgeCheck, BookOpen, Clock, Flame, Star } from "lucide-react";
 
 import { CourseThumbnail } from "@/components/course-thumbnail";
 import { InstrumentBadge, LevelBadge } from "@/components/instrument-badge";
 import { StarRating } from "@/components/star-rating";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { getMentorBySlug, formatRupiah } from "@/lib/mock-data";
+import { formatRating, cn } from "@/lib/utils";
 import type { Course } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 export type CourseCardEnrollment = {
   progressPercent: number;
@@ -17,11 +19,17 @@ export type CourseCardEnrollment = {
   lastLessonId?: string;
 };
 
+function courseLessonCount(course: Course): number | undefined {
+  if (!course.modules?.length) return undefined;
+  return course.modules.reduce((total, mod) => total + mod.lessons.length, 0);
+}
+
 export function CourseCard({
   course,
   className,
   enrollment,
   variant = "default",
+  isBestseller = false,
 }: {
   course: Course;
   className?: string;
@@ -29,10 +37,13 @@ export function CourseCard({
   enrollment?: CourseCardEnrollment | null;
   /** Poster = compact Netflix-style tile for mobile horizontal rows. */
   variant?: "default" | "poster";
+  /** Highlights the #1 popular course with a bestseller ribbon. */
+  isBestseller?: boolean;
 }) {
   const mentor = getMentorBySlug(course.mentorSlug);
   const enrolled = Boolean(enrollment);
   const isPoster = variant === "poster";
+  const lessonCount = courseLessonCount(course);
   const progressPercent = Math.min(
     100,
     Math.max(0, enrollment?.progressPercent ?? 0)
@@ -59,8 +70,16 @@ export function CourseCard({
             showPlayOverlay
             alt={course.title}
           />
-          <div className="absolute left-1.5 top-1.5 scale-90 origin-top-left">
-            <LevelBadge level={course.level} />
+          <div className="absolute left-1.5 top-1.5 flex flex-col items-start gap-1">
+            {isBestseller && (
+              <span className="inline-flex items-center gap-0.5 rounded-full bg-amber px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-amber-foreground shadow-sm">
+                <Flame className="size-2.5" />
+                Terlaris
+              </span>
+            )}
+            <span className="scale-90 origin-top-left">
+              <LevelBadge level={course.level} />
+            </span>
           </div>
           {enrolled && (
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/95 via-background/70 to-transparent px-1.5 pb-1.5 pt-6">
@@ -76,6 +95,16 @@ export function CourseCard({
           <h3 className="line-clamp-2 font-heading text-[11px] font-medium leading-tight">
             {course.title}
           </h3>
+          {mentor && (
+            <p className="course-card-poster-meta line-clamp-1 flex items-center gap-1 text-[9px] text-muted-foreground">
+              <span className="truncate">{mentor.name}</span>
+              <span aria-hidden>·</span>
+              <span className="inline-flex shrink-0 items-center gap-0.5 text-foreground/75">
+                <Star className="size-2.5 fill-foreground text-foreground" />
+                {formatRating(course.rating)}
+              </span>
+            </p>
+          )}
           <p className="course-card-poster-meta line-clamp-1 text-[10px] text-muted-foreground">
             {enrolled
               ? progressPercent >= 100
@@ -92,7 +121,7 @@ export function CourseCard({
     <Link
       href={href}
       className={cn(
-        "surface-card-hover group flex h-full w-full flex-col overflow-hidden",
+        "surface-card-hover @container group flex h-full w-full flex-col overflow-hidden",
         enrolled && "ring-1 ring-accent/25",
         className
       )}
@@ -104,7 +133,13 @@ export function CourseCard({
           showPlayOverlay
           alt={course.title}
         />
-        <div className="absolute left-3 top-3">
+        <div className="absolute left-3 top-3 flex flex-col items-start gap-1.5">
+          {isBestseller && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-amber-foreground shadow-sm">
+              <Flame className="size-3" />
+              Terlaris
+            </span>
+          )}
           <LevelBadge level={course.level} />
         </div>
         {enrolled && (
@@ -135,15 +170,42 @@ export function CourseCard({
       )}
 
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <InstrumentBadge instrument={course.instrument} className="w-fit" />
-        <h3 className="line-clamp-2 font-heading text-sm font-medium leading-snug">
+        {mentor && (
+          <div className="flex items-center gap-1.5">
+            <Avatar className="size-5 border border-border/60 bg-surface-2">
+              <AvatarFallback className="bg-surface-2 text-[9px] font-semibold">
+                {mentor.initials}
+              </AvatarFallback>
+            </Avatar>
+            <span className="truncate text-xs font-medium text-foreground/85">
+              {mentor.name}
+            </span>
+            {mentor.verified && (
+              <span
+                className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent"
+                title="Mentor terverifikasi"
+              >
+                <BadgeCheck className="size-3" />
+              </span>
+            )}
+          </div>
+        )}
+        <h3 className="line-clamp-2 font-heading text-sm font-semibold leading-snug @[240px]:text-base @[380px]:text-lg">
           {course.title}
         </h3>
-        {mentor && (
-          <p className="text-xs text-muted-foreground">
-            oleh <span className="text-foreground/75">{mentor.name}</span>
-          </p>
-        )}
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-muted-foreground">
+          <InstrumentBadge instrument={course.instrument} className="h-auto px-1.5 py-0.5 text-[10px]" />
+          <span className="inline-flex items-center gap-1">
+            <Clock className="size-3" />
+            {course.durationHours} jam
+          </span>
+          {lessonCount !== undefined && (
+            <span className="inline-flex items-center gap-1">
+              <BookOpen className="size-3" />
+              {lessonCount} pelajaran
+            </span>
+          )}
+        </div>
         <div className="mt-auto flex items-center justify-between pt-2">
           <StarRating rating={course.rating} reviewCount={course.studentsCount} />
           {enrolled ? (

@@ -42,6 +42,7 @@ const navLinks: {
   { href: "/katalog", label: "Katalog", prefetch: true },
   { href: "/komunitas", label: "Komunitas" },
   { href: "/tentang-kami", label: "Tentang Kami" },
+  { href: "/bantuan", label: "Bantuan" },
 ];
 
 function isNavLinkActive(pathname: string, href: string, exact = false) {
@@ -114,10 +115,10 @@ export function SiteNavbar() {
           {!isKatalog && (
             <Suspense
               fallback={
-                <SearchSkeleton className="hidden h-9 max-w-xs flex-1 animate-pulse rounded-full bg-muted xl:flex" />
+                <SearchSkeleton className="hidden h-9 max-w-[13rem] flex-1 animate-pulse rounded-full bg-muted lg:flex xl:max-w-xs" />
               }
             >
-              <SiteNavSearch className="hidden max-w-xs flex-1 xl:flex" />
+              <SiteNavSearch className="hidden max-w-[13rem] flex-1 lg:flex xl:max-w-xs" />
             </Suspense>
           )}
 

@@ -8,6 +8,8 @@ export interface Mentor {
   title: string;
   initials: string;
   avatarUrl?: string;
+  /** Waist-up cutout artwork (transparent background) used on the Mentor Stage carousel. */
+  cutoutUrl?: string;
   instruments: Instrument[];
   verified: boolean;
   licenseLabel?: string;
@@ -70,4 +72,8 @@ export interface Review {
   rating: number;
   comment: string;
   date: string;
+  /** Course title the reviewer took — surfaced as a tag on the review card. */
+  courseTag?: string;
+  /** Mentor name the reviewer studied with — surfaced as a tag on the review card. */
+  mentorTag?: string;
 }

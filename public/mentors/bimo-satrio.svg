@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 340" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="body-bimo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#45454f"/>
+      <stop offset="55%" stop-color="#6c6c78"/>
+      <stop offset="100%" stop-color="#9d9da8"/>
+    </linearGradient>
+    <radialGradient id="sheen-bimo" cx="42%" cy="24%" r="60%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shadow-bimo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="120" cy="322" rx="64" ry="13" fill="url(#shadow-bimo)"/>
+
+  <path d="M54,330 C54,244 67,203 89,181 C70,161 68,127 81,102 C94,77 146,77 159,102 C172,127 170,161 151,181 C173,203 186,244 186,330 Z" fill="url(#body-bimo)"/>
+  <path d="M54,330 C54,244 67,203 89,181 C70,161 68,127 81,102 C94,77 146,77 159,102 C172,127 170,161 151,181 C173,203 186,244 186,330 Z" fill="url(#sheen-bimo)"/>
+
+  <circle cx="120" cy="98" r="45" fill="url(#body-bimo)"/>
+  <circle cx="120" cy="98" r="45" fill="url(#sheen-bimo)"/>
+
+  <path d="M97,202 L143,202 L146,216 L94,216 Z" fill="#2b2b32" opacity="0.32"/>
+</svg>
