@@ -13,63 +13,32 @@ export type AccountMenuItem = {
   href: string;
   label: string;
   icon: LucideIcon;
-  description?: string;
+  isRoleLink?: boolean;
 };
 
-export type AccountMenuSection = {
-  label?: string;
-  items: AccountMenuItem[];
-};
-
-const ACCOUNT_SECTIONS: AccountMenuSection[] = [
-  {
-    label: "Akun",
-    items: [
-      {
-        href: "/dashboard",
-        label: "Dashboard",
-        icon: LayoutDashboard,
-        description: "Ringkasan belajar",
-      },
-    ],
-  },
-  {
-    label: "Konten",
-    items: [
-      { href: "/playlist", label: "Playlist", icon: ListVideo, description: "Koleksi tersimpan" },
-      { href: "/artikel", label: "Artikel", icon: Newspaper, description: "Tulisan & insight" },
-    ],
-  },
-  {
-    label: "Preferensi",
-    items: [
-      { href: "/pengaturan", label: "Pengaturan", icon: Settings, description: "Tampilan & akun" },
-      { href: "/bantuan", label: "Pusat Bantuan", icon: LifeBuoy, description: "FAQ & dukungan" },
-    ],
-  },
+const BASE_MENU_ITEMS: AccountMenuItem[] = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/playlist", label: "Playlist", icon: ListVideo },
+  { href: "/artikel", label: "Artikel", icon: Newspaper },
+  { href: "/pengaturan", label: "Pengaturan", icon: Settings },
+  { href: "/bantuan", label: "Pusat Bantuan", icon: LifeBuoy },
 ];
 
-export function getAccountMenuSections(roleLinks: RoleNavLink[] = []): AccountMenuSection[] {
+export function getAccountMenuItems(roleLinks: RoleNavLink[] = []): AccountMenuItem[] {
   const dashboardHref = "/dashboard";
   const privilegedLinks = roleLinks.filter((link) => link.href !== dashboardHref);
 
   if (privilegedLinks.length === 0) {
-    return ACCOUNT_SECTIONS;
+    return BASE_MENU_ITEMS;
   }
 
-  const [accountSection, ...rest] = ACCOUNT_SECTIONS;
+  const [dashboard, ...rest] = BASE_MENU_ITEMS;
+  const roleItems: AccountMenuItem[] = privilegedLinks.map((link) => ({
+    href: link.href,
+    label: link.label,
+    icon: LayoutDashboard,
+    isRoleLink: true,
+  }));
 
-  return [
-    accountSection,
-    {
-      label: "Akses",
-      items: privilegedLinks.map((link) => ({
-        href: link.href,
-        label: link.label,
-        icon: LayoutDashboard,
-        description: link.description,
-      })),
-    },
-    ...rest,
-  ];
+  return [dashboard, ...roleItems, ...rest];
 }

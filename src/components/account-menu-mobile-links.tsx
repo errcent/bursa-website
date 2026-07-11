@@ -8,7 +8,7 @@ import { useAuth } from "@/components/auth-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import type { RoleNavLink } from "@/lib/auth/roles";
-import { getAccountMenuSections } from "@/lib/nav/account-menu";
+import { getAccountMenuItems } from "@/lib/nav/account-menu";
 import { cn } from "@/lib/utils";
 
 function initials(name: string) {
@@ -44,7 +44,7 @@ export function AccountMenuMobileLinks({
 
   if (!session) return null;
 
-  const sections = getAccountMenuSections(roleLinks);
+  const items = getAccountMenuItems(roleLinks);
 
   function handleLogout() {
     logout();
@@ -54,7 +54,7 @@ export function AccountMenuMobileLinks({
   }
 
   return (
-    <div className={cn("flex flex-col gap-4", className)}>
+    <div className={cn("flex flex-col gap-3", className)}>
       <Link
         href="/profil"
         onClick={onNavigate}
@@ -74,47 +74,26 @@ export function AccountMenuMobileLinks({
         </div>
       </Link>
 
-      {sections.map((section) => (
-        <div key={section.label ?? section.items[0]?.href}>
-          {section.label && (
-            <p className="mb-2 px-2 text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
-              {section.label}
-            </p>
-          )}
-          <div className="flex flex-col gap-1">
-            {section.items.map((item) => {
-              const Icon =
-                section.label === "Akses" ? (
-                  <RoleMenuIcon href={item.href} />
-                ) : (
-                  <item.icon className="size-4 opacity-70" />
-                );
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onNavigate}
-                  className={cn(
-                    "mobile-nav-item gap-3 text-muted-foreground hover:bg-muted/60 hover:text-foreground",
-                    linkClassName
-                  )}
-                >
-                  {Icon}
-                  <span className="flex flex-col">
-                    <span>{item.label}</span>
-                    {item.description && (
-                      <span className="text-xs font-normal text-muted-foreground">
-                        {item.description}
-                      </span>
-                    )}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+      <div className="flex flex-col gap-0.5">
+        {items.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onNavigate}
+            className={cn(
+              "mobile-nav-item gap-3 text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+              linkClassName
+            )}
+          >
+            {item.isRoleLink ? (
+              <RoleMenuIcon href={item.href} />
+            ) : (
+              <item.icon className="size-4 opacity-70" />
+            )}
+            <span>{item.label}</span>
+          </Link>
+        ))}
+      </div>
 
       <Button
         variant="outline"
