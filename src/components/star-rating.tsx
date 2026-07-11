@@ -1,6 +1,6 @@
 import { Star } from "lucide-react";
 
-import { cn, formatRating } from "@/lib/utils";
+import { cn, formatRating, hasRating } from "@/lib/utils";
 
 interface StarRatingProps {
   rating: number;
@@ -9,6 +9,8 @@ interface StarRatingProps {
 }
 
 export function StarRating({ rating, reviewCount, className }: StarRatingProps) {
+  if (!hasRating(rating)) return null;
+
   return (
     <div className={cn("flex items-center gap-1 text-xs", className)}>
       <Star className="size-3.5 fill-foreground text-foreground" />

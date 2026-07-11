@@ -1,5 +1,6 @@
 import { courses, mentors, getMentorBySlug } from "@/lib/mock-data";
 import type { Course, Mentor } from "@/lib/types";
+import { hasRating } from "@/lib/utils";
 
 export type SearchResultType = "course" | "mentor" | "topic";
 
@@ -184,7 +185,9 @@ export function searchAll(query: string, limit = 8): SearchResult[] {
       score,
       matchedField,
       imageUrl: course.thumbnailUrl,
-      meta: `${course.rating}★ · ${course.studentsCount.toLocaleString("id-ID")} siswa`,
+      meta: hasRating(course.rating)
+        ? `${course.rating}★ · ${course.studentsCount.toLocaleString("id-ID")} siswa`
+        : `${course.studentsCount.toLocaleString("id-ID")} siswa`,
     });
   }
 
@@ -229,7 +232,7 @@ export function getPopularCourses(limit = 4): SearchResult[] {
         badge: course.instrument,
         score: course.studentsCount,
         imageUrl: course.thumbnailUrl,
-        meta: `${course.rating}★`,
+        meta: hasRating(course.rating) ? `${course.rating}★` : undefined,
       };
     });
 }

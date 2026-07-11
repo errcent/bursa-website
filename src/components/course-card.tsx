@@ -9,7 +9,7 @@ import { StarRating } from "@/components/star-rating";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { getMentorBySlug, formatRupiah } from "@/lib/mock-data";
-import { formatRating, cn } from "@/lib/utils";
+import { formatRating, cn, hasRating } from "@/lib/utils";
 import type { Course } from "@/lib/types";
 
 export type CourseCardEnrollment = {
@@ -98,11 +98,15 @@ export function CourseCard({
           {mentor && (
             <p className="course-card-poster-meta line-clamp-1 flex items-center gap-1 text-[9px] text-muted-foreground">
               <span className="truncate">{mentor.name}</span>
-              <span aria-hidden>·</span>
-              <span className="inline-flex shrink-0 items-center gap-0.5 text-foreground/75">
-                <Star className="size-2.5 fill-foreground text-foreground" />
-                {formatRating(course.rating)}
-              </span>
+              {hasRating(course.rating) && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span className="inline-flex shrink-0 items-center gap-0.5 text-foreground/75">
+                    <Star className="size-2.5 fill-foreground text-foreground" />
+                    {formatRating(course.rating)}
+                  </span>
+                </>
+              )}
             </p>
           )}
           <p className="course-card-poster-meta line-clamp-1 text-[10px] text-muted-foreground">
@@ -206,7 +210,12 @@ export function CourseCard({
             </span>
           )}
         </div>
-        <div className="mt-auto flex items-center justify-between pt-2">
+        <div
+          className={cn(
+            "mt-auto flex items-center pt-2",
+            hasRating(course.rating) ? "justify-between" : "justify-end"
+          )}
+        >
           <StarRating rating={course.rating} reviewCount={course.studentsCount} />
           {enrolled ? (
             <span className="text-xs font-medium text-accent">

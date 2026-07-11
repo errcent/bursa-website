@@ -22,6 +22,7 @@ import {
   getMentorBySlug,
 } from "@/lib/catalog/server";
 import { formatRupiah } from "@/lib/mock-data";
+import { hasRating } from "@/lib/utils";
 
 export async function generateStaticParams() {
   const slugs = await getCatalogCourseSlugs();
@@ -80,7 +81,7 @@ export default async function CourseDetailPage({
             priceLabel={formatRupiah(course.price)}
             checkoutHref={primaryCheckoutHref}
             previewHref={`/belajar/${course.slug}/l1`}
-            ratingLabel={`${course.rating}`}
+            ratingLabel={hasRating(course.rating) ? `${course.rating}` : ""}
           />
         </div>
 

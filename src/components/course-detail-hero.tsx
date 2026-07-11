@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
 import { resolveCourseThumbnailUrl } from "@/lib/courses/thumbnails";
-import { cn } from "@/lib/utils";
+import { cn, hasRating } from "@/lib/utils";
 import type { Course, Mentor } from "@/lib/types";
 
 interface CourseDetailHeroProps {
@@ -82,14 +82,14 @@ export function CourseDetailHero({
             trailerActive && "lg:justify-center"
           )}
         >
-          <StarRating rating={course.rating} />
+          {hasRating(course.rating) && <StarRating rating={course.rating} />}
           <span className="flex items-center gap-1.5">
             <Users className="size-4" /> {course.studentsCount.toLocaleString("id-ID")} siswa
           </span>
           <span className="flex items-center gap-1.5">
             <Clock className="size-4" /> {course.durationHours} jam · {totalLessons} lesson
           </span>
-          <span className="sr-only">{ratingLabel}</span>
+          {ratingLabel ? <span className="sr-only">{ratingLabel}</span> : null}
         </div>
         {mentor && (
           <Link

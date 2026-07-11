@@ -5,7 +5,7 @@ import { Check, ShieldCheck, Star, Users2 } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Progress, ProgressIndicator, ProgressTrack } from "@/components/ui/progress";
 import type { Course, Mentor } from "@/lib/types";
-import { formatRating } from "@/lib/utils";
+import { formatRating, hasRating } from "@/lib/utils";
 
 const verificationSteps = [
   { label: "Kredensial dan lisensi diperiksa", done: true },
@@ -28,7 +28,8 @@ export function TrustVerificationSection({
   const verifiedMentors = mentors.filter((m) => m.verified);
   const verifyRate = mentors.length > 0 ? Math.round((verifiedMentors.length / mentors.length) * 100) : 0;
   const totalStudents = courses.reduce((sum, c) => sum + c.studentsCount, 0);
-  const avgRating = average(courses.map((c) => c.rating));
+  const ratedCourses = courses.filter((c) => hasRating(c.rating));
+  const avgRating = average(ratedCourses.map((c) => c.rating));
 
   const stats = [
     {
