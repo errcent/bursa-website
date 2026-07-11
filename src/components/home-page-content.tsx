@@ -97,7 +97,7 @@ export function HomePageContent({
   return (
     <>
       <SiteNavbar />
-      <main className="has-mobile-sticky-cta flex-1 overflow-x-hidden">
+      <main className="has-mobile-sticky-cta flex-1 overflow-x-clip">
         {/* Hero — AtomAI centered layout */}
         <section className="hero-cinematic relative min-h-[min(74vh,720px)] border-b border-border/60 sm:min-h-[84vh]">
           <HeroLivingBackground />

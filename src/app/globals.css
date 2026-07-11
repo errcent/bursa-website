@@ -498,6 +498,12 @@
   }
 
   @media (max-width: 767px) {
+    .landing-course-row-scroll {
+      gap: 0.625rem;
+    }
+    .landing-course-row-scroll > * {
+      width: var(--landing-course-card-width);
+    }
     .landing-course-carousel .catalog-scroll-carousel-item {
       width: var(--landing-course-card-width);
       flex-basis: var(--landing-course-card-width);

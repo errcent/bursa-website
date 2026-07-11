@@ -206,7 +206,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
   const showArrows = !hideArrows && (canScrollLeft || canScrollRight);
 
   return (
-    <div className={cn("group/scroll-carousel relative", className)}>
+    <div className={cn("group/scroll-carousel relative w-full min-w-0 max-w-full", className)}>
       {showArrows && (
         <>
           <div
@@ -253,7 +253,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
         aria-roledescription="carousel"
         aria-label={ariaLabel}
         className={cn(
-          "catalog-scroll-carousel outline-none",
+          "catalog-scroll-carousel w-full min-w-0 max-w-full outline-none",
           "focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           viewportClassName
         )}
