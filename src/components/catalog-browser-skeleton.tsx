@@ -41,7 +41,7 @@ export function CatalogBrowserSkeleton() {
             ))}
           </div>
         </div>
-        <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
           {Array.from({ length: 8 }).map((_, i) => (
             <CatalogCardSkeleton key={i} />
           ))}
