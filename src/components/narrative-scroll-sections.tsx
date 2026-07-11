@@ -245,7 +245,10 @@ export function NarrativeScrollSections({
   mentors: Mentor[];
 }) {
   const verifiedMentors = mentors.filter((m) => m.verified);
-  const totalModules = courses.reduce((sum, c) => sum + c.modules.length, 0);
+  const totalModules = courses.reduce(
+    (sum, c) => sum + (c.moduleCount ?? c.modules.length),
+    0
+  );
   const totalDurationHours = courses.reduce((sum, c) => sum + c.durationHours, 0);
   const totalStudents = courses.reduce((sum, c) => sum + c.studentsCount, 0);
 

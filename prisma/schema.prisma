@@ -220,6 +220,8 @@ model MentorProfile {
   chatRooms      ChatRoom[]
   tradingSignals TradingSignal[]
   availabilitySlots MentorAvailabilitySlot[]
+
+  @@index([verificationStatus, studentsCount])
 }
 
 /// Admin-managed time slots for mentor 1-on-1 sessions.
@@ -267,6 +269,8 @@ model Course {
   reviews        Review[]
   changeRequests CourseChangeRequest[]
   playlistItems  PlaylistItem[]
+
+  @@index([isPublished, studentsCount])
 }
 
 model Module {

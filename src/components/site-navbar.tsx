@@ -31,9 +31,14 @@ function AuthSkeleton({ mobile = false }: { mobile?: boolean }) {
   return <div className="hidden h-8 w-20 animate-pulse rounded-lg bg-muted sm:block" />;
 }
 
-const navLinks = [
+const navLinks: {
+  href: string;
+  label: string;
+  exact?: boolean;
+  prefetch?: boolean;
+}[] = [
   { href: "/", label: "Beranda", exact: true },
-  { href: "/katalog", label: "Katalog" },
+  { href: "/katalog", label: "Katalog", prefetch: true },
   { href: "/komunitas", label: "Komunitas" },
 ];
 
@@ -86,6 +91,7 @@ export function SiteNavbar() {
                   <Link
                     key={link.label}
                     href={link.href}
+                    prefetch={link.prefetch}
                     aria-current={active ? "page" : undefined}
                     className={cn(
                       "text-sm font-medium transition-colors",

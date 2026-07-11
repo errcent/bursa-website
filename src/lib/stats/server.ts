@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 import { db } from "@/lib/db";
 
@@ -119,6 +119,7 @@ export async function recalculateStatsForCourse(courseId: string) {
 
 /** Revalidate catalog, course detail, mentor profile, and home. */
 export function revalidateStatsPaths(input: { courseSlug: string; mentorSlug: string }) {
+  revalidateTag("catalog", "max");
   revalidatePath("/katalog");
   revalidatePath(`/kelas/${input.courseSlug}`);
   revalidatePath(`/instruktur/${input.mentorSlug}`);

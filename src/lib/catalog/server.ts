@@ -1,22 +1,61 @@
 import { VerificationStatus, type Prisma } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
 import { instrumentToUi, levelToUi } from "@/lib/admin/server";
 import { db } from "@/lib/db";
 import type { Course, Mentor } from "@/lib/types";
 
-const mentorInclude = { user: true } as const;
+const CATALOG_CACHE_TAG = "catalog";
+const CATALOG_REVALIDATE_SECONDS = 60;
 
-type DbMentorProfile = Prisma.MentorProfileGetPayload<{ include: typeof mentorInclude }>;
+const mentorDetailInclude = { user: true } as const;
 
-type DbCourse = Prisma.CourseGetPayload<{
+const mentorListingSelect = {
+  slug: true,
+  title: true,
+  initials: true,
+  avatarUrl: true,
+  bio: true,
+  instruments: true,
+  licenseLabel: true,
+  verificationStatus: true,
+  yearsExperience: true,
+  studentsCount: true,
+  coursesCount: true,
+  rating: true,
+  availableFor1on1: true,
+  sessionPrice: true,
+  user: { select: { nama: true } },
+} as const;
+
+type DbMentorDetail = Prisma.MentorProfileGetPayload<{ include: typeof mentorDetailInclude }>;
+type DbMentorListing = Prisma.MentorProfileGetPayload<{ select: typeof mentorListingSelect }>;
+
+type DbCourseDetail = Prisma.CourseGetPayload<{
   include: {
     mentor: { select: { slug: true } };
     modules: { include: { lessons: true } };
   };
 }>;
 
-function mapCatalogMentor(profile: DbMentorProfile): Mentor {
+type DbCourseListing = Prisma.CourseGetPayload<{
+  select: {
+    slug: true;
+    title: true;
+    instrument: true;
+    level: true;
+    price: true;
+    rating: true;
+    studentsCount: true;
+    durationHours: true;
+    shortDescription: true;
+    outcomes: true;
+    mentor: { select: { slug: true } };
+    _count: { select: { modules: true } };
+  };
+}>;
+
+function mapCatalogMentor(profile: DbMentorDetail | DbMentorListing): Mentor {
   return {
     slug: profile.slug,
     name: profile.user.nama,
@@ -31,14 +70,14 @@ function mapCatalogMentor(profile: DbMentorProfile): Mentor {
     coursesCount: profile.coursesCount,
     rating: profile.rating,
     bio: profile.bio,
-    philosophy: profile.philosophy,
-    trackRecord: (profile.trackRecord as number[]) ?? [],
+    philosophy: "philosophy" in profile ? profile.philosophy : "",
+    trackRecord: "trackRecord" in profile ? ((profile.trackRecord as number[]) ?? []) : [],
     availableFor1on1: profile.availableFor1on1,
     sessionPrice: profile.sessionPrice ?? undefined,
   };
 }
 
-function mapCatalogCourse(course: DbCourse): Course {
+function mapCatalogCourse(course: DbCourseDetail): Course {
   return {
     slug: course.slug,
     title: course.title,
@@ -67,49 +106,91 @@ function mapCatalogCourse(course: DbCourse): Course {
   };
 }
 
-/** Mentors visible in public catalog — verified profiles only. */
-export async function getCatalogMentors(): Promise<Mentor[]> {
+function mapCatalogListingCourse(course: DbCourseListing): Course {
+  return {
+    slug: course.slug,
+    title: course.title,
+    mentorSlug: course.mentor.slug,
+    instrument: instrumentToUi(course.instrument),
+    level: levelToUi(course.level),
+    price: course.price,
+    rating: course.rating,
+    studentsCount: course.studentsCount,
+    durationHours: course.durationHours,
+    shortDescription: course.shortDescription,
+    outcomes: (course.outcomes as string[]) ?? [],
+    modules: [],
+    moduleCount: course._count.modules,
+  };
+}
+
+async function fetchCatalogCoursesListing(): Promise<Course[]> {
+  const courses = await db.course.findMany({
+    where: {
+      isPublished: true,
+      mentor: { verificationStatus: VerificationStatus.VERIFIED },
+    },
+    select: {
+      slug: true,
+      title: true,
+      instrument: true,
+      level: true,
+      price: true,
+      rating: true,
+      studentsCount: true,
+      durationHours: true,
+      shortDescription: true,
+      outcomes: true,
+      mentor: { select: { slug: true } },
+      _count: { select: { modules: true } },
+    },
+    orderBy: [{ studentsCount: "desc" }, { updatedAt: "desc" }],
+  });
+
+  return courses.map(mapCatalogListingCourse);
+}
+
+async function fetchCatalogMentorsListing(): Promise<Mentor[]> {
   const profiles = await db.mentorProfile.findMany({
     where: { verificationStatus: VerificationStatus.VERIFIED },
-    include: mentorInclude,
+    select: mentorListingSelect,
     orderBy: [{ studentsCount: "desc" }, { createdAt: "desc" }],
   });
 
   return profiles.map(mapCatalogMentor);
 }
 
-/** Published courses from verified mentors. */
-export async function getCatalogCourses(): Promise<Course[]> {
-  const courses = await db.course.findMany({
-    where: {
-      isPublished: true,
-      mentor: { verificationStatus: VerificationStatus.VERIFIED },
-    },
-    include: {
-      mentor: { select: { slug: true } },
-      modules: {
-        orderBy: { sortOrder: "asc" },
-        include: {
-          lessons: { orderBy: { sortOrder: "asc" } },
-        },
-      },
-    },
-    orderBy: [{ studentsCount: "desc" }, { updatedAt: "desc" }],
-  });
+const getCachedCatalogData = unstable_cache(
+  async () => {
+    const [courses, mentors] = await Promise.all([
+      fetchCatalogCoursesListing(),
+      fetchCatalogMentorsListing(),
+    ]);
+    return { courses, mentors };
+  },
+  ["catalog-data"],
+  { revalidate: CATALOG_REVALIDATE_SECONDS, tags: [CATALOG_CACHE_TAG] }
+);
 
-  return courses.map(mapCatalogCourse);
+/** Mentors visible in public catalog — verified profiles only. */
+export async function getCatalogMentors(): Promise<Mentor[]> {
+  return fetchCatalogMentorsListing();
+}
+
+/** Published courses from verified mentors (listing payload, no module/lesson joins). */
+export async function getCatalogCourses(): Promise<Course[]> {
+  return fetchCatalogCoursesListing();
 }
 
 export async function getCatalogData(): Promise<{ courses: Course[]; mentors: Mentor[] }> {
-  const [courses, mentors] = await Promise.all([getCatalogCourses(), getCatalogMentors()]);
-  return { courses, mentors };
+  return getCachedCatalogData();
 }
 
 /** Single mentor by slug — verified profiles only (public catalog). */
 export async function getMentorBySlug(slug: string): Promise<Mentor | null> {
   const profile = await db.mentorProfile.findFirst({
     where: { slug, verificationStatus: VerificationStatus.VERIFIED },
-    include: mentorInclude,
+    include: mentorDetailInclude,
   });
   return profile ? mapCatalogMentor(profile) : null;
 }
@@ -220,5 +301,7 @@ export async function getMentorReviews(mentorSlug: string, limit = 10) {
 
 /** Call after admin changes that affect catalog visibility. */
 export function revalidateCatalog() {
+  revalidateTag(CATALOG_CACHE_TAG, "max");
   revalidatePath("/katalog");
+  revalidatePath("/");
 }

@@ -47,6 +47,8 @@ export interface Course {
   shortDescription: string;
   outcomes: string[];
   modules: Module[];
+  /** Set on listing queries that skip module payloads. */
+  moduleCount?: number;
 }
 
 export interface FounderProfile {

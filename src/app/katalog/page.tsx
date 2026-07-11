@@ -4,13 +4,13 @@ import Script from "next/script";
 
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
-import { CatalogBrowser } from "@/components/catalog-browser";
+import { CatalogBrowserSkeleton } from "@/components/catalog-browser-skeleton";
+import { CatalogDataLoader } from "@/components/catalog-data-loader";
 import { KatalogHero } from "@/components/katalog-hero";
-import { getCatalogData } from "@/lib/catalog/server";
 import { buildSearchMetadata, buildSearchResultsJsonLd } from "@/lib/search/seo";
 import type { Instrument } from "@/lib/types";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const validInstruments: Instrument[] = ["Saham", "Crypto", "Forex"];
 const validViews = ["kelas", "instruktur"] as const;
@@ -36,7 +36,6 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
     : "kelas";
 
   const searchJsonLd = initialQuery ? buildSearchResultsJsonLd(initialQuery) : null;
-  const { courses, mentors } = await getCatalogData();
 
   return (
     <>
@@ -52,10 +51,8 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
       <main className="has-mobile-sticky-cta flex-1 overflow-x-clip pb-6">
         <KatalogHero query={initialQuery} />
         <div className="container-page py-4 sm:py-10">
-          <Suspense fallback={null}>
-            <CatalogBrowser
-              courses={courses}
-              mentors={mentors}
+          <Suspense fallback={<CatalogBrowserSkeleton />}>
+            <CatalogDataLoader
               initialInstrument={initialInstrument}
               initialQuery={initialQuery}
               initialView={initialView}
