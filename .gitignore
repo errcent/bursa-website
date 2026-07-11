@@ -62,3 +62,5 @@ next-env.d.ts
 _check_out.txt
 _tsc_exit.txt
 _tsc_filtered.txt
+
+.vercel
