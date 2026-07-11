@@ -9,7 +9,6 @@ import { CurriculumPreviewSection } from "@/components/home/curriculum-preview-s
 import { ClosingCtaSection } from "@/components/home/closing-cta-section";
 import { PricingModelComparison } from "@/components/home/pricing-model-comparison";
 import { TrustVerificationSection } from "@/components/home/trust-verification-section";
-import { FounderStorySection } from "@/components/founder-story-section";
 import { HeroLivingBackground } from "@/components/hero-living-bg";
 import { HeroTyping } from "@/components/motion/hero-typing";
 import { MentorCarousel } from "@/components/mentor-carousel";
@@ -18,10 +17,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { HomeFaqSection } from "@/components/home/home-faq-section";
 import { TestimonialShowcase } from "@/components/testimonial-showcase";
 import { Button } from "@/components/ui/button";
-import { DeviceOrbit } from "@/components/ui/orbit-visuals";
 import { Reveal, RevealText, Stagger, StaggerItem } from "@/components/motion/reveal";
-import { founder, founderManifesto, founderResponses, reviews } from "@/lib/mock-data";
-import { formatRating } from "@/lib/utils";
+import { reviews } from "@/lib/mock-data";
 import type { Course, Mentor } from "@/lib/types";
 
 const instruments = [
@@ -77,28 +74,22 @@ export function HomePageContent({
     .slice(0, 8);
 
   const totalStudents = courses.reduce((sum, course) => sum + course.studentsCount, 0);
-  const verifiedMentorsCount = mentors.filter((m) => m.verified).length;
-  const avgCourseRating =
-    courses.length > 0 ? courses.reduce((sum, c) => sum + c.rating, 0) / courses.length : 0;
-  const heroTrustStat =
-    avgCourseRating > 0
-      ? `${verifiedMentorsCount}+ mentor terverifikasi · rating ${formatRating(avgCourseRating)}/5`
-      : `${verifiedMentorsCount}+ mentor terverifikasi`;
+  const heroBadgeText = "Platform Belajar Trading #1 di Indonesia";
 
   return (
     <>
       <SiteNavbar />
       <main className="has-mobile-sticky-cta flex-1 overflow-x-clip">
-        {/* Hero — content-proportional height, two-column on desktop with a visual proof panel */}
+        {/* Hero — single-column, content-proportional height */}
         <section className="hero-cinematic relative border-b border-border/60">
           <HeroLivingBackground />
 
-          <div className="container-page relative z-10 grid gap-10 px-4 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:py-24">
-            <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+          <div className="container-page relative z-10 px-4 py-16 sm:px-8 sm:py-20 lg:py-24">
+            <div className="mx-auto flex max-w-3xl flex-col items-center text-center lg:mx-0 lg:items-start lg:text-left">
               <RevealText delay={0.05}>
                 <span className="badge-pill mb-6 inline-flex items-center gap-2">
                   <span className="size-1.5 rounded-full bg-accent" aria-hidden />
-                  <HeroTyping text={heroTrustStat} />
+                  <HeroTyping text={heroBadgeText} />
                 </span>
               </RevealText>
               <RevealText delay={0.12}>
@@ -154,11 +145,6 @@ export function HomePageContent({
                 </div>
               </Reveal>
             </div>
-
-            {/* Visual proof — dashboard/device preview so the hero isn't text-only */}
-            <Reveal delay={0.3} className="w-full">
-              <DeviceOrbit className="lg:min-h-[24rem]" />
-            </Reveal>
           </div>
         </section>
 
@@ -215,9 +201,6 @@ export function HomePageContent({
 
         {/* Testimonials */}
         <TestimonialShowcase reviews={reviews} />
-
-        {/* Founder story — manifesto pull-quote + photo, not a tilt deck */}
-        <FounderStorySection founder={founder} manifesto={founderManifesto} responses={founderResponses} />
 
         {/* FAQ */}
         <HomeFaqSection />
