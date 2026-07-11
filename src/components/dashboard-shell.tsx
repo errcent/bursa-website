@@ -8,7 +8,6 @@ import { motion } from "motion/react";
 import { CourseThumbnail } from "@/components/course-thumbnail";
 import { AuthGuard } from "@/components/auth-guard";
 import { useAuth } from "@/components/auth-provider";
-import { DashboardWatchlist } from "@/components/dashboard-watchlist";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { InstrumentBadge } from "@/components/instrument-badge";
@@ -33,21 +32,8 @@ type LearningCourse = {
   lastLessonId: string;
 };
 
-type LearningSummary = {
-  enrolledCount: number;
-  completedCourses: number;
-  totalHoursLearned: number;
-};
-
 type LearningPayload = {
   courses: LearningCourse[];
-  summary: LearningSummary;
-};
-
-const EMPTY_SUMMARY: LearningSummary = {
-  enrolledCount: 0,
-  completedCourses: 0,
-  totalHoursLearned: 0,
 };
 
 function DashboardBody() {
@@ -63,7 +49,7 @@ function DashboardBody() {
 
   useEffect(() => {
     if (!session?.userId && !session?.email) {
-      setLearning({ courses: [], summary: EMPTY_SUMMARY });
+      setLearning({ courses: [] });
       setLoading(false);
       return;
     }
@@ -88,13 +74,12 @@ function DashboardBody() {
         if (!cancelled) {
           setLearning({
             courses: data.courses ?? [],
-            summary: data.summary ?? EMPTY_SUMMARY,
           });
         }
       })
       .catch(() => {
         if (!cancelled) {
-          setLearning({ courses: [], summary: EMPTY_SUMMARY });
+          setLearning({ courses: [] });
         }
       })
       .finally(() => {
@@ -107,7 +92,6 @@ function DashboardBody() {
   }, [refreshKey, session?.userId, session?.email]);
 
   const inProgress = learning?.courses ?? [];
-  const summary = learning?.summary ?? EMPTY_SUMMARY;
   const hasProgress = inProgress.length > 0;
 
   return (
@@ -128,8 +112,7 @@ function DashboardBody() {
         </div>
 
         <div className="container-page section-spacious">
-          <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
-            <div className="flex min-w-0 flex-col gap-10">
+          <div className="flex min-w-0 flex-col gap-10">
               <section>
                 <Reveal className="mb-4 flex flex-wrap items-center justify-between gap-2">
                   <h2 className="section-title flex min-w-0 items-center gap-2">
@@ -265,37 +248,6 @@ function DashboardBody() {
                   })}
                 </Stagger>
               </section>
-            </div>
-
-            <aside className="flex min-w-0 flex-col gap-4">
-              <Reveal>
-                <DashboardWatchlist />
-              </Reveal>
-
-              <Reveal delay={0.1}>
-                <div className="surface-card p-5">
-                  <h3 className="mb-3 font-heading text-sm font-medium">Ringkasan Belajar</h3>
-                  <dl className="flex flex-col gap-2 text-sm">
-                    <div className="flex justify-between border-b border-border/60 pb-2">
-                      <dt className="text-muted-foreground">Kelas diikuti</dt>
-                      <dd className="font-medium">{loading ? "—" : summary.enrolledCount}</dd>
-                    </div>
-                    <div className="flex justify-between border-b border-border/60 pb-2">
-                      <dt className="text-muted-foreground">Kelas selesai</dt>
-                      <dd className="font-medium">
-                        {loading ? "—" : summary.completedCourses}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-muted-foreground">Total jam belajar</dt>
-                      <dd className="font-medium">
-                        {loading ? "—" : `${summary.totalHoursLearned} jam`}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-              </Reveal>
-            </aside>
           </div>
         </div>
       </main>
