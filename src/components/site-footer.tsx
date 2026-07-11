@@ -26,6 +26,7 @@ const footerColumns = [
   {
     title: "Platform",
     links: [
+      { label: "Tentang Kami", href: "/tentang-kami" },
       { label: "Dashboard", href: "/dashboard" },
       { label: "Profil", href: "/profil" },
       { label: "Pengaturan", href: "/pengaturan" },

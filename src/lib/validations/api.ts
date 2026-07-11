@@ -213,6 +213,12 @@ export const upsertLessonProgressSchema = z.object({
   email: z.string().email().optional(),
   lessonId: z.string().min(1),
   completed: z.boolean(),
+  watchedSeconds: z
+    .number()
+    .int()
+    .min(0)
+    .optional()
+    .transform((v) => (v === undefined ? undefined : Math.floor(v))),
 });
 
 export const createCourseReviewSchema = z.object({

@@ -158,6 +158,7 @@ export interface AdminCourse {
   studentsCount: number;
   durationHours: number;
   shortDescription: string;
+  thumbnailUrl?: string | null;
   isPublished: boolean;
   modules: AdminModuleInput[];
 }
@@ -267,6 +268,7 @@ export interface CourseFormInput {
   mentorId: string;
   durationHours: number;
   isPublished: boolean;
+  thumbnailUrl?: string | null;
   modules: AdminModuleInput[];
 }
 

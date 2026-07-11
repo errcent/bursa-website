@@ -31,4 +31,4 @@ export function AuthField({
 }
 
 export const authInputClassName =
-  "w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm outline-none backdrop-blur-sm transition-[border-color,box-shadow] placeholder:text-muted-foreground focus:border-accent/40 focus:shadow-[0_0_20px_var(--glow)] disabled:opacity-50";
+  "w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-base outline-none backdrop-blur-sm transition-[border-color,box-shadow] placeholder:text-muted-foreground focus:border-accent/40 focus:shadow-[0_0_20px_var(--glow)] disabled:opacity-50 sm:text-sm";

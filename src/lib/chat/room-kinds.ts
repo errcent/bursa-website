@@ -267,8 +267,9 @@ export function canUserSendInBranch(input: {
 
 /**
  * How far back a viewer may read room messages.
+ * - PUBLIC rooms: full shared history for all members
  * - Staff (room owner, MENTOR/MODERATOR membership, platform ADMIN): full history
- * - Regular MEMBER: only messages at/after ChatRoomMember.joinedAt
+ * - Regular MEMBER (mentor hubs / staff collab): only messages at/after joinedAt
  * - Logged-in non-member (or anonymous): no history until they join
  */
 export type MessageHistoryScope =
@@ -280,13 +281,20 @@ export function resolveMessageHistoryScope(input: {
   membership: Pick<ChatRoomMember, "role" | "joinedAt"> | null;
   userRole?: string | null;
   isRoomOwner?: boolean;
+  roomKind?: ChatRoomKind | RoomKindUi | null;
 }): MessageHistoryScope {
-  const { membership, userRole, isRoomOwner } = input;
+  const { membership, userRole, isRoomOwner, roomKind } = input;
 
   if (isRoomOwner) return { kind: "full" };
 
   const role = (userRole ?? "").toString().toUpperCase();
   if (role === "ADMIN") return { kind: "full" };
+
+  const isPublicRoom =
+    roomKind === ChatRoomKind.PUBLIC || roomKind === "public";
+  if (isPublicRoom) {
+    return membership ? { kind: "full" } : { kind: "empty" };
+  }
 
   if (
     membership?.role === ChatMemberRole.MENTOR ||

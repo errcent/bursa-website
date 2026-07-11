@@ -49,6 +49,7 @@ type DbCourseListing = Prisma.CourseGetPayload<{
     studentsCount: true;
     durationHours: true;
     shortDescription: true;
+    thumbnailUrl: true;
     outcomes: true;
     mentor: { select: { slug: true } };
     _count: { select: { modules: true } };
@@ -89,6 +90,7 @@ function mapCatalogCourse(course: DbCourseDetail): Course {
     studentsCount: course.studentsCount,
     durationHours: course.durationHours,
     shortDescription: course.shortDescription,
+    thumbnailUrl: course.thumbnailUrl ?? undefined,
     outcomes: (course.outcomes as string[]) ?? [],
     modules: course.modules
       .sort((a, b) => a.sortOrder - b.sortOrder)
@@ -118,6 +120,7 @@ function mapCatalogListingCourse(course: DbCourseListing): Course {
     studentsCount: course.studentsCount,
     durationHours: course.durationHours,
     shortDescription: course.shortDescription,
+    thumbnailUrl: course.thumbnailUrl ?? undefined,
     outcomes: (course.outcomes as string[]) ?? [],
     modules: [],
     moduleCount: course._count.modules,
@@ -140,6 +143,7 @@ async function fetchCatalogCoursesListing(): Promise<Course[]> {
       studentsCount: true,
       durationHours: true,
       shortDescription: true,
+      thumbnailUrl: true,
       outcomes: true,
       mentor: { select: { slug: true } },
       _count: { select: { modules: true } },

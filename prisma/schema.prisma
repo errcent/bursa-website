@@ -257,6 +257,7 @@ model Course {
   studentsCount    Int         @default(0)
   durationHours    Int
   shortDescription String
+  thumbnailUrl     String?
   outcomes         Json
   isPublished      Boolean     @default(true)
   createdAt        DateTime    @default(now())

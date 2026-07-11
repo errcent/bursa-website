@@ -4,14 +4,21 @@ import type { Metadata } from "next";
 import { ChevronLeft } from "lucide-react";
 
 import { LearningWorkspace } from "@/components/learning-workspace";
-import { courses, getCourseBySlug } from "@/lib/mock-data";
+import { getCatalogCourseSlugs, getCourseBySlug } from "@/lib/catalog/server";
 
-export function generateStaticParams() {
-  return courses.flatMap((course) =>
-    course.modules
-      .flatMap((m) => m.lessons)
-      .map((lesson) => ({ courseId: course.slug, lessonId: lesson.id }))
-  );
+export async function generateStaticParams() {
+  const slugs = await getCatalogCourseSlugs();
+  const params: { courseId: string; lessonId: string }[] = [];
+
+  for (const slug of slugs) {
+    const course = await getCourseBySlug(slug);
+    if (!course) continue;
+    for (const lesson of course.modules.flatMap((module) => module.lessons)) {
+      params.push({ courseId: slug, lessonId: lesson.id });
+    }
+  }
+
+  return params;
 }
 
 export async function generateMetadata({
@@ -20,7 +27,7 @@ export async function generateMetadata({
   params: Promise<{ courseId: string; lessonId: string }>;
 }): Promise<Metadata> {
   const { courseId } = await params;
-  const course = getCourseBySlug(courseId);
+  const course = await getCourseBySlug(courseId);
   if (!course) return {};
   return { title: `Belajar · ${course.title}` };
 }
@@ -31,7 +38,7 @@ export default async function LearningPage({
   params: Promise<{ courseId: string; lessonId: string }>;
 }) {
   const { courseId, lessonId } = await params;
-  const course = getCourseBySlug(courseId);
+  const course = await getCourseBySlug(courseId);
   if (!course) notFound();
 
   const lessonExists = course.modules.some((m) => m.lessons.some((l) => l.id === lessonId));

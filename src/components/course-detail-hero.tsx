@@ -11,6 +11,7 @@ import { StarRating } from "@/components/star-rating";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
+import { resolveCourseThumbnailUrl } from "@/lib/courses/thumbnails";
 import { cn } from "@/lib/utils";
 import type { Course, Mentor } from "@/lib/types";
 
@@ -40,7 +41,7 @@ export function CourseDetailHero({
   return (
     <div
       className={cn(
-        "container-page grid gap-10 py-14 transition-all duration-300 lg:py-16",
+        "container-page grid min-w-0 gap-10 py-14 transition-all duration-300 lg:py-16",
         trailerActive
           ? "lg:grid-cols-1"
           : "lg:grid-cols-[1.3fr_1fr]"
@@ -48,7 +49,7 @@ export function CourseDetailHero({
     >
       <div
         className={cn(
-          "flex flex-col gap-4",
+          "flex min-w-0 flex-col gap-4",
           trailerActive && "lg:order-2 lg:mx-auto lg:max-w-3xl lg:text-center"
         )}
       >
@@ -62,8 +63,8 @@ export function CourseDetailHero({
           <InstrumentBadge instrument={course.instrument} />
           <LevelBadge level={course.level} />
         </div>
-        <h1 className="page-hero-title leading-tight">{course.title}</h1>
-        <p className="section-copy">{course.shortDescription}</p>
+        <h1 className="page-hero-title break-words leading-tight">{course.title}</h1>
+        <p className="section-copy break-words">{course.shortDescription}</p>
         <div
           className={cn(
             "flex flex-wrap gap-2",
@@ -94,16 +95,16 @@ export function CourseDetailHero({
           <Link
             href={`/instruktur/${mentor.slug}`}
             className={cn(
-              "surface-card-hover flex w-fit items-center gap-3 p-3 pr-5 transition-colors hover:border-accent/30",
+              "surface-card-hover flex w-full max-w-full items-center gap-3 p-3 pr-5 transition-colors hover:border-accent/30 sm:w-fit",
               trailerActive && "lg:mx-auto"
             )}
           >
             <Avatar>
               <AvatarFallback className="bg-surface-2 text-xs">{mentor.initials}</AvatarFallback>
             </Avatar>
-            <div>
-              <p className="text-sm font-medium">{mentor.name}</p>
-              <p className="text-xs text-muted-foreground">{mentor.title}</p>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">{mentor.name}</p>
+              <p className="truncate text-xs text-muted-foreground">{mentor.title}</p>
             </div>
             <VerifiedBadge verified={mentor.verified} className="ml-2" />
           </Link>
@@ -112,13 +113,14 @@ export function CourseDetailHero({
 
       <div
         className={cn(
-          "flex flex-col gap-4",
+          "flex min-w-0 flex-col gap-4",
           trailerActive && "lg:order-1 lg:mx-auto lg:w-full lg:max-w-5xl"
         )}
       >
         <CourseTrailerPlayer
           title={course.title}
           mentor={mentor}
+          posterUrl={resolveCourseThumbnailUrl(course)}
           onPlaybackChange={setTrailerActive}
         />
         <div className={cn("surface-card p-5", trailerActive && "lg:mx-auto lg:w-full lg:max-w-md")}>

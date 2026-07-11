@@ -1,20 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeftRight, Bitcoin, LineChart, PlayCircle } from "lucide-react";
 
+import { CourseThumbnail } from "@/components/course-thumbnail";
 import { InstrumentBadge, LevelBadge } from "@/components/instrument-badge";
 import { StarRating } from "@/components/star-rating";
 import { Progress } from "@/components/ui/progress";
 import { getMentorBySlug, formatRupiah } from "@/lib/mock-data";
 import type { Course } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-const instrumentIcon = {
-  Saham: LineChart,
-  Crypto: Bitcoin,
-  Forex: ArrowLeftRight,
-} as const;
 
 export type CourseCardEnrollment = {
   progressPercent: number;
@@ -37,7 +31,6 @@ export function CourseCard({
   variant?: "default" | "poster";
 }) {
   const mentor = getMentorBySlug(course.mentorSlug);
-  const Icon = instrumentIcon[course.instrument];
   const enrolled = Boolean(enrollment);
   const isPoster = variant === "poster";
   const progressPercent = Math.min(
@@ -59,15 +52,13 @@ export function CourseCard({
           className
         )}
       >
-        <div className="relative flex aspect-[2/3] items-center justify-center overflow-hidden bg-gradient-to-br from-surface-2 to-background">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,var(--glow),transparent_60%)] opacity-50" />
-          <Icon
-            className="size-7 text-foreground/20 transition-transform duration-300 ease-out group-hover:scale-105"
-            strokeWidth={1.5}
+        <div className="relative aspect-[2/3]">
+          <CourseThumbnail
+            course={course}
+            className="absolute inset-0"
+            showPlayOverlay
+            alt={course.title}
           />
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
-            <PlayCircle className="size-7 text-foreground/90" />
-          </div>
           <div className="absolute left-1.5 top-1.5 scale-90 origin-top-left">
             <LevelBadge level={course.level} />
           </div>
@@ -106,15 +97,13 @@ export function CourseCard({
         className
       )}
     >
-      <div className="relative flex aspect-[16/10] items-center justify-center overflow-hidden bg-gradient-to-br from-surface-2 to-background">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,var(--glow),transparent_60%)] opacity-50" />
-        <Icon
-          className="size-9 text-foreground/20 transition-transform duration-300 ease-out group-hover:scale-105"
-          strokeWidth={1.5}
+      <div className="relative aspect-[16/10]">
+        <CourseThumbnail
+          course={course}
+          className="absolute inset-0"
+          showPlayOverlay
+          alt={course.title}
         />
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
-          <PlayCircle className="size-9 text-foreground/90" />
-        </div>
         <div className="absolute left-3 top-3">
           <LevelBadge level={course.level} />
         </div>

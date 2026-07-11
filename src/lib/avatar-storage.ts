@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, unlink, writeFile } from "fs/promises";
 import path from "path";
 
 /** Vercel/serverless deployments only allow ephemeral writes (not under public/). */
@@ -12,6 +12,32 @@ function dataUrlFor(mimeType: string, buffer: Buffer) {
 
 function safeFileName(userId: string, ext: string) {
   return `${userId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+}
+
+/** Returns true when avatarUrl points to a locally stored file we can delete. */
+export function isLocalAvatarUrl(avatarUrl: string | null | undefined): boolean {
+  return typeof avatarUrl === "string" && avatarUrl.startsWith("/uploads/avatars/");
+}
+
+/**
+ * Delete a locally stored avatar file. Silently ignores missing files
+ * and non-local URLs (OAuth CDN links, inline data URLs).
+ */
+export async function deleteLocalAvatarFile(avatarUrl: string | null | undefined): Promise<void> {
+  if (!isLocalAvatarUrl(avatarUrl)) return;
+
+  const relative = avatarUrl!.slice("/uploads/avatars/".length);
+  if (!relative || relative.includes("..") || relative.includes("/") || relative.includes("\\")) {
+    return;
+  }
+
+  const filePath = path.join(process.cwd(), "public", "uploads", "avatars", relative);
+  try {
+    await unlink(filePath);
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException)?.code;
+    if (code !== "ENOENT") throw error;
+  }
 }
 
 /**

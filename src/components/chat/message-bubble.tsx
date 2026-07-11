@@ -78,6 +78,8 @@ interface MessageBubbleProps {
   onReact?: (messageId: string, emoji: string) => void;
   onEdit?: (messageId: string, content: string) => void;
   onDelete?: (messageId: string) => void;
+  /** Platform admin may delete any message in public/community chat. */
+  isAdmin?: boolean;
   onPollVote?: (messageId: string, optionId: string) => void;
   className?: string;
 }
@@ -109,6 +111,7 @@ export function MessageBubble({
   onReact,
   onEdit,
   onDelete,
+  isAdmin,
   onPollVote,
   className,
 }: MessageBubbleProps) {
@@ -131,7 +134,9 @@ export function MessageBubble({
     ownUserIds,
   });
   const canEdit = isOwn && message.type === "text" && !message.isDeleted;
-  const canDelete = isOwn && !message.isDeleted && !isSystem;
+  const canDeleteOwn = isOwn && !message.isDeleted && !isSystem;
+  const canAdminDelete = Boolean(isAdmin) && !message.isDeleted && !isSystem;
+  const canDelete = canDeleteOwn || canAdminDelete;
 
   const handleSaveEdit = () => {
     const trimmed = editValue.trim();
@@ -445,7 +450,7 @@ export function MessageBubble({
                 onClick={() => onDelete?.(message.id)}
               >
                 <Trash2 className="size-3" />
-                Hapus pesan
+                {canAdminDelete && !canDeleteOwn ? "Hapus pesan (admin)" : "Hapus pesan"}
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>

@@ -21,13 +21,20 @@ import { ProtectionWarning } from "@/components/video/protection-warning";
 import { VideoWatermark } from "@/components/video/video-watermark";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { DEMO_VIDEO_URL, resolvePlayableVideoUrl } from "@/lib/video/demo";
+import {
+  getFullscreenElement,
+  isVideoFullscreen,
+  requestVideoFullscreen,
+  subscribeFullscreenChange,
+  subscribeVideoFullscreenChange,
+} from "@/lib/video/fullscreen";
 import {
   applyVideoProtection,
   generatePlaybackToken,
   type ProtectionViolationType,
   watermarkConfig,
 } from "@/lib/video/protection";
+import { DEMO_VIDEO_URL, resolvePlayableVideoUrl } from "@/lib/video/demo";
 
 const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
 const QUALITY_OPTIONS = ["Auto", "1080p", "720p", "480p"] as const;
@@ -218,13 +225,17 @@ export function ProtectedVideoPlayer({
   }, [isProtected, logViolation, tokenReady]);
 
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+    const syncFullscreenState = () => {
+      setIsFullscreen(Boolean(getFullscreenElement()) || isVideoFullscreen(videoRef.current));
     };
 
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
-  }, []);
+    const cleanups = [
+      subscribeFullscreenChange(syncFullscreenState),
+      subscribeVideoFullscreenChange(videoRef.current, syncFullscreenState),
+    ];
+
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }, [tokenReady]);
 
   useEffect(() => {
     const handleFocus = () => {
@@ -408,10 +419,10 @@ export function ProtectedVideoPlayer({
     const container = containerRef.current;
     if (!container) return;
 
-    if (!document.fullscreenElement) {
-      await container.requestFullscreen();
-    } else {
-      await document.exitFullscreen();
+    try {
+      await requestVideoFullscreen(container, videoRef.current);
+    } catch {
+      // Fullscreen may be blocked by browser policy or unsupported APIs.
     }
   }, []);
 
@@ -466,7 +477,7 @@ export function ProtectedVideoPlayer({
     <div
       ref={containerRef}
       className={cn(
-        "group/player relative bg-black",
+        "video-player-shell group/player relative bg-black",
         playerShellClass,
         isProtected && "select-none [-webkit-touch-callout:none]",
         isBlurred && isProtected && "[&_video]:blur-xl"
@@ -686,7 +697,11 @@ export function ProtectedVideoPlayer({
 
             <button
               type="button"
-              onClick={toggleFullscreen}
+              onClick={(e) => {
+                e.stopPropagation();
+                void toggleFullscreen();
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
               className="rounded-md p-1.5 text-white transition-colors hover:bg-white/10"
               aria-label={isFullscreen ? "Keluar layar penuh" : "Layar penuh"}
             >

@@ -674,7 +674,7 @@ export function CatalogBrowser({
                     aria-label="Cari di katalog"
                     aria-expanded={searchOpen}
                     autoComplete="off"
-                    className="w-full bg-transparent text-sm text-foreground outline-none"
+                    className="w-full bg-transparent text-base text-foreground outline-none sm:text-sm"
                   />
                 </div>
               </div>

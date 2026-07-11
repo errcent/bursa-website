@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMentorBySlug } from "@/lib/mock-data";
+import { notifyLearningChange } from "@/lib/learning/events";
+import { computeProgressPercent } from "@/lib/learning/progress";
 import { cn } from "@/lib/utils";
 import type { Course } from "@/lib/types";
 import type { ProtectionViolationType } from "@/lib/video/protection";
@@ -63,13 +65,18 @@ export function LearningWorkspace({
   const [playheadSeconds, setPlayheadSeconds] = useState(0);
   const [seekRequestSeconds, setSeekRequestSeconds] = useState<number | null>(null);
   const seekTokenRef = useRef(0);
+  const autoCompleteRef = useRef(false);
+  const completedModulesBeforeRef = useRef(0);
+  const completedRef = useRef(completed);
+  completedRef.current = completed;
   const [videoExpanded, setVideoExpanded] = useState(false);
   const [mobileLessonOpen, setMobileLessonOpen] = useState(false);
   const [moduleCompleteBanner, setModuleCompleteBanner] = useState<string | null>(null);
   const progressApi = `/api/courses/${course.slug}/progress`;
   const enrollApi = `/api/courses/${course.slug}/enroll`;
 
-  const progressPercent = Math.round((completed.size / allLessons.length) * 100);
+  const progressPercent = computeProgressPercent(completed.size, allLessons.length);
+  const completedLessonCount = completed.size;
   const isFreePreview = currentLessonContext
     ? isLessonFreePreview(
         currentLesson,
@@ -98,7 +105,11 @@ export function LearningWorkspace({
   }, []);
 
   useEffect(() => {
-    if (!session?.userId) {
+    autoCompleteRef.current = false;
+  }, [currentLesson.id]);
+
+  useEffect(() => {
+    if (!session?.userId && !session?.email) {
       setCompleted(new Set());
       setProgressReady(true);
       setHasCourseAccess(false);
@@ -108,19 +119,23 @@ export function LearningWorkspace({
     let cancelled = false;
     setProgressReady(false);
 
-    // Optimistic local/demo enrollment while DB check loads.
-    const localEnrolled = isEnrolled(session.userId, course.slug);
+    const localEnrolled = session?.userId
+      ? isEnrolled(session.userId, course.slug)
+      : false;
     setHasCourseAccess(localEnrolled);
 
     async function loadProgressAndEnrollment() {
       const params = new URLSearchParams({
-        userId: session!.userId,
+        ...(session!.userId ? { userId: session!.userId } : {}),
         ...(session!.email ? { email: session!.email } : {}),
       });
 
       try {
         const [progressRes, enrollRes] = await Promise.all([
-          fetch(`${progressApi}?${params}`, { cache: "no-store" }),
+          fetch(`${progressApi}?${params}`, {
+            cache: "no-store",
+            headers: session!.email ? { "x-user-email": session!.email } : {},
+          }),
           fetch(`${enrollApi}?${params}`, {
             cache: "no-store",
             headers: session!.email ? { "x-user-email": session!.email } : {},
@@ -130,6 +145,7 @@ export function LearningWorkspace({
         if (!cancelled && progressRes.ok) {
           const data = await progressRes.json();
           setCompleted(new Set(data.completedLessonIds ?? []));
+          completedModulesBeforeRef.current = data.completedModules ?? 0;
         }
 
         if (!cancelled && enrollRes.ok) {
@@ -137,11 +153,9 @@ export function LearningWorkspace({
           const serverEnrolled = Boolean(data.enrolled);
           const enrolled = serverEnrolled || localEnrolled;
           setHasCourseAccess(enrolled);
-          if (enrolled) {
+          if (enrolled && session!.userId) {
             enrollUser(session!.userId, course.slug);
           }
-          // Local demo enroll without Prisma row (pre-bridge checkout) — sync
-          // Enrollment + mentor hub membership so komunitas shows the hub.
           if (localEnrolled && !serverEnrolled && session!.email) {
             const syncRes = await fetch(enrollApi, {
               method: "POST",
@@ -190,8 +204,12 @@ export function LearningWorkspace({
     [course.slug, session?.userId]
   );
 
-  async function toggleCompleted(id: string) {
-    const nextCompleted = !completed.has(id);
+  async function syncLessonProgress(
+    id: string,
+    nextCompleted: boolean,
+    watchedSeconds?: number
+  ) {
+    const previousCompleted = new Set(completed);
 
     setCompleted((prev) => {
       const next = new Set(prev);
@@ -200,7 +218,7 @@ export function LearningWorkspace({
       return next;
     });
 
-    if (!session?.userId) {
+    if (!session?.userId && !session?.email) {
       setModuleCompleteBanner(
         "Masuk untuk menyimpan progres dan membuka akses rating & ulasan setelah modul selesai."
       );
@@ -210,29 +228,78 @@ export function LearningWorkspace({
     try {
       const res = await fetch(progressApi, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(session.email ? { "x-user-email": session.email } : {}),
+        },
         body: JSON.stringify({
-          userId: session.userId,
+          userId: session.userId ?? "guest",
           email: session.email,
           lessonId: id,
           completed: nextCompleted,
+          ...(watchedSeconds !== undefined ? { watchedSeconds } : {}),
         }),
       });
 
-      if (!res.ok) return;
-      const data = await res.json();
-      const newlyComplete = (
-        data.modules as { title: string; isComplete: boolean }[] | undefined
-      )?.find((module) => module.isComplete);
-      if (nextCompleted && newlyComplete && data.completedModules > 0) {
-        setModuleCompleteBanner(
-          `Modul "${newlyComplete.title}" selesai. Kamu sekarang bisa memberi rating & ulasan di halaman kelas.`
-        );
+      if (!res.ok) {
+        setCompleted(previousCompleted);
+        return;
       }
+
+      const data = await res.json();
+      if (Array.isArray(data.completedLessonIds)) {
+        setCompleted(new Set(data.completedLessonIds as string[]));
+      }
+
+      const modules = data.modules as
+        | { title: string; isComplete: boolean }[]
+        | undefined;
+      const completedModulesNow = (data.completedModules as number | undefined) ?? 0;
+
+      if (
+        nextCompleted &&
+        completedModulesNow > completedModulesBeforeRef.current &&
+        modules
+      ) {
+        const completeModules = modules.filter((module) => module.isComplete);
+        const bannerModule = completeModules[completeModules.length - 1];
+        if (bannerModule) {
+          setModuleCompleteBanner(
+            `Modul "${bannerModule.title}" selesai. Kamu sekarang bisa memberi rating & ulasan di halaman kelas.`
+          );
+        }
+      }
+      completedModulesBeforeRef.current = completedModulesNow;
+      notifyLearningChange();
     } catch {
-      // Keep optimistic local state if sync fails.
+      setCompleted(previousCompleted);
     }
   }
+
+  async function toggleCompleted(id: string) {
+    await syncLessonProgress(id, !completed.has(id));
+  }
+
+  const handleVideoTimeUpdate = useCallback(
+    (seconds: number) => {
+      setPlayheadSeconds(seconds);
+
+      if (
+        autoCompleteRef.current ||
+        completedRef.current.has(currentLesson.id) ||
+        !session?.email
+      ) {
+        return;
+      }
+
+      const durationSeconds = Math.max(currentLesson.durationMinutes * 60, 1);
+      if (seconds / durationSeconds < 0.9) return;
+
+      autoCompleteRef.current = true;
+      void syncLessonProgress(currentLesson.id, true, Math.floor(seconds));
+    },
+    [currentLesson.durationMinutes, currentLesson.id, session?.email]
+  );
 
   const lessonList = (
     <div className="flex flex-col gap-1">
@@ -320,7 +387,9 @@ export function LearningWorkspace({
               </SheetTrigger>
               <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
                 <SheetHeader>
-                  <SheetTitle>Progres Kelas · {progressPercent}%</SheetTitle>
+                  <SheetTitle>
+                    Progres Kelas · {progressPercent}% ({completedLessonCount}/{allLessons.length})
+                  </SheetTitle>
                 </SheetHeader>
                 <Progress
                   value={progressPercent}
@@ -347,7 +416,7 @@ export function LearningWorkspace({
               userId={session?.userId}
               userEmail={session?.email}
               seekRequestSeconds={seekRequestSeconds}
-              onTimeUpdate={setPlayheadSeconds}
+              onTimeUpdate={handleVideoTimeUpdate}
               onProtectionViolation={handleProtectionViolation}
             />
           </ResizableVideoStage>
@@ -474,7 +543,9 @@ export function LearningWorkspace({
         <aside className="hidden flex-col gap-3 border-t border-border p-4 sm:p-6 lg:flex lg:border-t-0">
           <div className="flex items-center justify-between">
             <h2 className="font-heading text-sm font-medium">Progres Kelas</h2>
-            <span className="text-xs text-muted-foreground">{progressPercent}%</span>
+            <span className="text-xs text-muted-foreground">
+              {progressPercent}% · {completedLessonCount}/{allLessons.length}
+            </span>
           </div>
           <Progress
             value={progressPercent}

@@ -172,6 +172,7 @@ export function mapCourse(
     studentsCount: course.studentsCount,
     durationHours: course.durationHours,
     shortDescription: course.shortDescription,
+    thumbnailUrl: course.thumbnailUrl ?? undefined,
     isPublished: course.isPublished,
     modules: course.modules
       .sort((a, b) => a.sortOrder - b.sortOrder)

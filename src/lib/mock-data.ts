@@ -1,4 +1,5 @@
 import type { Course, FounderProfile, FounderResponse, Mentor, Review } from "./types";
+import { defaultCourseThumbnailPath } from "./courses/thumbnails";
 
 /**
  * Seluruh data di file ini adalah DATA DUMMY untuk kebutuhan prototype visual.
@@ -135,6 +136,7 @@ export const courses: Course[] = [
     mentorSlug: "andra-wicaksono",
     instrument: "Saham",
     level: "Pemula",
+    thumbnailUrl: defaultCourseThumbnailPath("fundamental-saham-untuk-pemula"),
     price: 799000,
     rating: 4.9,
     studentsCount: 3240,
@@ -179,6 +181,7 @@ export const courses: Course[] = [
     mentorSlug: "rangga-dewantara",
     instrument: "Saham",
     level: "Menengah",
+    thumbnailUrl: defaultCourseThumbnailPath("membaca-laporan-keuangan-lanjutan"),
     price: 1450000,
     rating: 4.9,
     studentsCount: 1870,
@@ -222,6 +225,7 @@ export const courses: Course[] = [
     mentorSlug: "melati-putri",
     instrument: "Saham",
     level: "Pemula",
+    thumbnailUrl: defaultCourseThumbnailPath("swing-trading-teknikal-dasar"),
     price: 699000,
     rating: 4.8,
     studentsCount: 4110,
@@ -258,6 +262,7 @@ export const courses: Course[] = [
     mentorSlug: "kirana-ayu",
     instrument: "Crypto",
     level: "Menengah",
+    thumbnailUrl: defaultCourseThumbnailPath("crypto-on-chain-dasar"),
     price: 950000,
     rating: 4.8,
     studentsCount: 2650,
@@ -293,6 +298,7 @@ export const courses: Course[] = [
     mentorSlug: "bimo-satrio",
     instrument: "Crypto",
     level: "Pemula",
+    thumbnailUrl: defaultCourseThumbnailPath("manajemen-risiko-crypto-pemula"),
     price: 499000,
     rating: 4.6,
     studentsCount: 980,
@@ -328,6 +334,7 @@ export const courses: Course[] = [
     mentorSlug: "fajar-nugroho",
     instrument: "Forex",
     level: "Pemula",
+    thumbnailUrl: defaultCourseThumbnailPath("forex-makro-dasar"),
     price: 899000,
     rating: 4.7,
     studentsCount: 1560,

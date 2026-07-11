@@ -200,6 +200,14 @@
     @apply font-sans;
     scroll-behavior: smooth;
   }
+  /* Prevent iOS Safari auto-zoom when focusing inputs (<16px triggers zoom). */
+  @media (max-width: 767px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="file"]),
+    textarea,
+    select {
+      font-size: 16px;
+    }
+  }
   h1, h2, h3, h4 {
     @apply font-heading tracking-tight text-foreground;
   }
@@ -363,6 +371,8 @@
     --landing-container-px: 1.25rem;
     --landing-course-card-width: 8rem;
     --landing-mentor-card-width: 5.75rem;
+    --carousel-peek-ratio: 0.76;
+    --carousel-peek-item-width: calc(100% * var(--carousel-peek-ratio));
   }
 
   .catalog-section {
@@ -436,10 +446,12 @@
     .catalog-row-scroll > * {
       flex-shrink: 0;
       scroll-snap-align: start;
-      width: var(--catalog-card-width);
+      width: var(--carousel-peek-item-width);
+      max-width: 20rem;
     }
     .catalog-row-scroll--mentor > * {
-      width: var(--catalog-mentor-card-width);
+      width: var(--carousel-peek-item-width);
+      max-width: 14rem;
     }
 
     .katalog-hero-compact {
@@ -502,15 +514,152 @@
       gap: 0.625rem;
     }
     .landing-course-row-scroll > * {
-      width: var(--landing-course-card-width);
+      width: var(--carousel-peek-item-width);
+      max-width: 20rem;
     }
     .landing-course-carousel .catalog-scroll-carousel-item {
-      width: var(--landing-course-card-width);
-      flex-basis: var(--landing-course-card-width);
+      width: var(--carousel-peek-item-width);
+      flex-basis: var(--carousel-peek-item-width);
+      max-width: 20rem;
     }
-    .landing-mentor-carousel .catalog-scroll-carousel-item {
-      width: var(--landing-mentor-card-width);
-      flex-basis: var(--landing-mentor-card-width);
+  }
+
+  .mentor-marquee {
+    position: relative;
+    overflow: hidden;
+    margin-left: calc(-1 * var(--landing-container-px));
+    margin-right: calc(-1 * var(--landing-container-px));
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 8%,
+      black 92%,
+      transparent
+    );
+  }
+
+  .mentor-marquee-track {
+    display: flex;
+    width: max-content;
+    align-items: flex-end;
+    animation: mentor-marquee-ltr 42s linear infinite;
+    will-change: transform;
+  }
+
+  .mentor-marquee-item {
+    position: relative;
+    display: block;
+    flex-shrink: 0;
+    margin-left: -2.75rem;
+    transition: transform 0.35s ease, filter 0.35s ease;
+  }
+
+  .mentor-marquee-item:first-child {
+    margin-left: 0;
+  }
+
+  .mentor-marquee-item:hover {
+    transform: translateY(-6px) scale(1.04);
+    filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.28));
+  }
+
+  .mentor-marquee-figure {
+    position: relative;
+    display: flex;
+    height: clamp(11rem, 34vw, 18rem);
+    width: clamp(7rem, 22vw, 11rem);
+    align-items: flex-end;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .mentor-marquee-image {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.32));
+  }
+
+  .mentor-marquee-fallback {
+    display: flex;
+    height: 88%;
+    width: 88%;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 35% 25%, var(--glow-strong), transparent 68%),
+      linear-gradient(160deg, var(--surface-2), var(--card));
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: 600;
+    color: var(--foreground);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
+  }
+
+  .mentor-marquee-label {
+    position: absolute;
+    bottom: -0.35rem;
+    left: 50%;
+    z-index: 2;
+    width: max-content;
+    max-width: 9rem;
+    transform: translateX(-50%);
+    border-radius: 9999px;
+    border: 1px solid rgba(163, 163, 163, 0.18);
+    background: rgba(255, 255, 255, 0.72);
+    padding: 0.25rem 0.625rem;
+    text-align: center;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--foreground);
+    opacity: 0;
+    backdrop-filter: blur(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .dark .mentor-marquee-label {
+    background: rgba(22, 24, 32, 0.82);
+  }
+
+  .mentor-marquee-item:hover .mentor-marquee-label {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+  }
+
+  @keyframes mentor-marquee-ltr {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mentor-marquee-track {
+      animation: none;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      width: 100%;
+      max-width: 100%;
+      padding-inline: var(--landing-container-px);
+      scrollbar-width: none;
+    }
+
+    .mentor-marquee-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mentor-marquee-item {
+      scroll-snap-align: start;
+      margin-left: -1.75rem;
+    }
+
+    .mentor-marquee-label {
+      opacity: 1;
     }
   }
 
@@ -567,10 +716,10 @@
   }
 
   .badge-pill {
-    @apply inline-flex items-center rounded-full border border-border bg-accent-soft px-3 py-1 font-mono text-xs font-medium text-accent;
+    @apply inline-flex max-w-full items-center rounded-full border border-border bg-accent-soft px-3 py-1 font-mono text-xs font-medium text-accent;
   }
   .badge-muted {
-    @apply inline-flex items-center rounded-full border border-border bg-secondary px-3 py-1 font-mono text-xs text-muted-foreground;
+    @apply inline-flex max-w-full items-center rounded-full border border-border bg-secondary px-3 py-1 font-mono text-xs text-muted-foreground;
   }
 
   .nav-shell {
@@ -593,7 +742,8 @@
     .page-hero-title {
       font-size: clamp(1.75rem, 7.2vw, 2rem);
       line-height: 1.15;
-      max-width: 18ch;
+      max-width: 100%;
+      overflow-wrap: anywhere;
     }
 
     .section-title {
@@ -657,7 +807,8 @@
     }
 
     .testimonial-tilt-item {
-      width: min(58vw, 11.5rem);
+      width: var(--carousel-peek-item-width);
+      max-width: 18rem;
     }
 
     .testimonial-featured-card {
@@ -678,8 +829,10 @@
       font-size: 0.625rem;
     }
 
-    .course-card-poster .course-card-poster-meta {
-      font-size: 0.5625rem;
+    .badge-pill,
+    .badge-muted {
+      white-space: normal;
+      text-align: left;
     }
 
     .testimonial-showcase {
@@ -748,6 +901,23 @@
 
   .faq-accordion-trigger {
     @apply min-h-14 items-center py-3;
+  }
+
+  .video-player-shell:fullscreen,
+  .video-player-shell:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    aspect-ratio: auto;
+  }
+
+  .video-player-shell:fullscreen video,
+  .video-player-shell:-webkit-full-screen video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
   .has-mobile-sticky-cta {

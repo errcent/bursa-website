@@ -18,6 +18,7 @@ import {
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { courses, mentors, reviews } from "../src/lib/mock-data";
+import { defaultCourseThumbnailPath } from "../src/lib/courses/thumbnails";
 import type { Instrument as MockInstrument, Level } from "../src/lib/types";
 
 const prisma = new PrismaClient();
@@ -193,6 +194,7 @@ async function main() {
         studentsCount: course.studentsCount,
         durationHours: course.durationHours,
         shortDescription: course.shortDescription,
+        thumbnailUrl: course.thumbnailUrl ?? defaultCourseThumbnailPath(course.slug),
         outcomes: course.outcomes,
       },
     });

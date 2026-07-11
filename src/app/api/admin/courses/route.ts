@@ -49,6 +49,7 @@ export async function POST(request: Request) {
         price: input.price,
         durationHours: input.durationHours,
         shortDescription: input.shortDescription,
+        thumbnailUrl: input.thumbnailUrl ?? null,
         outcomes: [],
         isPublished: input.isPublished,
         modules: {

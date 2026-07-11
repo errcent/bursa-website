@@ -45,6 +45,7 @@ let mockCourses: AdminCourse[] = courses.map((c, i) => {
     studentsCount: c.studentsCount,
     durationHours: c.durationHours,
     shortDescription: c.shortDescription,
+    thumbnailUrl: c.thumbnailUrl,
     isPublished: true,
     modules: c.modules.map((mod, mi) => ({
       id: `mod-mock-${i}-${mi}`,

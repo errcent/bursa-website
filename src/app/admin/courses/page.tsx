@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Film, Pencil, Plus, Trash2 } from "lucide-react";
+import { Film, ImageIcon, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 import { useAdminToast } from "@/components/admin/admin-toast";
+import { CourseThumbnail } from "@/components/course-thumbnail";
 import { DataTable, type DataTableColumn } from "@/components/admin/data-table";
 import { ConfirmDialog, FormModal } from "@/components/admin/form-modal";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +17,9 @@ import {
   fetchCourses,
   fetchMentors,
   updateCourse,
+  uploadCourseThumbnail,
 } from "@/lib/admin/api";
+import { defaultCourseThumbnailPath } from "@/lib/courses/thumbnails";
 import type { AdminCourse, AdminMentor, CourseFormInput } from "@/lib/admin/types";
 import type { Instrument, Level } from "@/lib/types";
 import { formatRupiah } from "@/lib/mock-data";
@@ -33,6 +36,7 @@ const emptyForm: CourseFormInput = {
   mentorId: "",
   durationHours: 4,
   isPublished: false,
+  thumbnailUrl: null,
   modules: [{ title: "Modul 1", lessons: [{ title: "Pengenalan", durationMinutes: 15 }] }],
 };
 
@@ -46,6 +50,7 @@ export default function AdminCoursesPage() {
   const [editing, setEditing] = useState<AdminCourse | null>(null);
   const [form, setForm] = useState<CourseFormInput>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -79,6 +84,7 @@ export default function AdminCoursesPage() {
       mentorId: course.mentorId,
       durationHours: course.durationHours,
       isPublished: course.isPublished,
+      thumbnailUrl: course.thumbnailUrl ?? null,
       modules: course.modules,
     });
     setModalOpen(true);
@@ -130,6 +136,21 @@ export default function AdminCoursesPage() {
     }
   }
 
+  async function handleThumbnailUpload(file: File) {
+    setUploadingThumbnail(true);
+    try {
+      const { data } = await uploadCourseThumbnail(file);
+      setForm((prev) => ({ ...prev, thumbnailUrl: data.url }));
+      toast("Thumbnail berhasil diunggah.");
+    } catch {
+      toast("Gagal mengunggah thumbnail.", "error");
+    } finally {
+      setUploadingThumbnail(false);
+    }
+  }
+
+  const previewSlug = editing?.slug ?? "preview-kelas";
+
   function updateModule(index: number, title: string) {
     const modules = [...form.modules];
     modules[index] = { ...modules[index], title };
@@ -153,7 +174,12 @@ export default function AdminCoursesPage() {
       header: "Judul",
       sortable: true,
       render: (row) => (
-        <div className="max-w-xs">
+        <div className="flex max-w-xs items-center gap-3">
+          <CourseThumbnail
+            course={{ slug: row.slug, thumbnailUrl: row.thumbnailUrl ?? undefined }}
+            className="size-10 shrink-0 rounded-md"
+            alt={row.title}
+          />
           <p className="line-clamp-2 font-medium">{row.title}</p>
         </div>
       ),
@@ -338,6 +364,51 @@ export default function AdminCoursesPage() {
               />
               Publikasikan segera
             </label>
+            <div className="space-y-2 text-sm sm:col-span-2">
+              <span>Thumbnail Kelas</span>
+              <div className="flex flex-col gap-3 rounded-lg border border-white/8 bg-[#0f1117] p-3 sm:flex-row sm:items-start">
+                <CourseThumbnail
+                  course={{
+                    slug: previewSlug,
+                    thumbnailUrl: form.thumbnailUrl ?? defaultCourseThumbnailPath(previewSlug),
+                  }}
+                  className="aspect-[16/10] w-full max-w-[220px] shrink-0 rounded-md"
+                  alt="Pratinjau thumbnail"
+                />
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <input
+                    value={form.thumbnailUrl ?? ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        thumbnailUrl: e.target.value.trim() ? e.target.value : null,
+                      })
+                    }
+                    placeholder="/courses/slug.svg atau /uploads/courses/..."
+                    className="w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-xs"
+                  />
+                  <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs hover:bg-white/5">
+                    <ImageIcon className="size-3.5" />
+                    {uploadingThumbnail ? "Mengunggah..." : "Unggah gambar"}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                      className="sr-only"
+                      disabled={uploadingThumbnail}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) void handleThumbnailUpload(file);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    Gunakan JPG, PNG, WebP, atau SVG (maks. 5 MB). Kosongkan untuk thumbnail
+                    default berdasarkan slug.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
           {editing ? (

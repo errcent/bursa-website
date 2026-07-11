@@ -21,34 +21,17 @@ import { cn } from "@/lib/utils";
 
 export const SCROLL_CAROUSEL_GAP = 16;
 
-export function defaultGetScrollPerView(width: number) {
-  if (width >= 1280) return 4;
-  if (width >= 1024) return 3;
-  if (width >= 640) return 2;
+/** One full item on the left + a partial peek of the next item on the right. */
+export const CAROUSEL_PEEK_RATIO = 0.76;
+
+export function peekGetScrollPerView(_width: number) {
   return 1;
 }
 
-export function mentorGetScrollPerView(width: number) {
-  if (width >= 1280) return 6;
-  if (width >= 1024) return 4;
-  if (width >= 640) return 3;
-  return 2;
-}
-
-export function landingCourseGetScrollPerView(width: number) {
-  if (width >= 1024) return 3;
-  if (width >= 640) return 2;
-  return 1;
-}
-
-/** Katalog grouped rows on desktop — tighter than landing carousels. */
-export function catalogCourseGetScrollPerView(width: number) {
-  if (width >= 1536) return 5;
-  if (width >= 1280) return 4;
-  if (width >= 768) return 3;
-  if (width >= 640) return 2;
-  return 1;
-}
+export const defaultGetScrollPerView = peekGetScrollPerView;
+export const mentorGetScrollPerView = peekGetScrollPerView;
+export const landingCourseGetScrollPerView = peekGetScrollPerView;
+export const catalogCourseGetScrollPerView = peekGetScrollPerView;
 
 export type ScrollCarouselHandle = {
   scrollByStep: (direction: -1 | 1) => void;
@@ -84,7 +67,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       className,
       viewportClassName,
       getPerView = defaultGetScrollPerView,
-      mobilePeekRatio = 0.86,
+      mobilePeekRatio = CAROUSEL_PEEK_RATIO,
       fixedItemWidth,
       naturalItemWidth = false,
       gap = SCROLL_CAROUSEL_GAP,

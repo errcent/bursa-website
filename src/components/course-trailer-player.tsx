@@ -8,6 +8,13 @@ import {
   type MentorVideoBarMentor,
 } from "@/components/video/mentor-video-bar";
 import { DEMO_VIDEO_URL } from "@/lib/video/demo";
+import {
+  getFullscreenElement,
+  isVideoFullscreen,
+  requestVideoFullscreen,
+  subscribeFullscreenChange,
+  subscribeVideoFullscreenChange,
+} from "@/lib/video/fullscreen";
 import { cn } from "@/lib/utils";
 
 const TRAILER_DURATION_SECONDS = 45;
@@ -29,6 +36,7 @@ function getEffectiveDuration(video: HTMLVideoElement | null, fallback: number):
 interface CourseTrailerPlayerProps {
   title: string;
   mentor?: MentorVideoBarMentor | null;
+  posterUrl?: string;
   className?: string;
   onPlaybackChange?: (active: boolean) => void;
 }
@@ -36,6 +44,7 @@ interface CourseTrailerPlayerProps {
 export function CourseTrailerPlayer({
   title,
   mentor,
+  posterUrl,
   className,
   onPlaybackChange,
 }: CourseTrailerPlayerProps) {
@@ -46,7 +55,7 @@ export function CourseTrailerPlayer({
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(TRAILER_DURATION_SECONDS);
   const [showControls, setShowControls] = useState(true);
@@ -65,6 +74,30 @@ export function CourseTrailerPlayer({
     if (!video) return;
     if (Number.isFinite(video.duration) && video.duration > 0) {
       setDuration(video.duration);
+    }
+  }, []);
+
+  useEffect(() => {
+    const syncFullscreenState = () => {
+      setIsFullscreen(Boolean(getFullscreenElement()) || isVideoFullscreen(videoRef.current));
+    };
+
+    const cleanups = [
+      subscribeFullscreenChange(syncFullscreenState),
+      subscribeVideoFullscreenChange(videoRef.current, syncFullscreenState),
+    ];
+
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }, [hasStarted]);
+
+  const toggleFullscreen = useCallback(async () => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    try {
+      await requestVideoFullscreen(container, videoRef.current);
+    } catch {
+      // Fullscreen may be blocked by browser policy or unsupported APIs.
     }
   }, []);
 
@@ -158,19 +191,19 @@ export function CourseTrailerPlayer({
       )}
       data-playing={isPlaying ? "true" : "false"}
       data-started={hasStarted ? "true" : "false"}
-      data-expanded={isExpanded ? "true" : "false"}
+      data-fullscreen={isFullscreen ? "true" : "false"}
     >
       <div
         ref={containerRef}
         className={cn(
-          "group/trailer relative overflow-hidden rounded-2xl border border-border bg-black shadow-[0_0_40px_var(--glow)] transition-all duration-300",
-          "aspect-video w-full",
-          isExpanded && "sm:aspect-[21/9]"
+          "video-player-shell group/trailer relative overflow-hidden rounded-2xl border border-border bg-black shadow-[0_0_40px_var(--glow)] transition-all duration-300",
+          "aspect-video w-full"
         )}
       >
         <video
           ref={videoRef}
           src={DEMO_VIDEO_URL}
+          poster={posterUrl}
           className={cn(
             "size-full object-contain transition-opacity duration-300",
             hasStarted ? "opacity-100" : "opacity-0"
@@ -196,11 +229,25 @@ export function CourseTrailerPlayer({
           <button
             type="button"
             onClick={() => void togglePlay()}
-            className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-accent-soft via-surface-2 to-background transition-colors hover:from-accent-soft/90"
+            className={cn(
+              "absolute inset-0 flex flex-col items-center justify-center gap-3 transition-colors",
+              posterUrl
+                ? "bg-black/25 hover:bg-black/35"
+                : "bg-gradient-to-br from-accent-soft via-surface-2 to-background hover:from-accent-soft/90"
+            )}
             aria-label="Putar trailer"
           >
-            <PlayCircle className="size-14 text-foreground/60" />
-            <span className="absolute bottom-3 left-3 rounded-md bg-black/50 px-2 py-1 text-xs text-white/80">
+            {posterUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={posterUrl}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 size-full object-cover"
+              />
+            )}
+            <PlayCircle className="relative z-10 size-14 text-foreground/80 drop-shadow-md" />
+            <span className="absolute bottom-3 left-3 z-10 rounded-md bg-black/50 px-2 py-1 text-xs text-white/80">
               Trailer 0:45
             </span>
           </button>
@@ -310,12 +357,13 @@ export function CourseTrailerPlayer({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsExpanded((v) => !v);
+                  void toggleFullscreen();
                 }}
+                onPointerDown={(e) => e.stopPropagation()}
                 className="ml-auto inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur hover:bg-white/25"
-                aria-label={isExpanded ? "Perkecil trailer" : "Perbesar trailer"}
+                aria-label={isFullscreen ? "Keluar layar penuh" : "Layar penuh"}
               >
-                {isExpanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+                {isFullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
               </button>
             </div>
           </div>

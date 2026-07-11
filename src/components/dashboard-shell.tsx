@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Award, BookOpen, Flame, PlayCircle } from "lucide-react";
+import { Award, BookOpen, Flame } from "lucide-react";
 import { motion } from "motion/react";
 
+import { CourseThumbnail } from "@/components/course-thumbnail";
 import { AuthGuard } from "@/components/auth-guard";
 import { useAuth } from "@/components/auth-provider";
 import { DashboardWatchlist } from "@/components/dashboard-watchlist";
@@ -14,12 +15,14 @@ import { InstrumentBadge } from "@/components/instrument-badge";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { subscribeLearningChange } from "@/lib/learning/events";
 import { courses, formatRupiah } from "@/lib/mock-data";
 import type { Instrument } from "@/lib/types";
 
 type LearningCourse = {
   slug: string;
   title: string;
+  thumbnailUrl?: string | null;
   instrument: Instrument;
   mentorSlug: string;
   mentorName: string;
@@ -50,6 +53,11 @@ function DashboardBody() {
   const { session } = useAuth();
   const [learning, setLearning] = useState<LearningPayload | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    return subscribeLearningChange(() => setRefreshKey((key) => key + 1));
+  }, []);
 
   useEffect(() => {
     if (!session?.userId && !session?.email) {
@@ -94,7 +102,7 @@ function DashboardBody() {
     return () => {
       cancelled = true;
     };
-  }, [session?.userId, session?.email]);
+  }, [refreshKey, session?.userId, session?.email]);
 
   const inProgress = learning?.courses ?? [];
   const summary = learning?.summary ?? EMPTY_SUMMARY;
@@ -160,8 +168,12 @@ function DashboardBody() {
                             href={`/belajar/${course.slug}/${course.lastLessonId}`}
                             className="surface-card-hover flex min-w-0 flex-col gap-3 p-5 sm:flex-row sm:items-center"
                           >
-                            <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-accent-soft via-surface-2 to-background">
-                              <PlayCircle className="size-6 text-accent" />
+                            <div className="relative size-14 shrink-0 overflow-hidden rounded-xl">
+                              <CourseThumbnail
+                                course={{ slug: course.slug, thumbnailUrl: course.thumbnailUrl ?? undefined }}
+                                className="absolute inset-0"
+                                alt={course.title}
+                              />
                             </div>
                             <div className="min-w-0 flex-1">
                               <div className="mb-1 flex items-center gap-2">
@@ -219,15 +231,22 @@ function DashboardBody() {
                     <StaggerItem key={course.slug} className="w-56 shrink-0 sm:w-64">
                       <Link
                         href={`/kelas/${course.slug}`}
-                        className="surface-card-hover flex h-full flex-col gap-2 p-4"
+                        className="surface-card-hover flex h-full flex-col overflow-hidden"
                       >
-                        <InstrumentBadge instrument={course.instrument} className="w-fit" />
-                        <p className="line-clamp-2 font-heading text-sm font-medium">
-                          {course.title}
-                        </p>
-                        <p className="font-mono text-xs font-medium tabular-nums">
-                          {formatRupiah(course.price)}
-                        </p>
+                        <CourseThumbnail
+                          course={course}
+                          className="aspect-[16/10] w-full"
+                          alt={course.title}
+                        />
+                        <div className="flex flex-col gap-2 p-4">
+                          <InstrumentBadge instrument={course.instrument} className="w-fit" />
+                          <p className="line-clamp-2 font-heading text-sm font-medium">
+                            {course.title}
+                          </p>
+                          <p className="font-mono text-xs font-medium tabular-nums">
+                            {formatRupiah(course.price)}
+                          </p>
+                        </div>
                       </Link>
                     </StaggerItem>
                   ))}

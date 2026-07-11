@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Camera, Check, Loader2, Settings, X } from "lucide-react";
+import { Camera, Check, Loader2, Settings, Trash2, X } from "lucide-react";
 
+import { ConfirmDialog } from "@/components/admin/form-modal";
 import { useAuth } from "@/components/auth-provider";
+import { ProfileAvatarCropModal } from "@/components/profile-avatar-crop-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -78,6 +80,11 @@ export function ProfileEditor() {
 
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [cropSourceFile, setCropSourceFile] = useState<File | null>(null);
   const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [usernameCheck, setUsernameCheck] = useState<"idle" | "checking" | "available" | "taken">(
     "idle"
@@ -160,9 +167,10 @@ export function ProfileEditor() {
   useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (cropImageSrc) URL.revokeObjectURL(cropImageSrc);
       if (usernameTimer.current) clearTimeout(usernameTimer.current);
     };
-  }, [previewUrl]);
+  }, [previewUrl, cropImageSrc]);
 
   function scheduleUsernameCheck(value: string, profileId?: string) {
     if (usernameTimer.current) clearTimeout(usernameTimer.current);
@@ -214,14 +222,94 @@ export function ProfileEditor() {
       setMessage({ type: "err", text: "Format tidak didukung. Gunakan JPG, PNG, WebP, atau GIF." });
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      setMessage({ type: "err", text: "Ukuran foto maksimal 2 MB." });
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage({ type: "err", text: "Ukuran foto maksimal 5 MB." });
       return;
     }
 
+    if (cropImageSrc) URL.revokeObjectURL(cropImageSrc);
+    setCropSourceFile(file);
+    setCropImageSrc(URL.createObjectURL(file));
+    setCropModalOpen(true);
+  }
+
+  function onCropConfirm(file: File, nextPreviewUrl: string) {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPendingFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    setPreviewUrl(nextPreviewUrl);
+    setCropSourceFile(null);
+    if (cropImageSrc) {
+      URL.revokeObjectURL(cropImageSrc);
+      setCropImageSrc(null);
+    }
+  }
+
+  function onCropClose() {
+    setCropModalOpen(false);
+    setCropSourceFile(null);
+    if (cropImageSrc) {
+      URL.revokeObjectURL(cropImageSrc);
+      setCropImageSrc(null);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  async function handleDeleteAvatar() {
+    if (!session || deleting) return;
+
+    setDeleting(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch("/api/me/avatar", {
+        method: "DELETE",
+        headers: {
+          "x-user-email": session.email,
+          "x-user-id": session.userId,
+        },
+      });
+      const json = (await res.json()) as {
+        profile?: ProfilePayload;
+        error?: string;
+      };
+      if (!res.ok || !json.profile) {
+        throw new Error(json.error || "Gagal menghapus foto profil.");
+      }
+
+      const profile = json.profile;
+      const next: ProfileSnapshot = {
+        name: profile.name,
+        username: profile.username ?? "",
+        phone: profile.phone ?? "",
+        bio: profile.bio ?? "",
+        avatarUrl: profile.avatarUrl,
+      };
+      setAvatarUrl(next.avatarUrl);
+      setSaved(next);
+      setPendingFile(null);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
+
+      updateLocalProfile({
+        name: next.name,
+        username: next.username || null,
+        phone: next.phone || null,
+        bio: next.bio,
+        avatarUrl: next.avatarUrl,
+      });
+
+      setMessage({ type: "ok", text: "Foto profil dihapus." });
+    } catch (err) {
+      setMessage({
+        type: "err",
+        text: err instanceof Error ? err.message : "Gagal menghapus foto profil.",
+      });
+    } finally {
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+    }
   }
 
   async function handleSave(e: React.FormEvent) {
@@ -359,6 +447,7 @@ export function ProfileEditor() {
   }
 
   const displayAvatar = previewUrl || avatarUrl;
+  const hasAvatar = Boolean(displayAvatar);
   const canSave = isDirty && !saving && !loadingProfile && usernameCheck !== "taken";
 
   return (
@@ -408,18 +497,31 @@ export function ProfileEditor() {
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">Foto profil</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              JPG, PNG, WebP, atau GIF. Maksimal 2 MB.
+              JPG, PNG, WebP, atau GIF. Maksimal 5 MB. Foto akan dikompresi otomatis.
             </p>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="mt-3"
-              disabled={saving || loadingProfile}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Pilih foto
-            </Button>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={saving || loadingProfile || deleting}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Pilih foto
+              </Button>
+              {hasAvatar && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={saving || loadingProfile || deleting}
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  <Trash2 className="size-3.5" />
+                  Hapus foto
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -533,6 +635,25 @@ export function ProfileEditor() {
           )}
         </div>
       </form>
+
+      <ProfileAvatarCropModal
+        open={cropModalOpen}
+        imageSrc={cropImageSrc}
+        originalFile={cropSourceFile}
+        onClose={onCropClose}
+        onConfirm={onCropConfirm}
+        onError={(text) => setMessage({ type: "err", text })}
+      />
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteAvatar}
+        title="Hapus foto profil?"
+        description="Foto profil kamu akan dihapus. Kamu bisa mengunggah foto baru kapan saja."
+        confirmLabel="Hapus foto"
+        loading={deleting}
+      />
     </div>
   );
 }

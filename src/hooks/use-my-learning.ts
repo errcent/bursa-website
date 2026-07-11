@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useAuth } from "@/components/auth-provider";
+import { subscribeLearningChange } from "@/lib/learning/events";
 
 export type LearningCourseProgress = {
   slug: string;
@@ -24,6 +25,13 @@ export function useMyLearning() {
   const { session, isLoading: authLoading } = useAuth();
   const [courses, setCourses] = useState<LearningCourseProgress[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const refresh = useCallback(() => {
+    setRefreshKey((key) => key + 1);
+  }, []);
+
+  useEffect(() => subscribeLearningChange(refresh), [refresh]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -63,7 +71,7 @@ export function useMyLearning() {
     return () => {
       cancelled = true;
     };
-  }, [authLoading, session?.userId, session?.email]);
+  }, [authLoading, refreshKey, session?.userId, session?.email]);
 
   const bySlug = useMemo(() => {
     const map = new Map<string, LearningCourseProgress>();
@@ -78,5 +86,6 @@ export function useMyLearning() {
     bySlug,
     loading: authLoading || loading,
     isAuthenticated: Boolean(session?.userId || session?.email),
+    refresh,
   };
 }

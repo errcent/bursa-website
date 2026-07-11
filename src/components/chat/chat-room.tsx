@@ -38,6 +38,7 @@ import { generateEmbedsFromText } from "@/lib/chat/link-preview";
 import { getMessageGroupMeta } from "@/lib/chat/message-grouping";
 import { fetchRoomMembers, joinChatRoom, markChatRoomRead } from "@/lib/chat/api";
 import { getSession } from "@/lib/auth/client";
+import { canMutateAdmin } from "@/lib/auth/roles";
 import { mapApiChatMessage, mapApiChatMessages } from "@/lib/chat/map-api-message";
 import {
   branchModeLabel,
@@ -294,6 +295,7 @@ export function ChatRoomView({
   const isMentor =
     session?.role === "mentor" || (session?.email?.includes("mentor") ?? false);
   const isDeveloper = session?.role === "developer";
+  const isAdmin = canMutateAdmin(session?.role);
   /** Prefer Prisma viewer id so isOwn matches server-authored messages. */
   const currentUserId = viewerUserId ?? session?.userId ?? "guest";
   const ownUserIds = useMemo(() => {
@@ -844,11 +846,37 @@ export function ChatRoomView({
   };
 
   const handleDelete = (messageId: string) => {
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === messageId ? { ...msg, isDeleted: true, content: "" } : msg
-      )
-    );
+    const removeFromState = () => {
+      setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+    };
+
+    if (!isAdmin) {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId ? { ...msg, isDeleted: true, content: "" } : msg
+        )
+      );
+      return;
+    }
+
+    removeFromState();
+
+    const headers: HeadersInit = {};
+    if (session?.email) headers["x-user-email"] = session.email;
+    if (session?.userId) headers["x-user-id"] = session.userId;
+    if (session?.name) headers["x-user-name"] = session.name;
+    if (session?.role) headers["x-user-role"] = session.role;
+
+    void fetch(`/api/chat/rooms/${room.id}/messages/${messageId}`, {
+      method: "DELETE",
+      headers,
+    }).then((res) => {
+      if (!res.ok) {
+        void pollMessages();
+      }
+    }).catch(() => {
+      void pollMessages();
+    });
   };
 
   const handleSend = async (content: string, attachments?: PendingAttachment[]) => {
@@ -1387,6 +1415,7 @@ export function ChatRoomView({
                 message={msg}
                 currentUserId={currentUserId}
                 ownUserIds={ownUserIds}
+                isAdmin={isAdmin}
                 isReplyTarget={highlightedId === msg.id}
                 group={group}
                 onReply={startReply}

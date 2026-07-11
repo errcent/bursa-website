@@ -49,6 +49,10 @@ next-env.d.ts
 /public/uploads/avatars/*
 !/public/uploads/avatars/.gitkeep
 
+# local course thumbnail uploads
+/public/uploads/courses/*
+!/public/uploads/courses/.gitkeep
+
 # local sqlite / prisma artifacts
 /prisma/*.db
 /prisma/*.db-journal

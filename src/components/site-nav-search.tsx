@@ -179,7 +179,7 @@ export function SiteNavSearch({
             aria-autocomplete="list"
             autoComplete="off"
             className={cn(
-              "w-full min-w-0 bg-transparent text-sm text-foreground outline-none",
+              "w-full min-w-0 bg-transparent text-base text-foreground outline-none sm:text-sm",
               inputClassName
             )}
           />

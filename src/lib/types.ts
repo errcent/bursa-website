@@ -45,6 +45,7 @@ export interface Course {
   studentsCount: number;
   durationHours: number;
   shortDescription: string;
+  thumbnailUrl?: string;
   outcomes: string[];
   modules: Module[];
   /** Set on listing queries that skip module payloads. */

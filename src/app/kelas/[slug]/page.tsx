@@ -71,8 +71,8 @@ export default async function CourseDetailPage({
   return (
     <>
       <SiteNavbar />
-      <main className="flex-1 pb-24 sm:pb-0">
-        <div className="hero-cinematic page-header-strip">
+      <main className="flex-1 overflow-x-hidden pb-24 sm:pb-0">
+        <div className="hero-cinematic page-header-strip overflow-x-hidden">
           <CourseDetailHero
             course={course}
             mentor={mentor ?? null}
@@ -84,8 +84,8 @@ export default async function CourseDetailPage({
           />
         </div>
 
-        <div className="container-page grid gap-10 py-14 lg:grid-cols-[2fr_1fr]">
-          <div className="flex flex-col gap-10">
+        <div className="container-page grid min-w-0 gap-10 py-14 lg:grid-cols-[2fr_1fr]">
+          <div className="flex min-w-0 flex-col gap-10">
             <section>
               <h2 className="section-title mb-4">Setelah kelas ini, kamu akan bisa</h2>
               <ul className="grid gap-3 sm:grid-cols-2">
@@ -105,7 +105,7 @@ export default async function CourseDetailPage({
                   {course.modules.map((module, mi) => (
                     <AccordionItem key={module.title} value={`module-${mi}`} className="px-3">
                       <AccordionTrigger>
-                        <span>
+                        <span className="min-w-0 break-words pr-2 text-left">
                           {module.title}{" "}
                           <span className="font-normal text-muted-foreground">
                             ({module.lessons.length} lesson)
@@ -141,11 +141,11 @@ export default async function CourseDetailPage({
               </div>
             </section>
 
-            <section className="flex gap-3 rounded-xl border border-emerald/20 bg-emerald/5 p-5">
+            <section className="flex min-w-0 gap-3 rounded-xl border border-emerald/20 bg-emerald/5 p-5">
               <ShieldCheck className="size-5 shrink-0 text-emerald" />
-              <div>
+              <div className="min-w-0">
                 <h3 className="text-sm font-medium">Transparansi & Pengingat Risiko</h3>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                <p className="mt-1 break-words text-xs leading-relaxed text-muted-foreground">
                   Kelas ini berfokus pada edukasi konsep dan metodologi analisis
                   {" "}{course.instrument.toLowerCase()}, bukan rekomendasi/ajakan beli-jual instrumen
                   tertentu. Seluruh keputusan transaksi tetap ada di tangan masing-masing peserta.
@@ -165,7 +165,7 @@ export default async function CourseDetailPage({
                   {faqs.map((faq, i) => (
                     <AccordionItem key={faq.question} value={`faq-${i}`} className="px-3">
                       <AccordionTrigger className="faq-accordion-trigger">
-                        {faq.question}
+                        <span className="min-w-0 break-words pr-2 text-left">{faq.question}</span>
                       </AccordionTrigger>
                       <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
                     </AccordionItem>
@@ -176,7 +176,7 @@ export default async function CourseDetailPage({
           </div>
 
           {mentor && (
-            <aside>
+            <aside className="min-w-0">
               <div className="surface-card sticky top-24 p-5">
                 <h3 className="text-sm font-medium text-muted-foreground">Tentang Mentor</h3>
                 <div className="mt-3 flex items-center gap-3">
@@ -195,7 +195,7 @@ export default async function CourseDetailPage({
                     <p className="text-xs text-muted-foreground">{mentor.title}</p>
                   </div>
                 </div>
-                <p className="mt-3 text-sm text-muted-foreground">{mentor.bio}</p>
+                <p className="mt-3 break-words text-sm text-muted-foreground">{mentor.bio}</p>
                 <p className="mt-3 rounded-lg border border-border bg-surface/50 p-3 text-xs text-muted-foreground">
                   Konten kelas dari mentor tampil setelah proses review tim internal untuk menjaga
                   kualitas katalog.

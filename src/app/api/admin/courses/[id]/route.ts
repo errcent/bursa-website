@@ -63,6 +63,8 @@ export async function PATCH(request: Request, context: RouteContext) {
         mentorId: input.mentorId,
         durationHours: input.durationHours,
         isPublished: input.isPublished,
+        thumbnailUrl:
+          input.thumbnailUrl === undefined ? undefined : input.thumbnailUrl ?? null,
       },
     });
 

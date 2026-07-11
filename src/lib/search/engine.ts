@@ -183,6 +183,7 @@ export function searchAll(query: string, limit = 8): SearchResult[] {
       badge: course.level,
       score,
       matchedField,
+      imageUrl: course.thumbnailUrl,
       meta: `${course.rating}★ · ${course.studentsCount.toLocaleString("id-ID")} siswa`,
     });
   }
@@ -227,6 +228,7 @@ export function getPopularCourses(limit = 4): SearchResult[] {
         href: `/kelas/${course.slug}`,
         badge: course.instrument,
         score: course.studentsCount,
+        imageUrl: course.thumbnailUrl,
         meta: `${course.rating}★`,
       };
     });

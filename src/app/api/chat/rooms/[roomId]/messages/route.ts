@@ -121,6 +121,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       membership,
       userRole: user?.role,
       isRoomOwner: owner,
+      roomKind: room.roomKind,
     });
     const historyHidden = historyScope.kind !== "full";
 

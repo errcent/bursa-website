@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 
+import { computeProgressPercent } from "@/lib/learning/progress";
 import { instrumentToUi } from "@/lib/admin/server";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { healHubMembershipsForUserEnrollments } from "@/lib/chat/db-rooms";
@@ -88,8 +89,7 @@ export async function GET(request: NextRequest) {
       const lessons = enrollment.course.modules.flatMap((m) => m.lessons);
       const totalLessons = lessons.length;
       const completedLessons = lessons.filter((l) => completedSet.has(l.id)).length;
-      const progressPercent =
-        totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100);
+      const progressPercent = computeProgressPercent(completedLessons, totalLessons);
 
       const nextIncomplete = lessons.find((l) => !completedSet.has(l.id));
       const lastLessonId =
@@ -105,6 +105,7 @@ export async function GET(request: NextRequest) {
       return {
         slug: enrollment.course.slug,
         title: enrollment.course.title,
+        thumbnailUrl: enrollment.course.thumbnailUrl,
         instrument: instrumentToUi(enrollment.course.instrument),
         mentorSlug: enrollment.course.mentor.slug,
         mentorName: enrollment.course.mentor.user.nama,

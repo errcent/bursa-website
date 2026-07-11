@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { CourseThumbnail } from "@/components/course-thumbnail";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -212,8 +213,10 @@ export function CheckoutForm({
           <CardDescription>Pembayaran sekali untuk akses kelas selamanya.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <div className="rounded-xl border border-border bg-surface/50 p-4">
-            <p className="font-heading text-sm font-medium leading-snug">{course.title}</p>
+          <div className="overflow-hidden rounded-xl border border-border bg-surface/50">
+            <CourseThumbnail course={course} className="aspect-[16/10] w-full" alt={course.title} />
+            <div className="p-4">
+              <p className="font-heading text-sm font-medium leading-snug">{course.title}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Mentor:{" "}
               <Link href={`/instruktur/${mentor.slug}`} className="text-foreground/80 hover:underline">
@@ -223,6 +226,7 @@ export function CheckoutForm({
             <p className="mt-2 text-xs text-muted-foreground">
               {course.durationHours} jam · Akses selamanya
             </p>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2 text-sm">

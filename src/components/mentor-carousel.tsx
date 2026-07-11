@@ -1,37 +1,53 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useRef, useState } from "react";
+import { ArrowRight } from "lucide-react";
+import { useState } from "react";
 
-import { MentorCard } from "@/components/mentor-card";
-import {
-  SCROLL_CAROUSEL_GAP,
-  ScrollCarousel,
-  mentorGetScrollPerView,
-  type ScrollCarouselHandle,
-} from "@/components/scroll-carousel";
-import { Button } from "@/components/ui/button";
-import { useMobileLayout } from "@/hooks/use-mobile-layout";
 import type { Mentor } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-const LANDING_CAROUSEL_GAP = 10;
 
 interface MentorCarouselProps {
   mentors: Mentor[];
   className?: string;
 }
 
-export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
-  const isMobile = useMobileLayout();
-  const carouselRef = useRef<ScrollCarouselHandle>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+function MentorMarqueeFigure({ mentor, index }: { mentor: Mentor; index: number }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = mentor.avatarUrl && !imageFailed;
 
+  return (
+    <Link
+      href={`/instruktur/${mentor.slug}`}
+      className="mentor-marquee-item group"
+      style={{ zIndex: index % 12 }}
+      aria-label={`Profil ${mentor.name}`}
+    >
+      <div className="mentor-marquee-figure">
+        {showImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={mentor.avatarUrl}
+            alt=""
+            className="mentor-marquee-image"
+            draggable={false}
+            onError={() => setImageFailed(true)}
+          />
+        ) : (
+          <div className="mentor-marquee-fallback" aria-hidden>
+            {mentor.initials}
+          </div>
+        )}
+      </div>
+      <span className="mentor-marquee-label line-clamp-1">{mentor.name}</span>
+    </Link>
+  );
+}
+
+export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
   if (mentors.length === 0) return null;
 
-  const cardVariant = isMobile ? "compact" : "default";
+  const loopItems = [...mentors, ...mentors];
 
   return (
     <div className={cn("relative", className)}>
@@ -50,48 +66,22 @@ export function MentorCarousel({ mentors, className }: MentorCarouselProps) {
             <ArrowRight className="size-4" />
           </Link>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon-sm"
-            className="rounded-full"
-            onClick={() => carouselRef.current?.scrollByStep(-1)}
-            disabled={!canScrollLeft}
-            aria-label="Mentor sebelumnya"
-          >
-            <ArrowLeft className="size-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon-sm"
-            className="rounded-full"
-            onClick={() => carouselRef.current?.scrollByStep(1)}
-            disabled={!canScrollRight}
-            aria-label="Mentor berikutnya"
-          >
-            <ArrowRight className="size-4" />
-          </Button>
-        </div>
       </div>
 
-      <div className={cn(isMobile && "landing-carousel-bleed landing-mentor-carousel")}>
-        <ScrollCarousel
-          ref={carouselRef}
-          ariaLabel="Mentor di platform"
-          hideArrows
-          viewportClassName="landing-scroll-carousel"
-          getPerView={mentorGetScrollPerView}
-          fixedItemWidth={isMobile ? "var(--landing-mentor-card-width)" : undefined}
-          gap={isMobile ? LANDING_CAROUSEL_GAP : SCROLL_CAROUSEL_GAP}
-          onScrollStateChange={({ canScrollLeft, canScrollRight }) => {
-            setCanScrollLeft(canScrollLeft);
-            setCanScrollRight(canScrollRight);
-          }}
-        >
-          {mentors.map((mentor) => (
-            <MentorCard key={mentor.slug} mentor={mentor} variant={cardVariant} className="h-full w-full" />
+      <div
+        className="mentor-marquee"
+        aria-label="Mentor terverifikasi"
+        role="region"
+      >
+        <div className="mentor-marquee-track">
+          {loopItems.map((mentor, index) => (
+            <MentorMarqueeFigure
+              key={`${mentor.slug}-${index}`}
+              mentor={mentor}
+              index={index}
+            />
           ))}
-        </ScrollCarousel>
+        </div>
       </div>
     </div>
   );

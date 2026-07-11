@@ -202,7 +202,7 @@ export function CourseReviewsSection({ courseSlug }: CourseReviewsSectionProps) 
               onChange={(e) => setComment(e.target.value)}
               rows={4}
               placeholder="Ceritakan pengalaman belajarmu setelah menyelesaikan modul (min. 20 karakter)..."
-              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/30"
+              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-base outline-none placeholder:text-muted-foreground focus:border-foreground/30 sm:text-sm"
             />
             <label className="flex items-start gap-2 text-xs text-muted-foreground">
               <input

@@ -319,6 +319,26 @@ export async function fetchCourse(id: string): Promise<ApiResult<AdminCourse>> {
   return request<AdminCourse>(`/courses/${id}`);
 }
 
+export async function uploadCourseThumbnail(file: File): Promise<ApiResult<{ url: string }>> {
+  const session = getSession();
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/api/admin/uploads/thumbnail", {
+    method: "POST",
+    headers: session?.email ? { "x-user-email": session.email } : {},
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Gagal mengunggah thumbnail.");
+  }
+
+  const data = (await res.json()) as { url: string };
+  return { data, source: "api" };
+}
+
 export async function createModule(
   courseId: string,
   input: ModuleFormInput

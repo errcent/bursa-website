@@ -23,13 +23,12 @@ import {
 import { cn } from "@/lib/utils";
 
 export const DEFAULT_CAROUSEL_GAP = 16;
+export const DEFAULT_CAROUSEL_PEEK_RATIO = 0.76;
 export const DEFAULT_AUTO_SCROLL_PX_PER_SEC = 42;
 const RESUME_DELAY_MS = 900;
 const RESUME_RAMP_MS = 700;
 
-export function defaultGetPerView(width: number) {
-  if (width >= 1024) return 3;
-  if (width >= 640) return 2;
+export function defaultGetPerView(_width: number) {
   return 1;
 }
 
@@ -136,7 +135,11 @@ export function useInfiniteCarousel<T>({
       } else {
         perView = getPerView(containerWidth);
         itemWidth =
-          containerWidth > 0 ? (containerWidth - gap * (perView - 1)) / perView : 0;
+          containerWidth > 0
+            ? perView === 1
+              ? containerWidth * DEFAULT_CAROUSEL_PEEK_RATIO
+              : (containerWidth - gap * (perView - 1)) / perView
+            : 0;
       }
 
       setLayout({ containerWidth, itemWidth, perView });
