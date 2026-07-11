@@ -4,9 +4,9 @@ import Link from "next/link";
 import { ArrowRight, Check, ShieldCheck, Users2 } from "lucide-react";
 import { motion } from "motion/react";
 
+import { LearningRadarChart } from "@/components/home/learning-radar-chart";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { useAuth } from "@/components/auth-provider";
-import { DeviceOrbit } from "@/components/ui/orbit-visuals";
 import { Button } from "@/components/ui/button";
 import { Progress, ProgressIndicator, ProgressTrack } from "@/components/ui/progress";
 import type { Course, Mentor } from "@/lib/types";
@@ -134,43 +134,17 @@ function VerificationVisual({
 function LearningPathsVisual({
   courses,
   mentors,
-  learningPathTracks,
   totalModules,
   totalDurationHours,
 }: {
   courses: Course[];
   mentors: Mentor[];
-  learningPathTracks: { label: string; count: number; tone: string }[];
   totalModules: number;
   totalDurationHours: number;
 }) {
-  const maxTrack = Math.max(...learningPathTracks.map((item) => item.count), 1);
-
   return (
     <div className="narrative-visual-card surface-card bg-card/60 p-4 sm:p-8">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-          Peta minat belajar pengguna
-        </p>
-        <span className="rounded-full border border-border/60 bg-surface/40 px-3 py-1 font-mono text-[10px] text-muted-foreground">
-          {courses.length} kelas aktif
-        </span>
-      </div>
-
-      <div className="mt-6 space-y-3.5">
-        {learningPathTracks.map((item) => {
-          const percent = Math.max((item.count / maxTrack) * 100, 16);
-          return (
-            <div key={item.label} className="grid grid-cols-[minmax(0,9.5rem)_1fr_auto] items-center gap-3 sm:grid-cols-[minmax(0,11rem)_1fr_auto]">
-              <p className="text-xs text-muted-foreground sm:text-sm">{item.label}</p>
-              <div className="h-2.5 rounded-full bg-muted/70">
-                <div className={cn("h-full rounded-full", item.tone)} style={{ width: `${percent}%` }} />
-              </div>
-              <p className="font-mono text-[11px] text-foreground/85">{item.count}</p>
-            </div>
-          );
-        })}
-      </div>
+      <LearningRadarChart courses={courses} mentors={mentors} />
 
       <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="narrative-stat-tile rounded-xl border border-border/60 bg-surface/30 p-4">
@@ -190,52 +164,7 @@ function LearningPathsVisual({
   );
 }
 
-/* ── Visual: Learn anywhere devices + access stats ── */
-
-function LearnAnywhereVisual({
-  totalModules,
-  totalDurationHours,
-  totalStudents,
-}: {
-  totalModules: number;
-  totalDurationHours: number;
-  totalStudents: number;
-}) {
-  return (
-    <div className="narrative-visual-card surface-card bg-card/60 p-4 sm:p-8">
-      <p className="mb-4 font-mono text-[11px] uppercase tracking-wider text-muted-foreground sm:mb-6">
-        Studi lintas perangkat
-      </p>
-      <div className="hidden md:block">
-        <DeviceOrbit />
-      </div>
-      <p className="rounded-xl border border-border/50 bg-surface/30 px-4 py-3 text-center text-sm text-muted-foreground md:hidden">
-        Materi dan progres belajar dapat diakses dari ponsel atau desktop kapan saja.
-      </p>
-
-      <div className="mt-6 grid grid-cols-1 gap-3 border-t border-border/50 pt-5 sm:mt-8 sm:grid-cols-3 sm:pt-6">
-        <div className="text-center">
-          <p className="narrative-stat-value font-heading text-base font-semibold sm:text-xl">24/7</p>
-          <p className="stat-label mt-0.5">Akses materi</p>
-        </div>
-        <div className="text-center">
-          <p className="narrative-stat-value font-heading text-base font-semibold sm:text-xl">{totalModules}</p>
-          <p className="stat-label mt-0.5">Modul</p>
-        </div>
-        <div className="text-center">
-          <p className="narrative-stat-value font-heading text-base font-semibold sm:text-xl">{totalDurationHours}j</p>
-          <p className="stat-label mt-0.5">Konten video</p>
-        </div>
-      </div>
-
-      <p className="mt-4 text-center font-mono text-[10px] text-muted-foreground/70">
-        {Math.round(totalStudents / 1000)}rb+ pendaftaran kelas
-      </p>
-    </div>
-  );
-}
-
-/* ── Main export: 3 narrative blocks ── */
+/* ── Main export: 2 narrative blocks ── */
 
 export function NarrativeScrollSections({
   courses,
@@ -250,16 +179,6 @@ export function NarrativeScrollSections({
     0
   );
   const totalDurationHours = courses.reduce((sum, c) => sum + c.durationHours, 0);
-  const totalStudents = courses.reduce((sum, c) => sum + c.studentsCount, 0);
-
-  const learningPathTracks = [
-    { label: "Level pemula", count: courses.filter((c) => c.level === "Pemula").length, tone: "bg-accent/85" },
-    { label: "Level menengah", count: courses.filter((c) => c.level === "Menengah").length, tone: "bg-foreground/45" },
-    { label: "Saham", count: courses.filter((c) => c.instrument === "Saham").length, tone: "bg-emerald/85" },
-    { label: "Crypto", count: courses.filter((c) => c.instrument === "Crypto").length, tone: "bg-accent/65" },
-    { label: "Forex", count: courses.filter((c) => c.instrument === "Forex").length, tone: "bg-amber-300/70" },
-    { label: "Sesi mentor langsung", count: mentors.length, tone: "bg-foreground/55" },
-  ];
 
   return (
     <>
@@ -285,7 +204,6 @@ export function NarrativeScrollSections({
           <LearningPathsVisual
             courses={courses}
             mentors={mentors}
-            learningPathTracks={learningPathTracks}
             totalModules={totalModules}
             totalDurationHours={totalDurationHours}
           />
@@ -293,20 +211,6 @@ export function NarrativeScrollSections({
         reverse
         muted
         spacing="tight"
-      />
-
-      <NarrativeBlock
-        eyebrow="Akses fleksibel"
-        title="Lanjutkan belajar kapan pun"
-        copy="Akses modul dari desktop atau mobile kapan saja. Lanjut dari progres terakhirmu."
-        visual={
-          <LearnAnywhereVisual
-            totalModules={totalModules}
-            totalDurationHours={totalDurationHours}
-            totalStudents={totalStudents}
-          />
-        }
-        spacing="base"
       />
     </>
   );
