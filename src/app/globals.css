@@ -525,53 +525,18 @@
     background-color: var(--accent);
   }
 
-  /* Mentor landing — group photo hero with bottom fade into page background. */
+  /* Mentor landing — copy stacked above group photo with bottom fade into page background. */
   .mentor-landing-section {
-    position: relative;
-  }
-
-  .mentor-landing-hero {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    min-height: clamp(18rem, 52vw, 28rem);
-    border-radius: var(--radius-2xl);
-    background: #050505;
-  }
-
-  .mentor-landing-photo {
-    object-fit: cover;
-    object-position: center 18%;
-  }
-
-  .mentor-landing-fade {
-    pointer-events: none;
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: linear-gradient(
-      to bottom,
-      rgba(5, 5, 5, 0.08) 0%,
-      rgba(5, 5, 5, 0.02) 28%,
-      transparent 42%,
-      color-mix(in oklch, var(--background) 18%, transparent) 62%,
-      color-mix(in oklch, var(--background) 72%, transparent) 82%,
-      var(--background) 100%
-    );
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.25rem, 3vw, 2rem);
   }
 
   .mentor-landing-header {
-    position: absolute;
-    inset-inline: 0;
-    top: 0;
-    z-index: 2;
     display: flex;
     max-width: 42rem;
     flex-direction: column;
     align-items: center;
-    padding: clamp(1.75rem, 5vw, 3rem) clamp(1.25rem, 4vw, 2rem) 0;
     margin-inline: auto;
     text-align: center;
   }
@@ -580,54 +545,54 @@
     @apply mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-accent;
   }
 
-  .mentor-landing-title {
-    font-family: var(--font-heading);
-    font-size: clamp(1.625rem, 4vw, 2rem);
-    font-weight: 600;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    color: #f5f5f5;
-  }
-
   .mentor-landing-copy {
-    @apply mt-2 max-w-lg text-sm leading-relaxed sm:text-base;
-    color: rgba(245, 245, 245, 0.78);
+    @apply mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base;
   }
 
-  .mentor-landing-stats {
-    @apply mt-3 inline-flex items-center gap-1.5 text-xs font-medium;
-    color: rgba(245, 245, 245, 0.72);
+  .mentor-landing-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: clamp(14rem, 42vw, 24rem);
+    border-radius: var(--radius-2xl);
+    background: var(--background);
   }
 
-  .mentor-landing-cta {
-    @apply mt-4 inline-flex items-center gap-1 text-sm font-medium transition-colors;
-    color: #f5f5f5;
+  .mentor-landing-photo {
+    object-fit: contain;
+    object-position: center bottom;
   }
 
-  .mentor-landing-cta:hover {
-    color: var(--accent);
-  }
-
-  .mentor-landing-cta:focus-visible {
-    @apply rounded-sm outline-2 outline-offset-4 outline-ring;
+  .mentor-landing-fade {
+    pointer-events: none;
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 38%;
+    z-index: 1;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      color-mix(in oklch, var(--background) 35%, transparent) 45%,
+      color-mix(in oklch, var(--background) 85%, transparent) 78%,
+      var(--background) 100%
+    );
   }
 
   @media (min-width: 640px) {
     .mentor-landing-hero {
       aspect-ratio: 21 / 9;
-    }
-
-    .mentor-landing-photo {
-      object-position: center 22%;
+      min-height: clamp(16rem, 36vw, 26rem);
     }
   }
 
   @media (min-width: 1024px) {
     .mentor-landing-header {
       align-items: flex-start;
-      text-align: left;
       margin-inline: 0;
-      padding-inline: clamp(2rem, 4vw, 3rem);
+      text-align: left;
     }
   }
 

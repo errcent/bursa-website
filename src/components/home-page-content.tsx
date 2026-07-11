@@ -8,7 +8,6 @@ import { CourseCarousel } from "@/components/course-carousel";
 import { CurriculumPreviewSection } from "@/components/home/curriculum-preview-section";
 import { ClosingCtaSection } from "@/components/home/closing-cta-section";
 import { PricingModelComparison } from "@/components/home/pricing-model-comparison";
-import { TrustVerificationSection } from "@/components/home/trust-verification-section";
 import { HeroLivingBackground } from "@/components/hero-living-bg";
 import { HeroTyping } from "@/components/motion/hero-typing";
 import { MentorLandingSection } from "@/components/mentor-landing-section";
@@ -154,9 +153,6 @@ export function HomePageContent({
           </div>
         </section>
 
-        {/* Trust & Verification — real aggregate stats from the catalog */}
-        <TrustVerificationSection courses={courses} mentors={mentors} />
-
         {/* How it works — absorbs pricing transparency (pay-per-class, no subscription) */}
         <section className="section-muted section-tight border-b border-border/60">
           <div className="container-page">
@@ -185,10 +181,10 @@ export function HomePageContent({
           </div>
         </section>
 
-        {/* Mentor landing — group photo hero */}
+        {/* Mentor terverifikasi — trust, stats, group photo */}
         <section className="section-loose border-b border-border/60">
           <div className="container-page">
-            <MentorLandingSection mentors={mentors} />
+            <MentorLandingSection mentors={mentors} courses={courses} />
           </div>
         </section>
 
