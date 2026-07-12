@@ -6,7 +6,7 @@ import {
 
 type RouteContext = { params: Promise<{ slug: string }> };
 
-/** Redirect user playlist API to public curated playlists. */
+/** Public curated playlist detail. */
 export async function GET(_request: Request, context: RouteContext) {
   try {
     const { slug } = await context.params;
@@ -18,12 +18,4 @@ export async function GET(_request: Request, context: RouteContext) {
   } catch (error) {
     return handleApiError(error);
   }
-}
-
-export async function PATCH() {
-  return jsonError("Playlist hanya dapat dikurasi oleh admin.", 403);
-}
-
-export async function DELETE() {
-  return jsonError("Playlist hanya dapat dikurasi oleh admin.", 403);
 }

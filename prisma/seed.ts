@@ -726,11 +726,13 @@ async function main() {
   if (mentalLessonIds.length > 0) {
     await prisma.playlist.create({
       data: {
-        userId: learner.id,
+        userId: admin.id,
         title: "Kesehatan Mental Trading",
         description:
-          "Kurasi modul psikologi, disiplin, dan mindset dari lima mentor berbeda — susun jalur belajar untuk trading yang lebih tenang.",
+          "Kurasi modul psikologi, disiplin, dan mindset dari lima mentor berbeda.",
         slug: "kesehatan-mental-trading",
+        isCurated: true,
+        isPublished: true,
         items: {
           create: mentalLessonIds.map((lessonId, index) => ({
             lessonId,
@@ -749,14 +751,15 @@ async function main() {
 
   const fundasiLessonIds = fundasiLessons.filter(Boolean).map((lesson) => lesson!.id);
 
-  if (demoLearner && fundasiLessonIds.length > 0) {
+  if (fundasiLessonIds.length > 0) {
     await prisma.playlist.create({
       data: {
-        userId: demoLearner.id,
+        userId: admin.id,
         title: "Fundasi Analisis Saham",
-        description:
-          "Tiga pelajaran pembuka untuk memahami fundamental dan valuasi sebelum menyelam lebih dalam.",
+        description: "Tiga pelajaran pembuka untuk memahami fundamental dan valuasi.",
         slug: "fundasi-analisis-saham",
+        isCurated: true,
+        isPublished: true,
         items: {
           create: fundasiLessonIds.map((lessonId, index) => ({
             lessonId,

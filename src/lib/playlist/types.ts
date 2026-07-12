@@ -6,6 +6,7 @@ export type PlaylistSummary = {
   itemCount: number;
   totalMinutes: number;
   mentorCount: number;
+  isPublished?: boolean;
   createdAt: string;
   updatedAt: string;
 };

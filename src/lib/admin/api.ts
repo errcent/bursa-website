@@ -47,6 +47,7 @@ import type {
   ModerationDecision,
   ModuleFormInput,
 } from "./types";
+import type { PlaylistDetail, PlaylistSummary } from "@/lib/playlist/types";
 
 type ApiResult<T> = { data: T; source: "api" | "mock" };
 
@@ -546,5 +547,57 @@ export async function reviewBranchChangeRequest(
   return request<AdminBranchChangeRequest>(`/branch-change-requests/${id}`, {
     method: "PATCH",
     body: JSON.stringify(body),
+  });
+}
+
+export async function fetchPlaylists(): Promise<ApiResult<PlaylistSummary[]>> {
+  return request<PlaylistSummary[]>("/playlists");
+}
+
+export async function fetchPlaylist(id: string): Promise<ApiResult<PlaylistDetail>> {
+  return request<PlaylistDetail>(`/playlists/${id}`);
+}
+
+export async function createPlaylist(body: {
+  title: string;
+  description?: string;
+  isPublished?: boolean;
+}): Promise<ApiResult<PlaylistDetail>> {
+  return request<PlaylistDetail>("/playlists", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function updatePlaylist(
+  id: string,
+  body: { title?: string; description?: string | null; isPublished?: boolean }
+): Promise<ApiResult<PlaylistDetail>> {
+  return request<PlaylistDetail>(`/playlists/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function deletePlaylist(id: string): Promise<ApiResult<{ ok: boolean }>> {
+  return request<{ ok: boolean }>(`/playlists/${id}`, { method: "DELETE" });
+}
+
+export async function addPlaylistItems(
+  id: string,
+  body: { lessonId?: string; courseId?: string; moduleId?: string }
+): Promise<ApiResult<PlaylistDetail>> {
+  return request<PlaylistDetail>(`/playlists/${id}/items`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function removePlaylistItem(
+  playlistId: string,
+  itemId: string
+): Promise<ApiResult<PlaylistDetail>> {
+  return request<PlaylistDetail>(`/playlists/${playlistId}/items/${itemId}`, {
+    method: "DELETE",
   });
 }

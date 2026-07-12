@@ -7,6 +7,7 @@ type PlaylistWithItems = {
   title: string;
   description: string | null;
   slug: string;
+  isPublished?: boolean;
   createdAt: Date;
   updatedAt: Date;
   items: Array<{
@@ -38,7 +39,7 @@ type PlaylistWithItems = {
   }>;
 };
 
-const playlistInclude = {
+export const playlistInclude = {
   items: {
     orderBy: { sortOrder: "asc" as const },
     include: {
@@ -138,6 +139,7 @@ function summarizePlaylist(playlist: PlaylistWithItems): PlaylistSummary {
     itemCount: playlist.items.length,
     totalMinutes,
     mentorCount: mentors.size,
+    isPublished: playlist.isPublished,
     createdAt: playlist.createdAt.toISOString(),
     updatedAt: playlist.updatedAt.toISOString(),
   };
@@ -154,14 +156,14 @@ export function serializePlaylistDetail(playlist: PlaylistWithItems): PlaylistDe
   };
 }
 
-export async function resolveUniquePlaylistSlug(userId: string, title: string, preferred?: string) {
+export async function resolveUniquePlaylistSlug(title: string, preferred?: string) {
   const base = slugify(preferred?.trim() || title) || "playlist";
   let candidate = base;
   let suffix = 2;
 
   while (
     await db.playlist.findUnique({
-      where: { userId_slug: { userId, slug: candidate } },
+      where: { slug: candidate },
       select: { id: true },
     })
   ) {
@@ -172,17 +174,32 @@ export async function resolveUniquePlaylistSlug(userId: string, title: string, p
   return candidate;
 }
 
-export async function findUserPlaylistBySlug(userId: string, slug: string) {
-  return db.playlist.findUnique({
-    where: { userId_slug: { userId, slug } },
+export async function findCuratedPlaylistBySlug(slug: string) {
+  return db.playlist.findFirst({
+    where: { slug, isCurated: true, isPublished: true },
     include: playlistInclude,
   });
 }
 
-export async function listUserPlaylists(userId: string) {
+export async function listCuratedPlaylists() {
   return db.playlist.findMany({
-    where: { userId },
+    where: { isCurated: true, isPublished: true },
     orderBy: { createdAt: "desc" },
+    include: playlistInclude,
+  });
+}
+
+export async function listAdminPlaylists() {
+  return db.playlist.findMany({
+    where: { isCurated: true },
+    orderBy: { updatedAt: "desc" },
+    include: playlistInclude,
+  });
+}
+
+export async function findAdminPlaylistById(id: string) {
+  return db.playlist.findFirst({
+    where: { id, isCurated: true },
     include: playlistInclude,
   });
 }

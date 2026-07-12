@@ -52,6 +52,8 @@ export interface Course {
   modules: Module[];
   /** Set on listing queries that skip module payloads. */
   moduleCount?: number;
+  /** ISO date for "Baru di Bursa" catalog row. */
+  createdAt?: string;
 }
 
 export interface Review {

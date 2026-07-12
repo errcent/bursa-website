@@ -12,12 +12,13 @@ export async function CatalogDataLoader({
   initialQuery,
   initialView,
 }: CatalogDataLoaderProps) {
-  const { courses, mentors } = await getCatalogData();
+  const { courses, mentors, playlists } = await getCatalogData();
 
   return (
     <CatalogBrowser
       courses={courses}
       mentors={mentors}
+      playlists={playlists}
       initialQuery={initialQuery}
       initialView={initialView}
     />

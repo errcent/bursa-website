@@ -389,3 +389,57 @@ export const deletePlaylistSchema = z.object({
   name: z.string().min(1).max(120).optional(),
   role: z.string().optional(),
 });
+
+export const adminCreatePlaylistSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, "Judul wajib diisi.")
+    .max(120, "Judul maksimal 120 karakter."),
+  description: z
+    .string()
+    .max(500, "Deskripsi maksimal 500 karakter.")
+    .optional()
+    .transform((v) => {
+      const trimmed = v?.trim();
+      return trimmed ? trimmed : undefined;
+    }),
+  slug: z
+    .string()
+    .min(1)
+    .max(80)
+    .regex(/^[a-z0-9-]+$/, "Slug hanya huruf kecil, angka, dan tanda hubung.")
+    .optional(),
+  isPublished: z.boolean().optional(),
+  items: z.array(playlistItemInputSchema).max(100).optional(),
+});
+
+export const adminUpdatePlaylistSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, "Judul wajib diisi.")
+    .max(120, "Judul maksimal 120 karakter.")
+    .optional(),
+  description: z
+    .string()
+    .max(500, "Deskripsi maksimal 500 karakter.")
+    .nullable()
+    .optional()
+    .transform((v) => {
+      if (v === null) return null;
+      const trimmed = v?.trim();
+      return trimmed ? trimmed : null;
+    }),
+  isPublished: z.boolean().optional(),
+});
+
+export const adminPlaylistItemsSchema = z
+  .object({
+    lessonId: z.string().min(1).optional(),
+    courseId: z.string().min(1).optional(),
+    moduleId: z.string().min(1).optional(),
+  })
+  .refine((value) => Boolean(value.lessonId || value.courseId || value.moduleId), {
+    message: "Pilih modul, pelajaran, atau kelas.",
+  });

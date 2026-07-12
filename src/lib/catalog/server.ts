@@ -3,6 +3,8 @@ import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
 import { instrumentToUi, levelToUi } from "@/lib/admin/server";
 import { db } from "@/lib/db";
+import { listCuratedPlaylists, serializePlaylistSummary } from "@/lib/playlist/server";
+import type { PlaylistSummary } from "@/lib/playlist/types";
 import type { Course, Mentor } from "@/lib/types";
 
 const CATALOG_CACHE_TAG = "catalog";
@@ -51,6 +53,7 @@ type DbCourseListing = Prisma.CourseGetPayload<{
     shortDescription: true;
     thumbnailUrl: true;
     outcomes: true;
+    createdAt: true;
     mentor: { select: { slug: true } };
     _count: { select: { modules: true } };
   };
@@ -124,6 +127,7 @@ function mapCatalogListingCourse(course: DbCourseListing): Course {
     outcomes: (course.outcomes as string[]) ?? [],
     modules: [],
     moduleCount: course._count.modules,
+    createdAt: course.createdAt.toISOString(),
   };
 }
 
@@ -145,6 +149,7 @@ async function fetchCatalogCoursesListing(): Promise<Course[]> {
       shortDescription: true,
       thumbnailUrl: true,
       outcomes: true,
+      createdAt: true,
       mentor: { select: { slug: true } },
       _count: { select: { modules: true } },
     },
@@ -166,11 +171,16 @@ async function fetchCatalogMentorsListing(): Promise<Mentor[]> {
 
 const getCachedCatalogData = unstable_cache(
   async () => {
-    const [courses, mentors] = await Promise.all([
+    const [courses, mentors, playlists] = await Promise.all([
       fetchCatalogCoursesListing(),
       fetchCatalogMentorsListing(),
+      listCuratedPlaylists(),
     ]);
-    return { courses, mentors };
+    return {
+      courses,
+      mentors,
+      playlists: playlists.map(serializePlaylistSummary),
+    };
   },
   ["catalog-data"],
   { revalidate: CATALOG_REVALIDATE_SECONDS, tags: [CATALOG_CACHE_TAG] }
@@ -186,7 +196,11 @@ export async function getCatalogCourses(): Promise<Course[]> {
   return fetchCatalogCoursesListing();
 }
 
-export async function getCatalogData(): Promise<{ courses: Course[]; mentors: Mentor[] }> {
+export async function getCatalogData(): Promise<{
+  courses: Course[];
+  mentors: Mentor[];
+  playlists: PlaylistSummary[];
+}> {
   return getCachedCatalogData();
 }
 
@@ -308,4 +322,5 @@ export function revalidateCatalog() {
   revalidateTag(CATALOG_CACHE_TAG, "max");
   revalidatePath("/katalog");
   revalidatePath("/");
+  revalidatePath("/playlist");
 }

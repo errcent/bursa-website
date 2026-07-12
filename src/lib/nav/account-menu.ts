@@ -2,7 +2,6 @@ import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard,
   LifeBuoy,
-  ListVideo,
   Newspaper,
   Settings,
 } from "lucide-react";
@@ -18,7 +17,6 @@ export type AccountMenuItem = {
 
 const BASE_MENU_ITEMS: AccountMenuItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/playlist", label: "Playlist", icon: ListVideo },
   { href: "/artikel", label: "Artikel", icon: Newspaper },
   { href: "/pengaturan", label: "Pengaturan", icon: Settings },
   { href: "/bantuan", label: "Pusat Bantuan", icon: LifeBuoy },

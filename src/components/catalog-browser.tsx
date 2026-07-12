@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from "motion/react";
 
 import { CourseCard } from "@/components/course-card";
 import { MentorCard } from "@/components/mentor-card";
+import { PlaylistCard } from "@/components/playlist/playlist-card";
 import {
   SCROLL_CAROUSEL_GAP,
   ScrollCarousel,
@@ -25,6 +26,7 @@ import { SearchDropdown } from "@/components/search/search-dropdown";
 import { SearchPlaceholderMarquee } from "@/components/search/search-placeholder-marquee";
 import { useMyLearning } from "@/hooks/use-my-learning";
 import { courseEnrollmentFromLearning } from "@/lib/learning/enrollment";
+import type { PlaylistSummary } from "@/lib/playlist/types";
 import {
   getPopularCourses,
   getPopularMentors,
@@ -41,11 +43,18 @@ type ViewMode = "kelas" | "instruktur";
 interface CatalogBrowserProps {
   courses: Course[];
   mentors: Mentor[];
+  playlists: PlaylistSummary[];
   initialQuery?: string;
   initialView?: ViewMode;
 }
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
+
+const INSTRUMENT_ROW_LABELS: Record<Instrument, string> = {
+  Saham: "Saham",
+  Crypto: "Cryptocurrency",
+  Forex: "Foreign Exchange",
+};
 
 function parseViewParam(value: string | null): ViewMode {
   return value === "instruktur" ? "instruktur" : "kelas";
@@ -61,21 +70,15 @@ function buildCatalogQueryString(view: ViewMode): string {
 type CatalogCourseRowProps = {
   title: string;
   courses: Course[];
-  count?: number;
   enrollmentBySlug: Map<string, LearningCourseProgress>;
 };
 
-function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCourseRowProps) {
+function CatalogCourseRow({ title, courses, enrollmentBySlug }: CatalogCourseRowProps) {
   if (courses.length === 0) return null;
 
   return (
     <section className="catalog-row" aria-label={title}>
-      <h3 className="catalog-row-title">
-        {title}
-        {count !== undefined && (
-          <span className="catalog-row-count">{count}</span>
-        )}
-      </h3>
+      <h3 className="catalog-row-title">{title}</h3>
       <div className="catalog-row-bleed md:hidden">
         <div className="catalog-row-scroll">
           {courses.map((course) => (
@@ -108,17 +111,40 @@ function CatalogCourseRow({ title, courses, count, enrollmentBySlug }: CatalogCo
   );
 }
 
-function CatalogMentorRow({ title, mentors, count }: { title: string; mentors: Mentor[]; count?: number }) {
+function CatalogPlaylistRow({ title, playlists }: { title: string; playlists: PlaylistSummary[] }) {
+  if (playlists.length === 0) return null;
+
+  return (
+    <section className="catalog-row" aria-label={title}>
+      <h3 className="catalog-row-title">{title}</h3>
+      <div className="catalog-row-bleed md:hidden">
+        <div className="catalog-row-scroll">
+          {playlists.map((playlist) => (
+            <PlaylistCard key={playlist.id} playlist={playlist} className="w-[min(100%,280px)]" />
+          ))}
+        </div>
+      </div>
+      <div className="catalog-row-bleed hidden md:block">
+        <ScrollCarousel
+          ariaLabel={title}
+          getPerView={() => 3}
+          gap={SCROLL_CAROUSEL_GAP}
+        >
+          {playlists.map((playlist) => (
+            <PlaylistCard key={playlist.id} playlist={playlist} className="w-full" />
+          ))}
+        </ScrollCarousel>
+      </div>
+    </section>
+  );
+}
+
+function CatalogMentorRow({ title, mentors }: { title: string; mentors: Mentor[] }) {
   if (mentors.length === 0) return null;
 
   return (
     <section className="catalog-row" aria-label={title}>
-      <h3 className="catalog-row-title">
-        {title}
-        {count !== undefined && (
-          <span className="catalog-row-count">{count}</span>
-        )}
-      </h3>
+      <h3 className="catalog-row-title">{title}</h3>
       <div className="catalog-row-bleed md:hidden">
         <div className="catalog-row-scroll catalog-row-scroll--mentor">
           {mentors.map((mentor) => (
@@ -144,6 +170,7 @@ function CatalogMentorRow({ title, mentors, count }: { title: string; mentors: M
 export function CatalogBrowser({
   courses,
   mentors,
+  playlists,
   initialQuery = "",
   initialView = "kelas",
 }: CatalogBrowserProps) {
@@ -161,7 +188,7 @@ export function CatalogBrowser({
   const skipUrlWriteRef = useRef(true);
   const lastSyncedQsRef = useRef(buildCatalogQueryString(initialView));
 
-  const { bySlug: enrollmentBySlug } = useMyLearning();
+  const { bySlug: enrollmentBySlug, courses: learningCourses, isAuthenticated } = useMyLearning();
 
   const trending = useMemo(() => getTrendingSuggestions(), []);
   const popularCourses = useMemo(() => getPopularCourses(3), []);
@@ -244,20 +271,37 @@ export function CatalogBrowser({
     [router]
   );
 
-  const groupedCourseRows = useMemo(() => {
-    const popular = [...courses]
-      .sort((a, b) => b.studentsCount - a.studentsCount)
-      .slice(0, 10);
+  const continueWatchingCourses = useMemo(() => {
+    if (!isAuthenticated) return [];
+    const inProgressSlugs = learningCourses
+      .filter((c) => c.progressPercent > 0 && c.progressPercent < 100)
+      .map((c) => c.slug);
+    const courseBySlug = new Map(courses.map((c) => [c.slug, c]));
+    return inProgressSlugs
+      .map((slug) => courseBySlug.get(slug))
+      .filter((c): c is Course => Boolean(c));
+  }, [courses, isAuthenticated, learningCourses]);
 
+  const newCourses = useMemo(
+    () =>
+      [...courses]
+        .sort((a, b) => {
+          const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return bTime - aTime;
+        })
+        .slice(0, 10),
+    [courses]
+  );
+
+  const instrumentCourseRows = useMemo(() => {
     const byInstrument = (inst: Instrument) =>
       courses.filter((c) => c.instrument === inst);
 
-    return [
-      { title: "Paling Populer", courses: popular },
-      { title: "Saham", courses: byInstrument("Saham") },
-      { title: "Crypto", courses: byInstrument("Crypto") },
-      { title: "Forex", courses: byInstrument("Forex") },
-    ].filter((row) => row.courses.length > 0);
+    return (["Saham", "Crypto", "Forex"] as Instrument[]).map((inst) => ({
+      title: INSTRUMENT_ROW_LABELS[inst],
+      courses: byInstrument(inst),
+    }));
   }, [courses]);
 
   const groupedMentorRows = useMemo(() => {
@@ -345,7 +389,6 @@ export function CatalogBrowser({
                   }}
                   onFocus={() => setSearchFocused(true)}
                   onBlur={() => {
-                    // Defer so dropdown link clicks register before panel closes
                     window.setTimeout(() => {
                       if (
                         !searchContainerRef.current?.contains(document.activeElement)
@@ -386,7 +429,18 @@ export function CatalogBrowser({
         {view === "kelas" ? (
           <SnapPresence key="kelas" seed={11} className="relative z-0 block">
             <div className="catalog-section">
-              {groupedCourseRows.map((row) => (
+              <CatalogCourseRow
+                title="Lanjutkan Menonton"
+                courses={continueWatchingCourses}
+                enrollmentBySlug={enrollmentBySlug}
+              />
+              <CatalogCourseRow
+                title="Baru di Bursa"
+                courses={newCourses}
+                enrollmentBySlug={enrollmentBySlug}
+              />
+              <CatalogPlaylistRow title="Playlists" playlists={playlists} />
+              {instrumentCourseRows.map((row) => (
                 <CatalogCourseRow
                   key={row.title}
                   title={row.title}

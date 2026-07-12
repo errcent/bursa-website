@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 
-import { AuthGuard } from "@/components/auth-guard";
 import { PlaylistDetailView } from "@/components/playlist/playlist-detail";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNavbar } from "@/components/site-navbar";
@@ -18,7 +17,7 @@ export async function generateMetadata({ params }: PlaylistDetailPageProps) {
 
   return {
     title: `${title} · Playlist`,
-    description: "Playlist belajar kurasi pribadi di Bursa.",
+    description: "Playlist kurasi Bursa.",
   };
 }
 
@@ -26,7 +25,7 @@ export default async function PlaylistDetailPage({ params }: PlaylistDetailPageP
   const { slug } = await params;
 
   return (
-    <AuthGuard>
+    <>
       <Suspense fallback={<div className="h-14 border-b border-border" />}>
         <SiteNavbar />
       </Suspense>
@@ -36,6 +35,6 @@ export default async function PlaylistDetailPage({ params }: PlaylistDetailPageP
         </div>
       </main>
       <SiteFooter />
-    </AuthGuard>
+    </>
   );
 }
