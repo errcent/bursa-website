@@ -5,9 +5,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { useLanguage } from "@/components/language-provider";
 import { SettingsHero } from "@/components/settings-hero";
-import { SettingsPublicProfile } from "@/components/settings-public-profile";
 import { SettingsShell } from "@/components/settings-shell";
-import { Separator } from "@/components/ui/separator";
 
 export function SettingsPageContent() {
   const { messages } = useLanguage();
@@ -25,10 +23,6 @@ export function SettingsPageContent() {
         </Link>
 
         <div className="max-w-2xl">
-          <SettingsPublicProfile />
-
-          <Separator className="my-10 opacity-60" />
-
           <SettingsShell />
         </div>
       </div>

@@ -10,7 +10,7 @@ import { labCategories, getLabToolsByCategory } from "@/lib/lab/tools";
 export const metadata: Metadata = {
   title: "Lab",
   description:
-    "Kumpulan 37+ kalkulator dan simulator trading interaktif: manajemen risiko, valuasi saham, backtesting, dan analisis portofolio.",
+    "19 kalkulator dan simulator trading untuk saham, crypto, dan forex — manajemen risiko, mekanika trading, analisis teknikal, dan backtesting.",
 };
 
 export default function LabPage() {
@@ -20,8 +20,8 @@ export default function LabPage() {
       <main className="flex-1">
         <InfoPageHero
           eyebrow="Bursa Lab"
-          title="Tools trading & analisis"
-          description="37+ kalkulator dan simulator interaktif untuk manajemen risiko, valuasi, backtesting, dan analisis portofolio — langsung di browser."
+          title="Tools untuk trader"
+          description="19 kalkulator dan simulator interaktif untuk saham, crypto, dan forex — dari ukuran posisi dan pip value hingga Monte Carlo dan backtesting. Semua berjalan di browser, tanpa install."
         />
 
         <div className="container-page section-tight">

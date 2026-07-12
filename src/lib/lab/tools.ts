@@ -2,41 +2,26 @@ import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   ArrowLeftRight,
-  BarChart3,
   Bitcoin,
-  Calculator,
-  Calendar,
-  ChartLine,
   CircleDollarSign,
-  Coins,
   Crosshair,
   Dices,
   FlaskConical,
   Gauge,
-  GitBranch,
-  Grid3x3,
-  Landmark,
   Layers,
-  LineChart,
   Percent,
-  PieChart,
   RefreshCw,
   Scale,
   Shield,
-  Sigma,
-  SlidersHorizontal,
   Sparkles,
   Target,
   TrendingDown,
-  TrendingUp,
-  Wallet,
   Zap,
 } from "lucide-react";
 
 export type LabToolCategory =
   | "risk-money"
   | "performance"
-  | "valuation"
   | "trading-mechanics"
   | "technical"
   | "portfolio"
@@ -52,17 +37,12 @@ export const labCategories: LabCategory[] = [
   {
     id: "risk-money",
     title: "Risk & Money Management",
-    description: "Kalkulator ukuran posisi, breakeven, drawdown, Kelly, dan manajemen risiko.",
+    description: "Ukuran posisi, breakeven, Kelly — semua yang kamu butuhkan sebelum entry.",
   },
   {
     id: "performance",
     title: "Performance & Probability",
-    description: "Simulasi performa, ekspektasi trade, probabilitas ruin, dan equity curve.",
-  },
-  {
-    id: "valuation",
-    title: "Valuation & Fundamental",
-    description: "Model valuasi saham: DCF, DDM, Graham Number, PEG, dan proyeksi fundamental.",
+    description: "Monte Carlo simulator dan ekspektasi trade dengan matriks win rate × R:R.",
   },
   {
     id: "trading-mechanics",
@@ -72,17 +52,17 @@ export const labCategories: LabCategory[] = [
   {
     id: "technical",
     title: "Technical & Market",
-    description: "Volatilitas, ATR trailing stop, Fibonacci, R-multiple, korelasi, dan beta.",
+    description: "Volatilitas, ATR trailing stop, Fibonacci, dan R-multiple tracker.",
   },
   {
     id: "portfolio",
     title: "Portfolio & Advanced",
-    description: "VaR, alokasi aset, rebalancing, pajak, dan return disesuaikan inflasi.",
+    description: "Analisis risiko portofolio trading multi-aset.",
   },
   {
     id: "backtesting",
     title: "Strategy Testing & Backtesting",
-    description: "Backtester sederhana, walk-forward, optimasi parameter, dan analisis musiman.",
+    description: "Uji aturan entry/exit sederhana pada data harga historis.",
   },
 ];
 
@@ -119,16 +99,6 @@ export const labTools: LabTool[] = [
     category: "risk-money",
   },
   {
-    id: "risk-reward-matrix",
-    href: "/lab/risk-reward-matrix",
-    title: "Risk to Reward Expectancy Matrix",
-    description:
-      "Lihat matriks ekspektasi di berbagai kombinasi win rate dan rasio risk:reward untuk menilai kelayakan strategi.",
-    icon: Grid3x3,
-    tag: "Matriks",
-    category: "risk-money",
-  },
-  {
     id: "breakeven",
     href: "/lab/breakeven",
     title: "Breakeven Price Calculator",
@@ -136,16 +106,6 @@ export const labTools: LabTool[] = [
       "Hitung harga breakeven setelah memperhitungkan biaya komisi, spread, dan pajak.",
     icon: CircleDollarSign,
     tag: "Kalkulator",
-    category: "risk-money",
-  },
-  {
-    id: "max-drawdown",
-    href: "/lab/max-drawdown",
-    title: "Maximum Drawdown Simulator",
-    description:
-      "Simulasikan skenario drawdown maksimum berdasarkan win rate, R:R, dan jumlah trade.",
-    icon: TrendingDown,
-    tag: "Simulasi",
     category: "risk-money",
   },
   {
@@ -158,16 +118,6 @@ export const labTools: LabTool[] = [
     tag: "Kalkulator",
     category: "risk-money",
   },
-  {
-    id: "optimal-f",
-    href: "/lab/optimal-f",
-    title: "Optimal F / Fixed Fractional",
-    description:
-      "Kalkulator Optimal F dan fixed fractional sizing untuk manajemen modal berbasis risiko.",
-    icon: Sigma,
-    tag: "Kalkulator",
-    category: "risk-money",
-  },
 
   // ── Performance & Probability ──
   {
@@ -175,7 +125,7 @@ export const labTools: LabTool[] = [
     href: "/lab/monte-carlo",
     title: "Monte Carlo Simulator",
     description:
-      "Simulasikan ribuan skenario trading acak untuk melihat rentang kemungkinan hasil akhir modal.",
+      "Simulasikan ribuan skenario trading — probabilitas ruin, equity curve, max drawdown, dan distribusi saldo akhir.",
     icon: Dices,
     tag: "Simulasi",
     category: "performance",
@@ -185,112 +135,10 @@ export const labTools: LabTool[] = [
     href: "/lab/trade-expectancy",
     title: "Trade Expectancy Calculator",
     description:
-      "Hitung ekspektasi per trade dalam R-multiple dan nilai nominal berdasarkan win rate dan R:R.",
+      "Hitung ekspektasi per trade dan jelajahi matriks win rate × R:R untuk menilai kelayakan strategi.",
     icon: Sparkles,
     tag: "Kalkulator",
     category: "performance",
-  },
-  {
-    id: "win-rate-scenario",
-    href: "/lab/win-rate-scenario",
-    title: "Win Rate vs R:R Analyzer",
-    description:
-      "Analisis skenario berbagai kombinasi win rate dan risk:reward untuk mencapai target profit.",
-    icon: SlidersHorizontal,
-    tag: "Analisis",
-    category: "performance",
-  },
-  {
-    id: "ruin-probability",
-    href: "/lab/ruin-probability",
-    title: "Ruin Probability Calculator",
-    description:
-      "Estimasi probabilitas kebangkrutan (ruin) berdasarkan win rate, payoff ratio, dan risiko per trade.",
-    icon: Shield,
-    tag: "Kalkulator",
-    category: "performance",
-  },
-  {
-    id: "equity-curve",
-    href: "/lab/equity-curve",
-    title: "Equity Curve Simulator",
-    description:
-      "Visualisasikan kurva ekuitas dari serangkaian trade berdasarkan win rate, R:R, dan risiko per trade.",
-    icon: ChartLine,
-    tag: "Simulasi",
-    category: "performance",
-  },
-  {
-    id: "trade-sequence",
-    href: "/lab/trade-sequence",
-    title: "Trade Sequence Simulator",
-    description:
-      "Simulasi random walk urutan trade berdasarkan win rate dan R:R untuk melihat variasi hasil.",
-    icon: GitBranch,
-    tag: "Simulasi",
-    category: "performance",
-  },
-
-  // ── Valuation & Fundamental ──
-  {
-    id: "fair-value",
-    href: "/lab/fair-value",
-    title: "Fair Value Stock Calculator",
-    description:
-      "Estimasi nilai wajar saham dengan model DCF sederhana (pertumbuhan EPS) atau pendekatan P/E pembanding.",
-    icon: Calculator,
-    tag: "Kalkulator",
-    category: "valuation",
-  },
-  {
-    id: "ddm",
-    href: "/lab/ddm",
-    title: "Dividend Discount Model",
-    description:
-      "Valuasi saham berbasis dividen dengan model Gordon Growth (DDM) dan multi-stage growth.",
-    icon: Coins,
-    tag: "Kalkulator",
-    category: "valuation",
-  },
-  {
-    id: "graham-number",
-    href: "/lab/graham-number",
-    title: "Graham Number Calculator",
-    description:
-      "Hitung Graham Number — batas harga wajar menurut Benjamin Graham berdasarkan EPS dan book value.",
-    icon: Landmark,
-    tag: "Kalkulator",
-    category: "valuation",
-  },
-  {
-    id: "peg-ratio",
-    href: "/lab/peg-ratio",
-    title: "PEG Ratio Analyzer",
-    description:
-      "Analisis rasio PEG (P/E to Growth) untuk menilai apakah saham undervalued atau overvalued.",
-    icon: TrendingUp,
-    tag: "Analisis",
-    category: "valuation",
-  },
-  {
-    id: "roe-roic",
-    href: "/lab/roe-roic",
-    title: "ROE / ROIC Projector",
-    description:
-      "Proyeksikan ROE dan ROIC masa depan berdasarkan margin, turnover, dan leverage (DuPont).",
-    icon: BarChart3,
-    tag: "Proyeksi",
-    category: "valuation",
-  },
-  {
-    id: "earnings-growth",
-    href: "/lab/earnings-growth",
-    title: "Earnings Growth Projector",
-    description:
-      "Proyeksikan pertumbuhan laba (EPS) berdasarkan revenue growth, margin, dan buyback/dividen.",
-    icon: LineChart,
-    tag: "Proyeksi",
-    category: "valuation",
   },
 
   // ── Trading Mechanics ──
@@ -406,26 +254,6 @@ export const labTools: LabTool[] = [
     tag: "Tracker",
     category: "technical",
   },
-  {
-    id: "correlation-matrix",
-    href: "/lab/correlation-matrix",
-    title: "Correlation Matrix",
-    description:
-      "Hitung matriks korelasi antar aset dari data return untuk analisis diversifikasi.",
-    icon: Grid3x3,
-    tag: "Analisis",
-    category: "technical",
-  },
-  {
-    id: "beta-calculator",
-    href: "/lab/beta-calculator",
-    title: "Beta Calculator",
-    description:
-      "Hitung beta saham terhadap indeks pasar dari data return untuk mengukur sensitivitas sistematis.",
-    icon: BarChart3,
-    tag: "Kalkulator",
-    category: "technical",
-  },
 
   // ── Portfolio & Advanced ──
   {
@@ -433,49 +261,9 @@ export const labTools: LabTool[] = [
     href: "/lab/portfolio-var",
     title: "Portfolio Risk Analyzer (VaR)",
     description:
-      "Estimasi Value at Risk (VaR) sederhana untuk portofolio multi-aset.",
+      "Estimasi Value at Risk (VaR) untuk mengukur potensi kerugian maksimum portofolio trading.",
     icon: Shield,
     tag: "Analisis",
-    category: "portfolio",
-  },
-  {
-    id: "asset-allocation",
-    href: "/lab/asset-allocation",
-    title: "Asset Allocation Optimizer",
-    description:
-      "Optimasi alokasi aset sederhana berdasarkan expected return, volatilitas, dan korelasi.",
-    icon: PieChart,
-    tag: "Optimizer",
-    category: "portfolio",
-  },
-  {
-    id: "rebalancing",
-    href: "/lab/rebalancing",
-    title: "Rebalancing Calculator",
-    description:
-      "Hitung jumlah jual/beli yang diperlukan untuk rebalance portofolio ke target alokasi.",
-    icon: RefreshCw,
-    tag: "Kalkulator",
-    category: "portfolio",
-  },
-  {
-    id: "tax-impact",
-    href: "/lab/tax-impact",
-    title: "Tax Impact Simulator",
-    description:
-      "Simulasikan dampak pajak capital gain (final/dividen) terhadap return bersih portofolio.",
-    icon: Wallet,
-    tag: "Simulasi",
-    category: "portfolio",
-  },
-  {
-    id: "inflation-adjusted",
-    href: "/lab/inflation-adjusted",
-    title: "Inflation Adjusted Return",
-    description:
-      "Konversi nominal return ke real return setelah disesuaikan dengan tingkat inflasi.",
-    icon: TrendingUp,
-    tag: "Kalkulator",
     category: "portfolio",
   },
 
@@ -488,36 +276,6 @@ export const labTools: LabTool[] = [
       "Backtest aturan entry/exit sederhana (MA crossover, RSI) pada data harga historis.",
     icon: FlaskConical,
     tag: "Backtest",
-    category: "backtesting",
-  },
-  {
-    id: "walk-forward",
-    href: "/lab/walk-forward",
-    title: "Walk-Forward Analysis",
-    description:
-      "Analisis walk-forward untuk menguji robustnes parameter strategi di periode in-sample vs out-of-sample.",
-    icon: ArrowLeftRight,
-    tag: "Analisis",
-    category: "backtesting",
-  },
-  {
-    id: "parameter-optimization",
-    href: "/lab/parameter-optimization",
-    title: "Parameter Optimization Simulator",
-    description:
-      "Grid search parameter strategi untuk menemukan kombinasi optimal berdasarkan metrik performa.",
-    icon: SlidersHorizontal,
-    tag: "Simulasi",
-    category: "backtesting",
-  },
-  {
-    id: "seasonality",
-    href: "/lab/seasonality",
-    title: "Seasonality Analyzer",
-    description:
-      "Analisis pola musiman (January Effect, dll) dari data return bulanan historis.",
-    icon: Calendar,
-    tag: "Analisis",
     category: "backtesting",
   },
 ];

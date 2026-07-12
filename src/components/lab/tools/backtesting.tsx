@@ -7,18 +7,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   generateSamplePrices,
   maCrossoverBacktest,
-  parameterOptimization,
   parsePrices,
   rsiBacktest,
-  seasonalityAnalysis,
-  walkForwardAnalysis,
 } from "@/lib/lab/backtesting";
 
 function fmt(n: number, d = 2): string {
   return n.toLocaleString("id-ID", { maximumFractionDigits: d });
 }
-
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
 export function BacktesterTool() {
   const [prices, setPrices] = useState("");
@@ -79,130 +74,6 @@ function ResultPanel({ result }: { result: ReturnType<typeof maCrossoverBacktest
       <LabResultTile label="Max drawdown" value={`${fmt(result.maxDrawdown)}%`} tone="negative" />
       <LabResultTile label="Sharpe ratio" value={fmt(result.sharpe)} />
       <LabResultTile label="Jumlah trade" value={`${result.trades.length}`} className="sm:col-span-2 lg:col-span-4" />
-    </div>
-  );
-}
-
-export function WalkForwardTool() {
-  const [ratio, setRatio] = useState("0.7");
-  const [result, setResult] = useState<ReturnType<typeof walkForwardAnalysis> | null>(null);
-
-  const run = () => {
-    const prices = generateSamplePrices(300);
-    setResult(walkForwardAnalysis(prices, parseFloat(ratio) || 0.7, [3, 15], [10, 40]));
-  };
-
-  return (
-    <div className="surface-card p-5 sm:p-6">
-      <LabField label="In-sample ratio" id="wf-ratio" helperText="Proporsi data untuk optimasi parameter (sisanya out-of-sample)">
-        <LabNumberInput id="wf-ratio" value={ratio} onChange={setRatio} min={0.5} max={0.9} step={0.05} />
-      </LabField>
-      <button type="button" onClick={run} className="mt-4 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-accent-foreground">Jalankan walk-forward</button>
-      {result && (
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <div>
-            <p className="mb-2 text-sm font-medium">In-sample (MA {result.inSample.fast}/{result.inSample.slow})</p>
-            <div className="grid gap-2">
-              <LabResultTile label="Return" value={`${fmt(result.inSample.totalReturn)}%`} />
-              <LabResultTile label="Win rate" value={`${fmt(result.inSample.winRate)}%`} />
-            </div>
-          </div>
-          <div>
-            <p className="mb-2 text-sm font-medium">Out-of-sample</p>
-            <div className="grid gap-2">
-              <LabResultTile label="Return" value={`${fmt(result.outOfSample.totalReturn)}%`} tone={result.outOfSample.totalReturn > 0 ? "positive" : "negative"} />
-              <LabResultTile label="Win rate" value={`${fmt(result.outOfSample.winRate)}%`} />
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export function ParameterOptimizationTool() {
-  const [results, setResults] = useState<ReturnType<typeof parameterOptimization>>([]);
-
-  const run = () => {
-    const prices = generateSamplePrices(250);
-    setResults(parameterOptimization(prices, [3, 12], [15, 50]).slice(0, 15));
-  };
-
-  return (
-    <div className="surface-card p-5 sm:p-6">
-      <p className="text-sm text-muted-foreground">Grid search MA crossover pada data sample. Klik untuk menjalankan.</p>
-      <button type="button" onClick={run} className="mt-4 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-accent-foreground">Optimasi parameter</button>
-      {results.length > 0 && (
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead><tr className="border-b border-border text-left text-muted-foreground">
-              <th className="py-2 pr-4">Fast</th><th className="py-2 pr-4">Slow</th><th className="py-2 pr-4">Return</th><th className="py-2 pr-4">Win%</th><th className="py-2">Sharpe</th>
-            </tr></thead>
-            <tbody>
-              {results.map((r, i) => (
-                <tr key={i} className={`border-b border-border/40 ${i === 0 ? "bg-accent-soft/30" : ""}`}>
-                  <td className="py-2 pr-4">{r.fast}</td>
-                  <td className="py-2 pr-4">{r.slow}</td>
-                  <td className={`py-2 pr-4 ${r.totalReturn > 0 ? "text-profit" : "text-loss"}`}>{fmt(r.totalReturn)}%</td>
-                  <td className="py-2 pr-4">{fmt(r.winRate)}%</td>
-                  <td className="py-2">{fmt(r.sharpe)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export function SeasonalityAnalyzer() {
-  const [returns, setReturns] = useState("2, -1, 3, 1, -2, 4, 0.5, -3, 2, 5, -1, 1, 3, -0.5, 2, 4, -2, 1, 3, 2, -1, 4, 1, -2");
-  const [analysis, setAnalysis] = useState<ReturnType<typeof seasonalityAnalysis>>([]);
-
-  const run = () => {
-    const data = returns.split(/[,;\s]+/).map(Number).filter((n) => !isNaN(n));
-    setAnalysis(seasonalityAnalysis(data));
-  };
-
-  return (
-    <div className="surface-card p-5 sm:p-6">
-      <LabField label="Return bulanan historis (%)" id="sea-ret" helperText="Minimal 12 bulan data, pisahkan koma">
-        <input id="sea-ret" value={returns} onChange={(e) => setReturns(e.target.value)}
-          className="w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm outline-none" />
-      </LabField>
-      <button type="button" onClick={run} className="mt-4 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-accent-foreground">Analisis musiman</button>
-      {analysis.length > 0 && (
-        <div className="mt-6">
-          <div className="flex h-40 items-end gap-2">
-            {analysis.map((m) => {
-              const h = Math.max(4, Math.abs(m.avgReturn) * 8);
-              return (
-                <div key={m.month} className="flex flex-1 flex-col items-center gap-1">
-                  <div className={`w-full rounded-t ${m.avgReturn >= 0 ? "bg-profit/60" : "bg-loss/60"}`} style={{ height: `${h}px` }} />
-                  <span className="text-[10px] text-muted-foreground">{MONTHS[m.month - 1]}</span>
-                </div>
-              );
-            })}
-          </div>
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead><tr className="border-b border-border text-left text-muted-foreground">
-                <th className="py-2 pr-4">Bulan</th><th className="py-2 pr-4">Avg return</th><th className="py-2">Win rate</th>
-              </tr></thead>
-              <tbody>
-                {analysis.map((m) => (
-                  <tr key={m.month} className="border-b border-border/40">
-                    <td className="py-2 pr-4">{MONTHS[m.month - 1]}</td>
-                    <td className={`py-2 pr-4 ${m.avgReturn >= 0 ? "text-profit" : "text-loss"}`}>{fmt(m.avgReturn)}%</td>
-                    <td className="py-2">{fmt(m.winRate)}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

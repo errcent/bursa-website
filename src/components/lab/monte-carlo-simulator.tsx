@@ -19,9 +19,36 @@ type SimulationResult = {
   best: number;
   startingCapital: number;
   profitableShare: number;
-  bustShare: number;
+  ruinShare: number;
   bins: { from: number; to: number; count: number }[];
+  equityCurve: { trade: number; equity: number }[];
+  maxDrawdown: number;
 };
+
+function generateEquityPath({
+  startingCapital,
+  winRate,
+  avgWin,
+  avgLoss,
+  numTrades,
+}: {
+  startingCapital: number;
+  winRate: number;
+  avgWin: number;
+  avgLoss: number;
+  numTrades: number;
+}): { trade: number; equity: number }[] {
+  const curve: { trade: number; equity: number }[] = [{ trade: 0, equity: startingCapital }];
+  let balance = startingCapital;
+  for (let t = 1; t <= numTrades; t++) {
+    const isWin = Math.random() * 100 < winRate;
+    balance *= isWin ? 1 + avgWin / 100 : 1 - avgLoss / 100;
+    if (balance <= 0) balance = 0;
+    curve.push({ trade: t, equity: balance });
+    if (balance <= 0) break;
+  }
+  return curve;
+}
 
 function runSimulation({
   startingCapital,
@@ -39,6 +66,7 @@ function runSimulation({
   numTrades: number;
 }): SimulationResult {
   const endings: number[] = new Array(numSimulations);
+  let ruinCount = 0;
 
   for (let s = 0; s < numSimulations; s++) {
     let balance = startingCapital;
@@ -51,6 +79,7 @@ function runSimulation({
       }
     }
     endings[s] = balance;
+    if (balance <= startingCapital * 0.01) ruinCount++;
   }
 
   const sorted = [...endings].sort((a, b) => a - b);
@@ -59,7 +88,7 @@ function runSimulation({
   const worst = sorted[0];
   const best = sorted[sorted.length - 1];
   const profitableShare = endings.filter((v) => v > startingCapital).length / endings.length;
-  const bustShare = endings.filter((v) => v <= startingCapital * 0.01).length / endings.length;
+  const ruinShare = ruinCount / endings.length;
 
   const min = worst;
   const max = best;
@@ -75,7 +104,28 @@ function runSimulation({
     bins[Math.max(0, idx)].count += 1;
   }
 
-  return { endings, median, mean, worst, best, startingCapital, profitableShare, bustShare, bins };
+  const equityCurve = generateEquityPath({ startingCapital, winRate, avgWin, avgLoss, numTrades });
+  let peak = startingCapital;
+  let maxDrawdown = 0;
+  for (const point of equityCurve) {
+    if (point.equity > peak) peak = point.equity;
+    const dd = peak > 0 ? ((peak - point.equity) / peak) * 100 : 0;
+    if (dd > maxDrawdown) maxDrawdown = dd;
+  }
+
+  return {
+    endings,
+    median,
+    mean,
+    worst,
+    best,
+    startingCapital,
+    profitableShare,
+    ruinShare,
+    bins,
+    equityCurve,
+    maxDrawdown,
+  };
 }
 
 const currencyFormatter = new Intl.NumberFormat("id-ID", {
@@ -93,6 +143,57 @@ function formatCompact(value: number) {
     notation: "compact",
     maximumFractionDigits: 1,
   }).format(value);
+}
+
+function EquityCurveChart({
+  curve,
+  startingCapital,
+}: {
+  curve: { trade: number; equity: number }[];
+  startingCapital: number;
+}) {
+  const width = 600;
+  const height = 160;
+  const padding = { top: 8, right: 8, bottom: 20, left: 8 };
+  const chartW = width - padding.left - padding.right;
+  const chartH = height - padding.top - padding.bottom;
+
+  const equities = curve.map((c) => c.equity);
+  const minEq = Math.min(...equities, startingCapital * 0.9);
+  const maxEq = Math.max(...equities, startingCapital * 1.1);
+  const range = Math.max(maxEq - minEq, 1);
+
+  const points = curve
+    .map((c, i) => {
+      const x = padding.left + (i / Math.max(curve.length - 1, 1)) * chartW;
+      const y = padding.top + chartH - ((c.equity - minEq) / range) * chartH;
+      return `${x},${y}`;
+    })
+    .join(" ");
+
+  const startY = padding.top + chartH - ((startingCapital - minEq) / range) * chartH;
+
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full" preserveAspectRatio="none">
+      <line
+        x1={padding.left}
+        y1={startY}
+        x2={width - padding.right}
+        y2={startY}
+        stroke="currentColor"
+        strokeOpacity={0.25}
+        strokeDasharray="4 4"
+        className="text-accent"
+      />
+      <polyline
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        points={points}
+        className={curve[curve.length - 1].equity >= startingCapital ? "text-profit" : "text-loss"}
+      />
+    </svg>
+  );
 }
 
 export function MonteCarloSimulator() {
@@ -202,12 +303,41 @@ export function MonteCarloSimulator() {
             />
           </div>
 
+          <div className="grid gap-3 sm:grid-cols-2">
+            <LabResultTile
+              label="Probabilitas ruin"
+              value={`${(result.ruinShare * 100).toFixed(1)}%`}
+              tone={result.ruinShare > 0.1 ? "negative" : result.ruinShare > 0.01 ? "neutral" : "positive"}
+            />
+            <LabResultTile
+              label="Max drawdown (contoh path)"
+              value={`${result.maxDrawdown.toFixed(1)}%`}
+              tone="negative"
+            />
+          </div>
+
+          <div className="surface-card p-5 sm:p-6">
+            <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+              <h3 className="font-heading text-base font-semibold">Equity curve (contoh simulasi)</h3>
+              <p className="text-xs text-muted-foreground">
+                Satu jalur acak dari {parsed.numTrades} trade · garis putus = modal awal
+              </p>
+            </div>
+            <EquityCurveChart curve={result.equityCurve} startingCapital={result.startingCapital} />
+            <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+              <span>Trade 0</span>
+              <span>
+                Akhir: {formatCurrency(result.equityCurve[result.equityCurve.length - 1]?.equity ?? 0)}
+              </span>
+              <span>Trade {result.equityCurve[result.equityCurve.length - 1]?.trade ?? 0}</span>
+            </div>
+          </div>
+
           <div className="surface-card p-5 sm:p-6">
             <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
               <h3 className="font-heading text-base font-semibold">Distribusi saldo akhir</h3>
               <p className="text-xs text-muted-foreground">
-                {result.endings.length.toLocaleString("id-ID")} simulasi ·{" "}
-                {result.bustShare > 0 ? `${(result.bustShare * 100).toFixed(1)}% hampir habis modal` : "0% hampir habis modal"}
+                {result.endings.length.toLocaleString("id-ID")} simulasi
               </p>
             </div>
 

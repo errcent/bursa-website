@@ -18,12 +18,6 @@ export const homeFaqs: HomeFaq[] = [
       "Tidak. Bursa adalah platform edukasi, bukan broker atau aplikasi eksekusi trading. Kami tidak menyimpan saldo, tidak mengeksekusi order, dan tidak menjanjikan keuntungan. Semua keputusan investasi dan risiko ada pada kamu.",
   },
   {
-    id: "mentor-commission",
-    question: "Bagaimana sistem mentor dan komisi di Bursa?",
-    answer:
-      "Mentor terverifikasi membuat kelas dan ruang komunitas sendiri. Murid membayar per kelas langsung ke mentor melalui payment gateway terintegrasi. Platform mengambil komisi 25% dari setiap transaksi — sisanya menjadi pendapatan mentor. Rincian tampil sebelum checkout.",
-  },
-  {
     id: "beginners",
     question: "Apakah Bursa cocok untuk pemula yang belum pernah trading?",
     answer:
@@ -34,12 +28,6 @@ export const homeFaqs: HomeFaq[] = [
     question: "Instrumen apa saja yang diajarkan di Bursa?",
     answer:
       "Saat ini kami mendukung tiga instrumen utama: Saham, Crypto, dan Forex. Setiap instrumen punya kelas dari level pemula hingga menengah, dengan mentor yang spesialis di bidangnya. Kamu bisa fokus satu instrumen atau belajar lintas pasar.",
-  },
-  {
-    id: "video-protection",
-    question: "Bagaimana proteksi konten video kelas?",
-    answer:
-      "Video kelas dilindungi dengan streaming terenkripsi, watermark identitas akun, dan deteksi perekaman layar. Ruang komunitas premium juga memiliki perlindungan anti-screenshot untuk sinyal dan materi sensitif. Konten hanya bisa diakses oleh murid yang sudah membeli kelas.",
   },
   {
     id: "community",

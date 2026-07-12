@@ -12,7 +12,6 @@ import {
   formatLastActive,
   getCurrentDeviceId,
   getDeviceSessions,
-  MAX_DEVICES_PER_ACCOUNT,
   revokeDeviceSession,
   touchDeviceSession,
   type DeviceSession,
@@ -60,8 +59,8 @@ export function SettingsDevices() {
   if (!session) {
     return (
       <section className="surface-card p-5">
-        <h2 className="section-title text-base">{t.title}</h2>
-        <p className="section-copy mt-2">{t.signedOutDescription}</p>
+        <h2 className="text-sm font-medium">{t.title}</h2>
+        <p className="mt-2 text-sm text-muted-foreground">{t.signedOutDescription}</p>
         <Button
           size="sm"
           variant="outline"
@@ -76,7 +75,6 @@ export function SettingsDevices() {
 
   const otherDevices = devices.filter((d) => d.deviceId !== currentDeviceId);
   const currentDevice = devices.find((d) => d.deviceId === currentDeviceId);
-  const slotsLeft = Math.max(0, MAX_DEVICES_PER_ACCOUNT - devices.length);
 
   function handleRevokeOther(deviceId: string) {
     setRevokingId(deviceId);
@@ -93,89 +91,63 @@ export function SettingsDevices() {
   }
 
   return (
-    <section>
-      <h2 className="section-title">{t.title}</h2>
-      <p className="section-copy mt-1">
-        {t.description.replace("{max}", String(MAX_DEVICES_PER_ACCOUNT))}
-      </p>
+    <section className="space-y-4">
+      <h2 className="text-sm font-medium">{t.title}</h2>
 
-      <div className="surface-card mt-6 space-y-4 p-5">
+      <div className="surface-card divide-y divide-border/60">
         {currentDevice ? (
-          <div className="flex flex-col gap-3 border-b border-border/60 pb-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex gap-3">
-              <div className="mt-0.5 flex size-9 items-center justify-center rounded-xl bg-accent-soft">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-accent-soft">
                 <DeviceIcon name={currentDevice.deviceName} />
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="text-sm font-medium">{currentDevice.deviceName}</p>
-                  <Badge variant="accent">Perangkat ini</Badge>
+                  <Badge variant="accent" className="text-[10px]">
+                    Perangkat ini
+                  </Badge>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Aktif {formatLastActive(currentDevice.lastActiveAt)}
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {formatLastActive(currentDevice.lastActiveAt)}
+                </p>
+              </div>
+            </div>
+            <Button size="sm" variant="outline" onClick={handleLogoutCurrent}>
+              <LogOut className="size-3.5" />
+              Keluar
+            </Button>
+          </div>
+        ) : null}
+
+        {otherDevices.map((device) => (
+          <div
+            key={device.deviceId}
+            className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="flex gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-muted/50">
+                <DeviceIcon name={device.deviceName} />
+              </div>
+              <div>
+                <p className="text-sm font-medium">{device.deviceName}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {formatLastActive(device.lastActiveAt)}
                 </p>
               </div>
             </div>
             <Button
               size="sm"
               variant="outline"
-              className="shrink-0"
-              onClick={handleLogoutCurrent}
+              className="text-destructive hover:text-destructive"
+              disabled={revokingId === device.deviceId}
+              onClick={() => handleRevokeOther(device.deviceId)}
             >
-              <LogOut className="size-3.5" />
-              Keluar dari perangkat ini
+              <Trash2 className="size-3.5" />
+              {revokingId === device.deviceId ? "..." : "Cabut"}
             </Button>
           </div>
-        ) : null}
-
-        {otherDevices.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 px-4 py-6 text-center">
-            <MonitorSmartphone className="mx-auto size-8 text-muted-foreground/60" />
-            <p className="mt-3 text-sm font-medium">Tidak ada perangkat lain</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Hanya perangkat ini yang terhubung ke akunmu.
-              {slotsLeft > 0
-                ? ` Kamu masih punya slot untuk ${slotsLeft} perangkat lagi.`
-                : null}
-            </p>
-          </div>
-        ) : (
-          <ul className="space-y-3">
-            {otherDevices.map((device) => (
-              <li
-                key={device.deviceId}
-                className="flex flex-col gap-3 rounded-xl border border-border/60 p-3 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="flex gap-3">
-                  <div className="mt-0.5 flex size-9 items-center justify-center rounded-xl bg-muted/50">
-                    <DeviceIcon name={device.deviceName} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">{device.deviceName}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      Terakhir aktif {formatLastActive(device.lastActiveAt)}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="shrink-0 text-destructive hover:text-destructive"
-                  disabled={revokingId === device.deviceId}
-                  onClick={() => handleRevokeOther(device.deviceId)}
-                >
-                  <Trash2 className="size-3.5" />
-                  {revokingId === device.deviceId ? "Mencabut..." : "Cabut akses"}
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <p className="text-xs text-muted-foreground">
-          Prototype: sesi perangkat disimpan di browser ini (localStorage). Di produksi,
-          batas {MAX_DEVICES_PER_ACCOUNT} perangkat akan ditegakkan saat login di server.
-        </p>
+        ))}
       </div>
     </section>
   );

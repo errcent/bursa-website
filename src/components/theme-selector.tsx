@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
-import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 
 import { useLanguage } from "@/components/language-provider";
@@ -10,31 +9,63 @@ import { cn } from "@/lib/utils";
 
 const optionValues = ["dark", "light", "system"] as const;
 
-export function ThemeSelector({ className }: { className?: string }) {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+export function ThemeSelector({
+  className,
+  compact,
+}: {
+  className?: string;
+  compact?: boolean;
+}) {
+  const { theme, setTheme } = useTheme();
   const { messages } = useLanguage();
   const t = messages.settings.theme;
   const [mounted, setMounted] = useState(false);
 
   const options = [
-    { value: "dark" as const, label: t.dark, icon: Moon, description: t.darkDescription },
-    { value: "light" as const, label: t.light, icon: Sun, description: t.lightDescription },
-    { value: "system" as const, label: t.system, icon: Monitor, description: t.systemDescription },
+    { value: "dark" as const, label: t.dark, icon: Moon },
+    { value: "light" as const, label: t.light, icon: Sun },
+    { value: "system" as const, label: t.system, icon: Monitor },
   ];
 
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
     return (
-      <div className={cn("grid gap-3 sm:grid-cols-3", className)}>
-        {optionValues.map((value) => (
-          <div key={value} className="h-28 animate-pulse rounded-2xl bg-muted" />
-        ))}
-      </div>
+      <div
+        className={cn(
+          compact ? "h-10 w-56 animate-pulse rounded-lg bg-muted" : "grid gap-3 sm:grid-cols-3",
+          className
+        )}
+      />
     );
   }
 
   const active = theme ?? "dark";
+
+  if (compact) {
+    return (
+      <div className={cn("inline-flex rounded-lg border border-border p-1", className)}>
+        {options.map((opt) => {
+          const Icon = opt.icon;
+          const selected = active === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setTheme(opt.value)}
+              className={cn(
+                "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
+                selected ? "bg-accent-soft font-medium" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Icon className="size-3.5" />
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div className={cn("grid gap-3 sm:grid-cols-3", className)}>
@@ -42,50 +73,22 @@ export function ThemeSelector({ className }: { className?: string }) {
         const Icon = opt.icon;
         const selected = active === opt.value;
         return (
-          <motion.button
+          <button
             key={opt.value}
             type="button"
             onClick={() => setTheme(opt.value)}
-            whileHover={{ y: -3 }}
-            whileTap={{ scale: 0.98 }}
             className={cn(
-              "flex flex-col items-start gap-3 rounded-2xl border p-4 text-left transition-colors",
+              "flex items-center gap-2 rounded-xl border p-3 text-left text-sm transition-colors",
               selected
-                ? "border-accent/40 bg-accent-soft shadow-[0_0_24px_var(--glow)] ring-1 ring-accent/20"
+                ? "border-accent/40 bg-accent-soft font-medium"
                 : "surface-card hover:border-accent/25"
             )}
           >
-            <div className="flex w-full items-center justify-between">
-              <Icon className="size-5 text-muted-foreground" />
-              {selected && (
-                <span className="badge-pill border-accent/30 py-0.5 text-[10px]">
-                  {messages.common.active}
-                </span>
-              )}
-            </div>
-            <div>
-              <p className="font-heading text-sm font-medium">{opt.label}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{opt.description}</p>
-            </div>
-            {opt.value !== "system" && (
-              <div
-                className={cn(
-                  "mt-auto h-8 w-full rounded-lg border border-border",
-                  opt.value === "dark" ? "bg-[#0a0a0a]" : "bg-[#e8e9f0]"
-                )}
-              />
-            )}
-          </motion.button>
+            <Icon className="size-4 text-muted-foreground" />
+            {opt.label}
+          </button>
         );
       })}
-      {resolvedTheme && (
-        <p className="col-span-full text-xs text-muted-foreground">
-          {t.activeTheme}:{" "}
-          <span className="text-foreground">
-            {resolvedTheme === "dark" ? t.resolvedDark : t.resolvedLight}
-          </span>
-        </p>
-      )}
     </div>
   );
 }

@@ -5,12 +5,9 @@ import { useMemo, useState } from "react";
 import { LabField, LabNumberInput, LabResultTile } from "@/components/lab/lab-field";
 import {
   breakevenPrice,
-  fixedFractional,
   kellyVariants,
-  optimalF,
   positionSize,
   riskReward,
-  simulateMaxDrawdown,
 } from "@/lib/lab/risk-management";
 
 function fmt(n: number, decimals = 2): string {
@@ -145,49 +142,6 @@ export function BreakevenCalculator() {
   );
 }
 
-export function MaxDrawdownSimulator() {
-  const [capital, setCapital] = useState("100000000");
-  const [winRate, setWinRate] = useState("50");
-  const [rr, setRr] = useState("2");
-  const [risk, setRisk] = useState("1");
-  const [trades, setTrades] = useState("100");
-  const [sims, setSims] = useState("500");
-  const [result, setResult] = useState<ReturnType<typeof simulateMaxDrawdown> | null>(null);
-
-  const run = () => {
-    setResult(simulateMaxDrawdown({
-      startingCapital: parseFloat(capital) || 0,
-      winRate: parseFloat(winRate) || 0,
-      riskRewardRatio: parseFloat(rr) || 0,
-      riskPerTrade: parseFloat(risk) || 0,
-      numTrades: parseInt(trades) || 0,
-      numSimulations: parseInt(sims) || 0,
-    }));
-  };
-
-  return (
-    <div className="surface-card p-5 sm:p-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <LabField label="Modal awal" id="dd-cap" suffix="Rp"><LabNumberInput id="dd-cap" value={capital} onChange={setCapital} min={0} /></LabField>
-        <LabField label="Win rate" id="dd-wr" suffix="%"><LabNumberInput id="dd-wr" value={winRate} onChange={setWinRate} min={0} max={100} /></LabField>
-        <LabField label="R:R ratio" id="dd-rr"><LabNumberInput id="dd-rr" value={rr} onChange={setRr} min={0} /></LabField>
-        <LabField label="Risiko per trade" id="dd-risk" suffix="%"><LabNumberInput id="dd-risk" value={risk} onChange={setRisk} min={0} /></LabField>
-        <LabField label="Jumlah trade" id="dd-trades"><LabNumberInput id="dd-trades" value={trades} onChange={setTrades} min={1} /></LabField>
-        <LabField label="Jumlah simulasi" id="dd-sims"><LabNumberInput id="dd-sims" value={sims} onChange={setSims} min={1} max={3000} /></LabField>
-      </div>
-      <button type="button" onClick={run} className="mt-4 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-accent-foreground">Jalankan simulasi</button>
-      {result && (
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <LabResultTile label="Median DD" value={`${fmt(result.median)}%`} tone="negative" />
-          <LabResultTile label="Worst case DD" value={`${fmt(result.worst)}%`} tone="negative" />
-          <LabResultTile label="Best case DD" value={`${fmt(result.best)}%`} />
-          <LabResultTile label="95th percentile DD" value={`${fmt(result.p95)}%`} tone="negative" />
-        </div>
-      )}
-    </div>
-  );
-}
-
 export function KellyCriterionCalculator() {
   const [winRate, setWinRate] = useState("55");
   const [rr, setRr] = useState("2");
@@ -212,40 +166,6 @@ export function KellyCriterionCalculator() {
           <LabResultTile label="Quarter Kelly" value={`${fmt(result.quarter * 100)}%`} />
         </div>
       )}
-    </div>
-  );
-}
-
-export function OptimalFCalculator() {
-  const [tradesInput, setTradesInput] = useState("2, -1, 3, -1, 1, -2, 4, -1");
-  const [balance, setBalance] = useState("100000000");
-  const [fraction, setFraction] = useState("0.1");
-
-  const result = useMemo(() => {
-    const trades = tradesInput.split(/[,;\s]+/).map(Number).filter((n) => !isNaN(n));
-    const optF = optimalF(trades);
-    const bal = parseFloat(balance) || 0;
-    const frac = parseFloat(fraction) || 0;
-    return { ...optF, fixedSize: fixedFractional(bal, frac) };
-  }, [tradesInput, balance, fraction]);
-
-  return (
-    <div className="surface-card p-5 sm:p-6">
-      <div className="grid gap-4">
-        <LabField label="Hasil trade (R-multiple, pisahkan koma)" id="of-trades" helperText="Contoh: 2, -1, 3, -1, 1">
-          <input id="of-trades" value={tradesInput} onChange={(e) => setTradesInput(e.target.value)}
-            className="w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm outline-none" />
-        </LabField>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <LabField label="Modal" id="of-bal" suffix="Rp"><LabNumberInput id="of-bal" value={balance} onChange={setBalance} min={0} /></LabField>
-          <LabField label="Fixed fraction" id="of-frac"><LabNumberInput id="of-frac" value={fraction} onChange={setFraction} min={0} max={1} step={0.01} /></LabField>
-        </div>
-      </div>
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
-        <LabResultTile label="Optimal F" value={fmt(result.optimalF)} />
-        <LabResultTile label="Terminal Wealth Return" value={fmt(result.twr)} />
-        <LabResultTile label="Fixed fractional size" value={`Rp ${fmt(result.fixedSize, 0)}`} />
-      </div>
     </div>
   );
 }

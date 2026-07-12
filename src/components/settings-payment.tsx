@@ -8,11 +8,9 @@ import {
   Loader2,
   Plus,
   QrCode,
-  Receipt,
   Smartphone,
   Star,
   Trash2,
-  Wallet,
 } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
@@ -22,7 +20,6 @@ import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
@@ -122,33 +119,27 @@ function SavedMethodRow({
   const kind = option?.kind ?? "ewallet";
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface/40 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex min-w-0 items-start gap-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
-          <MethodIcon kind={kind} className="size-4.5 text-muted-foreground" />
+    <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
+          <MethodIcon kind={kind} className="size-4 text-muted-foreground" />
         </div>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-sm font-medium">{method.label}</p>
             {method.isDefault ? (
-              <Badge
-                variant="outline"
-                className="border-emerald/30 bg-emerald/10 text-emerald-200"
-              >
+              <Badge variant="outline" className="border-emerald/30 bg-emerald/10 text-emerald-200 text-[10px]">
                 <Star className="size-3 fill-current" />
                 Default
               </Badge>
             ) : null}
           </div>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {option?.description ?? "Metode pembayaran tersimpan"}
-          </p>
         </div>
       </div>
-      <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
+      <div className="flex shrink-0 gap-2">
         {!method.isDefault ? (
           <Button size="sm" variant="outline" onClick={() => onSetDefault(method.id)}>
-            Jadikan default
+            Default
           </Button>
         ) : null}
         <Button
@@ -194,10 +185,7 @@ function AddPaymentSheet({
       >
         <SheetHeader className="border-b border-border/60 px-4 pb-3 text-left">
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-border/80 sm:hidden" aria-hidden />
-          <SheetTitle className="font-heading text-lg">Tambah Metode Pembayaran</SheetTitle>
-          <SheetDescription>
-            Prototipe — penyimpanan aman akan diaktifkan setelah integrasi Midtrans.
-          </SheetDescription>
+          <SheetTitle className="font-heading text-lg">Tambah metode</SheetTitle>
         </SheetHeader>
 
         <div className="flex flex-col gap-2 px-4 py-4">
@@ -207,7 +195,7 @@ function AddPaymentSheet({
               <label
                 key={option.id}
                 className={cn(
-                  "flex cursor-pointer items-center gap-3 rounded-xl border p-3.5 transition-colors",
+                  "flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors",
                   selected
                     ? "border-foreground/20 bg-foreground/5"
                     : "border-border bg-surface/40 hover:border-foreground/15"
@@ -221,11 +209,8 @@ function AddPaymentSheet({
                   onChange={() => setSelectedId(option.id)}
                   className="size-4 accent-foreground"
                 />
-                <MethodIcon kind={option.kind} className="size-4.5 text-muted-foreground" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium">{option.label}</p>
-                  <p className="text-xs text-muted-foreground">{option.description}</p>
-                </div>
+                <MethodIcon kind={option.kind} className="size-4 text-muted-foreground" />
+                <p className="text-sm font-medium">{option.label}</p>
               </label>
             );
           })}
@@ -241,7 +226,7 @@ function AddPaymentSheet({
             ) : (
               <>
                 <Plus className="size-4" />
-                Simpan metode
+                Simpan
               </>
             )}
           </Button>
@@ -326,8 +311,8 @@ export function SettingsPayment() {
   if (!session) {
     return (
       <section className="surface-card p-5">
-        <h2 className="section-title text-base">{t.title}</h2>
-        <p className="section-copy mt-2">{t.signedOutDescription}</p>
+        <h2 className="text-sm font-medium">{t.title}</h2>
+        <p className="mt-2 text-sm text-muted-foreground">{t.signedOutDescription}</p>
         <Button
           size="sm"
           variant="outline"
@@ -341,98 +326,46 @@ export function SettingsPayment() {
   }
 
   return (
-    <section>
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="section-title">{t.title}</h2>
-          <p className="section-copy mt-1">{t.description}</p>
-        </div>
-        <Badge
-          variant="outline"
-          className="mt-2 w-fit border-amber-400/30 bg-amber-400/10 text-amber-200 sm:mt-0"
-        >
-          Mode Demo
-        </Badge>
+    <section className="space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-sm font-medium">{t.title}</h2>
+        <Button size="sm" variant="outline" onClick={() => setAddOpen(true)}>
+          <Plus className="size-3.5" />
+          Tambah
+        </Button>
       </div>
 
-      <div className="mt-4 flex gap-3 rounded-xl border border-amber-400/25 bg-amber-400/5 p-4">
-        <Wallet className="size-5 shrink-0 text-amber-300" />
-        <p className="text-sm leading-relaxed text-amber-200/90">
-          Penyimpanan metode pembayaran masih simulasi di perangkat ini. Integrasi Midtrans
-          (transfer bank, e-wallet GoPay/OVO/DANA, kartu kredit, QRIS) akan mengaktifkan
-          checkout real dan sinkronisasi aman di fase produksi (P3).
-        </p>
-      </div>
-
-      <div className="surface-card mt-6 space-y-4 p-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-medium">Metode tersimpan</p>
-            <p className="text-xs text-muted-foreground">
-              {methods.length === 0
-                ? "Belum ada metode — tambahkan untuk checkout lebih cepat."
-                : `${methods.length} metode tersimpan`}
-            </p>
-          </div>
-          <Button size="sm" className="btn-primary w-full sm:w-auto" onClick={() => setAddOpen(true)}>
-            <Plus className="size-3.5" />
-            Tambah metode
-          </Button>
-        </div>
-
+      <div className="surface-card divide-y divide-border/60">
         {methods.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border bg-surface/30 px-4 py-8 text-center">
-            <CreditCard className="mx-auto size-8 text-muted-foreground/60" />
-            <p className="mt-3 text-sm text-muted-foreground">
-              Belum ada kartu atau e-wallet tersimpan.
-            </p>
-            <Button size="sm" variant="outline" className="mt-3" onClick={() => setAddOpen(true)}>
-              Tambah metode pertama
-            </Button>
-          </div>
+          <p className="p-4 text-sm text-muted-foreground">Belum ada metode tersimpan.</p>
         ) : (
-          <div className="flex flex-col gap-3">
-            {methods.map((method) => (
-              <SavedMethodRow
-                key={method.id}
-                method={method}
-                onSetDefault={handleSetDefault}
-                onRemove={handleRemove}
-              />
-            ))}
-          </div>
+          methods.map((method) => (
+            <SavedMethodRow
+              key={method.id}
+              method={method}
+              onSetDefault={handleSetDefault}
+              onRemove={handleRemove}
+            />
+          ))
         )}
       </div>
 
-      <div className="surface-card mt-6 p-5">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-medium">Riwayat tagihan</p>
-            <p className="text-xs text-muted-foreground">3 transaksi terakhir</p>
-          </div>
-          <Button size="sm" variant="ghost" className="w-fit text-muted-foreground" disabled>
-            <Receipt className="size-3.5" />
-            Semua transaksi
-            <Badge variant="outline" className="ml-1 text-[10px]">
-              Segera
-            </Badge>
-          </Button>
-        </div>
-
+      <div className="surface-card">
+        <p className="border-b border-border/60 px-4 py-3 text-xs text-muted-foreground">
+          Riwayat
+        </p>
         {billingLoading ? (
-          <div className="mt-4 flex h-16 items-center justify-center">
+          <div className="flex h-16 items-center justify-center">
             <Loader2 className="size-5 animate-spin text-muted-foreground" />
           </div>
         ) : billing.length === 0 ? (
-          <p className="mt-4 text-sm text-muted-foreground">
-            Belum ada transaksi. Setelah checkout kelas, riwayat akan muncul di sini.
-          </p>
+          <p className="p-4 text-sm text-muted-foreground">Belum ada transaksi.</p>
         ) : (
-          <ul className="mt-4 divide-y divide-border/60">
+          <ul className="divide-y divide-border/60">
             {billing.map((tx) => (
               <li
                 key={tx.id}
-                className="flex flex-col gap-2 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
                   <Link
