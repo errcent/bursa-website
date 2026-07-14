@@ -40,9 +40,9 @@ export function CurriculumPreviewSection({
           </p>
         </Reveal>
 
-        <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-10">
-          <Reveal className="flex flex-col">
-            <div className="surface-card flex h-full flex-col p-5 sm:p-6">
+        <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-10">
+          <Reveal className="flex min-w-0 w-full flex-col">
+            <div className="surface-card flex h-full min-w-0 w-full max-w-full flex-col p-5 sm:p-6">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="accent">{course.instrument}</Badge>
                 <Badge variant="outline">{course.level}</Badge>
@@ -57,18 +57,18 @@ export function CurriculumPreviewSection({
                 {course.shortDescription}
               </p>
 
-              <div className="mt-5 grid grid-cols-3 gap-3 border-t border-border/50 pt-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Layers className="size-4 text-accent/80" aria-hidden />
-                  {moduleCount} modul
+              <div className="mt-5 grid grid-cols-1 gap-2 border-t border-border/50 pt-4 sm:grid-cols-3 sm:gap-3">
+                <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+                  <Layers className="size-4 shrink-0 text-accent/80" aria-hidden />
+                  <span className="truncate">{moduleCount} modul</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <PlayCircle className="size-4 text-accent/80" aria-hidden />
-                  {lessonCount} lesson
+                <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+                  <PlayCircle className="size-4 shrink-0 text-accent/80" aria-hidden />
+                  <span className="truncate">{lessonCount} lesson</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="size-4 text-accent/80" aria-hidden />
-                  {course.durationHours} jam
+                <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="size-4 shrink-0 text-accent/80" aria-hidden />
+                  <span className="truncate">{course.durationHours} jam</span>
                 </div>
               </div>
 
@@ -82,8 +82,8 @@ export function CurriculumPreviewSection({
             </div>
           </Reveal>
 
-          <Reveal delay={0.1} y={20}>
-            <div className="surface-card h-full p-2 sm:p-3">
+          <Reveal delay={0.1} y={20} className="min-w-0 w-full">
+            <div className="surface-card h-full min-w-0 w-full max-w-full overflow-hidden p-2 sm:p-3">
               <Accordion defaultValue={["preview-module-0"]}>
                 {previewModules.map((mod, mi) => (
                   <AccordionItem key={mod.title} value={`preview-module-${mi}`} className="px-3">
@@ -105,13 +105,13 @@ export function CurriculumPreviewSection({
                         {mod.lessons.map((lesson) => (
                           <li
                             key={lesson.id}
-                            className="flex items-center justify-between rounded-lg px-2 py-1.5 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+                            className="flex min-w-0 flex-col gap-1 rounded-lg px-2 py-1.5 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground sm:flex-row sm:items-center sm:justify-between"
                           >
                             <span className="flex min-w-0 items-center gap-2">
                               <PlayCircle className="size-4 shrink-0" aria-hidden />
-                              <span className="truncate text-sm">{lesson.title}</span>
+                              <span className="min-w-0 break-words text-sm">{lesson.title}</span>
                             </span>
-                            <span className="ml-2 flex shrink-0 items-center gap-2">
+                            <span className="flex shrink-0 items-center gap-2 sm:ml-2">
                               {lesson.preview ? (
                                 <span className="rounded-full bg-emerald/10 px-2 py-0.5 text-[10px] font-medium text-emerald">
                                   Preview Gratis
