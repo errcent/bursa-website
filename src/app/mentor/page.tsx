@@ -7,6 +7,7 @@ import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { canMutateMentor } from "@/lib/auth/roles";
 import { mockRooms } from "@/lib/chat/mock-chat-data";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 
 export default function MentorDashboardPage() {
   const { session } = useAuth();
@@ -25,14 +26,18 @@ export default function MentorDashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="surface-card p-5">
-          <p className="text-xs text-muted-foreground">Ruang internal</p>
-          <p className="mt-1 font-heading text-2xl font-semibold">{myRooms.length}</p>
-        </div>
-        <div className="surface-card p-5">
-          <p className="text-xs text-muted-foreground">Ruang publik terkait</p>
-          <p className="mt-1 font-heading text-2xl font-semibold">{publicRooms.length}</p>
-        </div>
+        {KOMUNITAS_ENABLED && (
+          <>
+            <div className="surface-card p-5">
+              <p className="text-xs text-muted-foreground">Ruang internal</p>
+              <p className="mt-1 font-heading text-2xl font-semibold">{myRooms.length}</p>
+            </div>
+            <div className="surface-card p-5">
+              <p className="text-xs text-muted-foreground">Ruang publik terkait</p>
+              <p className="mt-1 font-heading text-2xl font-semibold">{publicRooms.length}</p>
+            </div>
+          </>
+        )}
         <div className="surface-card p-5">
           <p className="text-xs text-muted-foreground">Status profil</p>
           <p className="mt-1 font-heading text-lg font-semibold text-emerald">Aktif</p>
@@ -53,15 +58,17 @@ export default function MentorDashboardPage() {
             </span>
           </span>
         </Button>
-        <Button className="h-auto flex-col items-start gap-2 p-4" variant="outline" render={<Link href="/mentor/chat" />}>
-          <MessageSquare className="size-4" />
-          <span className="text-left">
-            <span className="block font-medium">Group Chat</span>
-            <span className="block text-xs font-normal text-muted-foreground">
-              Kolaborasi admin & domain
+        {KOMUNITAS_ENABLED && (
+          <Button className="h-auto flex-col items-start gap-2 p-4" variant="outline" render={<Link href="/mentor/chat" />}>
+            <MessageSquare className="size-4" />
+            <span className="text-left">
+              <span className="block font-medium">Group Chat</span>
+              <span className="block text-xs font-normal text-muted-foreground">
+                Kolaborasi admin & domain
+              </span>
             </span>
-          </span>
-        </Button>
+          </Button>
+        )}
         <Button className="h-auto flex-col items-start gap-2 p-4" variant="outline" render={<Link href="/mentor/profil" />}>
           <UserRound className="size-4" />
           <span className="text-left">
@@ -92,9 +99,15 @@ export default function MentorDashboardPage() {
           Alur konten & privasi
         </h2>
         <p className="text-sm text-muted-foreground">
-          Perubahan konten kelas hanya diterapkan setelah admin menyetujui usulan Anda. Chat{" "}
-          <strong className="text-foreground">privat dengan admin</strong> (satu thread per mentor)
-          bersifat privat — developer QC dapat melihat panel ini tetapi tidak membuka isi pesan.
+          Perubahan konten kelas hanya diterapkan setelah admin menyetujui usulan Anda.
+          {KOMUNITAS_ENABLED && (
+            <>
+              {" "}
+              Chat <strong className="text-foreground">privat dengan admin</strong> (satu thread per
+              mentor) bersifat privat — developer QC dapat melihat panel ini tetapi tidak membuka isi
+              pesan.
+            </>
+          )}
         </p>
       </section>
     </div>

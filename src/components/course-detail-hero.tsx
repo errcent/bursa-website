@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
 import { resolveCourseThumbnailUrl } from "@/lib/courses/thumbnails";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { cn, hasRating } from "@/lib/utils";
 import type { Course, Mentor } from "@/lib/types";
 
@@ -128,14 +129,17 @@ export function CourseDetailHero({
             <>
               <p className="text-sm font-medium text-emerald">Sudah berlangganan</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Akses kelas dan hub komunitas mentor sudah aktif di akun Anda.
+                Akses kelas{KOMUNITAS_ENABLED ? " dan hub komunitas mentor" : ""} sudah aktif di akun
+                Anda.
               </p>
               <Button className="btn-primary mt-4 w-full" render={<Link href={learnHref} />}>
                 Lanjut Belajar
               </Button>
-              <Button variant="outline" className="mt-2 w-full" render={<Link href="/komunitas" />}>
-                Buka Komunitas
-              </Button>
+              {KOMUNITAS_ENABLED && (
+                <Button variant="outline" className="mt-2 w-full" render={<Link href="/komunitas" />}>
+                  Buka Komunitas
+                </Button>
+              )}
             </>
           ) : (
             <>

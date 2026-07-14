@@ -1,0 +1,157 @@
+import { ChatRoomKind } from "@prisma/client";
+import { NextRequest } from "next/server";
+import { db } from "@/lib/db";
+import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveRequestUser } from "@/lib/lesson-qa/server";
+import { createTradingPollSchema } from "@/lib/validations/api";
+
+type PollOptionRecord = {
+  id: string;
+  label: string;
+  votes: number;
+  voterIds?: string[];
+};
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = request.nextUrl;
+    const roomId = searchParams.get("roomId");
+
+    const polls = await db.tradingPoll.findMany({
+      where: {
+        ...(roomId ? { roomId } : {}),
+      },
+      include: {
+        room: {
+          select: { id: true, name: true, slug: true, tier: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return jsonOk({ polls });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = createTradingPollSchema.parse(await request.json());
+
+    const room = await db.chatRoom.findUnique({
+      where: { id: body.roomId },
+      include: { mentor: { select: { userId: true } } },
+    });
+    if (!room) {
+      return jsonError("Chat room not found", 404);
+    }
+
+    // Client auth IDs often differ from Prisma cuids — resolve by email first.
+    const email = request.headers.get("x-user-email")?.trim().toLowerCase();
+    const user = await resolveRequestUser(
+      {
+        userId:
+          body.userId?.trim() ||
+          request.headers.get("x-user-id")?.trim() ||
+          email ||
+          "",
+        email: email || undefined,
+        name: request.headers.get("x-user-name")?.trim() || undefined,
+        role: request.headers.get("x-user-role")?.trim() || undefined,
+      },
+      { createIfMissing: true }
+    );
+    if (!user) {
+      return jsonError("User not found", 404);
+    }
+
+    const membership = await db.chatRoomMember.findUnique({
+      where: { roomId_userId: { roomId: body.roomId, userId: user.id } },
+    });
+
+    const isMentor =
+      room.mentor?.userId === user.id || membership?.role === "MENTOR";
+
+    if (!isMentor) {
+      return jsonError("Only mentors can create polls", 403);
+    }
+
+    let branchId: string | null = body.branchId ?? null;
+    if (branchId) {
+      const branch = await db.chatBranch.findFirst({
+        where: { id: branchId, roomId: body.roomId, isActive: true },
+        select: { id: true },
+      });
+      if (!branch) {
+        return jsonError("Cabang tidak ditemukan di ruang ini.", 404);
+      }
+      branchId = branch.id;
+    } else if (
+      !room.isStaffCollaboration &&
+      room.roomKind === ChatRoomKind.MENTOR_COMMUNITY
+    ) {
+      return jsonError("branchId wajib untuk grup mentor.", 400);
+    }
+
+    const options: PollOptionRecord[] = body.options.map((label, index) => ({
+      id: `opt-${index + 1}`,
+      label: label.trim(),
+      votes: 0,
+      voterIds: [],
+    }));
+
+    const expiresAt =
+      body.durationHours != null
+        ? new Date(Date.now() + body.durationHours * 60 * 60 * 1000)
+        : null;
+
+    const poll = await db.tradingPoll.create({
+      data: {
+        roomId: body.roomId,
+        question: body.question.trim(),
+        options,
+        expiresAt: expiresAt ?? undefined,
+      },
+      include: {
+        room: {
+          select: { id: true, name: true, slug: true, tier: true },
+        },
+      },
+    });
+
+    const message = await db.chatMessage.create({
+      data: {
+        roomId: body.roomId,
+        branchId,
+        userId: user.id,
+        content: body.question.trim(),
+        messageType: "POLL",
+        metadata: {
+          pollId: poll.id,
+          question: poll.question,
+          options,
+          totalVotes: 0,
+          endsAt: expiresAt?.toISOString() ?? null,
+        },
+      },
+      include: {
+        user: {
+          select: { id: true, nama: true, role: true, avatarUrl: true, bio: true },
+        },
+        reactions: true,
+        replyTo: {
+          select: {
+            id: true,
+            content: true,
+            user: { select: { nama: true } },
+          },
+        },
+      },
+    });
+
+    return jsonOk({ poll, message, viewerId: user.id }, 201);
+  } catch (error) {
+    return handleApiError(error);
+  }
+}

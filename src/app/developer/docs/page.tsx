@@ -62,6 +62,13 @@ export default function DeveloperDocsPage() {
           dihormati. Gunakan kotak pencarian di samping (atau menu &ldquo;Daftar isi&rdquo; di
           mobile) untuk melompat ke bagian yang dicari.
         </p>
+        <div className="rounded-lg border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
+          <Strong>Komunitas diarsipkan (2026-07-14):</Strong> fitur chat/komunitas dinonaktifkan via{" "}
+          <Code>NEXT_PUBLIC_KOMUNITAS_ENABLED=false</Code>. Mirror kode ada di{" "}
+          <Code>_archive/komunitas/</Code> — lihat <Code>RESTORE-PROMPT.md</Code> untuk mengaktifkan
+          kembali. Bagian &ldquo;Sistem chat&rdquo; di bawah mendokumentasikan arsitektur saat fitur
+          masih aktif.
+        </div>
       </div>
 
       <div className="gap-8 lg:flex">
@@ -318,10 +325,11 @@ export default function DeveloperDocsPage() {
       </DocSection>
 
       {/* ── 4. Chat ───────────────────────────────────────────────── */}
-      <DocSection id="chat" title="4. Sistem chat">
+      <DocSection id="chat" title="4. Sistem chat (diarsipkan — lihat banner atas)">
         <p>
-          Chat ada di <Code>/komunitas</Code> (+ <Code>/komunitas/[roomSlug]</Code>). Logika akses
-          utama: <Code>lib/chat/access.ts</Code>, <Code>lib/chat/room-kinds.ts</Code>, model Prisma{" "}
+          <Strong>Status:</Strong> dinonaktifkan 2026-07-14. Saat aktif, chat ada di{" "}
+          <Code>/komunitas</Code> (+ <Code>/komunitas/[roomSlug]</Code>). Logika akses utama:{" "}
+          <Code>lib/chat/access.ts</Code>, <Code>lib/chat/room-kinds.ts</Code>, model Prisma{" "}
           <Code>ChatRoom</Code> / <Code>ChatBranch</Code> / <Code>ChatRoomMember</Code>.
         </p>
 

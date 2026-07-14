@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchStats } from "@/lib/admin/api";
 import type { AdminStats } from "@/lib/admin/types";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { formatRupiah } from "@/lib/mock-data";
 import { PLATFORM_COMMISSION_RATE } from "@/lib/pricing";
 
@@ -78,10 +79,12 @@ export default function AdminDashboardPage() {
             <UserSquare2 className="size-4" />
             Tambah Mentor
           </Button>
-          <Button size="sm" variant="outline" render={<Link href="/admin/chat-rooms" />}>
-            <MessageSquare className="size-4" />
-            Buat Chat Room
-          </Button>
+          {KOMUNITAS_ENABLED && (
+            <Button size="sm" variant="outline" render={<Link href="/admin/chat-rooms" />}>
+              <MessageSquare className="size-4" />
+              Buat Chat Room
+            </Button>
+          )}
         </div>
       </div>
 

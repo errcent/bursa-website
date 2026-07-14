@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { ChatRoomPageClient } from "@/components/chat/chat-room-page-client";
 import { findChatRoomBySlug, listActiveChatRooms } from "@/lib/chat/db-rooms";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { getRoomBySlug, mockRooms } from "@/lib/chat/mock-chat-data";
 
 interface RoomPageProps {
@@ -27,6 +28,8 @@ export function generateStaticParams() {
 }
 
 export default async function RoomPage({ params, searchParams }: RoomPageProps) {
+  if (!KOMUNITAS_ENABLED) notFound();
+
   const { roomSlug } = await params;
   const { mentorId } = await searchParams;
 

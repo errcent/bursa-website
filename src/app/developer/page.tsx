@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { mockRooms } from "@/lib/chat/mock-chat-data";
 import { filterRoomsForRole, isPrivateMentorRoom } from "@/lib/chat/access";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 
 const qcTargets = [
   {
@@ -80,6 +81,7 @@ export default function DeveloperQcPage() {
         })}
       </section>
 
+      {KOMUNITAS_ENABLED && (
       <section className="space-y-3">
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-heading text-sm font-semibold">Komunitas — ruang yang boleh ditinjau</h2>
@@ -102,6 +104,7 @@ export default function DeveloperQcPage() {
           ))}
         </ul>
       </section>
+      )}
 
       <section className="surface-card space-y-3 border-amber-500/20 p-5">
         <h2 className="flex items-center gap-2 font-heading text-sm font-semibold text-amber-600 dark:text-amber-400">

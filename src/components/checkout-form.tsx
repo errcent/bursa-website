@@ -27,6 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/components/auth-provider";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
 import { buildLoginHref } from "@/lib/auth/redirect";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { formatRupiah } from "@/lib/mock-data";
 import type { Course, Mentor } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -109,9 +110,11 @@ export function CheckoutForm({
           <Button className="flex-1 btn-primary" render={<Link href={learnHref} />}>
             Lanjut Belajar
           </Button>
-          <Button variant="outline" className="flex-1" render={<Link href="/komunitas" />}>
-            Buka Komunitas
-          </Button>
+          {KOMUNITAS_ENABLED && (
+            <Button variant="outline" className="flex-1" render={<Link href="/komunitas" />}>
+              Buka Komunitas
+            </Button>
+          )}
         </CardContent>
       </Card>
     );
@@ -164,8 +167,10 @@ export function CheckoutForm({
           <AlertTriangle className="size-5 shrink-0 text-amber-300" />
           <div className="flex flex-col gap-3">
             <p className="text-sm leading-relaxed text-amber-200/90">
-              Materi kelas ini bersifat edukasi umum, bukan rekomendasi atau ajakan beli-jual
-              instrumen tertentu. Trading dan investasi mengandung risiko kerugian modal.
+              Materi kelas ini bersifat edukasi umum untuk memahami analisis dan manajemen risiko,
+              bukan rekomendasi, nasihat, atau ajakan beli-jual instrumen tertentu. Trading dan
+              investasi berisiko kerugian modal. Kinerja masa lalu tidak menjamin hasil di masa
+              depan. Bursa tidak menjanjikan keuntungan pasti.
             </p>
             <label className="flex cursor-pointer items-start gap-3">
               <input

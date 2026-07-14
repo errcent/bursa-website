@@ -20,6 +20,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { getSession } from "@/lib/auth/client";
 import { buildLoginHref } from "@/lib/auth/redirect";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { formatRupiah, getCourseBySlug, getMentorBySlug } from "@/lib/mock-data";
 import { enrollUser } from "@/lib/video/protection";
 
@@ -114,7 +115,8 @@ export function CheckoutSuccessClient({ courseSlug }: { courseSlug: string }) {
               Simulasi Pembayaran Berhasil
             </h1>
             <p className="mt-2 max-w-md text-center text-sm text-muted-foreground">
-              Enrollment demo aktif dan hub mentor ditambahkan ke komunitas Anda (jika tersedia).
+              Enrollment demo aktif
+              {KOMUNITAS_ENABLED ? " dan hub mentor ditambahkan ke komunitas Anda (jika tersedia)" : ""}.
             </p>
             <Badge
               variant="outline"
@@ -153,14 +155,16 @@ export function CheckoutSuccessClient({ courseSlug }: { courseSlug: string }) {
                     <PlayCircle className="size-4" />
                     Mulai Belajar
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    render={<Link href="/komunitas" />}
-                  >
-                    <MessageSquare className="size-4" />
-                    Buka komunitas
-                  </Button>
+                  {KOMUNITAS_ENABLED && (
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      render={<Link href="/komunitas" />}
+                    >
+                      <MessageSquare className="size-4" />
+                      Buka komunitas
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>

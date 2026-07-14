@@ -13,12 +13,21 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  helpCategories,
-  helpFaqs,
+  helpCategories as allHelpCategories,
+  helpFaqs as allHelpFaqs,
   searchHelpFaqs,
   type HelpCategory,
 } from "@/lib/help-center/content";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { cn } from "@/lib/utils";
+
+const helpCategories = KOMUNITAS_ENABLED
+  ? allHelpCategories
+  : allHelpCategories.filter((c) => c !== "Komunitas");
+
+const helpFaqs = KOMUNITAS_ENABLED
+  ? allHelpFaqs
+  : allHelpFaqs.filter((f) => f.category !== "Komunitas");
 
 export function HelpCenterContent() {
   const [query, setQuery] = useState("");
@@ -143,14 +152,16 @@ export function HelpCenterContent() {
               <Mail className="size-4" />
               support@bursa.id
             </Button>
-            <Button
-              variant="outline"
-              className="border-border/70"
-              render={<a href="/komunitas" />}
-            >
-              <MessageCircle className="size-4" />
-              Tanya di komunitas
-            </Button>
+            {KOMUNITAS_ENABLED && (
+              <Button
+                variant="outline"
+                className="border-border/70"
+                render={<a href="/komunitas" />}
+              >
+                <MessageCircle className="size-4" />
+                Tanya di komunitas
+              </Button>
+            )}
           </div>
         </div>
       </Reveal>

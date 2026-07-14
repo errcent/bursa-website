@@ -13,6 +13,7 @@ import { SiteNavAuth } from "@/components/site-nav-auth";
 import { SiteNavSearch } from "@/components/site-nav-search";
 import { Button } from "@/components/ui/button";
 import { getRoleNavLinks } from "@/lib/auth/roles";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -32,7 +33,7 @@ function AuthSkeleton({ mobile = false }: { mobile?: boolean }) {
   return <div className="hidden h-8 w-20 animate-pulse rounded-lg bg-muted sm:block" />;
 }
 
-const navLinks: {
+const baseNavLinks: {
   href: string;
   label: string;
   exact?: boolean;
@@ -43,6 +44,10 @@ const navLinks: {
   { href: "/komunitas", label: "Komunitas" },
   { href: "/lab", label: "Lab" },
 ];
+
+const navLinks = KOMUNITAS_ENABLED
+  ? baseNavLinks
+  : baseNavLinks.filter((link) => link.href !== "/komunitas");
 
 function isNavLinkActive(pathname: string, href: string, exact = false) {
   if (exact) return pathname === href;

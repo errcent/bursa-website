@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { ensureHubMembershipForCourseEnrollment } from "@/lib/chat/db-rooms";
 import { db } from "@/lib/db";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
 import { recalculateStatsForCourse } from "@/lib/stats/server";
 
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     // Heal hub membership if enrollment exists but ChatRoomMember was missed
     // (e.g. older enroll path before client-auth bridge).
     let hubRoomId: string | null = null;
-    if (enrollment) {
+    if (enrollment && KOMUNITAS_ENABLED) {
       const hub = await ensureHubMembershipForCourseEnrollment({
         userId: user.id,
         courseId: course.id,

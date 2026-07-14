@@ -16,9 +16,10 @@ import {
   UserSquare2,
 } from "lucide-react";
 
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { cn } from "@/lib/utils";
 
-const links = [
+const allLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/pendapatan", label: "Pendapatan", icon: DollarSign },
   { href: "/admin/mentors", label: "Mentor", icon: UserSquare2 },
@@ -31,6 +32,12 @@ const links = [
   { href: "/admin/users", label: "Pengguna", icon: Users },
   { href: "/admin/settings", label: "Pengaturan", icon: Settings },
 ];
+
+const komunitasAdminPaths = new Set(["/admin/chat-rooms", "/admin/branch-change-requests"]);
+
+const links = KOMUNITAS_ENABLED
+  ? allLinks
+  : allLinks.filter((link) => !komunitasAdminPaths.has(link.href));
 
 export function AdminSidebar() {
   const pathname = usePathname();

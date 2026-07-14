@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { AuthGuard } from "@/components/auth-guard";
@@ -6,6 +7,7 @@ import { CommunityHub } from "@/components/chat/community-hub";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNavbar } from "@/components/site-navbar";
 import { listActiveChatRooms } from "@/lib/chat/db-rooms";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { mockRooms } from "@/lib/chat/mock-chat-data";
 import { normalizeChatRoomCounts } from "@/lib/chat/room-counts";
 
@@ -16,6 +18,8 @@ export const metadata: Metadata = {
 };
 
 export default async function KomunitasPage() {
+  if (!KOMUNITAS_ENABLED) notFound();
+
   const dbRooms = await listActiveChatRooms().catch(() => []);
   const rooms = (dbRooms.length > 0 ? dbRooms : mockRooms).map((room) =>
     normalizeChatRoomCounts(room)

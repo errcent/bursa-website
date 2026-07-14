@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { articles } from "@/lib/articles/content";
 import { courses, mentors } from "@/lib/mock-data";
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { searchAll } from "@/lib/search/engine";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursa.id";
@@ -124,7 +125,9 @@ export function getSitemapEntries() {
   const staticPages = [
     { url: "", priority: 1, changeFrequency: "weekly" as const },
     { url: "/katalog", priority: 0.9, changeFrequency: "daily" as const },
-    { url: "/komunitas", priority: 0.8, changeFrequency: "daily" as const },
+    ...(KOMUNITAS_ENABLED
+      ? [{ url: "/komunitas", priority: 0.8, changeFrequency: "daily" as const }]
+      : []),
     { url: "/jadi-mentor", priority: 0.7, changeFrequency: "monthly" as const },
     { url: "/artikel", priority: 0.6, changeFrequency: "weekly" as const },
     { url: "/bantuan", priority: 0.5, changeFrequency: "monthly" as const },
