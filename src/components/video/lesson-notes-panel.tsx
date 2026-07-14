@@ -23,6 +23,7 @@ import {
   type NoteExportFormat,
 } from "@/lib/lesson-notes/export";
 import type { LessonNote } from "@/lib/lesson-notes/types";
+import { sanitizeRichHtml } from "@/lib/sanitize-html";
 import { cn } from "@/lib/utils";
 
 function formatDuration(totalSeconds: number) {
@@ -529,7 +530,7 @@ export function LessonNotesPanel({
                 ) : (
                   <div
                     className={cn("prose-notes text-foreground/90")}
-                    dangerouslySetInnerHTML={{ __html: note.content }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(note.content) }}
                   />
                 )}
               </li>

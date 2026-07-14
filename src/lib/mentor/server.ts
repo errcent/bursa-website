@@ -1,11 +1,12 @@
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
 
+import { resolveTrustedEmail } from "@/lib/auth/request-identity";
 import { db } from "@/lib/db";
 import { mapCourse } from "@/lib/admin/server";
 
 export async function requireMentor(request: Request) {
-  const email = request.headers.get("x-user-email")?.trim().toLowerCase();
+  const email = await resolveTrustedEmail(request);
   if (!email) return null;
 
   const user = await db.user.findUnique({
@@ -17,7 +18,7 @@ export async function requireMentor(request: Request) {
 }
 
 export async function requireAdminOrMentor(request: Request) {
-  const email = request.headers.get("x-user-email")?.trim().toLowerCase();
+  const email = await resolveTrustedEmail(request);
   if (!email) return null;
 
   const user = await db.user.findUnique({

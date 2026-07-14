@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { updateChatMemberRoleSchema } from "@/lib/validations/api";
 
 type RouteContext = {
@@ -12,6 +13,13 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const { roomId, userId } = await context.params;
     const body = updateChatMemberRoleSchema.parse(await request.json());
 
+    const requesterUser = await resolveAuthenticatedUser(request, {
+      claimedUserId: body.requestedByUserId,
+    });
+    if (!requesterUser) {
+      return jsonError("Autentikasi diperlukan.", 401);
+    }
+
     const room = await db.chatRoom.findUnique({
       where: { id: roomId },
       include: { mentor: { select: { userId: true } } },
@@ -21,11 +29,11 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     }
 
     const requester = await db.chatRoomMember.findUnique({
-      where: { roomId_userId: { roomId, userId: body.requestedByUserId } },
+      where: { roomId_userId: { roomId, userId: requesterUser.id } },
     });
 
     const isRoomMentor =
-      room.mentor?.userId === body.requestedByUserId || requester?.role === "MENTOR";
+      room.mentor?.userId === requesterUser.id || requester?.role === "MENTOR";
 
     if (!isRoomMentor) {
       return jsonError("Only mentors can change member roles", 403);
@@ -57,7 +65,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     await db.chatAuditLog.create({
       data: {
         roomId,
-        userId: body.requestedByUserId,
+        userId: requesterUser.id,
         action: "MEMBER_ROLE_UPDATED",
         metadata: {
           targetUserId: userId,

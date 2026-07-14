@@ -8,6 +8,639 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model User {
+  id                             String                    @id @default(cuid())
+  email                          String                    @unique
+  passwordHash                   String
+  nama                           String
+  /// Optional short bio for the base user profile (learners, mentors, staff).
+  bio                            String?
+  /// Public avatar path/URL for the base user profile (e.g. /uploads/avatars/...).
+  avatarUrl                      String?
+  role                           UserRole                  @default(LEARNER)
+  kycStatus                      KycStatus                 @default(NOT_REQUIRED)
+  createdAt                      DateTime                  @default(now())
+  /// Login handle — lowercase alphanumeric + underscore; separate from display name.
+  username                       String?                   @unique
+  /// E.164 or Indonesian +62... format.
+  phone                          String?                   @unique
+  adminAuditLogs                 AdminAuditLog[]
+  AiConversation                 AiConversation[]
+  AiUsageLog                     AiUsageLog[]
+  chatAuditLogs                  ChatAuditLog[]
+  chatBranchChangeRequests       ChatBranchChangeRequest[] @relation("ChatBranchChangeMentor")
+  chatBranchChangeRequestReviews ChatBranchChangeRequest[] @relation("ChatBranchChangeReviewer")
+  chatMessages                   ChatMessage[]
+  chatMessageReactions           ChatMessageReaction[]
+  chatRoomMembers                ChatRoomMember[]
+  moderationReports              ContentModerationQueue[]  @relation("ReportedBy")
+  moderationReviews              ContentModerationQueue[]  @relation("ReviewedBy")
+  changeRequests                 CourseChangeRequest[]     @relation("ChangeRequestMentor")
+  changeRequestReviews           CourseChangeRequest[]     @relation("ChangeRequestReviewer")
+  enrollments                    Enrollment[]
+  lessonProgress                 LessonProgress[]
+  lessonQuestions                LessonQuestion[]
+  lessonQuestionLikes            LessonQuestionLike[]
+  lessonQuestionReplies          LessonQuestionReply[]
+  sessionBookings                MentorAvailabilitySlot[]  @relation("SessionBookings")
+  sessionSlotsCreated            MentorAvailabilitySlot[]  @relation("SessionSlotsCreated")
+  mentorProfile                  MentorProfile?
+  notes                          Note[]
+  passwordResetTokens            PasswordResetToken[]
+  playlists                      Playlist[]
+  reviews                        Review[]
+  transactions                   Transaction[]
+  watchlistItems                 WatchlistItem[]
+}
+
+/// Single-use reset token — stores hash only, never plaintext (UU PDP / GDPR-ready).
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model MentorProfile {
+  id                 String                   @id @default(cuid())
+  userId             String                   @unique
+  slug               String                   @unique
+  title              String
+  initials           String
+  avatarUrl          String?
+  bio                String
+  philosophy         String
+  spesialisasi       String
+  instruments        Json
+  licenseLabel       String?
+  verificationStatus VerificationStatus       @default(PENDING)
+  yearsExperience    Int
+  studentsCount      Int                      @default(0)
+  coursesCount       Int                      @default(0)
+  rating             Float                    @default(0)
+  trackRecord        Json
+  availableFor1on1   Boolean                  @default(false)
+  sessionPrice       String?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+  socialLinks        Json?
+  tagline            String?
+  chatRooms          ChatRoom[]
+  commissionRecords  CommissionRecord[]
+  courses            Course[]
+  availabilitySlots  MentorAvailabilitySlot[]
+  user               User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tradingSignals     TradingSignal[]
+
+  @@index([verificationStatus, studentsCount])
+}
+
+/// Admin-managed time slots for mentor 1-on-1 sessions.
+model MentorAvailabilitySlot {
+  id               String        @id @default(cuid())
+  mentorId         String
+  startAt          DateTime
+  endAt            DateTime
+  isBooked         Boolean       @default(false)
+  bookedByUserId   String?
+  createdByAdminId String?
+  notes            String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  bookedBy         User?         @relation("SessionBookings", fields: [bookedByUserId], references: [id])
+  createdByAdmin   User?         @relation("SessionSlotsCreated", fields: [createdByAdminId], references: [id])
+  mentor           MentorProfile @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+
+  @@index([mentorId, startAt])
+  @@index([mentorId, isBooked, startAt])
+}
+
+model Course {
+  id               String                @id @default(cuid())
+  slug             String                @unique
+  title            String
+  mentorId         String
+  instrument       Instrument
+  level            CourseLevel
+  price            Int
+  rating           Float                 @default(0)
+  studentsCount    Int                   @default(0)
+  durationHours    Int
+  shortDescription String
+  outcomes         Json
+  isPublished      Boolean               @default(true)
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  thumbnailUrl     String?
+  mentor           MentorProfile         @relation(fields: [mentorId], references: [id])
+  changeRequests   CourseChangeRequest[]
+  enrollments      Enrollment[]
+  modules          Module[]
+  playlistItems    PlaylistItem[]
+  reviews          Review[]
+  transactions     Transaction[]
+
+  @@index([isPublished, studentsCount])
+}
+
+model Module {
+  id        String   @id @default(cuid())
+  courseId  String
+  title     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  lessons   Lesson[]
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model Lesson {
+  id              String           @id @default(cuid())
+  moduleId        String
+  legacyId        String?
+  title           String
+  description     String?
+  durationMinutes Int
+  isPreviewGratis Boolean          @default(false)
+  videoUrl        String?
+  sortOrder       Int              @default(0)
+  createdAt       DateTime         @default(now())
+  module          Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lessonProgress  LessonProgress[]
+  questions       LessonQuestion[]
+  notes           Note[]
+  playlistItems   PlaylistItem[]
+}
+
+model LessonQuestion {
+  id               String                @id @default(cuid())
+  lessonId         String
+  userId           String
+  content          String
+  timestampSeconds Int?
+  isPinned         Boolean               @default(false)
+  likeCount        Int                   @default(0)
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  lesson           Lesson                @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes            LessonQuestionLike[]
+  replies          LessonQuestionReply[]
+}
+
+model LessonQuestionReply {
+  id         String         @id @default(cuid())
+  questionId String
+  userId     String
+  content    String
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  question   LessonQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LessonQuestionLike {
+  id         String         @id @default(cuid())
+  questionId String
+  userId     String
+  createdAt  DateTime       @default(now())
+  question   LessonQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, userId])
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  createdAt DateTime @default(now())
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model LessonProgress {
+  id             String   @id @default(cuid())
+  userId         String
+  lessonId       String
+  completed      Boolean  @default(false)
+  watchedSeconds Int      @default(0)
+  updatedAt      DateTime @updatedAt
+  lesson         Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model Transaction {
+  id               String            @id @default(cuid())
+  userId           String
+  courseId         String
+  amount           Int
+  status           TransactionStatus @default(PENDING)
+  createdAt        DateTime          @default(now())
+  commissionRecord CommissionRecord?
+  course           Course            @relation(fields: [courseId], references: [id])
+  user             User              @relation(fields: [userId], references: [id])
+
+  @@index([courseId, createdAt])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+  course    Course   @relation(fields: [courseId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, courseId])
+}
+
+model Note {
+  id               String   @id @default(cuid())
+  userId           String
+  lessonId         String
+  content          String
+  /// Video playhead (seconds) when the note was created / linked.
+  timestampSeconds Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  lesson           Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, lessonId])
+  @@index([lessonId, timestampSeconds])
+}
+
+model WatchlistItem {
+  id         String     @id @default(cuid())
+  userId     String
+  ticker     String
+  instrument Instrument
+  notes      String?
+  createdAt  DateTime   @default(now())
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, ticker])
+}
+
+/// Platform-curated lesson collections (admin-managed). User-created playlists are disabled.
+model Playlist {
+  id          String         @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  slug        String         @unique
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  isCurated   Boolean        @default(false)
+  isPublished Boolean        @default(false)
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       PlaylistItem[]
+
+  @@index([isCurated, isPublished, createdAt])
+}
+
+model PlaylistItem {
+  id         String   @id @default(cuid())
+  playlistId String
+  /// Lesson reference when the item is a specific video/module segment.
+  lessonId   String?
+  /// Course reference when the item points at a whole class (optional).
+  courseId   String?
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  course     Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lesson     Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+
+  @@index([playlistId, sortOrder])
+}
+
+model ChatRoom {
+  id                   String                    @id @default(cuid())
+  /// Null for PUBLIC platform rooms; required for mentor-owned rooms.
+  mentorId             String?
+  name                 String
+  slug                 String
+  description          String?
+  roomKind             ChatRoomKind              @default(MENTOR_COMMUNITY)
+  tier                 ChatRoomTier              @default(PEMULA)
+  isProtected          Boolean                   @default(false)
+  screenshotProtection Boolean                   @default(false)
+  memberOnly           Boolean                   @default(true)
+  /// Shared staff room (e.g. mentor–admin kolaborasi) — does not count toward mentor ownership limits.
+  isStaffCollaboration Boolean                   @default(false)
+  isActive             Boolean                   @default(true)
+  isLive               Boolean                   @default(false)
+  liveStartedAt        DateTime?
+  liveTitle            String?
+  createdAt            DateTime                  @default(now())
+  auditLogs            ChatAuditLog[]
+  branches             ChatBranch[]
+  branchChangeRequests ChatBranchChangeRequest[]
+  messages             ChatMessage[]
+  mentor               MentorProfile?            @relation(fields: [mentorId], references: [id])
+  members              ChatRoomMember[]
+  tradingPolls         TradingPoll[]
+  tradingSignals       TradingSignal[]
+
+  @@unique([mentorId, slug])
+  @@index([roomKind, isActive])
+}
+
+/// Channel / cabang under a mentor hub. Visibility (public/private) is per-branch.
+model ChatBranch {
+  id             String                    @id @default(cuid())
+  roomId         String
+  name           String
+  slug           String
+  description    String?
+  mode           ChatBranchMode            @default(TWO_WAY)
+  senderPolicy   ChatBranchSenderPolicy    @default(MENTOR_ONLY)
+  /// PUBLIC = members can access; PRIVATE = mentor/moderator only (developers blocked).
+  visibility     ChatBranchVisibility      @default(PUBLIC)
+  sortOrder      Int                       @default(0)
+  isActive       Boolean                   @default(true)
+  createdAt      DateTime                  @default(now())
+  updatedAt      DateTime                  @updatedAt
+  room           ChatRoom                  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  changeRequests ChatBranchChangeRequest[]
+  messages       ChatMessage[]
+
+  @@unique([roomId, slug])
+  @@index([roomId, sortOrder])
+}
+
+model ChatRoomMember {
+  id         String         @id @default(cuid())
+  roomId     String
+  userId     String
+  role       ChatMemberRole @default(MEMBER)
+  joinedAt   DateTime       @default(now())
+  lastReadAt DateTime?
+  room       ChatRoom       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+}
+
+model ChatMessage {
+  id          String                @id @default(cuid())
+  roomId      String
+  /// Set for mentor hub branches; null for PUBLIC rooms (room-level thread).
+  branchId    String?
+  userId      String
+  content     String
+  messageType MessageType           @default(TEXT)
+  metadata    Json?
+  isPinned    Boolean               @default(false)
+  replyToId   String?
+  createdAt   DateTime              @default(now())
+  editedAt    DateTime?
+  deletedAt   DateTime?
+  branch      ChatBranch?           @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  replyTo     ChatMessage?          @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies     ChatMessage[]         @relation("MessageReplies")
+  room        ChatRoom              @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user        User                  @relation(fields: [userId], references: [id])
+  reactions   ChatMessageReaction[]
+
+  @@index([roomId, branchId, createdAt])
+}
+
+model ChatMessageReaction {
+  id        String      @id @default(cuid())
+  messageId String
+  userId    String
+  emoji     String
+  createdAt DateTime    @default(now())
+  message   ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji])
+}
+
+model ChatAuditLog {
+  id        String   @id @default(cuid())
+  roomId    String
+  userId    String
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model TradingSignal {
+  id          String          @id @default(cuid())
+  roomId      String
+  mentorId    String
+  ticker      String
+  instrument  Instrument
+  direction   SignalDirection
+  entryPrice  Float
+  targetPrice Float?
+  stopLoss    Float?
+  rationale   String?
+  status      SignalStatus    @default(ACTIVE)
+  createdAt   DateTime        @default(now())
+  closedAt    DateTime?
+  mentor      MentorProfile   @relation(fields: [mentorId], references: [id])
+  room        ChatRoom        @relation(fields: [roomId], references: [id])
+}
+
+model TradingPoll {
+  id        String    @id @default(cuid())
+  roomId    String
+  question  String
+  options   Json
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  room      ChatRoom  @relation(fields: [roomId], references: [id])
+}
+
+model AdminAuditLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String
+  entityType String
+  entityId   String
+  changes    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+  admin      User     @relation(fields: [adminId], references: [id])
+}
+
+model ContentModerationQueue {
+  id          String           @id @default(cuid())
+  contentType String
+  contentId   String
+  reportedBy  String?
+  reason      String
+  status      ModerationStatus @default(PENDING)
+  reviewedBy  String?
+  createdAt   DateTime         @default(now())
+  reviewedAt  DateTime?
+  reporter    User?            @relation("ReportedBy", fields: [reportedBy], references: [id])
+  reviewer    User?            @relation("ReviewedBy", fields: [reviewedBy], references: [id])
+}
+
+/// Mentor proposes structural branch changes (add/rename/mode/remove). Admin approves.
+model ChatBranchChangeRequest {
+  id              String              @id @default(cuid())
+  roomId          String
+  mentorUserId    String
+  /// Existing branch for UPDATE/DELETE; null for CREATE
+  branchId        String?
+  action          ChangeRequestAction
+  summary         String
+  currentSnapshot Json?
+  proposedData    Json?
+  appliedData     Json?
+  status          ChangeRequestStatus @default(PENDING)
+  adminNote       String?
+  reviewedById    String?
+  reviewedAt      DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  branch          ChatBranch?         @relation(fields: [branchId], references: [id])
+  mentorUser      User                @relation("ChatBranchChangeMentor", fields: [mentorUserId], references: [id])
+  reviewer        User?               @relation("ChatBranchChangeReviewer", fields: [reviewedById], references: [id])
+  room            ChatRoom            @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([roomId])
+  @@index([mentorUserId])
+}
+
+/// Mentor-submitted proposal to change course content. Only admin can approve & apply.
+model CourseChangeRequest {
+  id              String                  @id @default(cuid())
+  courseId        String
+  mentorUserId    String
+  targetType      ChangeRequestTargetType
+  action          ChangeRequestAction
+  /// Existing module id (for MODULE/LESSON updates/deletes, or parent for CREATE LESSON)
+  moduleId        String?
+  /// Existing lesson id (for LESSON updates/deletes)
+  lessonId        String?
+  /// Human-readable summary from mentor
+  summary         String
+  /// Snapshot of current values at submit time
+  currentSnapshot Json?
+  /// Proposed field values (CREATE/UPDATE payload)
+  proposedData    Json?
+  /// Final payload applied (may differ if admin edited before approve)
+  appliedData     Json?
+  status          ChangeRequestStatus     @default(PENDING)
+  adminNote       String?
+  reviewedById    String?
+  reviewedAt      DateTime?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  course          Course                  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  mentorUser      User                    @relation("ChangeRequestMentor", fields: [mentorUserId], references: [id])
+  reviewer        User?                   @relation("ChangeRequestReviewer", fields: [reviewedById], references: [id])
+
+  @@index([status, createdAt])
+  @@index([courseId])
+  @@index([mentorUserId])
+}
+
+model PlatformConfig {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+/// RAG knowledge chunks indexed from vault docs (scripts/index-docs.ts).
+model KnowledgeChunk {
+  id         String                 @id @default(cuid())
+  sourceDoc  String
+  heading    String
+  content    String
+  embedding  Unsupported("vector")?
+  tokenCount Int                    @default(0)
+  updatedAt  DateTime               @updatedAt
+  createdAt  DateTime               @default(now())
+
+  @@index([sourceDoc])
+}
+
+model AiConversation {
+  id         String      @id @default(cuid())
+  userId     String
+  feature    AiFeature   @default(SUPPORT_BOT)
+  summary    String?
+  lastTurnAt DateTime    @default(now())
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages   AiMessage[]
+
+  @@index([userId, lastTurnAt])
+}
+
+model AiMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  role           AiMessageRole
+  content        String
+  tokenCount     Int            @default(0)
+  model          String?
+  createdAt      DateTime       @default(now())
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
+model AiUsageLog {
+  id           String    @id @default(cuid())
+  userId       String?
+  feature      AiFeature
+  model        String
+  inputTokens  Int       @default(0)
+  outputTokens Int       @default(0)
+  costEstimate Float     @default(0)
+  cacheHit     Boolean   @default(false)
+  latencyMs    Int?
+  createdAt    DateTime  @default(now())
+  user         User?     @relation(fields: [userId], references: [id])
+
+  @@index([feature, createdAt])
+  @@index([userId, createdAt])
+}
+
+model CommissionRecord {
+  id               String        @id @default(cuid())
+  transactionId    String        @unique
+  mentorId         String
+  grossAmount      Int
+  commissionPct    Float         @default(25)
+  commissionAmount Int
+  netMentorAmount  Int
+  payoutStatus     PayoutStatus  @default(PENDING)
+  payoutPeriod     String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  mentor           MentorProfile @relation(fields: [mentorId], references: [id])
+  transaction      Transaction   @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  @@index([mentorId, createdAt])
+  @@index([payoutStatus, payoutPeriod])
+}
+
 enum UserRole {
   LEARNER
   MENTOR
@@ -133,580 +766,22 @@ enum ChangeRequestAction {
   DELETE
 }
 
-model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  passwordHash String
-  /// Login handle — lowercase alphanumeric + underscore; separate from display name.
-  username     String?   @unique
-  /// E.164 or Indonesian +62... format.
-  phone        String?   @unique
-  nama         String
-  /// Optional short bio for the base user profile (learners, mentors, staff).
-  bio          String?
-  /// Public avatar path/URL for the base user profile (e.g. /uploads/avatars/...).
-  avatarUrl    String?
-  role         UserRole  @default(LEARNER)
-  kycStatus    KycStatus @default(NOT_REQUIRED)
-  createdAt    DateTime  @default(now())
-
-  mentorProfile        MentorProfile?
-  enrollments          Enrollment[]
-  lessonProgress       LessonProgress[]
-  transactions         Transaction[]
-  reviews              Review[]
-  notes                Note[]
-  lessonQuestions      LessonQuestion[]
-  lessonQuestionReplies LessonQuestionReply[]
-  lessonQuestionLikes  LessonQuestionLike[]
-  watchlistItems       WatchlistItem[]
-  playlists            Playlist[]
-  chatRoomMembers      ChatRoomMember[]
-  chatMessages         ChatMessage[]
-  chatMessageReactions ChatMessageReaction[]
-  chatAuditLogs        ChatAuditLog[]
-  adminAuditLogs       AdminAuditLog[]
-  moderationReports    ContentModerationQueue[] @relation("ReportedBy")
-  moderationReviews    ContentModerationQueue[] @relation("ReviewedBy")
-  changeRequests       CourseChangeRequest[]    @relation("ChangeRequestMentor")
-  changeRequestReviews CourseChangeRequest[]    @relation("ChangeRequestReviewer")
-  chatBranchChangeRequests       ChatBranchChangeRequest[] @relation("ChatBranchChangeMentor")
-  chatBranchChangeRequestReviews ChatBranchChangeRequest[] @relation("ChatBranchChangeReviewer")
-  passwordResetTokens            PasswordResetToken[]
-  sessionBookings                MentorAvailabilitySlot[] @relation("SessionBookings")
-  sessionSlotsCreated            MentorAvailabilitySlot[] @relation("SessionSlotsCreated")
+enum AiFeature {
+  SUPPORT_BOT
+  DOC_LOOKUP
+  RECOMMENDATION
 }
 
-/// Single-use reset token — stores hash only, never plaintext (UU PDP / GDPR-ready).
-model PasswordResetToken {
-  id        String    @id @default(cuid())
-  userId    String
-  tokenHash String    @unique
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([expiresAt])
+enum AiMessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
 }
 
-model MentorProfile {
-  id                 String             @id @default(cuid())
-  userId             String             @unique
-  slug               String             @unique
-  title              String
-  initials           String
-  avatarUrl          String?
-  bio                String
-  philosophy         String
-  spesialisasi       String
-  instruments        Json
-  licenseLabel       String?
-  verificationStatus VerificationStatus @default(PENDING)
-  yearsExperience    Int
-  studentsCount      Int                @default(0)
-  coursesCount       Int                @default(0)
-  rating             Float              @default(0)
-  trackRecord        Json
-  availableFor1on1   Boolean            @default(false)
-  sessionPrice       String?
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courses        Course[]
-  chatRooms      ChatRoom[]
-  tradingSignals TradingSignal[]
-  availabilitySlots MentorAvailabilitySlot[]
-
-  @@index([verificationStatus, studentsCount])
-}
-
-/// Admin-managed time slots for mentor 1-on-1 sessions.
-model MentorAvailabilitySlot {
-  id               String   @id @default(cuid())
-  mentorId         String
-  startAt          DateTime
-  endAt            DateTime
-  isBooked         Boolean  @default(false)
-  bookedByUserId   String?
-  createdByAdminId String?
-  notes            String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  mentor         MentorProfile @relation(fields: [mentorId], references: [id], onDelete: Cascade)
-  bookedBy       User?         @relation("SessionBookings", fields: [bookedByUserId], references: [id], onDelete: SetNull)
-  createdByAdmin User?         @relation("SessionSlotsCreated", fields: [createdByAdminId], references: [id], onDelete: SetNull)
-
-  @@index([mentorId, startAt])
-  @@index([mentorId, isBooked, startAt])
-}
-
-model Course {
-  id               String      @id @default(cuid())
-  slug             String      @unique
-  title            String
-  mentorId         String
-  instrument       Instrument
-  level            CourseLevel
-  price            Int
-  rating           Float       @default(0)
-  studentsCount    Int         @default(0)
-  durationHours    Int
-  shortDescription String
-  thumbnailUrl     String?
-  outcomes         Json
-  isPublished      Boolean     @default(true)
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
-
-  mentor         MentorProfile         @relation(fields: [mentorId], references: [id])
-  modules        Module[]
-  enrollments    Enrollment[]
-  transactions   Transaction[]
-  reviews        Review[]
-  changeRequests CourseChangeRequest[]
-  playlistItems  PlaylistItem[]
-
-  @@index([isPublished, studentsCount])
-}
-
-model Module {
-  id        String   @id @default(cuid())
-  courseId  String
-  title     String
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
-
-  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessons Lesson[]
-}
-
-model Lesson {
-  id              String   @id @default(cuid())
-  moduleId        String
-  legacyId        String?
-  title           String
-  description     String?
-  durationMinutes Int
-  isPreviewGratis Boolean  @default(false)
-  videoUrl        String?
-  sortOrder       Int      @default(0)
-  createdAt       DateTime @default(now())
-
-  module         Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  lessonProgress LessonProgress[]
-  notes          Note[]
-  questions      LessonQuestion[]
-  playlistItems  PlaylistItem[]
-}
-
-model LessonQuestion {
-  id               String   @id @default(cuid())
-  lessonId         String
-  userId           String
-  content          String
-  timestampSeconds Int?
-  isPinned         Boolean  @default(false)
-  likeCount        Int      @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  lesson  Lesson                @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  user    User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  replies LessonQuestionReply[]
-  likes   LessonQuestionLike[]
-}
-
-model LessonQuestionReply {
-  id         String   @id @default(cuid())
-  questionId String
-  userId     String
-  content    String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  question LessonQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model LessonQuestionLike {
-  id         String   @id @default(cuid())
-  questionId String
-  userId     String
-  createdAt  DateTime @default(now())
-
-  question LessonQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([questionId, userId])
-}
-
-model Enrollment {
-  id        String   @id @default(cuid())
-  userId    String
-  courseId  String
-  createdAt DateTime @default(now())
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, courseId])
-}
-
-model LessonProgress {
-  id             String   @id @default(cuid())
-  userId         String
-  lessonId       String
-  completed      Boolean  @default(false)
-  watchedSeconds Int      @default(0)
-  updatedAt      DateTime @updatedAt
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, lessonId])
-}
-
-model Transaction {
-  id        String            @id @default(cuid())
-  userId    String
-  courseId  String
-  amount    Int
-  status    TransactionStatus @default(PENDING)
-  createdAt DateTime          @default(now())
-
-  user   User   @relation(fields: [userId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
-}
-
-model Review {
-  id        String   @id @default(cuid())
-  userId    String
-  courseId  String
-  rating    Int
-  comment   String
-  createdAt DateTime @default(now())
-
-  user   User   @relation(fields: [userId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
-
-  @@unique([userId, courseId])
-}
-
-model Note {
-  id               String   @id @default(cuid())
-  userId           String
-  lessonId         String
-  content          String
-  /// Video playhead (seconds) when the note was created / linked.
-  timestampSeconds Int      @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-
-  @@index([userId, lessonId])
-  @@index([lessonId, timestampSeconds])
-}
-
-model WatchlistItem {
-  id         String     @id @default(cuid())
-  userId     String
-  ticker     String
-  instrument Instrument
-  notes      String?
-  createdAt  DateTime   @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, ticker])
-}
-
-/// Platform-curated lesson collections (admin-managed). User-created playlists are disabled.
-model Playlist {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String
-  description String?
-  slug        String   @unique
-  isCurated   Boolean  @default(false)
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items PlaylistItem[]
-
-  @@index([isCurated, isPublished, createdAt])
-}
-
-model PlaylistItem {
-  id         String   @id @default(cuid())
-  playlistId String
-  /// Lesson reference when the item is a specific video/module segment.
-  lessonId   String?
-  /// Course reference when the item points at a whole class (optional).
-  courseId   String?
-  sortOrder  Int      @default(0)
-  createdAt  DateTime @default(now())
-
-  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
-  lesson   Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  course   Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  @@index([playlistId, sortOrder])
-}
-
-model ChatRoom {
-  id                   String         @id @default(cuid())
-  /// Null for PUBLIC platform rooms; required for mentor-owned rooms.
-  mentorId             String?
-  name                 String
-  slug                 String
-  description          String?
-  roomKind             ChatRoomKind   @default(MENTOR_COMMUNITY)
-  tier                 ChatRoomTier   @default(PEMULA)
-  isProtected          Boolean        @default(false)
-  screenshotProtection Boolean        @default(false)
-  memberOnly           Boolean        @default(true)
-  /// Shared staff room (e.g. mentor–admin kolaborasi) — does not count toward mentor ownership limits.
-  isStaffCollaboration Boolean        @default(false)
-  isActive             Boolean        @default(true)
-  isLive               Boolean        @default(false)
-  liveStartedAt        DateTime?
-  liveTitle            String?
-  createdAt            DateTime       @default(now())
-
-  mentor         MentorProfile?   @relation(fields: [mentorId], references: [id])
-  members        ChatRoomMember[]
-  branches       ChatBranch[]
-  messages       ChatMessage[]
-  auditLogs      ChatAuditLog[]
-  tradingSignals TradingSignal[]
-  tradingPolls   TradingPoll[]
-  branchChangeRequests ChatBranchChangeRequest[]
-
-  @@unique([mentorId, slug])
-  @@index([roomKind, isActive])
-}
-
-/// Channel / cabang under a mentor hub. Visibility (public/private) is per-branch.
-model ChatBranch {
-  id                 String                  @id @default(cuid())
-  roomId             String
-  name               String
-  slug               String
-  description        String?
-  mode               ChatBranchMode          @default(TWO_WAY)
-  senderPolicy       ChatBranchSenderPolicy  @default(MENTOR_ONLY)
-  /// PUBLIC = members can access; PRIVATE = mentor/moderator only (developers blocked).
-  visibility         ChatBranchVisibility    @default(PUBLIC)
-  sortOrder          Int                     @default(0)
-  isActive           Boolean                 @default(true)
-  createdAt          DateTime                @default(now())
-  updatedAt          DateTime                @updatedAt
-
-  room     ChatRoom       @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  messages ChatMessage[]
-  changeRequests ChatBranchChangeRequest[]
-
-  @@unique([roomId, slug])
-  @@index([roomId, sortOrder])
-}
-
-model ChatRoomMember {
-  id         String         @id @default(cuid())
-  roomId     String
-  userId     String
-  role       ChatMemberRole @default(MEMBER)
-  joinedAt   DateTime       @default(now())
-  lastReadAt DateTime?
-
-  room ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([roomId, userId])
-}
-
-model ChatMessage {
-  id          String      @id @default(cuid())
-  roomId      String
-  /// Set for mentor hub branches; null for PUBLIC rooms (room-level thread).
-  branchId    String?
-  userId      String
-  content     String
-  messageType MessageType @default(TEXT)
-  metadata    Json?
-  isPinned    Boolean     @default(false)
-  replyToId   String?
-  createdAt   DateTime    @default(now())
-  editedAt    DateTime?
-  deletedAt   DateTime?
-
-  room      ChatRoom              @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  branch    ChatBranch?           @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  user      User                  @relation(fields: [userId], references: [id])
-  replyTo   ChatMessage?          @relation("MessageReplies", fields: [replyToId], references: [id])
-  replies   ChatMessage[]         @relation("MessageReplies")
-  reactions ChatMessageReaction[]
-
-  @@index([roomId, branchId, createdAt])
-}
-
-model ChatMessageReaction {
-  id        String   @id @default(cuid())
-  messageId String
-  userId    String
-  emoji     String
-  createdAt DateTime @default(now())
-
-  message ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([messageId, userId, emoji])
-}
-
-model ChatAuditLog {
-  id        String   @id @default(cuid())
-  roomId    String
-  userId    String
-  action    String
-  metadata  Json?
-  createdAt DateTime @default(now())
-
-  room ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  user User     @relation(fields: [userId], references: [id])
-}
-
-model TradingSignal {
-  id          String          @id @default(cuid())
-  roomId      String
-  mentorId    String
-  ticker      String
-  instrument  Instrument
-  direction   SignalDirection
-  entryPrice  Float
-  targetPrice Float?
-  stopLoss    Float?
-  rationale   String?
-  status      SignalStatus    @default(ACTIVE)
-  createdAt   DateTime        @default(now())
-  closedAt    DateTime?
-
-  room   ChatRoom      @relation(fields: [roomId], references: [id])
-  mentor MentorProfile @relation(fields: [mentorId], references: [id])
-}
-
-model TradingPoll {
-  id        String    @id @default(cuid())
-  roomId    String
-  question  String
-  options   Json
-  expiresAt DateTime?
-  createdAt DateTime  @default(now())
-
-  room ChatRoom @relation(fields: [roomId], references: [id])
-}
-
-model AdminAuditLog {
-  id         String   @id @default(cuid())
-  adminId    String
-  action     String
-  entityType String
-  entityId   String
-  changes    Json?
-  ipAddress  String?
-  createdAt  DateTime @default(now())
-
-  admin User @relation(fields: [adminId], references: [id])
-}
-
-model ContentModerationQueue {
-  id          String           @id @default(cuid())
-  contentType String
-  contentId   String
-  reportedBy  String?
-  reason      String
-  status      ModerationStatus @default(PENDING)
-  reviewedBy  String?
-  createdAt   DateTime         @default(now())
-  reviewedAt  DateTime?
-
-  reporter User? @relation("ReportedBy", fields: [reportedBy], references: [id])
-  reviewer User? @relation("ReviewedBy", fields: [reviewedBy], references: [id])
-}
-
-/// Mentor proposes structural branch changes (add/rename/mode/remove). Admin approves.
-model ChatBranchChangeRequest {
-  id              String              @id @default(cuid())
-  roomId          String
-  mentorUserId    String
-  /// Existing branch for UPDATE/DELETE; null for CREATE
-  branchId        String?
-  action          ChangeRequestAction
-  summary         String
-  currentSnapshot Json?
-  proposedData    Json?
-  appliedData     Json?
-  status          ChangeRequestStatus @default(PENDING)
-  adminNote       String?
-  reviewedById    String?
-  reviewedAt      DateTime?
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-
-  room       ChatRoom   @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  branch     ChatBranch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  mentorUser User       @relation("ChatBranchChangeMentor", fields: [mentorUserId], references: [id])
-  reviewer   User?      @relation("ChatBranchChangeReviewer", fields: [reviewedById], references: [id])
-
-  @@index([status, createdAt])
-  @@index([roomId])
-  @@index([mentorUserId])
-}
-
-/// Mentor-submitted proposal to change course content. Only admin can approve & apply.
-model CourseChangeRequest {
-  id              String                  @id @default(cuid())
-  courseId        String
-  mentorUserId    String
-  targetType      ChangeRequestTargetType
-  action          ChangeRequestAction
-  /// Existing module id (for MODULE/LESSON updates/deletes, or parent for CREATE LESSON)
-  moduleId        String?
-  /// Existing lesson id (for LESSON updates/deletes)
-  lessonId        String?
-  /// Human-readable summary from mentor
-  summary         String
-  /// Snapshot of current values at submit time
-  currentSnapshot Json?
-  /// Proposed field values (CREATE/UPDATE payload)
-  proposedData    Json?
-  /// Final payload applied (may differ if admin edited before approve)
-  appliedData     Json?
-  status          ChangeRequestStatus     @default(PENDING)
-  adminNote       String?
-  reviewedById    String?
-  reviewedAt      DateTime?
-  createdAt       DateTime                @default(now())
-  updatedAt       DateTime                @updatedAt
-
-  course     Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  mentorUser User   @relation("ChangeRequestMentor", fields: [mentorUserId], references: [id])
-  reviewer   User?  @relation("ChangeRequestReviewer", fields: [reviewedById], references: [id])
-
-  @@index([status, createdAt])
-  @@index([courseId])
-  @@index([mentorUserId])
-}
-
-model PlatformConfig {
-  key       String   @id
-  value     Json
-  updatedAt DateTime @updatedAt
+enum PayoutStatus {
+  PENDING
+  PROCESSING
+  PAID
+  REFUNDED
+  FAILED
 }

@@ -2,7 +2,12 @@ import { NextRequest } from "next/server";
 import { ChatMemberRole } from "@prisma/client";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
-import { ensureMentorOwnerMembership } from "@/lib/chat/db-rooms";
+import { resolveTrustedEmail } from "@/lib/auth/request-identity";
+import {
+  assertCanAccessChatRoom,
+  ensureMentorOwnerMembership,
+  resolveChatRoomViewerFromEmail,
+} from "@/lib/chat/db-rooms";
 import { db } from "@/lib/db";
 
 type RouteContext = {
@@ -15,16 +20,42 @@ function mapRole(role: "MEMBER" | "MODERATOR" | "MENTOR") {
   return "member";
 }
 
-export async function GET(_request: NextRequest, context: RouteContext) {
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { roomId } = await context.params;
 
-    const room = await db.chatRoom.findUnique({ where: { id: roomId } });
+    const room = await db.chatRoom.findUnique({
+      where: { id: roomId },
+      select: {
+        id: true,
+        mentorId: true,
+        roomKind: true,
+        isStaffCollaboration: true,
+        isProtected: true,
+        isActive: true,
+      },
+    });
     if (!room) {
       return jsonError("Chat room not found", 404);
     }
 
-    // Self-heal: hub owner must appear as MENTOR (create or upgrade from MEMBER).
+    const email = await resolveTrustedEmail(request);
+    if (!email) {
+      return jsonError("Autentikasi diperlukan.", 401);
+    }
+
+    const viewer = await resolveChatRoomViewerFromEmail(email, {
+      createIfMissing: false,
+      userId: request.headers.get("x-user-id"),
+      name: request.headers.get("x-user-name"),
+      role: request.headers.get("x-user-role"),
+    });
+
+    const access = await assertCanAccessChatRoom({ room, viewer });
+    if (!access.ok) {
+      return jsonError(access.error, access.status);
+    }
+
     if (room.mentorId) {
       await ensureMentorOwnerMembership({
         roomId,
@@ -74,7 +105,6 @@ export async function GET(_request: NextRequest, context: RouteContext) {
           initials: mentor?.initials ?? name.slice(0, 2).toUpperCase(),
           role: mapRole(effectiveRole),
           isOnline: false,
-          // Prefer mentor public avatar when present; fall back to base user profile.
           avatarUrl: mentor?.avatarUrl ?? m.user.avatarUrl ?? undefined,
           username: name.split(" ")[0]?.toLowerCase(),
           profileSlug: mentor?.slug,

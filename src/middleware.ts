@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+import { checkApiRateLimit, rateLimitResponse } from "@/lib/auth/rate-limit";
 import {
   isKomunitasApiPath,
   isKomunitasPagePath,
@@ -8,6 +9,13 @@ import {
 } from "@/lib/features/komunitas";
 
 export function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/api/")) {
+    const rate = checkApiRateLimit(request);
+    if (!rate.allowed) {
+      return rateLimitResponse(rate.retryAfterSec);
+    }
+  }
+
   if (KOMUNITAS_ENABLED) {
     return NextResponse.next();
   }
@@ -27,6 +35,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/api/:path*",
     "/komunitas/:path*",
     "/admin/chat-rooms/:path*",
     "/mentor/chat/:path*",

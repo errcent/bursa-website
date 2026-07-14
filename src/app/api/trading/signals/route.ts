@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { requireMentor, unauthorizedMentor } from "@/lib/mentor/server";
 import { createTradingSignalSchema } from "@/lib/validations/api";
 
 export async function GET(request: NextRequest) {
@@ -37,7 +38,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const mentorUser = await requireMentor(request);
+    if (!mentorUser?.mentorProfile) return unauthorizedMentor();
+
     const body = createTradingSignalSchema.parse(await request.json());
+    if (body.mentorId !== mentorUser.mentorProfile.id) {
+      return jsonError("Anda hanya dapat memposting sinyal sebagai mentor Anda sendiri.", 403);
+    }
 
     const room = await db.chatRoom.findUnique({
       where: { id: body.roomId },

@@ -1,4 +1,9 @@
 import { registerDeviceOnLogin, touchDeviceSession } from "./devices";
+import {
+  hashPasswordForStorage,
+  normalizeStoredPassword,
+  verifyStoredPassword,
+} from "./password-storage";
 import type { AuthSession, LoginInput, RegisterInput, StoredUser, UserRole } from "./types";
 import {
   classifyLoginIdentifier,
@@ -24,7 +29,7 @@ const DEMO_USER: StoredUser = {
   email: "demo@bursa.id",
   username: "dinda_r",
   phone: "+6281110000002",
-  password: "demo1234",
+  password: hashPasswordForStorage("demo1234"),
   role: "learner",
   createdAt: "2026-01-15T00:00:00.000Z",
 };
@@ -35,7 +40,7 @@ const ADMIN_USER: StoredUser = {
   email: "admin@test.dev",
   username: "test_admin",
   phone: "+6281110000003",
-  password: "password123",
+  password: hashPasswordForStorage("password123"),
   role: "admin",
   createdAt: "2026-01-01T00:00:00.000Z",
 };
@@ -46,7 +51,7 @@ const LEARNER_USER: StoredUser = {
   email: "learner@test.dev",
   username: "test_learner",
   phone: "+6281110000001",
-  password: "password123",
+  password: hashPasswordForStorage("password123"),
   role: "learner",
   createdAt: "2026-01-01T00:00:00.000Z",
 };
@@ -57,7 +62,7 @@ const MENTOR_USER: StoredUser = {
   email: "mentor@test.dev",
   username: "test_mentor",
   phone: "+6281110000004",
-  password: "password123",
+  password: hashPasswordForStorage("password123"),
   role: "mentor",
   createdAt: "2026-01-01T00:00:00.000Z",
 };
@@ -68,7 +73,7 @@ const DEVELOPER_USER: StoredUser = {
   email: "developer@test.dev",
   username: "test_developer",
   phone: "+6281110000005",
-  password: "password123",
+  password: hashPasswordForStorage("password123"),
   role: "developer",
   createdAt: "2026-01-01T00:00:00.000Z",
 };
@@ -96,6 +101,7 @@ function normalizeUser(user: StoredUser): StoredUser {
   return {
     ...user,
     role: user.role ?? roleForEmail(user.email),
+    password: normalizeStoredPassword(user.password),
   };
 }
 
@@ -173,10 +179,14 @@ function readUsers(): StoredUser[] {
 
 function writeUsers(users: StoredUser[]) {
   if (!isBrowser()) return;
-  const raw = JSON.stringify(users);
+  const normalized = users.map((user) => ({
+    ...user,
+    password: normalizeStoredPassword(user.password),
+  }));
+  const raw = JSON.stringify(normalized);
   localStorage.setItem(USERS_KEY, raw);
   cachedUsersRaw = raw;
-  cachedUsers = users;
+  cachedUsers = normalized;
 }
 
 function findStoredUserByIdentifier(identifier: string): StoredUser | undefined {
@@ -323,7 +333,7 @@ export function login(input: LoginInput): { ok: true; session: AuthSession } | {
   if (!user) {
     return { ok: false, error: "Username, email, telepon, atau kata sandi salah." };
   }
-  if (user.password !== input.password) {
+  if (!verifyStoredPassword(user.password, input.password)) {
     return { ok: false, error: "Username, email, telepon, atau kata sandi salah." };
   }
 
@@ -376,7 +386,7 @@ export function register(
     email,
     username,
     phone: phone ?? null,
-    password: input.password,
+    password: hashPasswordForStorage(input.password),
     role: "learner",
     createdAt: new Date().toISOString(),
   };
@@ -506,19 +516,19 @@ export function getStoredUserCreatedAt(email: string): string | null {
 }
 
 export function getDemoCredentials() {
-  return { identifier: DEMO_USER.email, password: DEMO_USER.password };
+  return { identifier: DEMO_USER.email, password: "demo1234" };
 }
 
 export function getAdminCredentials() {
-  return { email: ADMIN_USER.email, password: ADMIN_USER.password };
+  return { email: ADMIN_USER.email, password: "password123" };
 }
 
 export function getMentorCredentials() {
-  return { email: MENTOR_USER.email, password: MENTOR_USER.password };
+  return { email: MENTOR_USER.email, password: "password123" };
 }
 
 export function getDeveloperCredentials() {
-  return { email: DEVELOPER_USER.email, password: DEVELOPER_USER.password };
+  return { email: DEVELOPER_USER.email, password: "password123" };
 }
 
 /** Sync localStorage mock password after server-side bcrypt reset. */
@@ -529,6 +539,6 @@ export function syncLocalPasswordAfterReset(email: string, newPassword: string) 
   const idx = users.findIndex((u) => u.email === normalized);
   if (idx < 0) return;
   const nextUsers = [...users];
-  nextUsers[idx] = { ...nextUsers[idx], password: newPassword };
+  nextUsers[idx] = { ...nextUsers[idx], password: hashPasswordForStorage(newPassword) };
   writeUsers(nextUsers);
 }

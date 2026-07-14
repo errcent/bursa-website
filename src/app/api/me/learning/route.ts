@@ -3,9 +3,9 @@ import { NextRequest } from "next/server";
 import { computeProgressPercent } from "@/lib/learning/progress";
 import { instrumentToUi } from "@/lib/admin/server";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { healHubMembershipsForUserEnrollments } from "@/lib/chat/db-rooms";
 import { db } from "@/lib/db";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
 
 /**
  * Learner dashboard payload: enrollments + lesson progress for the signed-in user.
@@ -13,30 +13,13 @@ import { resolveRequestUser } from "@/lib/lesson-qa/server";
  */
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.nextUrl.searchParams.get("userId") ?? undefined;
-    const email =
-      request.nextUrl.searchParams.get("email")?.trim().toLowerCase() ||
-      request.headers.get("x-user-email")?.trim().toLowerCase() ||
-      undefined;
-
-    if (!userId && !email) {
-      return jsonError("Autentikasi diperlukan.", 401);
-    }
-
-    const user = await resolveRequestUser(
-      { userId: userId ?? "", email },
-      { createIfMissing: false }
-    );
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: false,
+      claimedUserId: request.nextUrl.searchParams.get("userId"),
+    });
 
     if (!user) {
-      return jsonOk({
-        courses: [],
-        summary: {
-          enrolledCount: 0,
-          completedCourses: 0,
-          totalHoursLearned: 0,
-        },
-      });
+      return jsonError("Autentikasi diperlukan.", 401);
     }
 
     // Enrollment without mentor-hub ChatRoomMember → repair on dashboard load.

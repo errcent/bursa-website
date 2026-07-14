@@ -1,30 +1,15 @@
 import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import {
   AVATAR_MAX_INPUT_BYTES,
   processAvatarImage,
 } from "@/lib/avatar-processing";
 import { deleteLocalAvatarFile, persistAvatar } from "@/lib/avatar-storage";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
 import { db } from "@/lib/db";
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
-
-function resolveIdentity(request: NextRequest, formData?: FormData) {
-  const email =
-    String(formData?.get("email") ?? "").trim().toLowerCase() ||
-    request.headers.get("x-user-email")?.trim().toLowerCase() ||
-    undefined;
-  const userId =
-    String(formData?.get("userId") ?? "").trim() ||
-    request.headers.get("x-user-id") ||
-    "";
-  const name = String(formData?.get("name") ?? "").trim() || undefined;
-  const role = String(formData?.get("role") ?? "").trim() || undefined;
-
-  return { userId, email, name, role };
-}
 
 function serializeProfile(user: {
   id: string;
@@ -75,14 +60,17 @@ export async function POST(request: NextRequest) {
       return jsonError("Ukuran foto maksimal 5 MB.", 400);
     }
 
-    const identity = resolveIdentity(request, formData);
-    if (!identity.userId && !identity.email) {
-      return jsonError("Autentikasi diperlukan.", 401);
-    }
+    const claimedUserId =
+      String(formData.get("userId") ?? "").trim() ||
+      request.headers.get("x-user-id") ||
+      undefined;
 
-    const user = await resolveRequestUser(identity, { createIfMissing: true });
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: true,
+      claimedUserId,
+    });
     if (!user) {
-      return jsonError("Pengguna tidak ditemukan.", 404);
+      return jsonError("Autentikasi diperlukan.", 401);
     }
 
     const rawBuffer = Buffer.from(await file.arrayBuffer());
@@ -130,14 +118,17 @@ export async function POST(request: NextRequest) {
  */
 export async function DELETE(request: NextRequest) {
   try {
-    const identity = resolveIdentity(request);
-    if (!identity.userId && !identity.email) {
-      return jsonError("Autentikasi diperlukan.", 401);
-    }
+    const claimedUserId =
+      request.nextUrl.searchParams.get("userId") ||
+      request.headers.get("x-user-id") ||
+      undefined;
 
-    const user = await resolveRequestUser(identity, { createIfMissing: false });
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: false,
+      claimedUserId,
+    });
     if (!user) {
-      return jsonError("Pengguna tidak ditemukan.", 404);
+      return jsonError("Autentikasi diperlukan.", 401);
     }
 
     if (!user.avatarUrl) {

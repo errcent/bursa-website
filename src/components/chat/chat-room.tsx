@@ -688,8 +688,17 @@ export function ChatRoomView({
   useEffect(() => {
     if (branchLoadInFlightRef.current) return;
     const key = pollScopeKey(room.id, effectiveBranchId);
-    branchMessagesCacheRef.current.set(key, messages);
-  }, [messages, room.id, effectiveBranchId]);
+    // Only cache when the active poll scope matches — avoids writing stale
+    // messages from a previous cabang into the new branch key on fast switches.
+    if (activePollScopeRef.current !== key) return;
+    const scoped = filterMessagesForScope(
+      messages,
+      room.id,
+      effectiveBranchId,
+      hasBranches
+    );
+    branchMessagesCacheRef.current.set(key, scoped);
+  }, [messages, room.id, effectiveBranchId, hasBranches]);
 
   useEffect(() => {
     const tick = () => {

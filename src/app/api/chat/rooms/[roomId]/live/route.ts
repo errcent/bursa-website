@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { setRoomLiveSchema } from "@/lib/validations/api";
 
 type RouteContext = {
@@ -12,6 +13,13 @@ export async function POST(request: NextRequest, context: RouteContext) {
     const { roomId } = await context.params;
     const body = setRoomLiveSchema.parse(await request.json());
 
+    const actor = await resolveAuthenticatedUser(request, {
+      claimedUserId: body.userId,
+    });
+    if (!actor) {
+      return jsonError("Autentikasi diperlukan.", 401);
+    }
+
     const room = await db.chatRoom.findUnique({
       where: { id: roomId },
       include: { mentor: { select: { userId: true } } },
@@ -21,11 +29,11 @@ export async function POST(request: NextRequest, context: RouteContext) {
     }
 
     const membership = await db.chatRoomMember.findUnique({
-      where: { roomId_userId: { roomId, userId: body.userId } },
+      where: { roomId_userId: { roomId, userId: actor.id } },
     });
 
     const isMentor =
-      room.mentor?.userId === body.userId || membership?.role === "MENTOR";
+      room.mentor?.userId === actor.id || membership?.role === "MENTOR";
 
     if (!isMentor) {
       return jsonError("Only mentors can start or end a live session", 403);
@@ -49,7 +57,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     await db.chatAuditLog.create({
       data: {
         roomId,
-        userId: body.userId,
+        userId: actor.id,
         action: body.isLive ? "LIVE_STARTED" : "LIVE_ENDED",
         metadata: {
           liveTitle: updated.liveTitle,
@@ -61,7 +69,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       await db.chatMessage.create({
         data: {
           roomId,
-          userId: body.userId,
+          userId: actor.id,
           content: `🔴 Mentor sedang live${updated.liveTitle ? `: ${updated.liveTitle}` : ""}`,
           messageType: "ANNOUNCEMENT",
           metadata: {

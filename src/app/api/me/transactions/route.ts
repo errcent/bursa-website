@@ -1,31 +1,21 @@
 import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { db } from "@/lib/db";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
 
 /**
  * Riwayat transaksi pengguna (3 terakhir) untuk halaman Pengaturan → Pembayaran.
  */
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.nextUrl.searchParams.get("userId") ?? undefined;
-    const email =
-      request.nextUrl.searchParams.get("email")?.trim().toLowerCase() ||
-      request.headers.get("x-user-email")?.trim().toLowerCase() ||
-      undefined;
-
-    if (!userId && !email) {
-      return jsonError("Autentikasi diperlukan.", 401);
-    }
-
-    const user = await resolveRequestUser(
-      { userId: userId ?? "", email },
-      { createIfMissing: false }
-    );
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: false,
+      claimedUserId: request.nextUrl.searchParams.get("userId"),
+    });
 
     if (!user) {
-      return jsonOk({ transactions: [] });
+      return jsonError("Autentikasi diperlukan.", 401);
     }
 
     const transactions = await db.transaction.findMany({

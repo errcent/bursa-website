@@ -10,7 +10,7 @@ import { useAuth } from "@/components/auth-provider";
 import { GoogleSignInButton, OAuthSessionSync } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { getDemoCredentials } from "@/lib/auth/client";
-import { buildLoginHref, resolvePostAuthRedirect, POST_AUTH_HOME } from "@/lib/auth/redirect";
+import { resolvePostAuthRedirect, POST_AUTH_HOME } from "@/lib/auth/redirect";
 
 export function LoginForm() {
   const { login, session, isLoading } = useAuth();

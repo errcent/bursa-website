@@ -2,6 +2,11 @@ import { courses, mentors, getMentorBySlug } from "@/lib/mock-data";
 import type { Course, Mentor } from "@/lib/types";
 import { hasRating } from "@/lib/utils";
 
+export type SearchCatalogIndex = {
+  courses: Course[];
+  mentors: Mentor[];
+};
+
 export type SearchResultType = "course" | "mentor" | "topic";
 
 export interface SearchResult {

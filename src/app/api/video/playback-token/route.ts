@@ -1,50 +1,59 @@
 import { NextResponse } from "next/server";
 
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { db } from "@/lib/db";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
-import { getCourseBySlug } from "@/lib/mock-data";
 import { DEMO_VIDEO_URL } from "@/lib/video/demo";
-import { findLessonInCourse, isLessonFreePreview } from "@/lib/video/lesson-access";
-import {
-  canAccessVideo,
-  generatePlaybackToken,
-  isPreviewLesson,
-} from "@/lib/video/protection";
+import { generatePlaybackToken } from "@/lib/video/protection";
 
-async function hasDbEnrollment(
-  userId: string,
-  courseSlug: string,
-  email?: string
-): Promise<boolean> {
-  const user = await resolveRequestUser({ userId, email }, { createIfMissing: false });
-  if (!user) return false;
-
-  const course = await db.course.findUnique({
-    where: { slug: courseSlug },
-    select: { id: true },
+async function getLessonContext(courseSlug: string, lessonId: string) {
+  return db.lesson.findFirst({
+    where: {
+      OR: [{ id: lessonId }, { legacyId: lessonId }],
+      module: { course: { slug: courseSlug } },
+    },
+    select: {
+      id: true,
+      videoUrl: true,
+      isPreviewGratis: true,
+      sortOrder: true,
+      module: {
+        select: {
+          sortOrder: true,
+          course: { select: { id: true, slug: true } },
+        },
+      },
+    },
   });
-  if (!course) return false;
+}
 
+async function hasDbEnrollment(userId: string, courseId: string): Promise<boolean> {
   const enrollment = await db.enrollment.findUnique({
     where: {
-      userId_courseId: { userId: user.id, courseId: course.id },
+      userId_courseId: { userId, courseId },
     },
     select: { id: true },
   });
   return Boolean(enrollment);
 }
 
+function isServerFreePreview(lesson: {
+  isPreviewGratis: boolean;
+  sortOrder: number;
+  module: { sortOrder: number };
+}): boolean {
+  if (lesson.isPreviewGratis) return true;
+  return lesson.module.sortOrder === 0 && lesson.sortOrder === 0;
+}
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {
       userId?: string;
-      email?: string;
       courseId?: string;
       lessonId?: string;
-      isPreview?: boolean;
     };
 
-    const { userId, email, courseId, lessonId, isPreview } = body;
+    const { courseId, lessonId } = body;
 
     if (!courseId || !lessonId) {
       return NextResponse.json(
@@ -53,50 +62,39 @@ export async function POST(request: Request) {
       );
     }
 
-    const course = getCourseBySlug(courseId);
-    if (!course) {
-      return NextResponse.json({ error: "Kelas tidak ditemukan." }, { status: 404 });
-    }
-
-    const lesson = course.modules
-      .flatMap((m) => m.lessons)
-      .find((l) => l.id === lessonId);
-
+    const lesson = await getLessonContext(courseId, lessonId);
     if (!lesson) {
       return NextResponse.json({ error: "Lesson tidak ditemukan." }, { status: 404 });
     }
 
-    const lessonContext = findLessonInCourse(course, lessonId);
-    const freePreview = lessonContext
-      ? isLessonFreePreview(lesson, lessonContext.moduleIndex, lessonContext.lessonIndex)
-      : isPreviewLesson(lesson);
+    const previewMode = isServerFreePreview(lesson);
 
-    // Explicit client flag wins; otherwise treat free-preview lessons as preview.
-    const previewMode = isPreview ?? freePreview;
+    let viewerId: string | null = null;
+    if (!previewMode) {
+      const user = await resolveAuthenticatedUser(request, {
+        createIfMissing: false,
+        claimedUserId: body.userId,
+      });
+      if (!user) {
+        return NextResponse.json(
+          { error: "Masuk diperlukan untuk mengakses konten berbayar." },
+          { status: 401 }
+        );
+      }
 
-    if (!previewMode && !userId) {
-      return NextResponse.json(
-        { error: "Masuk diperlukan untuk mengakses konten berbayar." },
-        { status: 401 }
-      );
-    }
-
-    if (!previewMode && userId) {
-      const localAccess = canAccessVideo(userId, courseId, lesson);
-      const dbEnrolled = localAccess
-        ? true
-        : await hasDbEnrollment(userId, courseId, email);
-
-      if (!localAccess && !dbEnrolled) {
+      const enrolled = await hasDbEnrollment(user.id, lesson.module.course.id);
+      if (!enrolled) {
         return NextResponse.json(
           { error: "Anda belum terdaftar di kelas ini." },
           { status: 403 }
         );
       }
+
+      viewerId = user.id;
     }
 
-    const tokenPayload = userId
-      ? generatePlaybackToken(userId, lessonId)
+    const tokenPayload = viewerId
+      ? generatePlaybackToken(viewerId, lessonId)
       : {
           token: generatePlaybackToken("guest", lessonId).token,
           expiresAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
@@ -106,7 +104,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ...tokenPayload,
-      videoUrl: DEMO_VIDEO_URL,
+      videoUrl: lesson.videoUrl ?? DEMO_VIDEO_URL,
       isPreview: previewMode,
       courseId,
     });

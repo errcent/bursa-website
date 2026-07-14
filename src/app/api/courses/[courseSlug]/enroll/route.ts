@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveAuthenticatedUser, resolveTrustedEmail } from "@/lib/auth/request-identity";
+import { isPrototypeMode } from "@/lib/auth/prototype";
 import { ensureHubMembershipForCourseEnrollment } from "@/lib/chat/db-rooms";
 import { db } from "@/lib/db";
 import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
@@ -11,25 +13,16 @@ type RouteContext = {
   params: Promise<{ courseSlug: string }>;
 };
 
-/**
- * Check whether the current user is enrolled (subscribed) in this course.
- * Query: ?userId=&email=  or header x-user-email.
- */
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { courseSlug } = await context.params;
-    const userId = request.nextUrl.searchParams.get("userId") ?? undefined;
-    const email =
-      request.nextUrl.searchParams.get("email")?.trim().toLowerCase() ||
-      request.headers.get("x-user-email")?.trim().toLowerCase() ||
-      undefined;
-
-    if (!userId && !email) {
+    const email = await resolveTrustedEmail(request);
+    if (!email) {
       return jsonOk({ enrolled: false });
     }
 
     const user = await resolveRequestUser(
-      { userId: userId ?? "", email },
+      { userId: "", email },
       { createIfMissing: false }
     );
     if (!user) {
@@ -51,8 +44,6 @@ export async function GET(request: NextRequest, context: RouteContext) {
       select: { id: true },
     });
 
-    // Heal hub membership if enrollment exists but ChatRoomMember was missed
-    // (e.g. older enroll path before client-auth bridge).
     let hubRoomId: string | null = null;
     if (enrollment && KOMUNITAS_ENABLED) {
       const hub = await ensureHubMembershipForCourseEnrollment({
@@ -72,43 +63,19 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 }
 
-/**
- * Demo / future checkout hook: create enrollment and subscribe the learner
- * to that mentor's community hub (ChatRoomMember).
- *
- * Client-auth users live in localStorage and often have no Prisma row yet —
- * resolveRequestUser({ createIfMissing: true }) bridges by email so hub
- * membership is created for newly registered checkout users.
- */
 export async function POST(request: NextRequest, context: RouteContext) {
   try {
     const { courseSlug } = await context.params;
     const body = (await request.json().catch(() => ({}))) as {
-      email?: string;
-      name?: string;
-      role?: string;
       userId?: string;
     };
 
-    const email =
-      request.headers.get("x-user-email")?.trim().toLowerCase() ||
-      body.email?.trim().toLowerCase() ||
-      undefined;
-    if (!email) {
-      return jsonError("Autentikasi diperlukan.", 401);
-    }
-
-    const user = await resolveRequestUser(
-      {
-        userId: body.userId?.trim() || "",
-        email,
-        name: body.name,
-        role: body.role,
-      },
-      { createIfMissing: true }
-    );
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: true,
+      claimedUserId: body.userId,
+    });
     if (!user) {
-      return jsonError("Pengguna tidak ditemukan.", 404);
+      return jsonError("Autentikasi diperlukan.", 401);
     }
 
     const course = await db.course.findUnique({
@@ -117,6 +84,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
     });
     if (!course) {
       return jsonError("Kelas tidak ditemukan.", 404);
+    }
+
+    const isFreeCourse = course.price <= 0;
+    if (!isPrototypeMode() && !isFreeCourse) {
+      return jsonError(
+        "Enrollment berbayar memerlukan pembayaran melalui checkout.",
+        402
+      );
     }
 
     const existing = await db.enrollment.findUnique({
@@ -133,7 +108,6 @@ export async function POST(request: NextRequest, context: RouteContext) {
       update: {},
     });
 
-    // Record revenue line on first enrollment (demo checkout → real Transaction row).
     if (!existing) {
       await db.transaction.create({
         data: {
@@ -145,10 +119,12 @@ export async function POST(request: NextRequest, context: RouteContext) {
       });
     }
 
-    const hub = await ensureHubMembershipForCourseEnrollment({
-      userId: user.id,
-      courseId: course.id,
-    });
+    const hub = KOMUNITAS_ENABLED
+      ? await ensureHubMembershipForCourseEnrollment({
+          userId: user.id,
+          courseId: course.id,
+        })
+      : null;
 
     if (!existing) {
       await recalculateStatsForCourse(course.id);

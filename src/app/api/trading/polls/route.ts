@@ -2,6 +2,12 @@ import { ChatRoomKind } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveTrustedEmail } from "@/lib/auth/request-identity";
+import {
+  assertCanAccessChatRoom,
+  listChatRoomsForViewer,
+  resolveChatRoomViewerFromEmail,
+} from "@/lib/chat/db-rooms";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
 import { createTradingPollSchema } from "@/lib/validations/api";
 
@@ -17,9 +23,49 @@ export async function GET(request: NextRequest) {
     const { searchParams } = request.nextUrl;
     const roomId = searchParams.get("roomId");
 
+    const email = (await resolveTrustedEmail(request)) ?? undefined;
+    const viewer = await resolveChatRoomViewerFromEmail(email, {
+      createIfMissing: true,
+      userId: request.headers.get("x-user-id"),
+      name: request.headers.get("x-user-name"),
+      role: request.headers.get("x-user-role"),
+    });
+    if (!viewer) {
+      return jsonError("Autentikasi diperlukan.", 401);
+    }
+
+    let accessibleRoomIds: string[];
+
+    if (roomId) {
+      const room = await db.chatRoom.findUnique({
+        where: { id: roomId },
+        select: {
+          id: true,
+          roomKind: true,
+          mentorId: true,
+          isActive: true,
+          isStaffCollaboration: true,
+          isProtected: true,
+        },
+      });
+      if (!room || !room.isActive) {
+        return jsonError("Chat room not found", 404);
+      }
+
+      const access = await assertCanAccessChatRoom({ room, viewer });
+      if (!access.ok) {
+        return jsonError(access.error, access.status);
+      }
+
+      accessibleRoomIds = [roomId];
+    } else {
+      const rooms = await listChatRoomsForViewer(viewer);
+      accessibleRoomIds = rooms.map((r) => r.id);
+    }
+
     const polls = await db.tradingPoll.findMany({
       where: {
-        ...(roomId ? { roomId } : {}),
+        roomId: { in: accessibleRoomIds },
       },
       include: {
         room: {

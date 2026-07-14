@@ -1,7 +1,15 @@
 import type { Lesson } from "@/lib/types";
 
+import { isPrototypeMode } from "@/lib/auth/prototype";
+
 const ENROLLMENTS_KEY = "bursa-enrollments";
-const TOKEN_SECRET = "bursa-demo-secret-v1";
+
+function requireTokenSecret(): string {
+  const secret = process.env.VIDEO_TOKEN_SECRET?.trim();
+  if (secret) return secret;
+  if (isPrototypeMode()) return "bursa-demo-secret-v1";
+  throw new Error("VIDEO_TOKEN_SECRET must be set in production.");
+}
 
 export type ProtectionViolationType =
   | "screen_capture"
@@ -83,7 +91,8 @@ function encodeBase64(value: string): string {
 export function generatePlaybackToken(userId: string, lessonId: string): PlaybackToken {
   const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
   const payload = `${userId}:${lessonId}:${expiresAt}`;
-  const signature = encodeBase64(`${payload}:${TOKEN_SECRET}`);
+  const tokenSecret = requireTokenSecret();
+  const signature = encodeBase64(`${payload}:${tokenSecret}`);
   const token = encodeBase64(`${payload}:${signature}`);
 
   return { token, expiresAt, lessonId, userId };

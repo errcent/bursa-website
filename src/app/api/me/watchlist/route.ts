@@ -2,8 +2,8 @@ import { NextRequest } from "next/server";
 
 import { instrumentToUi } from "@/lib/admin/server";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { db } from "@/lib/db";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
 import { createWatchlistItemSchema } from "@/lib/validations/api";
 
 function serializeWatchlistItem(item: {
@@ -28,23 +28,13 @@ function serializeWatchlistItem(item: {
  */
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.nextUrl.searchParams.get("userId") ?? undefined;
-    const email =
-      request.nextUrl.searchParams.get("email")?.trim().toLowerCase() ||
-      request.headers.get("x-user-email")?.trim().toLowerCase() ||
-      undefined;
-
-    if (!userId && !email) {
-      return jsonError("Autentikasi diperlukan.", 401);
-    }
-
-    const user = await resolveRequestUser(
-      { userId: userId ?? "", email },
-      { createIfMissing: false }
-    );
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: false,
+      claimedUserId: request.nextUrl.searchParams.get("userId"),
+    });
 
     if (!user) {
-      return jsonOk({ items: [] });
+      return jsonError("Autentikasi diperlukan.", 401);
     }
 
     const items = await db.watchlistItem.findMany({
@@ -61,22 +51,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = createWatchlistItemSchema.parse(await request.json());
-    const headerEmail = request.headers.get("x-user-email")?.trim().toLowerCase();
-    const email = body.email?.trim().toLowerCase() || headerEmail;
-
-    if (!body.userId && !email) {
-      return jsonError("Autentikasi diperlukan.", 401);
-    }
-
-    const user = await resolveRequestUser({
-      userId: body.userId ?? "",
-      email,
-      name: body.name,
-      role: body.role,
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: true,
+      claimedUserId: body.userId,
     });
 
     if (!user) {
-      return jsonError("Pengguna tidak ditemukan.", 404);
+      return jsonError("Autentikasi diperlukan.", 401);
     }
 
     const existing = await db.watchlistItem.findUnique({
