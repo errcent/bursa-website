@@ -6,7 +6,10 @@ import { ArrowRight, Star } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
-import { ScrollCarousel } from "@/components/scroll-carousel";
+import {
+  ScrollCarousel,
+  peekGetScrollPerView,
+} from "@/components/scroll-carousel";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { Review } from "@/lib/types";
 import { cn, formatRating } from "@/lib/utils";
@@ -36,6 +39,8 @@ const TILT_LAYOUTS = [
 ] as const;
 
 const cardTransition = { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const };
+
+const TESTIMONIAL_MOBILE_GAP = 8;
 
 interface TestimonialShowcaseProps {
   reviews: Review[];
@@ -71,16 +76,6 @@ function TiltedReviewCard({ review, index }: { review: Review; index: number }) 
       <p className="line-clamp-4 flex-1 text-sm leading-relaxed text-muted-foreground/95">
         {review.comment}
       </p>
-      {review.courseTag || review.mentorTag ? (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {review.courseTag ? (
-            <span className="badge-muted truncate">{review.courseTag}</span>
-          ) : null}
-          {review.mentorTag ? (
-            <span className="badge-muted truncate">{review.mentorTag}</span>
-          ) : null}
-        </div>
-      ) : null}
       <footer className="mt-4 flex items-center gap-2 border-t border-border/50 pt-3">
         <Avatar className="size-7 border border-border/80 bg-surface-2">
           <AvatarFallback className="bg-surface-2 text-[10px] font-medium">
@@ -95,7 +90,7 @@ function TiltedReviewCard({ review, index }: { review: Review; index: number }) 
   if (prefersReducedMotion) {
     return (
       <div
-        className="testimonial-tilt-item group h-full shrink-0 sm:w-auto sm:min-w-0 sm:flex-1"
+        className="testimonial-tilt-item group h-full w-full sm:w-auto sm:min-w-0 sm:flex-1"
         style={{
           zIndex: layout.zIndex,
           transform: `rotate(${layout.rotate}deg)`,
@@ -109,7 +104,7 @@ function TiltedReviewCard({ review, index }: { review: Review; index: number }) 
 
   return (
     <motion.div
-      className="testimonial-tilt-item group h-full shrink-0 sm:w-auto sm:min-w-0 sm:flex-1"
+      className="testimonial-tilt-item group h-full w-full sm:w-auto sm:min-w-0 sm:flex-1"
       style={{ zIndex: layout.zIndex, transformOrigin: layout.origin }}
       initial={false}
       animate={{ rotate: layout.rotate }}
@@ -169,9 +164,9 @@ export function TestimonialShowcase({
             <div className="sm:hidden">
               <ScrollCarousel
                 ariaLabel="Ulasan pengalaman belajar"
-                naturalItemWidth
                 hideArrows
-                gap={12}
+                getPerView={peekGetScrollPerView}
+                gap={TESTIMONIAL_MOBILE_GAP}
                 viewportClassName="landing-scroll-carousel testimonial-scroll-carousel"
                 onActiveIndexChange={setActiveIndex}
               >

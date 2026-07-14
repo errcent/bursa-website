@@ -761,11 +761,6 @@
       padding: 1rem;
     }
 
-    .testimonial-tilt-item {
-      width: var(--carousel-peek-item-width);
-      max-width: 18rem;
-    }
-
     .testimonial-featured-card {
       padding: 1.25rem 1rem;
     }
