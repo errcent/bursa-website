@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Building2,
@@ -244,15 +244,18 @@ export function SettingsPayment() {
   const [billing, setBilling] = useState<BillingTransaction[]>([]);
   const [billingLoading, setBillingLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
+  const [methods, setMethods] = useState<SavedPaymentMethod[]>([]);
 
-  const methods = useSyncExternalStore(
-    subscribeSavedPaymentMethods,
-    () =>
-      session
-        ? getSavedPaymentMethods(session.userId, session.email)
-        : [],
-    () => []
-  );
+  useEffect(() => {
+    if (!session) return;
+
+    const syncMethods = () => {
+      setMethods(getSavedPaymentMethods(session.userId, session.email));
+    };
+
+    syncMethods();
+    return subscribeSavedPaymentMethods(syncMethods);
+  }, [session]);
 
   useEffect(() => {
     if (!session) return;

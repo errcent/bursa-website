@@ -8,7 +8,7 @@ const AUTH_PAGES = ["/masuk", "/daftar"];
  * Deep links (e.g. /belajar/..., /jadi-mentor, /admin) may still be honored
  * when present on the same login URL.
  */
-const NON_RETURNABLE = new Set(["/dashboard", "/pengaturan", "/profil"]);
+const NON_RETURNABLE = new Set(["/dashboard", "/profil"]);
 
 function pathOnly(href: string) {
   return href.split("?")[0]?.split("#")[0] ?? href;
