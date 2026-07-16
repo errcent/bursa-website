@@ -119,7 +119,7 @@ export function GoogleSignInButton({ mode }: { mode: "login" | "register" }) {
       </Button>
       <p className="text-center text-xs leading-relaxed text-muted-foreground">
         Kami hanya meminta email dan profil publik Google. Data diproses sesuai{" "}
-        <Link href="/kebijakan-privasi" className="font-medium underline-offset-4 hover:underline">
+        <Link href="/privasi/kebijakan" className="font-medium underline-offset-4 hover:underline">
           Kebijakan Privasi
         </Link>
         .

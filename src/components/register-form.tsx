@@ -275,7 +275,7 @@ export function RegisterForm() {
       <p className="text-xs leading-relaxed text-muted-foreground">
         Dengan mendaftar, kamu menyetujui bahwa materi di platform ini bersifat edukasi — bukan
         rekomendasi investasi. Lihat{" "}
-        <Link href="/kebijakan-privasi" className="font-medium underline-offset-4 hover:underline">
+        <Link href="/privasi/kebijakan" className="font-medium underline-offset-4 hover:underline">
           Kebijakan Privasi
         </Link>
         .

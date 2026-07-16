@@ -10,6 +10,7 @@ import { CursorGlow } from "@/components/cursor-glow";
 import { NavbarRouteTracker } from "@/components/navbar-route-tracker";
 import { PreloaderGate } from "@/components/preloader-gate";
 import { StickyBottomCta } from "@/components/sticky-bottom-cta";
+import { CookieConsentBanner } from "@/components/trust-portal/cookie-consent-banner";
 
 import { SearchSeoJsonLd } from "@/components/search/search-seo-jsonld";
 
@@ -77,6 +78,7 @@ export default function RootLayout({
                 <LanguageProvider>
                   {children}
                   <StickyBottomCta />
+                  <CookieConsentBanner />
                 </LanguageProvider>
               </AuthProvider>
             </NextAuthProvider>

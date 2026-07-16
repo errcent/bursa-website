@@ -377,7 +377,7 @@ export function MentorApplicationForm() {
             Syarat & Ketentuan
           </Link>
           ,{" "}
-          <Link href="/kebijakan-privasi" className="font-medium text-foreground underline-offset-4 hover:underline">
+          <Link href="/privasi/kebijakan" className="font-medium text-foreground underline-offset-4 hover:underline">
             Kebijakan Privasi
           </Link>
           , dan memahami bahwa materi edukasi bukan rekomendasi investasi.

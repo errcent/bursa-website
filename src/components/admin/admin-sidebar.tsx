@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Settings,
   Shield,
+  FileText,
   Users,
   UserSquare2,
 } from "lucide-react";
@@ -29,6 +30,7 @@ const allLinks = [
   { href: "/admin/branch-change-requests", label: "Usulan Cabang", icon: GitBranch },
   { href: "/admin/chat-rooms", label: "Chat Room", icon: MessageSquare },
   { href: "/admin/moderation", label: "Moderasi", icon: Shield },
+  { href: "/admin/dokumen-publik", label: "Dokumen Publik", icon: FileText },
   { href: "/admin/users", label: "Pengguna", icon: Users },
   { href: "/admin/settings", label: "Pengaturan", icon: Settings },
 ];

@@ -27,7 +27,8 @@ const HIDDEN_PATH_PREFIXES = [
   "/kelas",
   "/instruktur",
   "/jadi-mentor",
-  "/kebijakan-privasi",
+  "/privasi",
+  "/kepercayaan",
   "/syarat-dan-ketentuan",
 ] as const;
 
