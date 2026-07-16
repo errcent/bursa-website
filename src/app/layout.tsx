@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Inter, JetBrains_Mono, Montserrat_Alternates } from "next/font/google";
+import { Inter, JetBrains_Mono, Montserrat, Montserrat_Alternates } from "next/font/google";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
@@ -24,9 +24,17 @@ const fontSans = Inter({
   display: "swap",
 });
 
-/** Headings, bold text, brand wordmark */
-const fontHeading = Montserrat_Alternates({
+/** Headings, bold text, buttons */
+const fontHeading = Montserrat({
   variable: "--font-heading",
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  display: "swap",
+});
+
+/** Preloader brand wordmark only ("bursanalar.") */
+const fontBrandAlt = Montserrat_Alternates({
+  variable: "--font-brand-alt",
   subsets: ["latin"],
   weight: ["600", "700", "800"],
   display: "swap",
@@ -61,7 +69,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${fontSans.variable} ${fontHeading.variable} ${fontMono.variable} h-full antialiased`}
+      className={`${fontSans.variable} ${fontHeading.variable} ${fontBrandAlt.variable} ${fontMono.variable} h-full antialiased`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
