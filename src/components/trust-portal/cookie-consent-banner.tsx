@@ -39,6 +39,7 @@ export function CookieConsentBanner() {
       role="dialog"
       aria-label="Preferensi cookie"
       className="fixed inset-x-0 bottom-0 z-[60] border-t border-border bg-surface/95 p-4 backdrop-blur-md sm:p-5"
+      style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
     >
       <div className="container-page flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0 flex-1 pr-2">

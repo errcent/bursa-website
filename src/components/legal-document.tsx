@@ -44,8 +44,9 @@ export function LegalDocumentContent({ document }: { document: LegalDocument }) 
         ))}
       </div>
 
-      <div className="mt-12 rounded-2xl border border-border/60 bg-surface/40 p-5">
-        <p className="text-sm text-muted-foreground">
+      <div className="mt-12 rounded-2xl border border-border/60 bg-muted/30 p-5 sm:p-6">
+        <p className="text-sm font-medium text-foreground">Butuh bantuan?</p>
+        <p className="mt-1.5 text-sm text-muted-foreground">
           Ada pertanyaan terkait dokumen ini? Hubungi{" "}
           <a href="mailto:support@bursa.id" className="link-muted font-medium text-foreground">
             support@bursa.id

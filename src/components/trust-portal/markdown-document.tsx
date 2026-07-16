@@ -33,10 +33,12 @@ function slugifyHeading(text: string): string {
 export function MarkdownDocument({
   markdown,
   showToc = true,
+  compact = false,
   className,
 }: {
   markdown: string;
   showToc?: boolean;
+  compact?: boolean;
   className?: string;
 }) {
   const headings = showToc ? extractHeadings(markdown) : [];
@@ -44,7 +46,7 @@ export function MarkdownDocument({
   return (
     <article className={cn("max-w-3xl", className)}>
       {headings.length > 0 && (
-        <nav className="mt-2 rounded-2xl border border-border bg-card/50 p-5 backdrop-blur-sm">
+        <nav className="rounded-2xl border border-border bg-card/50 p-5 backdrop-blur-sm">
           <p className="text-sm font-medium">Daftar isi</p>
           <ol className="mt-3 flex flex-col gap-2">
             {headings.map((h) => (
@@ -58,7 +60,7 @@ export function MarkdownDocument({
         </nav>
       )}
 
-      <div className="prose-trust mt-10">
+      <div className={cn("prose-trust", compact ? "mt-0" : headings.length > 0 ? "mt-10" : "mt-2")}>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
@@ -66,7 +68,7 @@ export function MarkdownDocument({
               const text = String(children);
               const id = slugifyHeading(text.replace(/\*\*/g, ""));
               return (
-                <h2 id={id} className="section-title scroll-mt-24">
+                <h2 id={id} className="section-title mt-10 first:mt-0 scroll-mt-24">
                   {children}
                 </h2>
               );
@@ -75,17 +77,21 @@ export function MarkdownDocument({
               const text = String(children);
               const id = slugifyHeading(text.replace(/\*\*/g, ""));
               return (
-                <h3 id={id} className="mt-6 text-lg font-semibold scroll-mt-24">
+                <h3 id={id} className="mt-8 text-lg font-semibold first:mt-0 scroll-mt-24">
                   {children}
                 </h3>
               );
             },
-            p: ({ children }) => <p className="section-copy mt-3">{children}</p>,
+            p: ({ children }) => <p className="section-copy mt-3 first:mt-0">{children}</p>,
             ul: ({ children }) => (
-              <ul className="mt-3 flex flex-col gap-2 pl-5">{children}</ul>
+              <ul className="mt-3 flex list-disc flex-col gap-2 pl-5 marker:text-muted-foreground/60">
+                {children}
+              </ul>
             ),
             ol: ({ children }) => (
-              <ol className="mt-3 list-decimal flex flex-col gap-2 pl-5">{children}</ol>
+              <ol className="mt-3 list-decimal flex flex-col gap-2 pl-5 marker:text-muted-foreground/60">
+                {children}
+              </ol>
             ),
             li: ({ children }) => (
               <li className="text-sm leading-relaxed text-muted-foreground">{children}</li>
@@ -111,38 +117,34 @@ export function MarkdownDocument({
               );
             },
             blockquote: ({ children }) => (
-              <blockquote className="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
+              <blockquote className="mt-4 rounded-xl border border-border/70 border-l-4 border-l-amber-500/50 bg-muted/40 px-4 py-3 text-sm text-muted-foreground [&>p]:mt-0 [&_strong]:font-semibold [&_strong]:text-foreground">
                 {children}
               </blockquote>
             ),
             table: ({ children }) => (
-              <div className="mt-4 overflow-x-auto rounded-lg border border-border">
+              <div className="mt-6 overflow-x-auto rounded-xl border border-border">
                 <table className="w-full min-w-[28rem] text-left text-sm">{children}</table>
               </div>
             ),
             thead: ({ children }) => (
-              <thead className="bg-muted/50 text-foreground">{children}</thead>
+              <thead className="border-b border-border bg-muted/40 text-foreground">{children}</thead>
             ),
             th: ({ children }) => (
-              <th className="px-3 py-2 font-medium">{children}</th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide">{children}</th>
             ),
             td: ({ children }) => (
-              <td className="border-t border-border px-3 py-2 text-muted-foreground">
-                {children}
-              </td>
+              <td className="border-t border-border/80 px-4 py-2.5 text-muted-foreground">{children}</td>
             ),
-            tr: ({ children }) => <tr className="border-t border-border">{children}</tr>,
+            tr: ({ children }) => <tr className="even:bg-muted/20">{children}</tr>,
             code: ({ children }) => (
-              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
-                {children}
-              </code>
+              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">{children}</code>
             ),
             pre: ({ children }) => (
               <pre className="mt-4 overflow-x-auto rounded-lg border border-border bg-muted/30 p-4 text-xs">
                 {children}
               </pre>
             ),
-            hr: () => <hr className="my-8 border-border" />,
+            hr: () => <hr className="my-10 border-border" />,
             strong: ({ children }) => (
               <strong className="font-semibold text-foreground">{children}</strong>
             ),

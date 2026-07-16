@@ -33,47 +33,51 @@ export function PortalMobileNav({
   }, [activeSlug]);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger
-        render={
-          <Button variant="outline" size="sm" className="lg:hidden">
-            <Menu className="size-4" />
-            Daftar isi
-          </Button>
-        }
-      />
-      <SheetContent side="left" className="w-[min(100%,20rem)]">
-        <SheetHeader>
-          <SheetTitle>{portalLabel}</SheetTitle>
-        </SheetHeader>
-        <nav className="mt-4 flex flex-col gap-1" aria-label={`Navigasi mobile ${portalLabel}`}>
-          <Link
-            href={`/${portalBase}`}
-            className={cn(
-              "rounded-lg px-3 py-2.5 text-sm",
-              !activeSlug || activeSlug === "hub"
-                ? "bg-primary/15 font-medium text-primary"
-                : "text-muted-foreground hover:bg-muted/60"
-            )}
-          >
-            Beranda
-          </Link>
-          {navItems.map((item) => (
+    <div className="mb-6 lg:hidden">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger
+          render={
+            <Button variant="outline" size="sm" className="w-full justify-center sm:w-auto">
+              <Menu className="size-4" />
+              Navigasi {portalLabel}
+            </Button>
+          }
+        />
+        <SheetContent side="left" className="w-[min(100%,20rem)]">
+          <SheetHeader>
+            <SheetTitle>{portalLabel}</SheetTitle>
+          </SheetHeader>
+          <nav className="mt-4 flex flex-col gap-0.5" aria-label={`Navigasi mobile ${portalLabel}`}>
             <Link
-              key={item.slug}
-              href={item.href}
+              href={`/${portalBase}`}
+              aria-current={!activeSlug || activeSlug === "hub" ? "page" : undefined}
               className={cn(
-                "rounded-lg px-3 py-2.5 text-sm",
-                activeSlug === item.slug
+                "rounded-lg px-3 py-2.5 text-sm transition-colors",
+                !activeSlug || activeSlug === "hub"
                   ? "bg-primary/15 font-medium text-primary"
-                  : "text-muted-foreground hover:bg-muted/60"
+                  : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
               )}
             >
-              {item.title}
+              Beranda
             </Link>
-          ))}
-        </nav>
-      </SheetContent>
-    </Sheet>
+            {navItems.map((item) => (
+              <Link
+                key={item.slug}
+                href={item.href}
+                aria-current={activeSlug === item.slug ? "page" : undefined}
+                className={cn(
+                  "rounded-lg px-3 py-2.5 text-sm transition-colors",
+                  activeSlug === item.slug
+                    ? "bg-primary/15 font-medium text-primary"
+                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                )}
+              >
+                {item.title}
+              </Link>
+            ))}
+          </nav>
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 }

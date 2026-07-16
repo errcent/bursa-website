@@ -23,7 +23,7 @@ export default function TermsPage() {
           title={termsOfService.title}
           description={termsOfService.description}
         />
-        <div className="container-page section-spacious">
+        <div className="container-page section-spacious pb-28">
           <Link href="/" className="link-muted mb-6 inline-flex items-center gap-1.5">
             <ArrowLeft className="size-4" />
             Kembali

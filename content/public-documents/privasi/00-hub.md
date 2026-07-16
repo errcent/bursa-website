@@ -20,20 +20,6 @@ Bursa bertindak sebagai **Pengendali Data Pribadi** sesuai UU No. 27 Tahun 2022 
 - **Transparansi** — kamu berhak tahu data apa yang kami simpan dan mengapa.
 - **Keamanan by design** — kontrol teknis dan organisasional diterapkan sejak awal.
 
-## Dokumen Privasi
-
-| Dokumen | Deskripsi |
-|---------|-----------|
-| [Kebijakan Privasi](/privasi/kebijakan) | Kebijakan lengkap pengumpulan dan pemrosesan data |
-| [Kebijakan Cookie](/privasi/cookie) | Jenis cookie dan cara mengelolanya |
-| [Sub-prosesor](/privasi/sub-prosesor) | Pihak ketiga yang membantu operasional platform |
-| [Permintaan Data](/privasi/permintaan-data) | Ajukan hak akses, koreksi, atau penghapusan data |
-| [FAQ Privasi](/privasi/faq) | Pertanyaan umum seputar privasi |
-
-## Hubungan dengan Pusat Kepercayaan
-
-Untuk informasi keamanan teknis, kontrol kepatuhan, dan pelaporan kerentanan, kunjungi [Pusat Kepercayaan](/kepercayaan).
-
 ## Kontak
 
 Pertanyaan privasi: [privacy@bursa.id](mailto:privacy@bursa.id)

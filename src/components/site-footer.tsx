@@ -123,7 +123,6 @@ const footerColumns = [
     links: [
       { label: "Pusat Privasi", href: "/privasi" },
       { label: "Pusat Kepercayaan", href: "/kepercayaan" },
-      { label: "Kebijakan Privasi", href: "/privasi/kebijakan" },
       { label: "Syarat & Ketentuan", href: "/syarat-dan-ketentuan" },
     ],
   },

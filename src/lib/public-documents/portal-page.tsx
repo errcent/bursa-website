@@ -97,7 +97,7 @@ export async function renderPortalPage(portalSlug: PortalSlug, docSlug?: string)
             title={hubDoc.title}
             description={hubDoc.description}
           />
-          <div className="container-page section-spacious">
+          <div className="container-page section-spacious pb-28">
             <Link href="/" className="link-muted mb-6 inline-flex items-center gap-1.5">
               <ArrowLeft className="size-4" />
               Kembali
@@ -137,7 +137,7 @@ export async function renderPortalPage(portalSlug: PortalSlug, docSlug?: string)
       <SiteNavbar />
       <main className="flex-1">
         <InfoPageHero eyebrow={doc.eyebrow || meta.label} title={doc.title} description={doc.description} />
-        <div className="container-page section-spacious">
+        <div className="container-page section-spacious pb-28">
           <Link
             href={`/${portalBase}`}
             className="link-muted mb-6 inline-flex items-center gap-1.5"
