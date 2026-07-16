@@ -24,11 +24,19 @@ export interface Mentor {
   sessionPrice?: string;
 }
 
+export interface LessonMaterial {
+  id: string;
+  title: string;
+  url: string;
+}
+
 export interface Lesson {
   id: string;
   title: string;
   durationMinutes: number;
   preview?: boolean;
+  /** Downloadable files (PDF, template, cheat sheet) attached to this lesson. */
+  materials?: LessonMaterial[];
 }
 
 export interface Module {

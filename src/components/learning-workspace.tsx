@@ -95,6 +95,8 @@ export function LearningWorkspace({
     () => (nextLesson ? findLessonInCourse(course, nextLesson.id) : null),
     [course, nextLesson]
   );
+  const lessonMaterials = currentLesson.materials ?? [];
+  const hasMaterials = lessonMaterials.length > 0;
 
   const seekTo = useCallback((seconds: number) => {
     seekTokenRef.current += 1;
@@ -566,32 +568,55 @@ export function LearningWorkspace({
           </div>
         )}
 
-        <Tabs defaultValue="materi" className="mx-auto mt-2 w-full max-w-5xl">
-          <TabsList className="w-full overflow-x-auto">
-            <TabsTrigger value="materi">
-              <Download className="size-3.5" /> Materi
-            </TabsTrigger>
-            <TabsTrigger value="qa">
-              <MessageSquare className="size-3.5" /> Komentar
-            </TabsTrigger>
-          </TabsList>
+        {hasMaterials ? (
+          <Tabs defaultValue="materi" className="mx-auto mt-2 w-full max-w-5xl">
+            <TabsList className="w-full overflow-x-auto">
+              <TabsTrigger value="materi">
+                <Download className="size-3.5" /> Materi
+              </TabsTrigger>
+              <TabsTrigger value="qa">
+                <MessageSquare className="size-3.5" /> Komentar
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="materi" className="mt-4">
-            <p className="text-sm text-muted-foreground">
-              Belum ada materi unduhan untuk lesson ini. Mentor dapat mengunggah PDF, template,
-              atau cheat sheet dari dashboard mentor.
-            </p>
-          </TabsContent>
+            <TabsContent value="materi" className="mt-4">
+              <ul className="flex flex-col gap-2">
+                {lessonMaterials.map((material) => (
+                  <li key={material.id}>
+                    <a
+                      href={material.url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 text-sm transition-colors hover:bg-muted/30"
+                    >
+                      <Download className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="font-medium">{material.title}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </TabsContent>
 
-          <TabsContent value="qa" className="mt-4">
+            <TabsContent value="qa" className="mt-4">
+              <LessonQaPanel
+                courseSlug={course.slug}
+                lessonId={currentLesson.id}
+                playheadSeconds={playheadSeconds}
+                onSeek={seekTo}
+              />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <div className="mx-auto mt-2 w-full max-w-5xl">
             <LessonQaPanel
               courseSlug={course.slug}
               lessonId={currentLesson.id}
               playheadSeconds={playheadSeconds}
               onSeek={seekTo}
             />
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
       </div>
 
       {!videoExpanded && (
