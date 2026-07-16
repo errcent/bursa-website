@@ -1,4 +1,4 @@
-﻿-- CreateEnum
+-- CreateEnum
 CREATE TYPE "DocumentPortal" AS ENUM ('PRIVACY', 'TRUST', 'LEGAL');
 
 -- CreateEnum
