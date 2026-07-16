@@ -136,13 +136,18 @@ function DashboardBody() {
                     <div>
                       <p className="font-heading text-sm font-medium">Belum ada progress</p>
                       <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                        Kamu belum mengikuti kelas. Mulai belajar dari katalog untuk melihat
-                        progress di sini.
+                        Belum tahu mulai dari mana? Ikuti panduan belajar untuk rekomendasi kelas
+                        dan mentor yang sesuai profilmu.
                       </p>
                     </div>
-                    <Button render={<Link href="/katalog" />} className="btn-primary">
-                      Mulai Belajar
-                    </Button>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      <Button render={<Link href="/panduan-belajar" />} className="btn-primary">
+                        Temukan Jalur Belajar
+                      </Button>
+                      <Button render={<Link href="/katalog" />} variant="outline">
+                        Jelajahi Katalog
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <Stagger className="flex flex-col gap-4">

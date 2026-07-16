@@ -59,8 +59,10 @@ Buka http://localhost:3000
 | `/katalog` | Katalog + search dropdown + filter SEO |
 | `/komunitas` | Grup chat trading (anti-screenshot internal) |
 | `/instruktur/[slug]` | Profil mentor |
-| `/kelas/[slug]` | Detail course |
-| `/belajar/...` | Video protected + notes |
+| `/kelas/[slug]` | Detail course + hero cinematic + curriculum cards |
+| `/panduan-belajar` | Kuis 8 pertanyaan → rekomendasi kelas/mentor |
+| `/jadi-mentor` | Formulir aplikasi mentor (+ email admin Resend) |
+| `/belajar/...` | Video protected + catatan sidebar kanan |
 | `/checkout/...` | Mock checkout (komisi 25%) |
 | `/dashboard` | Dashboard user |
 | `/admin` | Panel admin (DB-backed) |
@@ -112,6 +114,21 @@ Build **tetap jalan** tanpa variabel Google — tombol menampilkan petunjuk konf
 4. Kebijakan privasi: link di form + consent screen Google
 
 Privasi & keamanan: lihat `Documentation/18 - Cybersecurity, Privasi Data & Kepatuhan IT/`.
+
+---
+
+## Email transaksional (Resend)
+
+Notifikasi **aplikasi mentor baru** ke admin (HTML + lampiran PDF). Env-gated — tanpa `RESEND_API_KEY`, submit formulir tetap sukses; email tidak terkirim.
+
+| Variable | Keterangan |
+|---|---|
+| `RESEND_API_KEY` | API key dari [Resend](https://resend.com) |
+| `EMAIL_FROM` | From address terverifikasi (default: `Bursa <onboarding@resend.dev>`) |
+| `MENTOR_APPLICATION_ADMIN_EMAIL` | Penerima admin (default: `admin.kitty033@passinbox.com`) |
+| `MENTOR_APPLICATION_EMAIL_ENABLED` | Set `false` untuk nonaktifkan tanpa hapus key |
+
+Kode: `src/lib/email/*`, `src/lib/mentor-program/application-notification.ts`
 
 ---
 
@@ -183,6 +200,9 @@ Vercel → project **bursa-website** → **Settings** → **Environment Variable
 | `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret |
 | `NEXTAUTH_SECRET` | Random secret untuk session JWT |
 | `NEXTAUTH_URL` | `https://bursa-website.vercel.app` (Production) |
+| `RESEND_API_KEY` | Resend API key (email aplikasi mentor) |
+| `EMAIL_FROM` | From address Resend terverifikasi |
+| `MENTOR_APPLICATION_ADMIN_EMAIL` | Opsional — override penerima admin |
 
 Untuk Google OAuth, tambahkan redirect URI `https://bursa-website.vercel.app/api/auth/callback/google` di Google Cloud Console (lihat bagian Login dengan Google di atas).
 
@@ -202,6 +222,20 @@ Ini mengisi akun demo (`learner@test.dev`, dll.) dan data katalog.
 Push ke `master` atau klik **Redeploy** di Vercel setelah env vars disimpan.
 
 Site: https://bursa-website.vercel.app
+
+### 5. Commit message vs isi deploy
+
+Dashboard Vercel menampilkan **pesan commit Git terakhir yang terhubung ke deploy** (biasanya commit terakhir di branch yang di-push). Deploy lewat `npx vercel deploy --prod` meng-upload **working tree lokal**; jika belum commit/push, production bisa berisi kode baru sementara dashboard masih menampilkan commit lama (misalnya pesan legal portal).
+
+**Workflow disarankan:**
+
+1. `git status` � review perubahan
+2. Commit dengan pesan yang menjelaskan perubahan sebenarnya
+3. `git push origin master`
+4. Biarkan Vercel auto-deploy dari GitHub, **atau** jalankan CLI deploy **setelah** push agar metadata commit selaras
+
+Jangan deploy production hanya dari perubahan uncommitted jika Anda ingin riwayat Git dan label deploy Vercel akurat.
+
 
 ---
 

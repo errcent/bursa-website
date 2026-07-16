@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { notifyAdminOfMentorApplication } from "@/lib/mentor-program/application-notification";
 import { createMentorApplication } from "@/lib/mentor-program/applications";
 import { mentorApplicationSchema } from "@/lib/validations/api";
 
@@ -17,6 +18,10 @@ export async function POST(request: Request) {
     const application = createMentorApplication({
       ...rest,
       portfolioUrl: portfolioUrl || undefined,
+    });
+
+    void notifyAdminOfMentorApplication(application).catch((error) => {
+      console.error("[mentor-application] Unhandled email error:", error);
     });
 
     return jsonOk({ id: application.id, status: application.status }, 201);

@@ -29,7 +29,7 @@ export function IntroPreloader({ onComplete }: IntroPreloaderProps) {
 
   return (
     <motion.div
-      className="intro-overlay fixed inset-0 z-[10000] flex items-center justify-center bg-[#0a0a0a]"
+      className="intro-overlay fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-[#0a0a0a]"
       role="status"
       aria-live="polite"
       aria-label="Memuat Bursa"
@@ -45,17 +45,8 @@ export function IntroPreloader({ onComplete }: IntroPreloaderProps) {
         animate={{ opacity: 0, scale: 1.05, y: -10 }}
         transition={{ delay: T.holdEnd, duration: T.fadeOut, ease: "easeIn" }}
       >
-        <motion.p
-          className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-[#7b7eb8]/80 sm:text-[11px]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: T.blank + 0.05, duration: 0.15, ease: "easeOut" }}
-        >
-          Platform edukasi trading
-        </motion.p>
-
         <motion.h1
-          className="mt-3 font-heading text-[2rem] font-bold tracking-[0.06em] text-[#F5F5F5] sm:text-5xl sm:tracking-[0.08em]"
+          className="font-heading text-[2rem] font-bold tracking-[0.06em] text-[#F5F5F5] sm:text-5xl sm:tracking-[0.08em]"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: [0.9, 1.05, 1] }}
           transition={{
@@ -107,6 +98,18 @@ export function IntroPreloader({ onComplete }: IntroPreloaderProps) {
           />
         </div>
       </motion.div>
+
+      <motion.p
+        className="pointer-events-none absolute inset-x-0 bottom-8 flex items-baseline justify-center gap-1.5 text-sm sm:bottom-10 sm:text-base"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: T.blank + 0.35, duration: 0.35, ease: "easeOut" }}
+      >
+        <span className="font-sans font-normal tracking-wide text-[#F5F5F5]/70">by</span>
+        <span className="font-brand text-base font-bold tracking-tight text-[#F5F5F5] sm:text-lg">
+          bursanalar.
+        </span>
+      </motion.p>
     </motion.div>
   );
 }

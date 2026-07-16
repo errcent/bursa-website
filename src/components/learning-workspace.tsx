@@ -71,6 +71,7 @@ export function LearningWorkspace({
   completedRef.current = completed;
   const [videoExpanded, setVideoExpanded] = useState(false);
   const [mobileLessonOpen, setMobileLessonOpen] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState<"modul" | "catatan">("modul");
   const [moduleCompleteBanner, setModuleCompleteBanner] = useState<string | null>(null);
   const progressApi = `/api/courses/${course.slug}/progress`;
   const enrollApi = `/api/courses/${course.slug}/enroll`;
@@ -353,11 +354,75 @@ export function LearningWorkspace({
     </div>
   );
 
+  const sidebarPanel = (
+    <>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 flex-1 rounded-lg border border-border bg-muted/30 p-0.5">
+          <button
+            type="button"
+            onClick={() => setSidebarTab("modul")}
+            className={cn(
+              "flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
+              sidebarTab === "modul"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <List className="size-3.5 shrink-0" />
+            Daftar Modul
+          </button>
+          <button
+            type="button"
+            onClick={() => setSidebarTab("catatan")}
+            className={cn(
+              "flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
+              sidebarTab === "catatan"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <StickyNote className="size-3.5 shrink-0" />
+            Catatan
+          </button>
+        </div>
+        {sidebarTab === "modul" && (
+          <span className="shrink-0 text-xs text-muted-foreground">{progressPercent}%</span>
+        )}
+      </div>
+
+      {sidebarTab === "modul" ? (
+        <>
+          <Progress
+            value={progressPercent}
+            className="[&_[data-slot=progress-indicator]]:bg-foreground"
+          />
+          <p className="text-[11px] leading-relaxed text-muted-foreground">
+            {completedLessonCount}/{allLessons.length} lesson · selesaikan modul untuk rating &
+            ulasan.
+          </p>
+          <div className="min-h-0 flex-1 overflow-y-auto">{lessonList}</div>
+        </>
+      ) : (
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <LessonNotesPanel
+            courseSlug={course.slug}
+            courseTitle={course.title}
+            lessonId={currentLesson.id}
+            lessonTitle={currentLesson.title}
+            playheadSeconds={playheadSeconds}
+            onSeek={seekTo}
+            variant="sidebar"
+          />
+        </div>
+      )}
+    </>
+  );
+
   return (
     <div
       className={cn(
-        "grid flex-1 grid-cols-1 gap-0 transition-[grid-template-columns] duration-300",
-        videoExpanded ? "lg:grid-cols-1" : "lg:grid-cols-[minmax(0,1fr)_300px]"
+        "grid min-h-0 flex-1 grid-cols-1 gap-0 transition-[grid-template-columns] duration-300",
+        videoExpanded ? "lg:grid-cols-1" : "lg:grid-cols-[minmax(0,1fr)_340px]"
       )}
     >
       <div
@@ -383,19 +448,15 @@ export function LearningWorkspace({
                 }
               >
                 <List className="size-3.5" />
-                Daftar Lesson
+                Modul & Catatan
               </SheetTrigger>
-              <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
+              <SheetContent side="bottom" className="flex max-h-[85vh] flex-col overflow-hidden">
                 <SheetHeader>
-                  <SheetTitle>
-                    Progres Kelas · {progressPercent}% ({completedLessonCount}/{allLessons.length})
-                  </SheetTitle>
+                  <SheetTitle>{course.title}</SheetTitle>
                 </SheetHeader>
-                <Progress
-                  value={progressPercent}
-                  className="mb-3 [&_[data-slot=progress-indicator]]:bg-foreground"
-                />
-                {lessonList}
+                <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden pt-2">
+                  {sidebarPanel}
+                </div>
               </SheetContent>
             </Sheet>
           </div>
@@ -442,6 +503,14 @@ export function LearningWorkspace({
                 hasAccess={hasCourseAccess}
                 durationMinutes={nextLesson.durationMinutes}
                 size="md"
+                showPlayOverlay={
+                  hasCourseAccess ||
+                  isLessonFreePreview(
+                    nextLesson,
+                    nextLessonContext.moduleIndex,
+                    nextLessonContext.lessonIndex
+                  )
+                }
               />
               <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
                 <p className="text-xs text-muted-foreground">{nextLessonContext.module.title}</p>
@@ -497,11 +566,8 @@ export function LearningWorkspace({
           </div>
         )}
 
-        <Tabs defaultValue="catatan" className="mx-auto mt-2 w-full max-w-5xl">
+        <Tabs defaultValue="materi" className="mx-auto mt-2 w-full max-w-5xl">
           <TabsList className="w-full overflow-x-auto">
-            <TabsTrigger value="catatan">
-              <StickyNote className="size-3.5" /> Catatan
-            </TabsTrigger>
             <TabsTrigger value="materi">
               <Download className="size-3.5" /> Materi
             </TabsTrigger>
@@ -509,17 +575,6 @@ export function LearningWorkspace({
               <MessageSquare className="size-3.5" /> Komentar
             </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="catatan" className="mt-4">
-            <LessonNotesPanel
-              courseSlug={course.slug}
-              courseTitle={course.title}
-              lessonId={currentLesson.id}
-              lessonTitle={currentLesson.title}
-              playheadSeconds={playheadSeconds}
-              onSeek={seekTo}
-            />
-          </TabsContent>
 
           <TabsContent value="materi" className="mt-4">
             <p className="text-sm text-muted-foreground">
@@ -540,22 +595,8 @@ export function LearningWorkspace({
       </div>
 
       {!videoExpanded && (
-        <aside className="hidden flex-col gap-3 border-t border-border p-4 sm:p-6 lg:flex lg:border-t-0">
-          <div className="flex items-center justify-between">
-            <h2 className="font-heading text-sm font-medium">Progres Kelas</h2>
-            <span className="text-xs text-muted-foreground">
-              {progressPercent}% · {completedLessonCount}/{allLessons.length}
-            </span>
-          </div>
-          <Progress
-            value={progressPercent}
-            className="[&_[data-slot=progress-indicator]]:bg-foreground"
-          />
-          <p className="text-[11px] leading-relaxed text-muted-foreground">
-            Selesaikan satu modul penuh untuk membuka rating & ulasan kelas.
-          </p>
-
-          <div className="mt-2">{lessonList}</div>
+        <aside className="hidden min-h-0 flex-col gap-3 overflow-hidden border-t border-border p-4 sm:p-6 lg:flex lg:border-t-0">
+          {sidebarPanel}
         </aside>
       )}
     </div>

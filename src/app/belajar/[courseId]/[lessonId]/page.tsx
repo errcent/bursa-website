@@ -61,7 +61,9 @@ export default async function LearningPage({
           {course.title}
         </span>
       </header>
-      <LearningWorkspace course={course} currentLessonId={lessonId} />
+      <div className="flex min-h-0 flex-1 flex-col">
+        <LearningWorkspace course={course} currentLessonId={lessonId} />
+      </div>
     </div>
   );
 }

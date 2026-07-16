@@ -51,6 +51,27 @@ model User {
   reviews                        Review[]
   transactions                   Transaction[]
   watchlistItems                 WatchlistItem[]
+  learningGuidanceProfile        LearningGuidanceProfile?
+}
+
+/// Quiz answers from the learning-path onboarding ("jembatannya").
+model LearningGuidanceProfile {
+  id               String                   @id @default(cuid())
+  userId           String                   @unique
+  instrument       Instrument
+  experienceLevel  CourseLevel
+  tradingStyle     LearningTradingStyle
+  goal             LearningGoal
+  riskTolerance    LearningRiskTolerance
+  timeAvailability LearningTimeAvailability
+  capitalRange     LearningCapitalRange?
+  learningFormat   LearningFormat
+  completedAt      DateTime                 @default(now())
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  user             User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([instrument, experienceLevel])
 }
 
 /// Single-use reset token — stores hash only, never plaintext (UU PDP / GDPR-ready).
@@ -671,6 +692,46 @@ enum CourseLevel {
   PEMULA
   MENENGAH
   MAHIR
+}
+
+enum LearningTradingStyle {
+  SCALPING
+  SWING
+  LONG_TERM
+}
+
+enum LearningGoal {
+  SIDE_INCOME
+  WEALTH_BUILDING
+  LEARN_BASICS
+  RETIREMENT
+}
+
+enum LearningRiskTolerance {
+  CONSERVATIVE
+  MODERATE
+  AGGRESSIVE
+}
+
+enum LearningTimeAvailability {
+  MINIMAL
+  PART_TIME
+  DEDICATED
+}
+
+enum LearningCapitalRange {
+  UNDER_5M
+  FROM_5M_TO_20M
+  FROM_20M_TO_50M
+  ABOVE_50M
+  PREFER_NOT_SAY
+}
+
+enum LearningFormat {
+  VIDEO
+  LIVE
+  COMMUNITY
+  MIXED
 }
 
 enum TransactionStatus {

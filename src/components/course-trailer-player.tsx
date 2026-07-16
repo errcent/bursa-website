@@ -38,6 +38,8 @@ interface CourseTrailerPlayerProps {
   mentor?: MentorVideoBarMentor | null;
   posterUrl?: string;
   className?: string;
+  variant?: "default" | "cinema";
+  autoStart?: boolean;
   onPlaybackChange?: (active: boolean) => void;
 }
 
@@ -46,6 +48,8 @@ export function CourseTrailerPlayer({
   mentor,
   posterUrl,
   className,
+  variant = "default",
+  autoStart = false,
   onPlaybackChange,
 }: CourseTrailerPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -182,6 +186,16 @@ export function CourseTrailerPlayer({
     [markStarted, revealControls, seekTo]
   );
 
+  const isCinema = variant === "cinema";
+
+  useEffect(() => {
+    if (!autoStart) return;
+    const video = videoRef.current;
+    if (!video) return;
+    markStarted();
+    void video.play().then(() => setIsPlaying(true)).catch(() => undefined);
+  }, [autoStart, markStarted]);
+
   return (
     <div
       className={cn(
@@ -196,8 +210,10 @@ export function CourseTrailerPlayer({
       <div
         ref={containerRef}
         className={cn(
-          "video-player-shell group/trailer relative overflow-hidden rounded-2xl border border-border bg-black shadow-[0_0_40px_var(--glow)] transition-all duration-300",
-          "aspect-video w-full"
+          "video-player-shell group/trailer relative overflow-hidden bg-black transition-all duration-300",
+          isCinema
+            ? "size-full rounded-none border-0 shadow-none"
+            : "aspect-video w-full rounded-2xl border border-border shadow-[0_0_40px_var(--glow)]"
         )}
       >
         <video
@@ -206,7 +222,7 @@ export function CourseTrailerPlayer({
           poster={posterUrl}
           className={cn(
             "size-full object-contain transition-opacity duration-300",
-            hasStarted ? "opacity-100" : "opacity-0"
+            hasStarted || isCinema ? "opacity-100" : "opacity-0"
           )}
           playsInline
           preload="metadata"
@@ -225,7 +241,7 @@ export function CourseTrailerPlayer({
           aria-label={`Trailer ${title}`}
         />
 
-        {!hasStarted && (
+        {!hasStarted && !autoStart && (
           <button
             type="button"
             onClick={() => void togglePlay()}
@@ -263,7 +279,56 @@ export function CourseTrailerPlayer({
           />
         )}
 
-        {hasStarted && (
+        {hasStarted && isCinema && (
+          <div
+            data-video-controls
+            className={cn(
+              "fixed inset-x-0 bottom-0 z-50 flex items-center gap-4 border-t border-white/10 bg-black/90 px-4 py-3 backdrop-blur-md transition-opacity duration-300 sm:px-6",
+              showControls || !isPlaying ? "opacity-100" : "opacity-95"
+            )}
+          >
+            {posterUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={posterUrl}
+                alt=""
+                aria-hidden
+                className="hidden size-12 rounded object-cover sm:block"
+              />
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-white">{title}</p>
+              {mentor && (
+                <p className="truncate text-xs text-white/60">{mentor.name}</p>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => void togglePlay()}
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-black"
+              aria-label={isPlaying ? "Jeda" : "Putar"}
+            >
+              {isPlaying ? <Pause className="size-4" /> : <Play className="size-4 fill-current" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                videoRef.current?.pause();
+                setIsPlaying(false);
+                setHasStarted(false);
+                onPlaybackChange?.(false);
+              }}
+              className="hidden text-xs text-white/60 underline-offset-2 hover:text-white hover:underline sm:inline"
+            >
+              Tutup
+            </button>
+            <span className="hidden min-w-[5rem] font-mono text-xs text-white/80 tabular-nums sm:inline">
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </span>
+          </div>
+        )}
+
+        {hasStarted && !isCinema && (
           <div
             data-video-controls
             className={cn(
@@ -370,7 +435,7 @@ export function CourseTrailerPlayer({
         )}
       </div>
 
-      {mentor ? <MentorVideoBar mentor={mentor} className="mt-3" /> : null}
+      {mentor && !isCinema ? <MentorVideoBar mentor={mentor} className="mt-3" /> : null}
     </div>
   );
 }
