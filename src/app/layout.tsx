@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Inter, JetBrains_Mono, Montserrat_Alternates, Sora } from "next/font/google";
+import { Inter, JetBrains_Mono, Montserrat_Alternates } from "next/font/google";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
@@ -16,18 +16,19 @@ import { SearchSeoJsonLd } from "@/components/search/search-seo-jsonld";
 
 import "./globals.css";
 
-/** Body / UI copy */
+/** Body / UI copy — light & regular weights */
 const fontSans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "500"],
   display: "swap",
 });
 
-/** Display headings */
-const fontHeading = Sora({
+/** Headings, bold text, brand wordmark */
+const fontHeading = Montserrat_Alternates({
   variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["600", "700", "800"],
   display: "swap",
 });
 
@@ -35,14 +36,6 @@ const fontHeading = Sora({
 const fontMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  display: "swap",
-});
-
-/** Brand wordmark (preloader, accents) */
-const fontBrand = Montserrat_Alternates({
-  variable: "--font-brand",
-  subsets: ["latin"],
-  weight: ["700"],
   display: "swap",
 });
 
@@ -68,7 +61,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${fontSans.variable} ${fontHeading.variable} ${fontMono.variable} ${fontBrand.variable} h-full antialiased`}
+      className={`${fontSans.variable} ${fontHeading.variable} ${fontMono.variable} h-full antialiased`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
