@@ -1,12 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Maximize2, Minimize2, Pause, Play, PlayCircle } from "lucide-react";
+import { Pause, Play, PlayCircle } from "lucide-react";
 
 import {
   MentorVideoBar,
   type MentorVideoBarMentor,
 } from "@/components/video/mentor-video-bar";
+import {
+  DEFAULT_QUALITY_OPTIONS,
+  VideoControlBar,
+  type VideoQualityValue,
+} from "@/components/video/video-control-bar";
 import { DEMO_VIDEO_URL } from "@/lib/video/demo";
 import {
   getFullscreenElement,
@@ -54,8 +59,6 @@ export function CourseTrailerPlayer({
 }: CourseTrailerPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
-  const isScrubbingRef = useRef(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
@@ -63,6 +66,12 @@ export function CourseTrailerPlayer({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(TRAILER_DURATION_SECONDS);
   const [showControls, setShowControls] = useState(true);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [quality, setQuality] = useState<VideoQualityValue>("Auto");
+  const [subtitlesEnabled, setSubtitlesEnabled] = useState(false);
+  const [hasSubtitleTracks, setHasSubtitleTracks] = useState(false);
 
   const markStarted = useCallback(() => {
     setHasStarted(true);
@@ -111,7 +120,7 @@ export function CourseTrailerPlayer({
       setShowControls(true);
       clearTimeout(hideTimer);
       if (isPlaying) {
-        hideTimer = setTimeout(() => setShowControls(false), 3000);
+        hideTimer = setTimeout(() => setShowControls(false), 2500);
       }
     };
 
@@ -126,6 +135,24 @@ export function CourseTrailerPlayer({
       container?.removeEventListener("touchstart", resetTimer);
     };
   }, [isPlaying]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const syncSubtitleTracks = () => {
+      setHasSubtitleTracks(video.textTracks.length > 0);
+    };
+
+    syncSubtitleTracks();
+    video.textTracks.addEventListener("addtrack", syncSubtitleTracks);
+    video.textTracks.addEventListener("removetrack", syncSubtitleTracks);
+
+    return () => {
+      video.textTracks.removeEventListener("addtrack", syncSubtitleTracks);
+      video.textTracks.removeEventListener("removetrack", syncSubtitleTracks);
+    };
+  }, [hasStarted]);
 
   const togglePlay = useCallback(async () => {
     const video = videoRef.current;
@@ -142,16 +169,16 @@ export function CourseTrailerPlayer({
   }, [markStarted]);
 
   const handleVideoAreaTap = useCallback(() => {
-    if (isPlaying) {
-      revealControls();
+    if (isPlaying && showControls) {
+      setShowControls(false);
       return;
     }
-    void togglePlay();
-  }, [isPlaying, revealControls, togglePlay]);
+    revealControls();
+  }, [isPlaying, revealControls, showControls]);
 
   const seekTo = useCallback(
     (clientX: number) => {
-      const bar = progressRef.current;
+      const bar = containerRef.current?.querySelector<HTMLElement>("[data-video-controls] [role='slider']");
       const video = videoRef.current;
       const max = getEffectiveDuration(video, duration);
       if (!bar || !video || max <= 0) return;
@@ -164,20 +191,7 @@ export function CourseTrailerPlayer({
     [duration]
   );
 
-  const seekBy = useCallback(
-    (deltaSeconds: number) => {
-      const video = videoRef.current;
-      const max = getEffectiveDuration(video, duration);
-      if (!video || max <= 0) return;
-      const next = Math.max(0, Math.min(max, video.currentTime + deltaSeconds));
-      video.currentTime = next;
-      setCurrentTime(next);
-      revealControls();
-    },
-    [duration, revealControls]
-  );
-
-  const handleProgressPointer = useCallback(
+  const handleSeek = useCallback(
     (clientX: number) => {
       markStarted();
       seekTo(clientX);
@@ -185,6 +199,41 @@ export function CourseTrailerPlayer({
     },
     [markStarted, revealControls, seekTo]
   );
+
+  const toggleMute = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const next = !isMuted;
+    video.muted = next;
+    setIsMuted(next);
+  }, [isMuted]);
+
+  const handleVolumeChange = useCallback((value: number) => {
+    const video = videoRef.current;
+    if (!video) return;
+    const clamped = Math.max(0, Math.min(1, value));
+    video.volume = clamped;
+    setVolume(clamped);
+    setIsMuted(clamped === 0);
+  }, []);
+
+  const changeSpeed = useCallback((speed: number) => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.playbackRate = speed;
+    setPlaybackSpeed(speed);
+  }, []);
+
+  const toggleSubtitles = useCallback(() => {
+    const video = videoRef.current;
+    if (!video || !hasSubtitleTracks) return;
+
+    const next = !subtitlesEnabled;
+    for (let i = 0; i < video.textTracks.length; i += 1) {
+      video.textTracks[i].mode = next ? "showing" : "hidden";
+    }
+    setSubtitlesEnabled(next);
+  }, [hasSubtitleTracks, subtitlesEnabled]);
 
   const isCinema = variant === "cinema";
 
@@ -269,13 +318,12 @@ export function CourseTrailerPlayer({
           </button>
         )}
 
-        {hasStarted && isPlaying && (
+        {hasStarted && (
           <button
             type="button"
-            data-play-overlay
             onClick={handleVideoAreaTap}
-            className="absolute inset-x-0 top-0 bottom-24 z-10 cursor-default bg-transparent"
-            aria-label="Tampilkan kontrol trailer"
+            className="absolute inset-0 z-10 cursor-default bg-transparent"
+            aria-label="Tampilkan atau sembunyikan kontrol trailer"
           />
         )}
 
@@ -329,109 +377,32 @@ export function CourseTrailerPlayer({
         )}
 
         {hasStarted && !isCinema && (
-          <div
-            data-video-controls
-            className={cn(
-              "absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-3 pb-3 pt-8 transition-opacity duration-300",
-              showControls || !isPlaying ? "opacity-100" : "opacity-0"
-            )}
-            onPointerDown={revealControls}
-          >
-            <div
-              ref={progressRef}
-              className="group/progress relative mb-3 flex min-h-11 cursor-pointer touch-none items-center sm:min-h-0 sm:h-1.5"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleProgressPointer(e.clientX);
-              }}
-              onPointerDown={(e) => {
-                e.stopPropagation();
-                isScrubbingRef.current = true;
-                progressRef.current?.setPointerCapture(e.pointerId);
-                handleProgressPointer(e.clientX);
-              }}
-              onPointerMove={(e) => {
-                if (!isScrubbingRef.current) return;
-                handleProgressPointer(e.clientX);
-              }}
-              onPointerUp={(e) => {
-                isScrubbingRef.current = false;
-                progressRef.current?.releasePointerCapture(e.pointerId);
-              }}
-              onPointerCancel={() => {
-                isScrubbingRef.current = false;
-              }}
-              role="slider"
-              aria-label="Progres trailer"
-              aria-valuemin={0}
-              aria-valuemax={duration}
-              aria-valuenow={currentTime}
-            >
-              <div className="relative h-3 w-full rounded-full bg-white/20 sm:h-1.5">
-                <div
-                  className="absolute inset-y-0 left-0 rounded-full bg-white/90 transition-all"
-                  style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  seekBy(-10);
-                }}
-                onPointerDown={(e) => e.stopPropagation()}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white/15 px-2 text-[11px] font-medium text-white backdrop-blur hover:bg-white/25 sm:hidden"
-                aria-label="Mundur 10 detik"
-              >
-                -10s
-              </button>
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  void togglePlay();
-                }}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur hover:bg-white/25"
-                aria-label={isPlaying ? "Jeda" : "Putar"}
-              >
-                {isPlaying ? <Pause className="size-4" /> : <Play className="size-4" />}
-              </button>
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  seekBy(10);
-                }}
-                onPointerDown={(e) => e.stopPropagation()}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white/15 px-2 text-[11px] font-medium text-white backdrop-blur hover:bg-white/25 sm:hidden"
-                aria-label="Maju 10 detik"
-              >
-                +10s
-              </button>
-
-              <span className="min-w-[5rem] font-mono text-xs text-white/90 tabular-nums">
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </span>
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  void toggleFullscreen();
-                }}
-                onPointerDown={(e) => e.stopPropagation()}
-                className="ml-auto inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur hover:bg-white/25"
-                aria-label={isFullscreen ? "Keluar layar penuh" : "Layar penuh"}
-              >
-                {isFullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
-              </button>
-            </div>
-          </div>
+          <VideoControlBar
+            isPlaying={isPlaying}
+            showControls={showControls}
+            currentTime={currentTime}
+            duration={duration}
+            volume={volume}
+            isMuted={isMuted}
+            playbackSpeed={playbackSpeed}
+            quality={quality}
+            qualityOptions={DEFAULT_QUALITY_OPTIONS.map((option) => ({
+              ...option,
+              disabled: option.value !== "Auto",
+            }))}
+            isFullscreen={isFullscreen}
+            subtitlesEnabled={subtitlesEnabled}
+            hasSubtitleTracks={hasSubtitleTracks}
+            onRevealControls={revealControls}
+            onTogglePlay={() => void togglePlay()}
+            onSeek={handleSeek}
+            onToggleMute={toggleMute}
+            onVolumeChange={handleVolumeChange}
+            onChangeSpeed={changeSpeed}
+            onChangeQuality={setQuality}
+            onToggleSubtitles={toggleSubtitles}
+            onToggleFullscreen={toggleFullscreen}
+          />
         )}
       </div>
 

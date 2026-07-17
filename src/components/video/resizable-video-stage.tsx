@@ -1,9 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Maximize2, Minimize2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const MIN_WIDTH_PCT = 60;
@@ -13,17 +11,10 @@ const STORAGE_KEY = "bursa-lesson-player-width";
 
 interface ResizableVideoStageProps {
   children: React.ReactNode;
-  expanded: boolean;
-  onExpandedChange: (expanded: boolean) => void;
   className?: string;
 }
 
-export function ResizableVideoStage({
-  children,
-  expanded,
-  onExpandedChange,
-  className,
-}: ResizableVideoStageProps) {
+export function ResizableVideoStage({ children, className }: ResizableVideoStageProps) {
   const [widthPct, setWidthPct] = useState(DEFAULT_WIDTH_PCT);
   const dragging = useRef(false);
   const latestWidth = useRef(DEFAULT_WIDTH_PCT);
@@ -37,7 +28,6 @@ export function ResizableVideoStage({
         const clamped = Math.min(MAX_WIDTH_PCT, Math.max(MIN_WIDTH_PCT, parsed));
         setWidthPct(clamped);
         latestWidth.current = clamped;
-        if (clamped >= 98) onExpandedChange(true);
       }
     } catch {
       /* ignore */
@@ -58,9 +48,8 @@ export function ResizableVideoStage({
       const clamped = Math.min(MAX_WIDTH_PCT, Math.max(MIN_WIDTH_PCT, next));
       setWidthPct(clamped);
       latestWidth.current = clamped;
-      onExpandedChange(clamped >= 98);
     },
-    [onExpandedChange]
+    []
   );
 
   const onPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
@@ -90,36 +79,11 @@ export function ResizableVideoStage({
     [persist]
   );
 
-  function toggleExpand() {
-    if (expanded) {
-      onExpandedChange(false);
-      applyWidth(DEFAULT_WIDTH_PCT);
-      persist(DEFAULT_WIDTH_PCT);
-    } else {
-      onExpandedChange(true);
-      applyWidth(100);
-      persist(100);
-    }
-  }
-
   return (
     <div
       className={cn("relative mx-auto w-full", className)}
-      style={{ maxWidth: expanded ? "100%" : `${widthPct}%` }}
+      style={{ maxWidth: `${widthPct}%` }}
     >
-      <div className="mb-2 flex items-center justify-center gap-2">
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={toggleExpand}
-          className="h-8 gap-1.5 text-xs"
-        >
-          {expanded ? <Minimize2 className="size-3.5" /> : <Maximize2 className="size-3.5" />}
-          {expanded ? "Layout normal" : "Perbesar video"}
-        </Button>
-      </div>
-
       <div className="relative w-full">
         {children}
         <div

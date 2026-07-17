@@ -6,18 +6,14 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  Maximize,
-  Minimize,
-  Pause,
-  Play,
-  Shield,
-  Sparkles,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { Shield } from "lucide-react";
 
 import { ProtectionWarning } from "@/components/video/protection-warning";
+import {
+  DEFAULT_QUALITY_OPTIONS,
+  VideoControlBar,
+  type VideoQualityValue,
+} from "@/components/video/video-control-bar";
 import { VideoWatermark } from "@/components/video/video-watermark";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -35,16 +31,6 @@ import {
   watermarkConfig,
 } from "@/lib/video/protection";
 import { DEMO_VIDEO_URL, resolvePlayableVideoUrl } from "@/lib/video/demo";
-
-const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
-const QUALITY_OPTIONS = ["Auto", "1080p", "720p", "480p"] as const;
-
-function formatTime(seconds: number): string {
-  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-}
 
 function getEffectiveDuration(video: HTMLVideoElement | null, fallback: number): number {
   if (video && Number.isFinite(video.duration) && video.duration > 0) {
@@ -89,8 +75,6 @@ export function ProtectedVideoPlayer({
 }: ProtectedVideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
-  const isScrubbingRef = useRef(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -98,7 +82,9 @@ export function ProtectedVideoPlayer({
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [quality, setQuality] = useState<(typeof QUALITY_OPTIONS)[number]>("Auto");
+  const [quality, setQuality] = useState<VideoQualityValue>("Auto");
+  const [subtitlesEnabled, setSubtitlesEnabled] = useState(false);
+  const [hasSubtitleTracks, setHasSubtitleTracks] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [isBlurred, setIsBlurred] = useState(false);
@@ -256,7 +242,7 @@ export function ProtectedVideoPlayer({
       setShowControls(true);
       clearTimeout(hideTimer);
       if (isPlaying) {
-        hideTimer = setTimeout(() => setShowControls(false), 3000);
+        hideTimer = setTimeout(() => setShowControls(false), 2500);
       }
     };
 
@@ -271,6 +257,24 @@ export function ProtectedVideoPlayer({
       container?.removeEventListener("touchstart", resetTimer);
     };
   }, [isPlaying]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const syncSubtitleTracks = () => {
+      setHasSubtitleTracks(video.textTracks.length > 0);
+    };
+
+    syncSubtitleTracks();
+    video.textTracks.addEventListener("addtrack", syncSubtitleTracks);
+    video.textTracks.addEventListener("removetrack", syncSubtitleTracks);
+
+    return () => {
+      video.textTracks.removeEventListener("addtrack", syncSubtitleTracks);
+      video.textTracks.removeEventListener("removetrack", syncSubtitleTracks);
+    };
+  }, [resolvedSrc, tokenReady]);
 
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
@@ -291,12 +295,12 @@ export function ProtectedVideoPlayer({
   }, [playbackError]);
 
   const handleVideoAreaTap = useCallback(() => {
-    if (isPlaying) {
-      revealControls();
+    if (isPlaying && showControls) {
+      setShowControls(false);
       return;
     }
-    togglePlay();
-  }, [isPlaying, revealControls, togglePlay]);
+    revealControls();
+  }, [isPlaying, revealControls, showControls]);
 
   const handleVideoError = useCallback(() => {
     const video = videoRef.current;
@@ -355,7 +359,7 @@ export function ProtectedVideoPlayer({
 
   const seekTo = useCallback(
     (clientX: number) => {
-      const bar = progressRef.current;
+      const bar = containerRef.current?.querySelector<HTMLElement>("[data-video-controls] [role='slider']");
       const video = videoRef.current;
       const max = getEffectiveDuration(video, duration);
       if (!bar || !video || max <= 0) return;
@@ -369,21 +373,7 @@ export function ProtectedVideoPlayer({
     [duration, onTimeUpdate]
   );
 
-  const seekBy = useCallback(
-    (deltaSeconds: number) => {
-      const video = videoRef.current;
-      const max = getEffectiveDuration(video, duration);
-      if (!video || max <= 0) return;
-      const next = Math.max(0, Math.min(max, video.currentTime + deltaSeconds));
-      video.currentTime = next;
-      setCurrentTime(next);
-      onTimeUpdate?.(next);
-      revealControls();
-    },
-    [duration, onTimeUpdate, revealControls]
-  );
-
-  const handleProgressPointer = useCallback(
+  const handleSeek = useCallback(
     (clientX: number) => {
       seekTo(clientX);
       revealControls();
@@ -414,6 +404,21 @@ export function ProtectedVideoPlayer({
     video.playbackRate = speed;
     setPlaybackSpeed(speed);
   }, []);
+
+  const handleQualityChange = useCallback((nextQuality: VideoQualityValue) => {
+    setQuality(nextQuality);
+  }, []);
+
+  const toggleSubtitles = useCallback(() => {
+    const video = videoRef.current;
+    if (!video || !hasSubtitleTracks) return;
+
+    const next = !subtitlesEnabled;
+    for (let i = 0; i < video.textTracks.length; i += 1) {
+      video.textTracks[i].mode = next ? "showing" : "hidden";
+    }
+    setSubtitlesEnabled(next);
+  }, [hasSubtitleTracks, subtitlesEnabled]);
 
   const toggleFullscreen = useCallback(async () => {
     const container = containerRef.current;
@@ -520,220 +525,40 @@ export function ProtectedVideoPlayer({
         </Badge>
       )}
 
-      {isPreview && (
-        <Badge
-          variant="accent"
-          className="absolute left-3 top-3 z-30 border-accent/30 bg-accent/20 text-accent-foreground backdrop-blur-sm"
-        >
-          <Sparkles className="size-3" />
-          Preview Gratis
-        </Badge>
-      )}
+      <button
+        type="button"
+        onClick={handleVideoAreaTap}
+        className="absolute inset-0 z-10 cursor-default bg-transparent"
+        aria-label={isPlaying ? "Tampilkan atau sembunyikan kontrol" : "Tampilkan kontrol video"}
+      />
 
-      {isPlaying && (
-        <button
-          type="button"
-          data-play-overlay
-          onClick={handleVideoAreaTap}
-          className="absolute inset-x-0 top-0 bottom-24 z-10 cursor-default bg-transparent"
-          aria-label="Tampilkan kontrol video"
-        />
-      )}
-
-      <div
-        data-video-controls
-        className={cn(
-          "absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-black/90 via-black/50 to-transparent px-3 pb-3 pt-10 transition-opacity duration-300 sm:px-4",
-          showControls || !isPlaying ? "opacity-100" : "opacity-0"
-        )}
-        onPointerDown={revealControls}
-      >
-        <div
-          ref={progressRef}
-          className="group/progress relative mb-3 flex min-h-11 cursor-pointer touch-none items-center sm:min-h-0 sm:h-1.5"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleProgressPointer(e.clientX);
-          }}
-          onPointerDown={(e) => {
-            e.stopPropagation();
-            isScrubbingRef.current = true;
-            progressRef.current?.setPointerCapture(e.pointerId);
-            handleProgressPointer(e.clientX);
-          }}
-          onPointerMove={(e) => {
-            if (!isScrubbingRef.current) return;
-            handleProgressPointer(e.clientX);
-          }}
-          onPointerUp={(e) => {
-            isScrubbingRef.current = false;
-            progressRef.current?.releasePointerCapture(e.pointerId);
-          }}
-          onPointerCancel={() => {
-            isScrubbingRef.current = false;
-          }}
-          role="slider"
-          aria-label="Progres video"
-          aria-valuemin={0}
-          aria-valuemax={duration}
-          aria-valuenow={currentTime}
-        >
-          <div className="relative h-3 w-full rounded-full bg-white/20 sm:h-1.5">
-            <div
-              className="absolute inset-y-0 left-0 rounded-full bg-foreground/90 transition-all"
-              style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
-            />
-            {chapterMarkers.map((marker) => (
-              <div
-                key={marker.label}
-                className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/60"
-                style={{ left: `${marker.percent}%` }}
-                title={marker.label}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              seekBy(-10);
-            }}
-            onPointerDown={(e) => e.stopPropagation()}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-2 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
-            aria-label="Mundur 10 detik"
-          >
-            -10s
-          </button>
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              togglePlay();
-            }}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-white transition-colors hover:bg-white/10"
-            aria-label={isPlaying ? "Jeda" : "Putar"}
-          >
-            {isPlaying ? <Pause className="size-5" /> : <Play className="size-5" />}
-          </button>
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              seekBy(10);
-            }}
-            onPointerDown={(e) => e.stopPropagation()}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-2 text-[11px] font-medium text-white transition-colors hover:bg-white/10 sm:hidden"
-            aria-label="Maju 10 detik"
-          >
-            +10s
-          </button>
-
-          <span className="min-w-[5.5rem] font-mono text-xs text-white/90 tabular-nums">
-            {formatTime(currentTime)} / {formatTime(duration)}
-          </span>
-
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={toggleMute}
-              className="rounded-md p-1.5 text-white transition-colors hover:bg-white/10"
-              aria-label={isMuted ? "Nyalakan suara" : "Bisukan"}
-            >
-              {isMuted || volume === 0 ? (
-                <VolumeX className="size-4" />
-              ) : (
-                <Volume2 className="size-4" />
-              )}
-            </button>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.05}
-              value={isMuted ? 0 : volume}
-              onChange={(e) => handleVolumeChange(Number(e.target.value))}
-              className="hidden h-1 w-16 cursor-pointer accent-white sm:block"
-              aria-label="Volume"
-            />
-          </div>
-
-          <div className="ml-auto flex flex-wrap items-center gap-2">
-            <label className="flex items-center gap-1 text-xs text-white/80">
-              <span className="hidden sm:inline">Kecepatan</span>
-              <select
-                value={playbackSpeed}
-                onChange={(e) => changeSpeed(Number(e.target.value))}
-                className="rounded border border-white/20 bg-black/40 px-1.5 py-0.5 text-xs text-white outline-none"
-                aria-label="Kecepatan putar"
-              >
-                {PLAYBACK_SPEEDS.map((speed) => (
-                  <option key={speed} value={speed}>
-                    {speed}x
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="flex items-center gap-1 text-xs text-white/80">
-              <span className="hidden sm:inline">Kualitas</span>
-              <select
-                value={quality}
-                onChange={(e) => setQuality(e.target.value as (typeof QUALITY_OPTIONS)[number])}
-                className="rounded border border-white/20 bg-black/40 px-1.5 py-0.5 text-xs text-white outline-none"
-                aria-label="Kualitas video"
-              >
-                {QUALITY_OPTIONS.map((q) => (
-                  <option key={q} value={q}>
-                    {q}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                void toggleFullscreen();
-              }}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="rounded-md p-1.5 text-white transition-colors hover:bg-white/10"
-              aria-label={isFullscreen ? "Keluar layar penuh" : "Layar penuh"}
-            >
-              {isFullscreen ? <Minimize className="size-4" /> : <Maximize className="size-4" />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {!isPlaying && !isBlurred && (
-        <>
-          <button
-            type="button"
-            data-play-overlay
-            onClick={handleVideoAreaTap}
-            className="absolute inset-x-0 top-0 bottom-24 z-10 bg-black/20 transition-opacity hover:bg-black/30"
-            aria-label="Putar video"
-          />
-          <button
-            type="button"
-            data-play-overlay
-            onClick={(e) => {
-              e.stopPropagation();
-              togglePlay();
-            }}
-            className="absolute left-1/2 top-1/2 z-20 flex size-16 -translate-x-1/2 -translate-y-[calc(50%+2rem)] items-center justify-center rounded-full bg-white/15 backdrop-blur-sm transition-transform hover:scale-105 sm:-translate-y-1/2"
-            aria-label="Putar video"
-          >
-            <Play className="size-8 text-white" />
-          </button>
-        </>
-      )}
+      <VideoControlBar
+        isPlaying={isPlaying}
+        showControls={showControls}
+        currentTime={currentTime}
+        duration={duration}
+        volume={volume}
+        isMuted={isMuted}
+        playbackSpeed={playbackSpeed}
+        quality={quality}
+        qualityOptions={DEFAULT_QUALITY_OPTIONS.map((option) => ({
+          ...option,
+          disabled: option.value !== "Auto",
+        }))}
+        isFullscreen={isFullscreen}
+        subtitlesEnabled={subtitlesEnabled}
+        hasSubtitleTracks={hasSubtitleTracks}
+        chapterMarkers={chapterMarkers}
+        onRevealControls={revealControls}
+        onTogglePlay={togglePlay}
+        onSeek={handleSeek}
+        onToggleMute={toggleMute}
+        onVolumeChange={handleVolumeChange}
+        onChangeSpeed={changeSpeed}
+        onChangeQuality={handleQualityChange}
+        onToggleSubtitles={toggleSubtitles}
+        onToggleFullscreen={toggleFullscreen}
+      />
 
       {isProtected && (
         <ProtectionWarning open={showWarning} onDismiss={() => setShowWarning(false)} />

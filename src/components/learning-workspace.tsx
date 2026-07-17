@@ -69,7 +69,6 @@ export function LearningWorkspace({
   const completedModulesBeforeRef = useRef(0);
   const completedRef = useRef(completed);
   completedRef.current = completed;
-  const [videoExpanded, setVideoExpanded] = useState(false);
   const [mobileLessonOpen, setMobileLessonOpen] = useState(false);
   const [sidebarTab, setSidebarTab] = useState<"modul" | "catatan">("modul");
   const [moduleCompleteBanner, setModuleCompleteBanner] = useState<string | null>(null);
@@ -421,28 +420,35 @@ export function LearningWorkspace({
   );
 
   return (
-    <div
-      className={cn(
-        "grid min-h-0 flex-1 grid-cols-1 gap-0 transition-[grid-template-columns] duration-300",
-        videoExpanded ? "lg:grid-cols-1" : "lg:grid-cols-[minmax(0,1fr)_340px]"
-      )}
-    >
-      <div
-        className={cn(
-          "flex flex-col gap-4 border-border p-4 sm:p-6",
-          !videoExpanded && "lg:border-r"
-        )}
-      >
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 text-center sm:text-left">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              {course.title}
-            </p>
-            <h1 className="font-heading text-xl font-medium sm:text-2xl">
-              {currentLesson.title}
-            </h1>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+    <div className="grid min-h-0 flex-1 grid-cols-1 gap-0 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="flex flex-col gap-4 border-border p-4 sm:p-6 lg:border-r">
+        <div className="mx-auto w-full max-w-5xl">
+          <ResizableVideoStage>
+            <ProtectedVideoPlayer
+              courseId={course.slug}
+              lessonId={currentLesson.id}
+              lessonTitle={currentLesson.title}
+              durationMinutes={currentLesson.durationMinutes}
+              isPreview={isPreview}
+              hasAccess={hasCourseAccess}
+              userId={session?.userId}
+              userEmail={session?.email}
+              seekRequestSeconds={seekRequestSeconds}
+              onTimeUpdate={handleVideoTimeUpdate}
+              onProtectionViolation={handleProtectionViolation}
+            />
+          </ResizableVideoStage>
+          {mentor ? <MentorVideoBar mentor={mentor} className="mt-3" /> : null}
+        </div>
+
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 text-center sm:text-left">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-muted-foreground">{course.title}</p>
+              <h1 className="font-heading text-xl font-medium sm:text-2xl">
+                {currentLesson.title}
+              </h1>
+            </div>
             <Sheet open={mobileLessonOpen} onOpenChange={setMobileLessonOpen}>
               <SheetTrigger
                 render={
@@ -462,28 +468,6 @@ export function LearningWorkspace({
               </SheetContent>
             </Sheet>
           </div>
-        </div>
-
-        <div className="mx-auto w-full max-w-5xl">
-          <ResizableVideoStage
-            expanded={videoExpanded}
-            onExpandedChange={setVideoExpanded}
-          >
-            <ProtectedVideoPlayer
-              courseId={course.slug}
-              lessonId={currentLesson.id}
-              lessonTitle={currentLesson.title}
-              durationMinutes={currentLesson.durationMinutes}
-              isPreview={isPreview}
-              hasAccess={hasCourseAccess}
-              userId={session?.userId}
-              userEmail={session?.email}
-              seekRequestSeconds={seekRequestSeconds}
-              onTimeUpdate={handleVideoTimeUpdate}
-              onProtectionViolation={handleProtectionViolation}
-            />
-          </ResizableVideoStage>
-          {mentor ? <MentorVideoBar mentor={mentor} className="mt-3" /> : null}
         </div>
 
         {nextLesson && nextLessonContext && (
@@ -619,11 +603,9 @@ export function LearningWorkspace({
         )}
       </div>
 
-      {!videoExpanded && (
-        <aside className="hidden min-h-0 flex-col gap-3 overflow-hidden border-t border-border p-4 sm:p-6 lg:flex lg:border-t-0">
-          {sidebarPanel}
-        </aside>
-      )}
+      <aside className="hidden min-h-0 flex-col gap-3 overflow-hidden border-t border-border p-4 sm:p-6 lg:flex lg:border-t-0">
+        {sidebarPanel}
+      </aside>
     </div>
   );
 }
