@@ -231,20 +231,59 @@ export function VideoControlBar({
         </span>
 
         <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <button
+                  type="button"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className={controlButtonClass}
+                  aria-label="Kecepatan putar"
+                >
+                  <Gauge className="size-[18px]" />
+                </button>
+              }
+            />
+            <DropdownMenuContent align="end" side="top" className={menuContentClass}>
+              <DropdownMenuLabel className="text-[11px] text-white/60">Kecepatan</DropdownMenuLabel>
+              {VIDEO_PLAYBACK_SPEEDS.map((speed) => (
+                <DropdownMenuItem
+                  key={speed}
+                  className={cn(menuItemClass, playbackSpeed === speed && "bg-white/10")}
+                  onClick={() => onChangeSpeed(speed)}
+                >
+                  {speed}x
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <button
             type="button"
+            disabled={!hasSubtitleTracks}
             onClick={(e) => {
               e.stopPropagation();
-              void onToggleFullscreen();
+              onToggleSubtitles();
             }}
             onPointerDown={(e) => e.stopPropagation()}
-            className={controlButtonClass}
-            aria-label={isFullscreen ? "Keluar layar penuh" : "Layar penuh"}
+            className={cn(
+              controlButtonClass,
+              !hasSubtitleTracks && "cursor-not-allowed opacity-40 hover:bg-transparent",
+              hasSubtitleTracks && subtitlesEnabled && "text-white"
+            )}
+            aria-label={
+              hasSubtitleTracks
+                ? subtitlesEnabled
+                  ? "Matikan subtitle"
+                  : "Nyalakan subtitle"
+                : "Subtitle tidak tersedia"
+            }
+            title={hasSubtitleTracks ? undefined : "Subtitle belum tersedia"}
           >
-            {isFullscreen ? (
-              <Minimize className="size-[18px]" />
+            {subtitlesEnabled && hasSubtitleTracks ? (
+              <Captions className="size-[18px]" />
             ) : (
-              <Maximize className="size-[18px]" />
+              <CaptionsOff className="size-[18px]" />
             )}
           </button>
 
@@ -290,59 +329,20 @@ export function VideoControlBar({
 
           <button
             type="button"
-            disabled={!hasSubtitleTracks}
             onClick={(e) => {
               e.stopPropagation();
-              onToggleSubtitles();
+              void onToggleFullscreen();
             }}
             onPointerDown={(e) => e.stopPropagation()}
-            className={cn(
-              controlButtonClass,
-              !hasSubtitleTracks && "cursor-not-allowed opacity-40 hover:bg-transparent",
-              hasSubtitleTracks && subtitlesEnabled && "text-white"
-            )}
-            aria-label={
-              hasSubtitleTracks
-                ? subtitlesEnabled
-                  ? "Matikan subtitle"
-                  : "Nyalakan subtitle"
-                : "Subtitle tidak tersedia"
-            }
-            title={hasSubtitleTracks ? undefined : "Subtitle belum tersedia"}
+            className={controlButtonClass}
+            aria-label={isFullscreen ? "Keluar layar penuh" : "Layar penuh"}
           >
-            {subtitlesEnabled && hasSubtitleTracks ? (
-              <Captions className="size-[18px]" />
+            {isFullscreen ? (
+              <Minimize className="size-[18px]" />
             ) : (
-              <CaptionsOff className="size-[18px]" />
+              <Maximize className="size-[18px]" />
             )}
           </button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <button
-                  type="button"
-                  onPointerDown={(e) => e.stopPropagation()}
-                  className={controlButtonClass}
-                  aria-label="Kecepatan putar"
-                >
-                  <Gauge className="size-[18px]" />
-                </button>
-              }
-            />
-            <DropdownMenuContent align="end" side="top" className={menuContentClass}>
-              <DropdownMenuLabel className="text-[11px] text-white/60">Kecepatan</DropdownMenuLabel>
-              {VIDEO_PLAYBACK_SPEEDS.map((speed) => (
-                <DropdownMenuItem
-                  key={speed}
-                  className={cn(menuItemClass, playbackSpeed === speed && "bg-white/10")}
-                  onClick={() => onChangeSpeed(speed)}
-                >
-                  {speed}x
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
     </div>
