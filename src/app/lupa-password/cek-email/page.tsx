@@ -1,22 +1,16 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { MailCheck } from "lucide-react";
 
 import { AuthPageShell } from "@/components/auth-page-shell";
-import { consumePrototypeResetUrl } from "@/components/forgot-password-form";
 import { Button } from "@/components/ui/button";
 
 function CheckEmailContent() {
   const searchParams = useSearchParams();
   const maskedEmail = searchParams.get("email") ?? "email kamu";
-  const [prototypeUrl, setPrototypeUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    setPrototypeUrl(consumePrototypeResetUrl());
-  }, []);
 
   return (
     <div className="flex flex-col gap-6 text-center">
@@ -36,22 +30,6 @@ function CheckEmailContent() {
           menit.
         </p>
       </div>
-
-      {prototypeUrl && (
-        <div className="rounded-xl border border-accent/30 bg-accent-soft/30 p-4 text-left text-xs text-muted-foreground">
-          <p className="font-medium text-foreground">Mode prototype — tanpa email nyata</p>
-          <p className="mt-1">
-            Di produksi, tautan reset dikirim via email. Untuk pengujian, gunakan tautan di
-            bawah:
-          </p>
-          <Link
-            href={prototypeUrl}
-            className="link-accent mt-2 inline-block break-all text-sm font-medium"
-          >
-            Buka halaman reset kata sandi
-          </Link>
-        </div>
-      )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
         <Button variant="outline" className="h-11" render={<Link href="/lupa-password" />}>

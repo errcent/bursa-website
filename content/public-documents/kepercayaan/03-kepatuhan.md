@@ -7,7 +7,7 @@ description: Kepatuhan Bursa terhadap UU PDP, POJK 6/2026, dan standar keamanan 
 sortOrder: 3
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT** — wajib direview advokat sebelum publish final.
+_Berlaku efektif: 22 Juli 2026_
 
 ## Posisi Regulasi Platform
 

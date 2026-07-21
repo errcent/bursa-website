@@ -7,7 +7,9 @@ description: Ringkasan program keamanan informasi Bursa — prinsip, arsitektur,
 sortOrder: 1
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT**. Platform saat ini dalam tahap prototype lanjutan — beberapa kontrol production belum sepenuhnya diimplementasikan.
+_Berlaku efektif: 22 Juli 2026_
+
+Program keamanan Bursa menerapkan kontrol teknis dan organisasional best-practice. Sertifikasi formal (SOC 2, ISO 27001) ada dalam roadmap; status implementasi setiap kontrol dijelaskan secara transparan di halaman ini.
 
 ## Prinsip Fundamental
 

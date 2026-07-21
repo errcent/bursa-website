@@ -4,14 +4,15 @@ import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 
 import { CheckoutForm } from "@/components/checkout-form";
+import { CheckoutUnavailable } from "@/components/checkout-unavailable";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
-import { Badge } from "@/components/ui/badge";
 import {
   getCatalogCourseSlugs,
   getCourseBySlug,
   getMentorBySlug,
 } from "@/lib/catalog/server";
+import { canPurchaseCourse } from "@/lib/catalog/payment-gate";
 
 export async function generateStaticParams() {
   const slugs = await getCatalogCourseSlugs();
@@ -28,7 +29,7 @@ export async function generateMetadata({
   if (!course) return {};
   return {
     title: `Checkout — ${course.title}`,
-    description: "Simulasi pembayaran ke mentor untuk akses kelas/paket belajar (mode demo).",
+    description: `Selesaikan pembelian akses kelas ${course.title} di Bursa Trading Academy.`,
   };
 }
 
@@ -44,6 +45,10 @@ export default async function CheckoutPage({
   const mentor = await getMentorBySlug(course.mentorSlug);
   if (!mentor) notFound();
 
+  if (!canPurchaseCourse(course.price)) {
+    return <CheckoutUnavailable course={course} />;
+  }
+
   return (
     <>
       <SiteNavbar />
@@ -57,15 +62,10 @@ export default async function CheckoutPage({
               <ArrowLeft className="size-4" />
               Kembali ke detail kelas
             </Link>
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="section-title">Checkout</h1>
-              <Badge variant="outline" className="border-amber-400/30 bg-amber-400/10 text-amber-200">
-                Simulasi — Tanpa Pembayaran Real
-              </Badge>
-            </div>
+            <h1 className="section-title">Checkout</h1>
             <p className="section-copy mt-3 max-w-2xl">
-              Murid membayar langsung ke mentor (bukan per modul). Total yang ditampilkan adalah
-              jumlah yang Anda bayar untuk akses kelas selamanya.
+              Pembayaran sekali untuk akses kelas selamanya. Total yang ditampilkan adalah jumlah
+              yang kamu bayar ke mentor melalui platform.
             </p>
           </div>
         </div>

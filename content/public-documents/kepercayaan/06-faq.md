@@ -7,7 +7,7 @@ description: Pertanyaan umum seputar keamanan dan kepatuhan platform Bursa.
 sortOrder: 6
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT** — wajib direview advokat sebelum publish final.
+_Berlaku efektif: 22 Juli 2026_
 
 ## Apakah Bursa tersertifikasi SOC 2 atau ISO 27001?
 
@@ -15,7 +15,7 @@ sortOrder: 6
 
 ## Apakah Bursa aman untuk data pribadiku?
 
-Kami menerapkan enkripsi transit (TLS), hashing password (bcrypt), kontrol akses berbasis peran, dan prinsip privacy by design. Platform masih dalam tahap prototype lanjutan — beberapa kontrol production (MFA admin, field encryption) masih dalam pengembangan.
+Kami menerapkan enkripsi transit (TLS), hashing password (bcrypt), kontrol akses berbasis peran, dan prinsip privacy by design. Kontrol lanjutan (MFA admin, field encryption penuh) terus kami tingkatkan — lihat [Kontrol Keamanan](/kepercayaan/kontrol) untuk status terkini.
 
 ## Apakah admin Bursa bisa melihat catatan belajarku?
 

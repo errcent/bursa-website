@@ -7,7 +7,7 @@ description: Index dokumen keamanan, privasi, dan legal Bursa.
 sortOrder: 5
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT** — wajib direview advokat sebelum publish final.
+_Berlaku efektif: 22 Juli 2026_
 
 ## Dokumen Legal & Privasi
 

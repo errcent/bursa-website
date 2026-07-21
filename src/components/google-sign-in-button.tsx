@@ -79,15 +79,9 @@ export function GoogleSignInButton({ mode }: { mode: "login" | "register" }) {
 
   if (!configured) {
     return (
-      <div className="rounded-xl border border-dashed border-border/60 bg-muted/20 px-3 py-3 text-xs text-muted-foreground">
-        <p className="font-medium text-foreground">Login Google (prototype)</p>
-        <p className="mt-1">
-          Tambahkan <span className="font-mono">GOOGLE_CLIENT_ID</span>,{" "}
-          <span className="font-mono">GOOGLE_CLIENT_SECRET</span>, dan{" "}
-          <span className="font-mono">NEXTAUTH_SECRET</span> di <span className="font-mono">.env</span>{" "}
-          — lihat README.
-        </p>
-      </div>
+      <p className="text-center text-xs text-muted-foreground">
+        Login Google sementara tidak tersedia.
+      </p>
     );
   }
 

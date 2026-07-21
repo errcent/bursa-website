@@ -7,8 +7,8 @@ import { getCourseBySlug, getMentorBySlug } from "@/lib/catalog/server";
 import type { Course, Mentor } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Pembayaran Berhasil (Simulasi)",
-  description: "Konfirmasi simulasi pembayaran ke mentor untuk kelas/paket belajar.",
+  title: "Pembayaran Berhasil",
+  description: "Konfirmasi pembayaran ke mentor untuk kelas atau paket belajar.",
 };
 
 export default async function CheckoutSuccessPage({

@@ -9,7 +9,6 @@ import { AuthField, authInputClassName } from "@/components/auth-field";
 import { useAuth } from "@/components/auth-provider";
 import { GoogleSignInButton, OAuthSessionSync } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
-import { getDemoCredentials } from "@/lib/auth/client";
 import { resolvePostAuthRedirect, POST_AUTH_HOME } from "@/lib/auth/redirect";
 
 export function LoginForm() {
@@ -55,14 +54,6 @@ export function LoginForm() {
     }
 
     router.replace(next);
-  }
-
-  function fillDemo() {
-    const demo = getDemoCredentials();
-    setIdentifier(demo.identifier);
-    setPassword(demo.password);
-    setError(null);
-    setFieldErrors({});
   }
 
   return (
@@ -149,29 +140,6 @@ export function LoginForm() {
       </div>
 
       <GoogleSignInButton mode="login" />
-
-      <div className="rounded-xl border border-border/60 bg-accent-soft/50 p-3 text-xs text-muted-foreground">
-        <p className="font-medium text-foreground">Mode demo (prototype)</p>
-        <p className="mt-1">
-          Learner: <span className="font-mono">demo@bursa.id</span>,{" "}
-          <span className="font-mono">andi_r</span>, atau{" "}
-          <span className="font-mono">+6281110000002</span> — password{" "}
-          <span className="font-mono">demo1234</span>
-        </p>
-        <p className="mt-1">
-          Role: <span className="font-mono">admin@test.dev</span>,{" "}
-          <span className="font-mono">mentor@test.dev</span>,{" "}
-          <span className="font-mono">developer@test.dev</span> — password{" "}
-          <span className="font-mono">password123</span>
-        </p>
-        <button
-          type="button"
-          onClick={fillDemo}
-          className="mt-2 text-sm font-medium underline-offset-4 hover:underline"
-        >
-          Isi otomatis (learner)
-        </button>
-      </div>
 
       <p className="text-center text-sm text-muted-foreground">
         Belum punya akun?{" "}

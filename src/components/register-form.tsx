@@ -27,6 +27,7 @@ export function RegisterForm() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{
     name?: string;
@@ -34,6 +35,7 @@ export function RegisterForm() {
     email?: string;
     phone?: string;
     password?: string;
+    consent?: string;
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [usernameCheck, setUsernameCheck] = useState<"idle" | "checking" | "available" | "taken">(
@@ -99,6 +101,9 @@ export function RegisterForm() {
       }
     }
     if (!password) errors.password = "Kata sandi wajib diisi.";
+    if (!consentAccepted) {
+      errors.consent = "Anda perlu menyetujui Syarat & Ketentuan dan Kebijakan Privasi.";
+    }
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
@@ -272,13 +277,48 @@ export function RegisterForm() {
         />
       </AuthField>
 
+      <div className="space-y-2">
+        <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed">
+          <input
+            type="checkbox"
+            checked={consentAccepted}
+            onChange={(e) => {
+              setConsentAccepted(e.target.checked);
+              if (fieldErrors.consent) {
+                setFieldErrors((prev) => ({ ...prev, consent: undefined }));
+              }
+            }}
+            disabled={isSubmitting}
+            className="mt-0.5 size-4 shrink-0 rounded border-border accent-primary"
+            aria-invalid={Boolean(fieldErrors.consent)}
+          />
+          <span>
+            Saya setuju{" "}
+            <Link
+              href="/syarat-dan-ketentuan"
+              className="font-medium underline-offset-4 hover:underline"
+            >
+              Syarat &amp; Ketentuan
+            </Link>{" "}
+            dan{" "}
+            <Link
+              href="/privasi/kebijakan"
+              className="font-medium underline-offset-4 hover:underline"
+            >
+              Kebijakan Privasi
+            </Link>
+            .
+          </span>
+        </label>
+        {fieldErrors.consent && (
+          <p className="text-sm text-destructive" role="alert">
+            {fieldErrors.consent}
+          </p>
+        )}
+      </div>
+
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Dengan mendaftar, kamu menyetujui bahwa materi di platform ini bersifat edukasi — bukan
-        rekomendasi investasi. Lihat{" "}
-        <Link href="/privasi/kebijakan" className="font-medium underline-offset-4 hover:underline">
-          Kebijakan Privasi
-        </Link>
-        .
+        Materi di platform ini bersifat edukasi — bukan rekomendasi investasi.
       </p>
 
       <Button type="submit" className="h-11 w-full btn-primary" disabled={isSubmitting}>

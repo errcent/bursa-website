@@ -8,6 +8,7 @@ import { CourseThumbnail } from "@/components/course-thumbnail";
 import { Button } from "@/components/ui/button";
 import { StarRating } from "@/components/star-rating";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
+import { canPurchaseCourse } from "@/lib/catalog/payment-gate";
 import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import type { Course } from "@/lib/types";
 import { hasRating } from "@/lib/utils";
@@ -27,6 +28,7 @@ export function CourseDetailCheckoutPanel({
 }) {
   const { enrolled, loading } = useCourseEnrollment(course.slug);
   const learnHref = `/belajar/${course.slug}/l1`;
+  const purchaseAvailable = canPurchaseCourse(course.price);
 
   if (loading) {
     return (
@@ -114,12 +116,21 @@ export function CourseDetailCheckoutPanel({
                 </ul>
 
                 <div className="flex flex-col gap-2 sm:flex-row">
-                  <Button
-                    className="h-12 flex-1 btn-primary text-sm font-semibold"
-                    render={<Link href={checkoutHref} />}
-                  >
-                    Checkout Sekarang
-                  </Button>
+                  {purchaseAvailable ? (
+                    <Button
+                      className="h-12 flex-1 btn-primary text-sm font-semibold"
+                      render={<Link href={checkoutHref} />}
+                    >
+                      Checkout Sekarang
+                    </Button>
+                  ) : (
+                    <Button
+                      className="h-12 flex-1 btn-primary text-sm font-semibold"
+                      render={<Link href="/waitlist" />}
+                    >
+                      Segera Hadir — Gabung Waitlist
+                    </Button>
+                  )}
                   <Button
                     variant="outline"
                     className="h-12 flex-1"
@@ -133,12 +144,14 @@ export function CourseDetailCheckoutPanel({
                 <ul className="flex flex-col gap-1.5 border-t border-border/60 pt-4 text-xs text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Check className="mt-0.5 size-3 shrink-0 text-emerald" />
-                    Simulasi checkout — tanpa biaya real
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="mt-0.5 size-3 shrink-0 text-emerald" />
                     Pembayaran langsung ke mentor
                   </li>
+                  {!purchaseAvailable && (
+                    <li className="flex items-start gap-2">
+                      <Check className="mt-0.5 size-3 shrink-0 text-emerald" />
+                      Checkout online segera dibuka — daftar waitlist untuk info pertama
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>

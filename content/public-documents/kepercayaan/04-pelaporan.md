@@ -7,7 +7,7 @@ description: Kebijakan responsible disclosure Bursa — cara melaporkan celah ke
 sortOrder: 4
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT** — wajib direview advokat sebelum publish final.
+_Berlaku efektif: 22 Juli 2026_
 
 Kami menghargai kontribusi komunitas keamanan dalam menjaga platform Bursa aman. Jika kamu menemukan kerentanan keamanan, laporkan secara responsible.
 

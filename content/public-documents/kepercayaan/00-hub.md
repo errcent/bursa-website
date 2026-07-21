@@ -7,7 +7,7 @@ description: Transparansi keamanan, kontrol kepatuhan, dan praktik perlindungan 
 sortOrder: 0
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT** — wajib direview advokat sebelum publish final.
+_Berlaku efektif: 22 Juli 2026_
 
 Selamat datang di Pusat Kepercayaan Bursa. Kami percaya transparansi adalah fondasi kepercayaan — terutama di platform edukasi trading yang diawasi regulasi.
 

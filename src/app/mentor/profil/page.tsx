@@ -74,7 +74,7 @@ export default function MentorProfilePage() {
             <Button type="submit" size="sm">
               Simpan profil
             </Button>
-            {saved && <span className="text-xs text-emerald">Tersimpan (prototype lokal).</span>}
+            {saved && <span className="text-xs text-emerald">Perubahan tersimpan.</span>}
           </div>
         )}
       </form>

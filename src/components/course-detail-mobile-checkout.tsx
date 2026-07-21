@@ -5,18 +5,22 @@ import { Play } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
+import { canPurchaseCourse } from "@/lib/catalog/payment-gate";
 
 export function CourseDetailMobileCheckout({
   courseSlug,
   priceLabel,
   checkoutHref,
+  price,
 }: {
   courseSlug: string;
   priceLabel: string;
   checkoutHref: string;
+  price: number;
 }) {
   const { enrolled, loading } = useCourseEnrollment(courseSlug);
   const learnHref = `/belajar/${courseSlug}/l1`;
+  const purchaseAvailable = canPurchaseCourse(price);
 
   if (loading) {
     return (
@@ -55,9 +59,11 @@ export function CourseDetailMobileCheckout({
         </div>
         <Button
           className="h-11 shrink-0 px-6 btn-primary text-sm font-semibold"
-          render={<Link href={checkoutHref} />}
+          render={
+            <Link href={purchaseAvailable ? checkoutHref : "/waitlist"} />
+          }
         >
-          Checkout
+          {purchaseAvailable ? "Checkout" : "Waitlist"}
         </Button>
       </div>
     </div>

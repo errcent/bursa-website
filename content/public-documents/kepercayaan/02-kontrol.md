@@ -7,7 +7,9 @@ description: Matriks kontrol keamanan teknis dan organisasional Bursa.
 sortOrder: 2
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT**. Matriks ini versi publik — detail teknis internal tidak dipublikasikan demi keamanan.
+_Berlaku efektif: 22 Juli 2026_
+
+Matriks ini versi publik — detail teknis internal tidak dipublikasikan demi keamanan.
 
 ## Kontrol Teknis
 

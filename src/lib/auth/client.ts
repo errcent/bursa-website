@@ -363,7 +363,13 @@ export async function loginWithServer(
       return { ok: false, error: data.error };
     }
   } catch {
-    // fall through to local prototype auth
+    if (process.env.NODE_ENV === "production") {
+      return { ok: false, error: "Tidak dapat terhubung ke server. Coba lagi." };
+    }
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    return { ok: false, error: "Login gagal. Periksa email dan kata sandi Anda." };
   }
 
   return loginLocal(input);
@@ -461,7 +467,13 @@ export async function registerWithServer(
       return { ok: false, error: data.error };
     }
   } catch {
-    // fall through
+    if (process.env.NODE_ENV === "production") {
+      return { ok: false, error: "Tidak dapat terhubung ke server. Coba lagi." };
+    }
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    return { ok: false, error: "Pendaftaran gagal. Coba lagi atau hubungi dukungan." };
   }
 
   return register(input);

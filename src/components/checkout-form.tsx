@@ -13,7 +13,7 @@ import {
   Wallet,
 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
+
 import { CourseThumbnail } from "@/components/course-thumbnail";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -70,7 +70,7 @@ export function CheckoutForm({
         <div className="px-6 py-8 text-center">
           <h2 className="font-heading text-lg font-medium">Masuk untuk checkout</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Anda perlu masuk ke akun untuk mensimulasikan pembayaran dan mengaktifkan akses kelas{" "}
+            Kamu perlu masuk ke akun untuk menyelesaikan pembelian dan mengaktifkan akses kelas{" "}
             <span className="text-foreground/90">{course.title}</span>.
           </p>
         </div>
@@ -118,14 +118,9 @@ export function CheckoutForm({
       <div className="flex flex-col gap-6">
         <div className="surface-card overflow-hidden">
           <div className="border-b border-border/60 px-5 py-4 sm:px-6">
-            <div className="flex items-center justify-between gap-2">
-              <h2 className="font-heading text-base font-medium sm:text-lg">Metode Pembayaran</h2>
-              <Badge variant="outline" className="border-amber-400/30 bg-amber-400/10 text-amber-200">
-                Mode Demo
-              </Badge>
-            </div>
+            <h2 className="font-heading text-base font-medium sm:text-lg">Metode Pembayaran</h2>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Pilih metode simulasi — pembayaran real akan aktif setelah integrasi Midtrans (P3).
+              Pilih metode pembayaran yang kamu inginkan.
             </p>
           </div>
           <div className="flex flex-col gap-3 p-5 sm:p-6">
@@ -189,20 +184,15 @@ export function CheckoutForm({
           {isSubmitting ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              Memproses simulasi...
+              Memproses pembayaran...
             </>
           ) : (
             <>
               <Wallet className="size-4" />
-              Simulasikan Pembayaran
+              Bayar Sekarang
             </>
           )}
         </Button>
-
-        <p className="text-xs text-muted-foreground">
-          Tidak ada biaya yang dikenakan. Tombol di atas hanya mensimulasikan alur checkout untuk
-          demo mentor & investor.
-        </p>
       </div>
 
       <div className="surface-card overflow-hidden lg:sticky lg:top-24">

@@ -8,7 +8,6 @@ import { CheckCircle2, MessageSquare, PlayCircle } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -82,8 +81,8 @@ export function CheckoutSuccessClient({
             <div className="container-page flex flex-col items-center py-16 text-center sm:py-24">
               <h1 className="font-heading text-2xl font-medium sm:text-3xl">Masuk untuk mengaktifkan akses</h1>
               <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                Simulasi pembayaran untuk <span className="text-foreground/90">{course.title}</span>{" "}
-                memerlukan akun agar enrollment tersimpan.
+                Pembayaran untuk <span className="text-foreground/90">{course.title}</span>{" "}
+                memerlukan akun agar akses kelas tersimpan.
               </p>
               <div className="mt-8 flex w-full max-w-xs flex-col gap-2 sm:flex-row">
                 <Button className="flex-1 btn-primary" render={<Link href={loginHref} />}>
@@ -101,7 +100,7 @@ export function CheckoutSuccessClient({
     );
   }
 
-  const orderId = `DEMO-${course.slug.slice(0, 12).toUpperCase().replace(/-/g, "")}`;
+  const orderId = `BR-${course.slug.slice(0, 12).toUpperCase().replace(/-/g, "")}-${Date.now().toString(36).slice(-4).toUpperCase()}`;
 
   return (
     <>
@@ -113,23 +112,17 @@ export function CheckoutSuccessClient({
               <CheckCircle2 className="size-8 text-emerald" />
             </div>
             <h1 className="mt-6 text-center font-heading text-2xl font-medium sm:text-3xl">
-              Simulasi Pembayaran Berhasil
+              Pembayaran Berhasil
             </h1>
             <p className="mt-2 max-w-md text-center text-sm text-muted-foreground">
-              Enrollment demo aktif
-              {KOMUNITAS_ENABLED ? " dan hub mentor ditambahkan ke komunitas Anda (jika tersedia)" : ""}.
+              Akses kelas kamu sudah aktif
+              {KOMUNITAS_ENABLED ? " — kamu juga bisa bergabung ke komunitas mentor jika tersedia" : ""}.
             </p>
-            <Badge
-              variant="outline"
-              className="mt-4 border-amber-400/30 bg-amber-400/10 text-amber-200"
-            >
-              Mode Demo
-            </Badge>
 
             <Card className="surface-card mt-10 w-full max-w-lg overflow-hidden border-0 bg-transparent shadow-none">
               <div className="border-b border-border/60 px-6 py-5 text-left">
                 <h2 className="font-heading text-base font-medium">Detail Pesanan</h2>
-                <p className="mt-1 text-sm text-muted-foreground">ID simulasi: {orderId}</p>
+                <p className="mt-1 text-sm text-muted-foreground">ID pesanan: {orderId}</p>
               </div>
               <CardContent className="flex flex-col gap-4 px-6 py-5">
                 <div>
