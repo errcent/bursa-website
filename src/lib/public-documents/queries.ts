@@ -6,6 +6,31 @@ import { loadAllVaultDocuments } from "./parse-vault";
 import type { PortalNavItem, PublicDocumentRecord } from "./types";
 import { PORTAL_ROUTE } from "./types";
 
+const STALE_DRAFT_BANNER = /> \*\*Catatan:\*\*[\s\S]*?\*\*DRAFT\*\*/i;
+
+function hasStaleDraftBanner(body: string): boolean {
+  return STALE_DRAFT_BANNER.test(body);
+}
+
+/** Prefer bundled markdown when production DB still has pre-launch DRAFT banners. */
+function mergeWithBundledWhenStale(
+  dbDoc: PublicDocumentRecord,
+  bundled: PublicDocumentRecord | undefined
+): PublicDocumentRecord {
+  if (!bundled || !hasStaleDraftBanner(dbDoc.markdownBody)) return dbDoc;
+  if (hasStaleDraftBanner(bundled.markdownBody)) return dbDoc;
+
+  return {
+    ...dbDoc,
+    title: bundled.title,
+    eyebrow: bundled.eyebrow,
+    description: bundled.description,
+    markdownBody: bundled.markdownBody,
+    sourceVaultPath: bundled.sourceVaultPath,
+    sortOrder: bundled.sortOrder,
+  };
+}
+
 function mapRecord(doc: {
   id: string;
   slug: string;
@@ -65,10 +90,11 @@ export async function getPublishedDocument(
       where: { portal, slug, status: "PUBLISHED" },
     })
   );
-  if (doc) return mapRecord(doc);
+  const bundled = (await loadVaultFallback(portal, slug))[0];
 
-  const fallback = await loadVaultFallback(portal, slug);
-  return fallback[0] ?? null;
+  if (doc) return mergeWithBundledWhenStale(mapRecord(doc), bundled);
+
+  return bundled ?? null;
 }
 
 export async function getDocumentForPreview(
@@ -80,10 +106,11 @@ export async function getDocumentForPreview(
       where: { portal, slug, status: { not: "ARCHIVED" } },
     })
   );
-  if (doc) return mapRecord(doc);
+  const bundled = (await loadVaultFallback(portal, slug))[0];
 
-  const fallback = await loadVaultFallback(portal, slug);
-  return fallback[0] ?? null;
+  if (doc) return mergeWithBundledWhenStale(mapRecord(doc), bundled);
+
+  return bundled ?? null;
 }
 
 export async function getPortalDocuments(
@@ -98,9 +125,17 @@ export async function getPortalDocuments(
       orderBy: { sortOrder: "asc" },
     })
   );
-  if (docs && docs.length > 0) return docs.map(mapRecord);
 
-  return loadVaultFallback(portal);
+  const bundled = await loadVaultFallback(portal);
+  const bundledBySlug = new Map(bundled.map((d) => [d.slug, d]));
+
+  if (docs && docs.length > 0) {
+    return docs.map((doc) =>
+      mergeWithBundledWhenStale(mapRecord(doc), bundledBySlug.get(doc.slug))
+    );
+  }
+
+  return bundled;
 }
 
 export async function getPortalNav(portal: DocumentPortal): Promise<PortalNavItem[]> {
