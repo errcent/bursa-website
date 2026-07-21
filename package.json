@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:webpack": "next dev --webpack",
-    "build": "prisma generate && prisma migrate deploy && next build",
+    "build": "prisma generate && prisma migrate deploy && tsx scripts/sync-legal-drafts.ts --force && next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",

@@ -8,7 +8,14 @@ export async function POST(request: Request) {
   if (!admin) return unauthorized();
 
   try {
-    const result = await syncLegalDrafts();
+    const body = (await request.json().catch(() => ({}))) as {
+      force?: boolean;
+      publishAll?: boolean;
+    };
+    const result = await syncLegalDrafts({
+      force: body.force ?? false,
+      publishAll: body.publishAll ?? false,
+    });
     return NextResponse.json({
       ok: true,
       message: `Sync dari vault selesai: ${result.created} baru, ${result.updated} diperbarui, ${result.skipped} dilewati.`,
