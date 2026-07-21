@@ -10,7 +10,7 @@ import {
 import { NextResponse } from "next/server";
 
 import { resolveTrustedEmail } from "@/lib/auth/request-identity";
-import { instrumentToUi, levelToUi } from "@/lib/catalog/enums";
+import { instrumentToUi, levelToUi, tierToUi } from "@/lib/catalog/enums";
 import { db } from "@/lib/db";
 import {
   PLATFORM_COMMISSION_RATE,
