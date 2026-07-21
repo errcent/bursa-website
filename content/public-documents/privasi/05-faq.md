@@ -7,7 +7,7 @@ description: Pertanyaan umum seputar privasi data di platform Bursa.
 sortOrder: 5
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT** — wajib direview advokat sebelum publish final.
+_Berlaku efektif: 22 Juli 2026_
 
 ## Apakah Bursa menjual data pribadiku?
 

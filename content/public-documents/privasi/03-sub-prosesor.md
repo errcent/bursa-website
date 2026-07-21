@@ -7,7 +7,7 @@ description: Daftar pihak ketiga yang memproses data atas nama Bursa.
 sortOrder: 3
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT** — wajib direview advokat sebelum publish final.
+_Berlaku efektif: 22 Juli 2026_
 
 Sub-prosesor adalah pihak ketiga yang memproses data pribadi **atas nama Bursa** untuk menjalankan layanan platform. Kami **tidak menjual** data pribadimu.
 

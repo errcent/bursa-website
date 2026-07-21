@@ -7,7 +7,7 @@ description: Ajukan permintaan hak subjek data — akses, koreksi, penghapusan, 
 sortOrder: 4
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT** — wajib direview advokat sebelum publish final.
+_Berlaku efektif: 22 Juli 2026_
 
 Sesuai UU PDP, kamu memiliki hak atas data pribadimu. Gunakan halaman ini untuk mengajukan permintaan.
 

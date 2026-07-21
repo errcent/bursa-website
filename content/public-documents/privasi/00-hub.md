@@ -7,7 +7,7 @@ description: Pusat informasi privasi Bursa — kebijakan data, cookie, sub-prose
 sortOrder: 0
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT** dan wajib direview advokat sebelum dianggap mengikat secara hukum.
+_Berlaku efektif: 22 Juli 2026_
 
 Selamat datang di Pusat Privasi Bursa. Di sini kamu bisa mempelajari bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadimu saat belajar di platform edukasi trading kami.
 

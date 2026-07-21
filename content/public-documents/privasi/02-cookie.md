@@ -7,7 +7,7 @@ description: Jenis cookie yang digunakan Bursa dan cara mengelola preferensimu.
 sortOrder: 2
 ---
 
-> **Catatan:** Dokumen ini masih **DRAFT** — wajib direview advokat sebelum publish final.
+_Berlaku efektif: 22 Juli 2026_
 
 Kebijakan Cookie ini melengkapi [Kebijakan Privasi](/privasi/kebijakan) dan menjelaskan bagaimana Bursa menggunakan cookie serta teknologi serupa.
 
