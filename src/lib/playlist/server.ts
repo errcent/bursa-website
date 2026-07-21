@@ -1,4 +1,4 @@
-import { slugify } from "@/lib/admin/server";
+import { slugify } from "@/lib/slugify";
 import { db } from "@/lib/db";
 import type { PlaylistDetail, PlaylistItemView, PlaylistSummary } from "@/lib/playlist/types";
 

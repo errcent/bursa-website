@@ -10,6 +10,7 @@ import {
 import { NextResponse } from "next/server";
 
 import { resolveTrustedEmail } from "@/lib/auth/request-identity";
+import { instrumentToUi, levelToUi } from "@/lib/catalog/enums";
 import { db } from "@/lib/db";
 import {
   PLATFORM_COMMISSION_RATE,
@@ -56,61 +57,14 @@ export function forbidden(message = "Akses ditolak.") {
   return NextResponse.json({ error: message }, { status: 403 });
 }
 
-export function instrumentToUi(value: Instrument): UiInstrument {
-  const map: Record<Instrument, UiInstrument> = {
-    SAHAM: "Saham",
-    CRYPTO: "Crypto",
-    FOREX: "Forex",
-  };
-  return map[value];
-}
-
-export function instrumentFromUi(value: UiInstrument): Instrument {
-  const map: Record<UiInstrument, Instrument> = {
-    Saham: Instrument.SAHAM,
-    Crypto: Instrument.CRYPTO,
-    Forex: Instrument.FOREX,
-  };
-  return map[value];
-}
-
-export function levelToUi(value: CourseLevel): Level {
-  const map: Record<CourseLevel, Level> = {
-    PEMULA: "Pemula",
-    MENENGAH: "Menengah",
-    MAHIR: "Mahir",
-  };
-  return map[value];
-}
-
-export function levelFromUi(value: Level): CourseLevel {
-  const map: Record<Level, CourseLevel> = {
-    Pemula: CourseLevel.PEMULA,
-    Menengah: CourseLevel.MENENGAH,
-    Mahir: CourseLevel.MAHIR,
-  };
-  return map[value];
-}
-
-export function tierToUi(value: ChatRoomTier): ChatRoomTierLabel {
-  const map: Record<ChatRoomTier, ChatRoomTierLabel> = {
-    PEMULA: "Pemula",
-    MENENGAH: "Menengah",
-    MAHIR: "Mahir",
-    INTERNAL: "Internal",
-  };
-  return map[value];
-}
-
-export function tierFromUi(value: ChatRoomTierLabel): ChatRoomTier {
-  const map: Record<ChatRoomTierLabel, ChatRoomTier> = {
-    Pemula: ChatRoomTier.PEMULA,
-    Menengah: ChatRoomTier.MENENGAH,
-    Mahir: ChatRoomTier.MAHIR,
-    Internal: ChatRoomTier.INTERNAL,
-  };
-  return map[value];
-}
+export {
+  instrumentFromUi,
+  instrumentToUi,
+  levelFromUi,
+  levelToUi,
+  tierFromUi,
+  tierToUi,
+} from "@/lib/catalog/enums";
 
 export function roleToUi(role: UserRole): AdminUser["role"] {
   const map: Record<UserRole, AdminUser["role"]> = {
@@ -528,12 +482,4 @@ export async function mapModerationItem(
   };
 }
 
-export function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-    .slice(0, 60);
-}
+export { slugify } from "@/lib/slugify";

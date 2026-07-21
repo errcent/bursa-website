@@ -1,7 +1,7 @@
 import { VerificationStatus, type Prisma } from "@prisma/client";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
-import { instrumentToUi, levelToUi } from "@/lib/admin/server";
+import { instrumentToUi, levelToUi } from "@/lib/catalog/enums";
 import { db } from "@/lib/db";
 import { listCuratedPlaylists, serializePlaylistSummary } from "@/lib/playlist/server";
 import type { PlaylistSummary } from "@/lib/playlist/types";
