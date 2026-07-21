@@ -10,9 +10,9 @@ import {
 
 import {
   getSession,
-  login as loginRequest,
+  loginWithServer,
   logout as logoutRequest,
-  register as registerRequest,
+  registerWithServer,
   refreshAuth,
   subscribeAuth,
   updateLocalProfile as updateLocalProfileRequest,
@@ -22,8 +22,12 @@ import type { AuthSession, LoginInput, RegisterInput } from "@/lib/auth/types";
 interface AuthContextValue {
   session: AuthSession | null;
   isLoading: boolean;
-  login: (input: LoginInput) => { ok: true } | { ok: false; error: string };
-  register: (input: RegisterInput) => { ok: true } | { ok: false; error: string };
+  login: (
+    input: LoginInput
+  ) => Promise<{ ok: true } | { ok: false; error: string }>;
+  register: (
+    input: RegisterInput
+  ) => Promise<{ ok: true } | { ok: false; error: string }>;
   logout: () => void;
   refresh: () => void;
   updateLocalProfile: (input: {
@@ -66,14 +70,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshAuth();
   }, []);
 
-  const login = useCallback((input: LoginInput) => {
-    const result = loginRequest(input);
+  const login = useCallback(async (input: LoginInput) => {
+    const result = await loginWithServer(input);
     if (!result.ok) return result;
     return { ok: true as const };
   }, []);
 
-  const register = useCallback((input: RegisterInput) => {
-    const result = registerRequest(input);
+  const register = useCallback(async (input: RegisterInput) => {
+    const result = await registerWithServer(input);
     if (!result.ok) return result;
     return { ok: true as const };
   }, []);

@@ -1,21 +1,17 @@
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { voteTradingPollSchema } from "@/lib/validations/api";
 import type { Prisma } from "@prisma/client";
-
-type RouteContext = {
-  params: Promise<{ pollId: string }>;
-};
 
 type PollOptionRecord = {
   id: string;
   label: string;
   votes: number;
-  voterIds?: string[];
 };
 
+/** Parse option definitions, dropping any legacy `voterIds` so identities never leak (QC-20260719-23). */
 function asOptions(raw: unknown): PollOptionRecord[] {
   if (!Array.isArray(raw)) return [];
   return raw.map((item, index) => {
@@ -24,46 +20,23 @@ function asOptions(raw: unknown): PollOptionRecord[] {
       id: typeof opt.id === "string" ? opt.id : `opt-${index + 1}`,
       label: typeof opt.label === "string" ? opt.label : String(opt),
       votes: typeof opt.votes === "number" ? opt.votes : 0,
-      voterIds: Array.isArray(opt.voterIds)
-        ? opt.voterIds.filter((id): id is string => typeof id === "string")
-        : [],
     };
   });
 }
 
-function serializeOptions(options: PollOptionRecord[]) {
-  return options.map(({ id, label, votes, voterIds }) => ({
-    id,
-    label,
-    votes,
-    voterIds: voterIds ?? [],
-  }));
-}
-
-export async function POST(request: NextRequest, context: RouteContext) {
+export async function POST(request: NextRequest, context: { params: Promise<{ pollId: string }> }) {
   try {
     const { pollId } = await context.params;
     const body = voteTradingPollSchema.parse(await request.json());
 
-    const email = request.headers.get("x-user-email")?.trim().toLowerCase();
-    const user = await resolveRequestUser(
-      {
-        userId:
-          body.userId?.trim() ||
-          request.headers.get("x-user-id")?.trim() ||
-          email ||
-          "",
-        email: email || undefined,
-        name: request.headers.get("x-user-name")?.trim() || undefined,
-        role: request.headers.get("x-user-role")?.trim() || undefined,
-      },
-      { createIfMissing: true }
-    );
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: true,
+      claimedUserId: body.userId,
+    });
     if (!user) {
-      return jsonError("User not found", 404);
+      return jsonError("Autentikasi diperlukan.", 401);
     }
 
-    // Atomic read-modify-write so concurrent voters (3+) do not clobber each other.
     const result = await db.$transaction(async (tx) => {
       const poll = await tx.tradingPoll.findUnique({ where: { id: pollId } });
       if (!poll) {
@@ -90,39 +63,40 @@ export async function POST(request: NextRequest, context: RouteContext) {
         return { error: "Option not found" as const, status: 404 as const };
       }
 
-      const alreadyVoted = options.some((o) => o.voterIds?.includes(user.id));
+      // One ballot per (poll,user) enforced by the unique constraint on PollVote —
+      // voter identities live in this table only, never returned to viewers (QC-20260719-23/41).
+      const alreadyVoted = await tx.pollVote.findUnique({
+        where: { pollId_userId: { pollId, userId: user.id } },
+        select: { id: true },
+      });
       if (alreadyVoted) {
-        return {
-          error: "You already voted on this poll" as const,
-          status: 400 as const,
-        };
+        return { error: "You already voted on this poll" as const, status: 400 as const };
       }
 
-      const nextOptions = options.map((o) => {
-        if (o.id !== body.optionId) return o;
-        return {
-          ...o,
-          votes: o.votes + 1,
-          voterIds: [...(o.voterIds ?? []), user.id],
-        };
+      await tx.pollVote.create({
+        data: { pollId, optionId: body.optionId, userId: user.id },
       });
 
+      // Recount aggregates from the normalized table (never trust the cached JSON).
+      const grouped = await tx.pollVote.groupBy({
+        by: ["optionId"],
+        where: { pollId },
+        _count: { _all: true },
+      });
+      const countByOption = new Map(grouped.map((g) => [g.optionId, g._count._all]));
+      const nextOptions = options.map((o) => ({
+        ...o,
+        votes: countByOption.get(o.id) ?? 0,
+      }));
       const totalVotes = nextOptions.reduce((sum, o) => sum + o.votes, 0);
-      const serialized = serializeOptions(nextOptions);
 
       const updated = await tx.tradingPoll.update({
         where: { id: pollId },
-        data: {
-          options: serialized as unknown as Prisma.InputJsonValue,
-        },
+        data: { options: nextOptions as unknown as Prisma.InputJsonValue },
       });
 
       const linkedMessages = await tx.chatMessage.findMany({
-        where: {
-          roomId: poll.roomId,
-          messageType: "POLL",
-          deletedAt: null,
-        },
+        where: { roomId: poll.roomId, messageType: "POLL", deletedAt: null },
         orderBy: { createdAt: "desc" },
         take: 50,
       });
@@ -130,8 +104,6 @@ export async function POST(request: NextRequest, context: RouteContext) {
       for (const msg of linkedMessages) {
         const meta = (msg.metadata ?? {}) as Record<string, unknown>;
         if (meta.pollId !== pollId) continue;
-        // Drop any accidental per-viewer votedOptionId so it cannot lock out
-        // other members when the shared message metadata is remapped.
         const { votedOptionId: _drop, ...restMeta } = meta;
         void _drop;
         await tx.chatMessage.update({
@@ -139,7 +111,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
           data: {
             metadata: {
               ...restMeta,
-              options: serialized,
+              options: nextOptions,
               totalVotes,
             } as Prisma.InputJsonValue,
           },
@@ -148,11 +120,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       }
 
       return {
-        poll: {
-          ...updated,
-          options: serialized,
-          totalVotes,
-        },
+        poll: { ...updated, options: nextOptions, totalVotes },
       };
     });
 
@@ -160,9 +128,11 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return jsonError(result.error, result.status);
     }
 
+    // `viewerId` lets the client mark the viewer's own choice without exposing others.
     return jsonOk({
       poll: result.poll,
       viewerId: user.id,
+      votedOptionId: body.optionId,
     });
   } catch (error) {
     return handleApiError(error);

@@ -2,6 +2,10 @@ import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { requireMentor, unauthorizedMentor } from "@/lib/mentor/server";
+import {
+  defaultSignalExpiry,
+  resolveExpiredSignals,
+} from "@/lib/trading/signal-resolution";
 import { createTradingSignalSchema } from "@/lib/validations/api";
 
 export async function GET(request: NextRequest) {
@@ -10,6 +14,13 @@ export async function GET(request: NextRequest) {
     const roomId = searchParams.get("roomId");
     const mentorId = searchParams.get("mentorId");
     const status = searchParams.get("status");
+
+    // Force closure of expired signals before returning so track records reflect
+    // real (non-cherry-picked) outcomes (QC-20260719-19).
+    await resolveExpiredSignals({
+      roomId: roomId ?? undefined,
+      mentorId: mentorId ?? undefined,
+    });
 
     const signals = await db.tradingSignal.findMany({
       where: {
@@ -85,6 +96,9 @@ export async function POST(request: NextRequest) {
         targetPrice: body.targetPrice,
         stopLoss: body.stopLoss,
         rationale: body.rationale?.trim() || undefined,
+        expiresAt: body.expiryHours
+          ? new Date(Date.now() + body.expiryHours * 60 * 60 * 1000)
+          : defaultSignalExpiry(),
       },
       include: {
         mentor: {

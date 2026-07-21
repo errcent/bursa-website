@@ -1,18 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, ListVideo, PlayCircle, Users } from "lucide-react";
+import { ListVideo } from "lucide-react";
 
+import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
+import { PlaylistThumbnail } from "@/components/playlist/playlist-thumbnail";
 import type { PlaylistSummary } from "@/lib/playlist/types";
 import { cn } from "@/lib/utils";
-
-const ACCENT_GRADIENTS = [
-  "from-violet-500/25 via-fuchsia-500/10 to-background",
-  "from-sky-500/25 via-indigo-500/10 to-background",
-  "from-emerald-500/20 via-teal-500/10 to-background",
-  "from-amber-500/20 via-orange-500/10 to-background",
-  "from-rose-500/20 via-pink-500/10 to-background",
-] as const;
 
 function formatDuration(totalMinutes: number) {
   if (totalMinutes < 60) return `${totalMinutes} mnt`;
@@ -21,72 +15,94 @@ function formatDuration(totalMinutes: number) {
   return mins > 0 ? `${hours} j ${mins} mnt` : `${hours} jam`;
 }
 
-function gradientForSlug(slug: string) {
-  let hash = 0;
-  for (let i = 0; i < slug.length; i += 1) {
-    hash = (hash + slug.charCodeAt(i) * (i + 1)) % ACCENT_GRADIENTS.length;
+function playlistMetaLabel(playlist: PlaylistSummary) {
+  return `${playlist.itemCount} video · ${formatDuration(playlist.totalMinutes)}`;
+}
+
+function playlistSubtitle(playlist: PlaylistSummary) {
+  if (playlist.mentorCount > 0) {
+    return `${playlist.mentorCount} mentor`;
   }
-  return ACCENT_GRADIENTS[hash] ?? ACCENT_GRADIENTS[0];
+  return "Kurasi Bursa";
 }
 
 export function PlaylistCard({
   playlist,
   className,
+  variant = "default",
 }: {
   playlist: PlaylistSummary;
   className?: string;
+  /** "catalog" — title below thumbnail; meta pill stays bottom-right on thumbnail. */
+  variant?: "default" | "catalog";
 }) {
-  const gradient = gradientForSlug(playlist.slug);
+  const subtitle = playlistSubtitle(playlist);
+  const isCatalog = variant === "catalog";
 
   return (
     <Link
       href={`/playlist/${playlist.slug}`}
+      prefetch={false}
       className={cn(
-        "surface-card-hover group flex h-full w-full flex-col overflow-hidden",
+        "@container group relative block w-full rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        isCatalog ? "overflow-visible" : "overflow-hidden",
         className
       )}
     >
-      <div
-        className={cn(
-          "relative flex aspect-[16/10] items-center justify-center overflow-hidden bg-gradient-to-br",
-          gradient
-        )}
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,var(--glow),transparent_55%)] opacity-60" />
-        <ListVideo
-          className="size-10 text-foreground/15 transition-transform duration-300 ease-out group-hover:scale-105"
-          strokeWidth={1.25}
+      <div className="relative aspect-[16/10] w-full min-h-0 overflow-hidden rounded-xl bg-surface-2">
+        <PlaylistThumbnail
+          playlist={playlist}
+          withScrim={!isCatalog}
+          fillSlot
+          className="absolute inset-0"
         />
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
-          <PlayCircle className="size-9 text-foreground/90" />
-        </div>
-        <div className="absolute left-3 top-3">
-          <span className="rounded-full border border-border/60 bg-background/70 px-2 py-0.5 text-[10px] font-medium tracking-wide text-foreground/80 backdrop-blur-sm">
-            {playlist.itemCount} pelajaran
+
+        <div className="pointer-events-none absolute left-2 top-2 z-10 flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-0.5 rounded-full border border-accent/30 bg-accent/20 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-accent backdrop-blur-sm">
+            <ListVideo className="size-3" />
+            Playlist
           </span>
         </div>
+
+        <div className="absolute bottom-2.5 left-2.5 z-20">
+          <BookmarkToggleButton bookmarkRef={{ type: "playlist", slug: playlist.slug }} />
+        </div>
+
+        {!isCatalog ? (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-1.5 p-2.5 pb-3">
+            <div className="min-w-0 flex-1">
+              <h3 className="line-clamp-2 font-heading text-sm font-semibold leading-tight text-white @[280px]:text-[15px]">
+                {playlist.title}
+              </h3>
+              {subtitle ? (
+                <p className="mt-1 truncate text-[11px] font-light text-white/70">
+                  {subtitle}
+                </p>
+              ) : null}
+            </div>
+            <span className="hidden shrink-0 whitespace-nowrap rounded-full bg-black/45 px-2 py-1 text-[10px] font-medium text-white/85 backdrop-blur-sm @[220px]:inline">
+              {playlistMetaLabel(playlist)}
+            </span>
+          </div>
+        ) : (
+          <span className="pointer-events-none absolute bottom-2.5 right-2.5 z-10 shrink-0 whitespace-nowrap rounded-full bg-black/45 px-2 py-1 text-[10px] font-medium text-white/85 backdrop-blur-sm @[220px]:text-[11px]">
+            {playlistMetaLabel(playlist)}
+          </span>
+        )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="line-clamp-2 font-heading text-sm font-medium leading-snug">
-          {playlist.title}
-        </h3>
-        {playlist.description ? (
-          <p className="line-clamp-2 text-xs text-muted-foreground">{playlist.description}</p>
-        ) : null}
-        <div className="mt-auto flex flex-wrap items-center gap-3 pt-2 text-[11px] text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <Clock className="size-3.5" />
-            {formatDuration(playlist.totalMinutes)}
-          </span>
-          {playlist.mentorCount > 0 ? (
-            <span className="inline-flex items-center gap-1">
-              <Users className="size-3.5" />
-              {playlist.mentorCount} mentor
-            </span>
+      {isCatalog ? (
+        <div className="pt-2">
+          <h3 className="line-clamp-2 font-heading text-sm font-semibold leading-snug text-foreground @[280px]:text-[15px]">
+            {playlist.title}
+          </h3>
+          {subtitle ? (
+            <p className="mt-0.5 truncate text-[11px] font-light text-muted-foreground @[280px]:text-xs">
+              {subtitle}
+            </p>
           ) : null}
         </div>
-      </div>
+      ) : null}
     </Link>
   );
 }

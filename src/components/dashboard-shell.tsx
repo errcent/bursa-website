@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Award, BookOpen, Flame } from "lucide-react";
 import { motion } from "motion/react";
@@ -14,10 +14,11 @@ import { InstrumentBadge } from "@/components/instrument-badge";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useCatalogIndex } from "@/hooks/use-catalog-index";
 import { useMyLearning } from "@/hooks/use-my-learning";
 import { subscribeLearningChange } from "@/lib/learning/events";
-import { courses, formatRupiah } from "@/lib/mock-data";
-import type { Instrument } from "@/lib/types";
+import { formatRupiah } from "@/lib/mock-data";
+import type { Course, Instrument } from "@/lib/types";
 
 type LearningCourse = {
   slug: string;
@@ -39,7 +40,9 @@ type LearningPayload = {
 function DashboardBody() {
   const { session } = useAuth();
   const { bySlug: enrollmentBySlug } = useMyLearning();
+  const { index: catalogIndex, loading: catalogLoading } = useCatalogIndex();
   const [learning, setLearning] = useState<LearningPayload | null>(null);
+  const [guidanceCourses, setGuidanceCourses] = useState<Course[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -90,6 +93,61 @@ function DashboardBody() {
       cancelled = true;
     };
   }, [refreshKey, session?.userId, session?.email]);
+
+  useEffect(() => {
+    if (!session?.userId && !session?.email) {
+      setGuidanceCourses(null);
+      return;
+    }
+
+    let cancelled = false;
+    const params = new URLSearchParams({
+      ...(session.userId ? { userId: session.userId } : {}),
+      ...(session.email ? { email: session.email } : {}),
+    });
+
+    void fetch(`/api/me/learning-guidance?${params}`, {
+      cache: "no-store",
+      headers: session.email ? { "x-user-email": session.email } : {},
+    })
+      .then(async (res) => {
+        if (!res.ok) return null;
+        return (await res.json()) as {
+          result?: { courses?: Array<{ course: Course }> } | null;
+        };
+      })
+      .then((data) => {
+        if (cancelled) return;
+        const courses =
+          data?.result?.courses?.map((entry) => entry.course).filter(Boolean) ?? [];
+        setGuidanceCourses(courses.length > 0 ? courses : null);
+      })
+      .catch(() => {
+        if (!cancelled) setGuidanceCourses(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.userId, session?.email]);
+
+  const enrolledSlugs = useMemo(
+    () => new Set(enrollmentBySlug.keys()),
+    [enrollmentBySlug]
+  );
+
+  const recommendations = useMemo(() => {
+    const fromGuidance = guidanceCourses?.filter((course) => !enrolledSlugs.has(course.slug));
+    if (fromGuidance && fromGuidance.length > 0) {
+      return fromGuidance.slice(0, 3);
+    }
+
+    const courses = catalogIndex?.courses ?? [];
+    return [...courses]
+      .filter((course) => !enrolledSlugs.has(course.slug))
+      .sort((a, b) => b.studentsCount - a.studentsCount)
+      .slice(0, 3);
+  }, [guidanceCourses, catalogIndex, enrolledSlugs]);
 
   const inProgress = learning?.courses ?? [];
   const hasProgress = inProgress.length > 0;
@@ -161,7 +219,9 @@ function DashboardBody() {
                             <div className="relative size-14 shrink-0 overflow-hidden rounded-xl">
                               <CourseThumbnail
                                 course={{ slug: course.slug, thumbnailUrl: course.thumbnailUrl ?? undefined }}
-                                className="absolute inset-0"
+                                fillSlot
+                                objectFit="contain"
+                                className="size-full"
                                 alt={course.title}
                                 progressPercent={course.progressPercent}
                               />
@@ -217,8 +277,25 @@ function DashboardBody() {
                 <Reveal>
                   <h2 className="section-title mb-4">Rekomendasi Lanjutan</h2>
                 </Reveal>
+                {catalogLoading && recommendations.length === 0 ? (
+                  <div className="surface-card p-8 text-center text-sm text-muted-foreground">
+                    Memuat rekomendasi…
+                  </div>
+                ) : recommendations.length === 0 ? (
+                  <div className="surface-card p-8 text-center text-sm text-muted-foreground">
+                    Belum ada rekomendasi — jelajahi{" "}
+                    <Link href="/katalog" className="link-accent">
+                      katalog
+                    </Link>{" "}
+                    atau ikuti{" "}
+                    <Link href="/panduan-belajar" className="link-accent">
+                      panduan belajar
+                    </Link>
+                    .
+                  </div>
+                ) : (
                 <Stagger className="flex gap-3 overflow-x-auto pb-2 sm:gap-4">
-                  {courses.slice(0, 3).map((course) => {
+                  {recommendations.map((course) => {
                     const enrolled = enrollmentBySlug.get(course.slug);
                     return (
                     <StaggerItem key={course.slug} className="w-56 shrink-0 sm:w-64">
@@ -230,14 +307,17 @@ function DashboardBody() {
                         }
                         className="surface-card-hover flex h-full flex-col overflow-hidden rounded-xl"
                       >
-                        <CourseThumbnail
-                          course={course}
-                          className="aspect-[16/10] w-full"
-                          alt={course.title}
-                          progressPercent={
-                            enrolled ? enrolled.progressPercent : undefined
-                          }
-                        />
+                        <div className="relative aspect-[16/10] w-full overflow-hidden">
+                          <CourseThumbnail
+                            course={course}
+                            fillSlot
+                            className="absolute inset-0"
+                            alt={course.title}
+                            progressPercent={
+                              enrolled ? enrolled.progressPercent : undefined
+                            }
+                          />
+                        </div>
                         <div className="flex flex-col gap-2 p-4">
                           <InstrumentBadge instrument={course.instrument} className="w-fit" />
                           <p className="line-clamp-2 font-heading text-sm font-medium">
@@ -252,6 +332,7 @@ function DashboardBody() {
                     );
                   })}
                 </Stagger>
+                )}
               </section>
           </div>
         </div>

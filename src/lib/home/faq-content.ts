@@ -9,7 +9,7 @@ export const homeFaqs: HomeFaq[] = [
     id: "uniqueness",
     question: "Apa yang membuat Bursa berbeda dari platform edukasi trading lain?",
     answer:
-      "Bursa fokus pada edukasi terstruktur dengan mentor terverifikasi — bukan konten random atau sinyal tanpa konteks. Setiap kelas punya modul berurutan, progress tracking, dan ruang komunitas per mentor. Kamu bayar per kelas tanpa langganan bulanan, dan platform tidak mengelola dana tradingmu.",
+      "Bursa fokus pada edukasi terstruktur dengan mentor terverifikasi — bukan konten random atau sinyal tanpa konteks. Setiap kelas punya video berurutan, progress tracking, dan ruang komunitas per mentor. Kamu bayar per kelas tanpa langganan bulanan, dan platform tidak mengelola dana tradingmu.",
   },
   {
     id: "not-broker",

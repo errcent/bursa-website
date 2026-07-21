@@ -33,6 +33,7 @@ export interface LessonMaterial {
 export interface Lesson {
   id: string;
   title: string;
+  description?: string;
   durationMinutes: number;
   preview?: boolean;
   /** Downloadable files (PDF, template, cheat sheet) attached to this lesson. */
@@ -58,10 +59,22 @@ export interface Course {
   thumbnailUrl?: string;
   outcomes: string[];
   modules: Module[];
-  /** Set on listing queries that skip module payloads. */
+  /** Prisma Module (section) count — admin/internal; not shown to learners. */
   moduleCount?: number;
+  /** Total video count — listing queries aggregate lessons across modules. */
+  lessonCount?: number;
   /** ISO date for "Baru di Bursa" catalog row. */
   createdAt?: string;
+  /** Number of (non-flagged) reviews behind `rating` — shown as "(n)" and used for min-sample. */
+  ratingCount?: number;
+  /** Bayesian-shrunk rating used for ranking (QC-20260719-17). */
+  bayesianRating?: number;
+  /** Time-decayed rating used for staleness signalling (QC-20260719-18). */
+  decayedRating?: number;
+  /** Distinct COMPLETED paid buyers — popularity signal for ranking (QC-20260719-27). */
+  paidStudentsCount?: number;
+  /** ISO date content was last materially updated — staleness penalty input (QC-20260719-18). */
+  contentUpdatedAt?: string;
 }
 
 export interface Review {

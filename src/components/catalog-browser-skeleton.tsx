@@ -5,7 +5,7 @@ function CatalogCardSkeleton({ compact = false }: { compact?: boolean }) {
     <div
       className={
         compact
-          ? "flex w-[var(--carousel-peek-item-width)] max-w-[20rem] shrink-0 flex-col overflow-hidden rounded-xl border border-border/60"
+          ? "flex w-[var(--catalog-card-width)] shrink-0 flex-col overflow-hidden rounded-xl border border-border/60"
           : "flex w-full flex-col overflow-hidden rounded-xl border border-border/60"
       }
     >
@@ -17,11 +17,6 @@ function CatalogCardSkeleton({ compact = false }: { compact?: boolean }) {
 export function CatalogBrowserSkeleton() {
   return (
     <div className="flex min-w-0 flex-col gap-6 md:gap-10" aria-busy="true" aria-label="Memuat katalog">
-      <div className="surface-card catalog-filter-compact flex flex-col gap-3 bg-card p-3 md:gap-4 md:p-5">
-        <Skeleton className="h-9 w-full rounded-full sm:w-72" />
-        <Skeleton className="h-11 w-full rounded-2xl" />
-      </div>
-
       <div className="space-y-6">
         <Skeleton className="hidden h-6 w-48 md:block" />
         <div className="catalog-row-bleed md:hidden">
@@ -35,6 +30,17 @@ export function CatalogBrowserSkeleton() {
           {Array.from({ length: 8 }).map((_, i) => (
             <CatalogCardSkeleton key={i} />
           ))}
+        </div>
+      </div>
+
+      <div className="catalog-guidance border-t border-border/30 pt-6" aria-hidden>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-4 w-52 max-w-full" />
+            <Skeleton className="h-3.5 w-40 max-w-full" />
+          </div>
+          <Skeleton className="h-9 w-full shrink-0 rounded-md sm:w-24" />
         </div>
       </div>
     </div>

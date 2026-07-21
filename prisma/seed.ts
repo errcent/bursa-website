@@ -99,10 +99,10 @@ async function main() {
   await prisma.user.create({
     data: {
       email: "demo@bursa.id",
-      username: "dinda_r",
+      username: "andi_r",
       phone: "+6281110000002",
       passwordHash,
-      nama: "Dinda Ramadhani",
+      nama: "Andi Rahayu",
       role: UserRole.LEARNER,
       kycStatus: KycStatus.VERIFIED,
     },
@@ -713,28 +713,45 @@ async function main() {
     });
   }
 
-  const mentalLessons = await Promise.all([
-    findLessonByCourseAndLegacy("manajemen-risiko-crypto-pemula", "l1"),
-    findLessonByCourseAndLegacy("manajemen-risiko-crypto-pemula", "l4"),
-    findLessonByCourseAndLegacy("swing-trading-teknikal-dasar", "l4"),
-    findLessonByCourseAndLegacy("fundamental-saham-untuk-pemula", "l1"),
-    findLessonByCourseAndLegacy("forex-makro-dasar", "l1"),
-  ]);
+  async function createCuratedPlaylist(
+    title: string,
+    slug: string,
+    description: string,
+    lessonRefs: Array<{ courseSlug: string; legacyId: string }>
+  ) {
+    const resolved = await Promise.all(
+      lessonRefs.map(async (ref) => ({
+        ref,
+        lesson: await findLessonByCourseAndLegacy(ref.courseSlug, ref.legacyId),
+      }))
+    );
+    const missing = resolved.filter((entry) => !entry.lesson);
+    if (missing.length > 0) {
+      console.warn(
+        `Playlist "${slug}": ${missing.length} lesson(s) not found:`,
+        missing.map((entry) => `${entry.ref.courseSlug}/${entry.ref.legacyId}`).join(", ")
+      );
+    }
+    const lessonIds = resolved
+      .filter((entry): entry is { ref: (typeof lessonRefs)[number]; lesson: { id: string } } =>
+        Boolean(entry.lesson)
+      )
+      .map((entry) => entry.lesson.id);
+    if (lessonIds.length === 0) {
+      console.warn(`Playlist "${slug}" skipped — no valid lessons.`);
+      return;
+    }
 
-  const mentalLessonIds = mentalLessons.filter(Boolean).map((lesson) => lesson!.id);
-
-  if (mentalLessonIds.length > 0) {
     await prisma.playlist.create({
       data: {
         userId: admin.id,
-        title: "Kesehatan Mental Trading",
-        description:
-          "Kurasi modul psikologi, disiplin, dan mindset dari lima mentor berbeda.",
-        slug: "kesehatan-mental-trading",
+        title,
+        description,
+        slug,
         isCurated: true,
         isPublished: true,
         items: {
-          create: mentalLessonIds.map((lessonId, index) => ({
+          create: lessonIds.map((lessonId, index) => ({
             lessonId,
             sortOrder: index,
           })),
@@ -743,32 +760,93 @@ async function main() {
     });
   }
 
-  const fundasiLessons = await Promise.all([
-    findLessonByCourseAndLegacy("fundamental-saham-untuk-pemula", "l1"),
-    findLessonByCourseAndLegacy("fundamental-saham-untuk-pemula", "l4"),
-    findLessonByCourseAndLegacy("membaca-laporan-keuangan-lanjutan", "l1"),
-  ]);
+  await createCuratedPlaylist(
+    "Kesehatan Mental Trading",
+    "kesehatan-mental-trading",
+    "Kurasi modul psikologi, disiplin, dan mindset dari lima mentor berbeda.",
+    [
+      { courseSlug: "psikologi-trading-anti-fomo", legacyId: "l1" },
+      { courseSlug: "manajemen-risiko-crypto-pemula", legacyId: "l4" },
+      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l8" },
+      { courseSlug: "scalping-saham-intraday-jam-perdagangan", legacyId: "l2" },
+      { courseSlug: "price-action-forex-tanpa-indikator", legacyId: "l6" },
+    ]
+  );
 
-  const fundasiLessonIds = fundasiLessons.filter(Boolean).map((lesson) => lesson!.id);
+  await createCuratedPlaylist(
+    "Fundasi Analisis Saham",
+    "fundasi-analisis-saham",
+    "Tiga pelajaran pembuka untuk memahami fundamental dan valuasi.",
+    [
+      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l1" },
+      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l2" },
+      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l1" },
+    ]
+  );
 
-  if (fundasiLessonIds.length > 0) {
-    await prisma.playlist.create({
-      data: {
-        userId: admin.id,
-        title: "Fundasi Analisis Saham",
-        description: "Tiga pelajaran pembuka untuk memahami fundamental dan valuasi.",
-        slug: "fundasi-analisis-saham",
-        isCurated: true,
-        isPublished: true,
-        items: {
-          create: fundasiLessonIds.map((lessonId, index) => ({
-            lessonId,
-            sortOrder: index,
-          })),
-        },
-      },
-    });
-  }
+  await createCuratedPlaylist(
+    "Jalur Crypto Pemula",
+    "jalur-crypto-pemula",
+    "Mulai dari on-chain dasar hingga manajemen risiko untuk trader crypto baru.",
+    [
+      { courseSlug: "crypto-on-chain-dasar", legacyId: "l1" },
+      { courseSlug: "crypto-on-chain-dasar", legacyId: "l2" },
+      { courseSlug: "manajemen-risiko-crypto-pemula", legacyId: "l1" },
+      { courseSlug: "manajemen-risiko-crypto-pemula", legacyId: "l2" },
+      { courseSlug: "manajemen-risiko-crypto-pemula", legacyId: "l3" },
+    ]
+  );
+
+  await createCuratedPlaylist(
+    "Teknikal Swing Trading",
+    "teknikal-swing-trading",
+    "Rangkaian pelajaran candlestick, support/resistance, dan manajemen posisi untuk swing trader.",
+    [
+      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l1" },
+      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l2" },
+      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l3" },
+      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l4" },
+      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l5" },
+    ]
+  );
+
+  await createCuratedPlaylist(
+    "Forex dari Nol",
+    "forex-dari-nol",
+    "Memahami makro, suku bunga, dan reaksi pasar forex untuk pemula.",
+    [
+      { courseSlug: "forex-makro-dasar", legacyId: "l1" },
+      { courseSlug: "forex-makro-dasar", legacyId: "l2" },
+      { courseSlug: "forex-makro-dasar", legacyId: "l3" },
+      { courseSlug: "forex-makro-dasar", legacyId: "l4" },
+    ]
+  );
+
+  await createCuratedPlaylist(
+    "Valuasi Lanjutan",
+    "valuasi-lanjutan",
+    "DCF, proyeksi arus kas, dan perbandingan sektor untuk analis yang ingin naik level.",
+    [
+      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l1" },
+      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l3" },
+      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l4" },
+      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l5" },
+      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l7" },
+    ]
+  );
+
+  await createCuratedPlaylist(
+    "Screening Saham Berkualitas",
+    "screening-saham-berkualitas",
+    "Dari membaca laporan keuangan hingga menyusun watchlist emiten berkualitas.",
+    [
+      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l2" },
+      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l5" },
+      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l6" },
+      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l7" },
+      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l8" },
+    ]
+  );
 
   // Sample 1-on-1 availability slots for mentors with availableFor1on1
   const adminUser = await prisma.user.findUnique({ where: { email: "admin@test.dev" } });
@@ -808,7 +886,7 @@ async function main() {
   console.log("Seed completed.");
   console.log("Test accounts (password: password123):");
   console.log("  learner@test.dev  | username: test_learner  | phone: +6281110000001");
-  console.log("  demo@bursa.id     | username: dinda_r       | phone: +6281110000002 (password: demo1234)");
+  console.log("  demo@bursa.id     | username: andi_r       | phone: +6281110000002 (password: demo1234)");
   console.log("  mentor@test.dev   | username: test_mentor   | phone: +6281110000004");
   console.log("  admin@test.dev    | username: test_admin    | phone: +6281110000003");
 }

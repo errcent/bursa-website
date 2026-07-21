@@ -16,8 +16,10 @@ export function LessonPreviewThumb({
   isFree,
   hasAccess = false,
   durationMinutes,
+  durationLabel,
   size = "sm",
   showPlayOverlay = false,
+  durationPosition = "auto",
   className,
 }: {
   title: string;
@@ -26,13 +28,23 @@ export function LessonPreviewThumb({
   /** Enrolled / subscribed — clear thumbnail even for paid lessons. */
   hasAccess?: boolean;
   durationMinutes: number;
+  /** Override badge text (e.g. `16:00` for MasterClass-style curriculum rows). */
+  durationLabel?: string;
   size?: keyof typeof sizeClasses;
   /** Centered play affordance for curriculum-style cards (playable lessons only). */
   showPlayOverlay?: boolean;
+  /** Where to pin the duration badge; `auto` keeps legacy top-left when play overlay is on. */
+  durationPosition?: "auto" | "bottom-right" | "top-left";
   className?: string;
 }) {
   const isLocked = !isFree && !hasAccess;
   const isPlayable = isFree || hasAccess;
+  const badgeText = durationLabel ?? `${durationMinutes}m`;
+  const badgeCorner =
+    durationPosition === "bottom-right" ||
+    (durationPosition === "auto" && !(showPlayOverlay && isPlayable && !isLocked))
+      ? "bottom-2 right-2"
+      : "left-2 top-2";
 
   return (
     <div
@@ -49,15 +61,12 @@ export function LessonPreviewThumb({
         playsInline
         preload="metadata"
         tabIndex={-1}
-        className={cn(
-          "pointer-events-none size-full object-cover",
-          isLocked && "scale-105 blur-md"
-        )}
+        className="pointer-events-none absolute inset-0 size-full object-cover object-center"
       />
 
       {isLocked ? (
         <>
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-black/35" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex size-9 items-center justify-center rounded-full border border-white/25 bg-black/60 text-white sm:size-10">
               <Lock className="size-4 sm:size-[18px]" />
@@ -74,13 +83,18 @@ export function LessonPreviewThumb({
       ) : null}
 
       {showPlayOverlay && isPlayable && !isLocked ? (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/20">
-          <PlayCircle className="size-9 text-white opacity-80 drop-shadow-lg transition-opacity group-hover:opacity-100 sm:size-10" />
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+          <PlayCircle className="size-8 text-white drop-shadow-lg sm:size-9" />
         </div>
       ) : null}
 
-      <span className="absolute bottom-2 right-2 rounded bg-black/70 px-1.5 py-0.5 font-mono text-[10px] text-white tabular-nums">
-        {durationMinutes}m
+      <span
+        className={cn(
+          "absolute z-20 rounded bg-black/75 px-1.5 py-0.5 font-mono text-[10px] text-white tabular-nums",
+          badgeCorner
+        )}
+      >
+        {badgeText}
       </span>
 
       <span className="sr-only">{title}</span>

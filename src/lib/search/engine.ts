@@ -1,4 +1,4 @@
-import { courses, mentors, getMentorBySlug } from "@/lib/mock-data";
+import { resolveMentorAvatarUrl } from "@/lib/mentors/avatar";
 import type { Course, Mentor } from "@/lib/types";
 import { hasRating } from "@/lib/utils";
 
@@ -94,8 +94,16 @@ function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function scoreCourse(course: Course, tokens: string[]): { score: number; matchedField: string } {
-  const mentor = getMentorBySlug(course.mentorSlug);
+function findMentorBySlug(slug: string, mentors: Mentor[]): Mentor | undefined {
+  return mentors.find((mentor) => mentor.slug === slug);
+}
+
+function scoreCourse(
+  course: Course,
+  tokens: string[],
+  mentors: Mentor[]
+): { score: number; matchedField: string } {
+  const mentor = findMentorBySlug(course.mentorSlug, mentors);
   let score = 0;
   let matchedField = "judul";
 
@@ -116,8 +124,10 @@ function scoreCourse(course: Course, tokens: string[]): { score: number; matched
   else if (mentorScore > 0) matchedField = "mentor";
   else if (descScore > 0) matchedField = "deskripsi";
 
-  score += course.studentsCount / 5000;
-  score += course.rating * 0.3;
+  // Reuse the hardened, gaming-resistant signals used by catalog ranking (QC-20260719-37):
+  // distinct paid buyers + Bayesian-shrunk rating, not raw enrollment/rating counts.
+  score += (course.paidStudentsCount ?? course.studentsCount) / 2500;
+  score += (course.bayesianRating ?? course.rating) * 0.3;
 
   return { score, matchedField };
 }
@@ -167,19 +177,24 @@ function matchTopicSuggestions(tokens: string[]): SearchResult[] {
     }));
 }
 
-export function searchAll(query: string, limit = 8): SearchResult[] {
+export function searchAll(
+  query: string,
+  index: SearchCatalogIndex,
+  limit = 8
+): SearchResult[] {
   const trimmed = query.trim();
   const tokens = tokenize(trimmed);
 
   if (tokens.length === 0) return [];
 
   const results: SearchResult[] = [];
+  const { courses, mentors } = index;
 
   for (const course of courses) {
-    const { score, matchedField } = scoreCourse(course, tokens);
+    const { score, matchedField } = scoreCourse(course, tokens, mentors);
     if (score < 2) continue;
 
-    const mentor = getMentorBySlug(course.mentorSlug);
+    const mentor = findMentorBySlug(course.mentorSlug, mentors);
     results.push({
       id: `course-${course.slug}`,
       type: "course",
@@ -209,7 +224,7 @@ export function searchAll(query: string, limit = 8): SearchResult[] {
       badge: mentor.instruments.join(", "),
       score,
       matchedField,
-      imageUrl: mentor.avatarUrl,
+      imageUrl: resolveMentorAvatarUrl(mentor),
       initials: mentor.initials,
       meta: `${mentor.rating}★ · ${mentor.studentsCount.toLocaleString("id-ID")} siswa`,
     });
@@ -222,12 +237,15 @@ export function searchAll(query: string, limit = 8): SearchResult[] {
     .slice(0, limit);
 }
 
-export function getPopularCourses(limit = 4): SearchResult[] {
-  return [...courses]
-    .sort((a, b) => b.studentsCount - a.studentsCount)
+export function getPopularCourses(index: SearchCatalogIndex, limit = 4): SearchResult[] {
+  return [...index.courses]
+    .sort(
+      (a, b) =>
+        (b.paidStudentsCount ?? b.studentsCount) - (a.paidStudentsCount ?? a.studentsCount)
+    )
     .slice(0, limit)
     .map((course) => {
-      const mentor = getMentorBySlug(course.mentorSlug);
+      const mentor = findMentorBySlug(course.mentorSlug, index.mentors);
       return {
         id: `popular-course-${course.slug}`,
         type: "course" as const,
@@ -242,8 +260,8 @@ export function getPopularCourses(limit = 4): SearchResult[] {
     });
 }
 
-export function getPopularMentors(limit = 3): SearchResult[] {
-  return [...mentors]
+export function getPopularMentors(index: SearchCatalogIndex, limit = 3): SearchResult[] {
+  return [...index.mentors]
     .sort((a, b) => b.studentsCount - a.studentsCount)
     .slice(0, limit)
     .map((mentor) => ({
@@ -254,7 +272,7 @@ export function getPopularMentors(limit = 3): SearchResult[] {
       href: `/instruktur/${mentor.slug}`,
       badge: mentor.instruments[0],
       score: mentor.studentsCount,
-      imageUrl: mentor.avatarUrl,
+      imageUrl: resolveMentorAvatarUrl(mentor),
       initials: mentor.initials,
       meta: `${mentor.rating}★`,
     }));

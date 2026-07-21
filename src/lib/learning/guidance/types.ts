@@ -2,6 +2,7 @@ import type {
   CourseLevel,
   Instrument,
   LearningCapitalRange,
+  LearningExperience,
   LearningFormat,
   LearningGoal,
   LearningRiskTolerance,
@@ -26,6 +27,7 @@ export interface LearningGuidanceAnswers {
 export interface LearningGuidanceProfileRecord {
   instrument: Instrument;
   experienceLevel: CourseLevel;
+  experienceTier: LearningExperience;
   tradingStyle: LearningTradingStyle;
   goal: LearningGoal;
   riskTolerance: LearningRiskTolerance;

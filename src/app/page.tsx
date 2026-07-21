@@ -14,7 +14,7 @@ export default async function HomePage() {
   const { courses, mentors } = await getCatalogData();
 
   // Most-enrolled course, fetched with full module/lesson detail for the
-  // "Curriculum Preview" section (the listing query omits module payloads).
+  // device mockup section (the listing query omits module payloads).
   const topCourseSlug = [...courses].sort((a, b) => b.studentsCount - a.studentsCount)[0]?.slug;
   const curriculumCourse = topCourseSlug ? await getCourseBySlug(topCourseSlug) : null;
   const curriculumMentor = curriculumCourse

@@ -172,7 +172,14 @@ export function LearningGuidanceQuiz() {
   }
 
   if (result) {
-    return <GuidanceResults result={result} saved={saved} onRetake={handleRetake} />;
+    return (
+      <GuidanceResults
+        result={result}
+        saved={saved}
+        onRetake={handleRetake}
+        isLoggedIn={Boolean(session?.userId || session?.email)}
+      />
+    );
   }
 
   if (!question) return null;
@@ -180,13 +187,14 @@ export function LearningGuidanceQuiz() {
   const currentValue = answers[question.id];
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-5 pb-[env(safe-area-inset-bottom,0px)] sm:gap-6">
       {session ? (
         <Reveal>
           <div className="flex justify-end">
             <Button
               variant="ghost"
-              className="text-sm"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground"
               disabled={loadingProfile}
               onClick={() => void loadSavedProfile()}
             >
@@ -204,32 +212,40 @@ export function LearningGuidanceQuiz() {
       ) : null}
 
       <Reveal>
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>
-              Langkah {step + 1} dari {totalSteps}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <span className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+              Langkah {step + 1} / {totalSteps}
             </span>
-            <span>{progressPercent}%</span>
+            <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+              {progressPercent}%
+            </span>
           </div>
           <Progress
             value={progressPercent}
-            className="h-1.5 [&_[data-slot=progress-indicator]]:bg-accent"
+            className="h-1 overflow-hidden rounded-full bg-surface-2 [&_[data-slot=progress-indicator]]:bg-accent [&_[data-slot=progress-indicator]]:transition-all"
           />
         </div>
       </Reveal>
 
       <Reveal>
-        <div className="surface-card flex flex-col gap-6 p-6 sm:p-8">
-          <div>
-            <p className="eyebrow mb-2 flex items-center gap-1.5">
-              <Sparkles className="size-3.5 text-accent" />
+        <div className="surface-card flex flex-col gap-6 p-5 sm:gap-7 sm:p-8">
+          <div className="space-y-2">
+            <p className="eyebrow-tight flex items-center gap-1.5">
+              <Sparkles className="size-3.5" aria-hidden />
               Panduan Belajar
             </p>
-            <h2 className="font-heading text-xl font-medium sm:text-2xl">{question.title}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{question.subtitle}</p>
+            <h2 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
+              {question.title}
+            </h2>
+            <p className="section-copy">{question.subtitle}</p>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div
+            className="flex flex-col gap-2.5 sm:gap-3"
+            role="group"
+            aria-label={question.title}
+          >
             {question.options.map((option) => (
               <GuidanceOptionCard
                 key={option.value}
@@ -246,11 +262,16 @@ export function LearningGuidanceQuiz() {
             ))}
           </div>
 
-          {error ? <p className="text-sm text-red-400">{error}</p> : null}
+          {error ? (
+            <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-red-400">
+              {error}
+            </p>
+          ) : null}
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
+          <div className="flex flex-col-reverse gap-3 border-t border-border/60 pt-5 sm:flex-row sm:items-center sm:justify-between">
             <Button
               variant="outline"
+              className="w-full sm:w-auto"
               onClick={handleBack}
               disabled={step === 0 || loading}
             >
@@ -258,13 +279,22 @@ export function LearningGuidanceQuiz() {
               Kembali
             </Button>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
               {question.optional ? (
-                <Button variant="ghost" onClick={handleSkipOptional} disabled={loading}>
+                <Button
+                  variant="ghost"
+                  className="w-full sm:w-auto"
+                  onClick={handleSkipOptional}
+                  disabled={loading}
+                >
                   Lewati
                 </Button>
               ) : null}
-              <Button className="btn-primary" onClick={handleNext} disabled={!canProceed || loading}>
+              <Button
+                className="btn-primary w-full sm:w-auto"
+                onClick={handleNext}
+                disabled={!canProceed || loading}
+              >
                 {loading ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
@@ -272,7 +302,7 @@ export function LearningGuidanceQuiz() {
                   </>
                 ) : step === totalSteps - 1 ? (
                   <>
-                    Lihat Rekomendasi
+                    Lihat rekomendasi
                     <Sparkles className="size-4" />
                   </>
                 ) : (

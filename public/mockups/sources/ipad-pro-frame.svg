@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1462 1124">
+  <defs>
+    <linearGradient id="edge-h" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#1a1a1c"/>
+      <stop offset="6%" stop-color="#4a4a4e"/>
+      <stop offset="14%" stop-color="#2a2a2e"/>
+      <stop offset="86%" stop-color="#242428"/>
+      <stop offset="94%" stop-color="#525256"/>
+      <stop offset="100%" stop-color="#1e1e22"/>
+    </linearGradient>
+    <linearGradient id="edge-v" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#3a3a3e"/>
+      <stop offset="50%" stop-color="#18181a"/>
+      <stop offset="100%" stop-color="#2e2e32"/>
+    </linearGradient>
+    <radialGradient id="cam-lens" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a3a5c"/>
+      <stop offset="55%" stop-color="#0a1520"/>
+      <stop offset="100%" stop-color="#050508"/>
+    </radialGradient>
+    <filter id="inner-shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+  <!-- Body shell -->
+  <rect x="8" y="8" width="1446" height="1108" rx="52" ry="52" fill="#0a0a0c"/>
+  <rect x="14" y="14" width="1434" height="1096" rx="48" ry="48" fill="url(#edge-v)" stroke="url(#edge-h)" stroke-width="3"/>
+  <!-- Screen bezel ring -->
+  <rect x="48" y="44" width="1366" height="1036" rx="28" ry="28" fill="#050506" stroke="#1c1c1f" stroke-width="2"/>
+  <rect x="52" y="48" width="1358" height="1028" rx="24" ry="24" fill="none" stroke="#3a3a3f" stroke-width="1.5" opacity="0.65"/>
+  <!-- Side camera cluster (landscape, right edge) -->
+  <g transform="translate(1418 470)">
+    <circle cx="12" cy="12" r="11" fill="#111114" stroke="#2a2a2e" stroke-width="1.5"/>
+    <circle cx="12" cy="12" r="7" fill="url(#cam-lens)"/>
+    <circle cx="12" cy="12" r="2.2" fill="#0ea5c8" opacity="0.85"/>
+    <circle cx="12" cy="52" r="5" fill="#0d0d10"/>
+    <circle cx="12" cy="88" r="5" fill="#0d0d10"/>
+  </g>
+  <!-- Top subtle highlight -->
+  <rect x="80" y="18" width="1302" height="6" rx="3" fill="#fff" opacity="0.04"/>
+  <!-- Bottom shadow lip -->
+  <rect x="60" y="1094" width="1342" height="8" rx="4" fill="#000" opacity="0.35" filter="url(#inner-shadow)"/>
+</svg>

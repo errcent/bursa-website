@@ -26,6 +26,9 @@ export async function GET(request: NextRequest) {
         course: {
           select: { title: true, slug: true },
         },
+        mentor: {
+          select: { slug: true, user: { select: { nama: true } } },
+        },
       },
     });
 
@@ -34,9 +37,13 @@ export async function GET(request: NextRequest) {
         id: tx.id,
         amount: tx.amount,
         status: tx.status,
+        kind: tx.kind,
         createdAt: tx.createdAt.toISOString(),
-        courseTitle: tx.course.title,
-        courseSlug: tx.course.slug,
+        // Session payments (kind=SESSION) have no course; label them by mentor (QC-20260719-47).
+        courseTitle:
+          tx.course?.title ??
+          (tx.mentor ? `Sesi 1-on-1 · ${tx.mentor.user.nama}` : "Sesi 1-on-1"),
+        courseSlug: tx.course?.slug ?? null,
       })),
     });
   } catch (error) {

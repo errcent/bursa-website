@@ -16,13 +16,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { CourseThumbnail } from "@/components/course-thumbnail";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/components/auth-provider";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
@@ -65,7 +58,7 @@ export function CheckoutForm({
 
   if (authLoading || enrollmentLoading) {
     return (
-      <div className="flex min-h-48 items-center justify-center rounded-xl border border-border bg-card">
+      <div className="surface-card flex min-h-48 items-center justify-center">
         <Loader2 className="size-5 animate-spin text-muted-foreground" />
       </div>
     );
@@ -73,40 +66,40 @@ export function CheckoutForm({
 
   if (!session) {
     return (
-      <Card className="mx-auto max-w-lg border-border bg-card">
-        <CardHeader className="text-center">
-          <CardTitle>Masuk untuk checkout</CardTitle>
-          <CardDescription>
+      <div className="surface-card mx-auto max-w-lg overflow-hidden">
+        <div className="px-6 py-8 text-center">
+          <h2 className="font-heading text-lg font-medium">Masuk untuk checkout</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
             Anda perlu masuk ke akun untuk mensimulasikan pembayaran dan mengaktifkan akses kelas{" "}
             <span className="text-foreground/90">{course.title}</span>.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-2 sm:flex-row">
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 border-t border-border/60 px-6 py-5 sm:flex-row">
           <Button className="flex-1 btn-primary" render={<Link href={loginHref} />}>
             Masuk
           </Button>
           <Button variant="outline" className="flex-1" render={<Link href="/daftar" />}>
             Daftar
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   if (enrolled) {
     return (
-      <Card className="mx-auto max-w-lg border-border bg-card">
-        <CardHeader className="text-center">
+      <div className="surface-card mx-auto max-w-lg overflow-hidden">
+        <div className="px-6 py-8 text-center">
           <div className="mx-auto flex size-12 items-center justify-center rounded-full border border-emerald/30 bg-emerald/10">
             <CheckCircle2 className="size-6 text-emerald" />
           </div>
-          <CardTitle className="mt-2">Sudah berlangganan</CardTitle>
-          <CardDescription>
+          <h2 className="mt-3 font-heading text-lg font-medium">Sudah berlangganan</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
             Anda sudah memiliki akses ke{" "}
             <span className="text-foreground/90">{course.title}</span>. Checkout tidak diperlukan lagi.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-2 sm:flex-row">
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 border-t border-border/60 px-6 py-5 sm:flex-row">
           <Button className="flex-1 btn-primary" render={<Link href={learnHref} />}>
             Lanjut Belajar
           </Button>
@@ -115,27 +108,27 @@ export function CheckoutForm({
               Buka Komunitas
             </Button>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-start">
       <div className="flex flex-col gap-6">
-        <Card className="border-border bg-card">
-          <CardHeader>
+        <div className="surface-card overflow-hidden">
+          <div className="border-b border-border/60 px-5 py-4 sm:px-6">
             <div className="flex items-center justify-between gap-2">
-              <CardTitle>Metode Pembayaran</CardTitle>
+              <h2 className="font-heading text-base font-medium sm:text-lg">Metode Pembayaran</h2>
               <Badge variant="outline" className="border-amber-400/30 bg-amber-400/10 text-amber-200">
                 Mode Demo
               </Badge>
             </div>
-            <CardDescription>
+            <p className="mt-1.5 text-sm text-muted-foreground">
               Pilih metode simulasi — pembayaran real akan aktif setelah integrasi Midtrans (P3).
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 p-5 sm:p-6">
             {paymentMethods.map((method) => {
               const Icon = method.icon;
               const selected = selectedMethod === method.id;
@@ -160,10 +153,10 @@ export function CheckoutForm({
                 </label>
               );
             })}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <div className="flex gap-3 rounded-xl border border-amber-400/25 bg-amber-400/5 p-4">
+        <div className="surface-card flex gap-4 p-5 sm:p-6">
           <AlertTriangle className="size-5 shrink-0 text-amber-300" />
           <div className="flex flex-col gap-3">
             <p className="text-sm leading-relaxed text-amber-200/90">
@@ -212,32 +205,41 @@ export function CheckoutForm({
         </p>
       </div>
 
-      <Card className="border-border bg-card lg:sticky lg:top-24">
-        <CardHeader>
-          <CardTitle>Ringkasan Pesanan</CardTitle>
-          <CardDescription>Pembayaran sekali untuk akses kelas selamanya.</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="overflow-hidden rounded-xl border border-border bg-surface/50">
-            <CourseThumbnail course={course} className="aspect-[16/10] w-full" alt={course.title} />
+      <div className="surface-card overflow-hidden lg:sticky lg:top-24">
+        <div className="border-b border-border/60 px-5 py-4 sm:px-6">
+          <h2 className="font-heading text-base font-medium sm:text-lg">Ringkasan Pesanan</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Pembayaran sekali untuk akses kelas selamanya.
+          </p>
+        </div>
+        <div className="flex flex-col gap-4 p-5 sm:p-6">
+          <div className="overflow-hidden rounded-xl border border-border/60 bg-surface/40">
+            <div className="relative aspect-[16/10] w-full overflow-hidden">
+              <CourseThumbnail
+                course={course}
+                fillSlot
+                className="absolute inset-0"
+                alt={course.title}
+              />
+            </div>
             <div className="p-4">
               <p className="font-heading text-sm font-medium leading-snug">{course.title}</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Mentor:{" "}
-              <Link href={`/instruktur/${mentor.slug}`} className="text-foreground/80 hover:underline">
-                {mentor.name}
-              </Link>
-            </p>
-            <p className="mt-2 text-xs text-muted-foreground">
-              {course.durationHours} jam · Akses selamanya
-            </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Mentor:{" "}
+                <Link href={`/instruktur/${mentor.slug}`} className="text-foreground/80 hover:underline">
+                  {mentor.name}
+                </Link>
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {course.durationHours} jam · Akses selamanya
+              </p>
             </div>
           </div>
 
           <div className="flex flex-col gap-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Harga kelas</span>
-              <span>{formatRupiah(course.price)}</span>
+              <span className="tabular-nums">{formatRupiah(course.price)}</span>
             </div>
           </div>
 
@@ -245,12 +247,12 @@ export function CheckoutForm({
 
           <div className="flex items-center justify-between">
             <span className="font-heading font-medium">Total dibayar</span>
-            <span className="text-xl font-semibold font-mono tabular-nums">
+            <span className="font-heading text-xl font-semibold tabular-nums">
               {formatRupiah(course.price)}
             </span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

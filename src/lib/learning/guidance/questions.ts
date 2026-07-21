@@ -166,7 +166,7 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
     id: "capitalRange",
     title: "Kisaran modal yang siap kamu alokasikan? (opsional)",
     subtitle:
-      "Informasi ini membantu kami menyesuaikan ekspektasi risiko. Bisa dilewati — tidak wajib diisi.",
+      "Opsional — jika diisi, kami sesuaikan level kelas dan ekspektasi risiko. Bisa dilewati kapan saja.",
     optional: true,
     options: [
       {

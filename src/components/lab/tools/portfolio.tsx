@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import { LabField, LabNumberInput, LabResultTile } from "@/components/lab/lab-field";
+import { LabField, LabNumberInput, LabResultGrid, LabResultTile, LabToolPanel } from "@/components/lab/lab-field";
 import { valueAtRisk } from "@/lib/lab/portfolio";
 
 function fmt(n: number, d = 2): string {
@@ -21,16 +21,16 @@ export function PortfolioVarCalculator() {
   }), [value, vol, confidence]);
 
   return (
-    <div className="surface-card p-5 sm:p-6">
+    <LabToolPanel title="Value at Risk (VaR) parametric" description="Asumsi distribusi normal — Z-score 90/95/99%.">
       <div className="grid gap-4 sm:grid-cols-3">
         <LabField label="Nilai portofolio" id="var-val" suffix="Rp"><LabNumberInput id="var-val" value={value} onChange={setValue} min={0} /></LabField>
         <LabField label="Volatilitas tahunan" id="var-vol" suffix="%"><LabNumberInput id="var-vol" value={vol} onChange={setVol} min={0} /></LabField>
-        <LabField label="Confidence level" id="var-cl" suffix="%"><LabNumberInput id="var-cl" value={confidence} onChange={setConfidence} min={0} max={100} /></LabField>
+        <LabField label="Tingkat kepercayaan" id="var-cl" suffix="%"><LabNumberInput id="var-cl" value={confidence} onChange={setConfidence} min={0} max={100} /></LabField>
       </div>
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+      <LabResultGrid className="lg:grid-cols-2">
         <LabResultTile label="VaR (1 hari)" value={`Rp ${fmt(result.var, 0)}`} tone="negative" />
         <LabResultTile label="VaR %" value={`${fmt(result.varPercent)}%`} tone="negative" />
-      </div>
-    </div>
+      </LabResultGrid>
+    </LabToolPanel>
   );
 }

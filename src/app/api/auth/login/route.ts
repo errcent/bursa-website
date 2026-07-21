@@ -3,6 +3,11 @@ import { NextRequest } from "next/server";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { findUserByIdentifier, verifyPassword } from "@/lib/auth/server";
 import { checkRateLimit, clientIp } from "@/lib/auth/rate-limit";
+import {
+  signWebSessionToken,
+  webSessionCookieOptions,
+  WEB_SESSION_COOKIE,
+} from "@/lib/auth/web-session";
 import { loginSchema } from "@/lib/auth/validation";
 
 /** Generic login failure — do not reveal whether identifier exists (OWASP A07). */
@@ -31,7 +36,8 @@ export async function POST(request: NextRequest) {
       return jsonError(GENERIC_LOGIN_ERROR, 401);
     }
 
-    return jsonOk({
+    const token = await signWebSessionToken({ id: user.id, email: user.email });
+    const response = jsonOk({
       user: {
         id: user.id,
         email: user.email,
@@ -41,6 +47,8 @@ export async function POST(request: NextRequest) {
         role: user.role,
       },
     });
+    response.cookies.set(WEB_SESSION_COOKIE, token, webSessionCookieOptions());
+    return response;
   } catch (error) {
     return handleApiError(error);
   }

@@ -17,6 +17,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
@@ -83,6 +84,7 @@ interface VideoControlBarProps {
   onChangeQuality: (quality: VideoQualityValue) => void;
   onToggleSubtitles: () => void;
   onToggleFullscreen: () => void;
+  highlightFullscreenControl?: boolean;
   className?: string;
 }
 
@@ -109,6 +111,7 @@ export function VideoControlBar({
   onChangeQuality,
   onToggleSubtitles,
   onToggleFullscreen,
+  highlightFullscreenControl = false,
   className,
 }: VideoControlBarProps) {
   const progressRef = useRef<HTMLDivElement>(null);
@@ -230,7 +233,7 @@ export function VideoControlBar({
           {formatTime(currentTime)}
         </span>
 
-        <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
+        <div className="relative z-50 ml-auto flex items-center gap-0.5 sm:gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
@@ -245,16 +248,18 @@ export function VideoControlBar({
               }
             />
             <DropdownMenuContent align="end" side="top" className={menuContentClass}>
-              <DropdownMenuLabel className="text-[11px] text-white/60">Kecepatan</DropdownMenuLabel>
-              {VIDEO_PLAYBACK_SPEEDS.map((speed) => (
-                <DropdownMenuItem
-                  key={speed}
-                  className={cn(menuItemClass, playbackSpeed === speed && "bg-white/10")}
-                  onClick={() => onChangeSpeed(speed)}
-                >
-                  {speed}x
-                </DropdownMenuItem>
-              ))}
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="text-[11px] text-white/60">Kecepatan</DropdownMenuLabel>
+                {VIDEO_PLAYBACK_SPEEDS.map((speed) => (
+                  <DropdownMenuItem
+                    key={speed}
+                    className={cn(menuItemClass, playbackSpeed === speed && "bg-white/10")}
+                    onClick={() => onChangeSpeed(speed)}
+                  >
+                    {speed}x
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -301,11 +306,11 @@ export function VideoControlBar({
               }
             />
             <DropdownMenuContent align="end" side="top" className={menuContentClass}>
-              <DropdownMenuLabel className="text-[11px] text-white/60">Kualitas</DropdownMenuLabel>
               <DropdownMenuRadioGroup
                 value={quality}
                 onValueChange={(value) => onChangeQuality(value as VideoQualityValue)}
               >
+                <DropdownMenuLabel className="text-[11px] text-white/60">Kualitas</DropdownMenuLabel>
                 {qualityOptions.map((option) => (
                   <DropdownMenuRadioItem
                     key={option.value}
@@ -334,7 +339,11 @@ export function VideoControlBar({
               void onToggleFullscreen();
             }}
             onPointerDown={(e) => e.stopPropagation()}
-            className={controlButtonClass}
+            className={cn(
+              controlButtonClass,
+              highlightFullscreenControl &&
+                "ring-2 ring-white/80 ring-offset-2 ring-offset-black/40 animate-pulse",
+            )}
             aria-label={isFullscreen ? "Keluar layar penuh" : "Layar penuh"}
           >
             {isFullscreen ? (

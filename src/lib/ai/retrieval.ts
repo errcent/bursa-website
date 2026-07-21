@@ -1,3 +1,5 @@
+import type { UserRole } from "@prisma/client";
+
 import { db } from "@/lib/db";
 
 import { AI_CONFIG } from "./config";
@@ -10,14 +12,31 @@ export type RetrievedChunk = {
   score: number;
 };
 
+/** Wrap RAG chunk as untrusted data — never treat as instructions. */
+function wrapRetrievedContent(content: string): string {
+  return `<retrieved trusted="false">\n${content}\n</retrieved>`;
+}
+
+function roleFilter(userRole: UserRole) {
+  return {
+    sensitivity: "PUBLIC" as const,
+    OR: [{ allowedRoles: { isEmpty: true } }, { allowedRoles: { has: userRole } }],
+  };
+}
+
 /**
  * Hybrid retrieval placeholder — keyword match until pgvector embeddings ship.
- * Production: combine vector similarity + keyword filter by role/metadata.
+ * Only PUBLIC chunks are returned to the support bot.
  */
 export async function retrieveChunks(
   query: string,
-  limit = AI_CONFIG.ragTopK
+  limit = AI_CONFIG.ragTopK,
+  userRole?: UserRole
 ): Promise<RetrievedChunk[]> {
+  if (!userRole) {
+    return [];
+  }
+
   const terms = query
     .toLowerCase()
     .split(/\s+/)
@@ -27,6 +46,7 @@ export async function retrieveChunks(
   if (terms.length === 0) return [];
 
   const rows = await db.knowledgeChunk.findMany({
+    where: roleFilter(userRole),
     take: limit * 4,
     orderBy: { updatedAt: "desc" },
   });
@@ -48,7 +68,7 @@ export async function retrieveChunks(
     id: r.id,
     sourceDoc: r.sourceDoc,
     heading: r.heading,
-    content: r.content,
+    content: wrapRetrievedContent(r.content),
     score: r.score,
   }));
 }
@@ -73,10 +93,10 @@ export function lookupFaq(query: string): string | null {
 
 /**
  * Intent router placeholder — cheap classifier before LLM.
- * Returns: faq | rag | action
+ * Returns: faq | rag (action path disabled until tool sandbox exists)
  */
-export function routeIntent(query: string): "faq" | "rag" | "action" {
+export function routeIntent(query: string): "faq" | "rag" {
   if (lookupFaq(query)) return "faq";
-  if (/status|pesanan|enrollment|transaksi/i.test(query)) return "action";
+  if (/status|pesanan|enrollment|transaksi/i.test(query)) return "rag";
   return "rag";
 }

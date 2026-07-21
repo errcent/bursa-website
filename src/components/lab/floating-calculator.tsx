@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowDown, ArrowUp } from "lucide-react";
 
-import { LabField, LabNumberInput, LabResultTile } from "@/components/lab/lab-field";
+import {
+  LabDirectionToggle,
+  LabField,
+  LabNumberInput,
+  LabResultTile,
+  LabToolPanel,
+} from "@/components/lab/lab-field";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   floatingPercent,
@@ -11,36 +16,6 @@ import {
   priceFromFloatingPercent,
   type Direction,
 } from "@/lib/lab/floating";
-import { cn } from "@/lib/utils";
-
-function DirectionToggle({ value, onChange }: { value: Direction; onChange: (d: Direction) => void }) {
-  return (
-    <div className="inline-flex rounded-xl border border-border bg-muted p-1">
-      <button
-        type="button"
-        onClick={() => onChange("long")}
-        className={cn(
-          "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-          value === "long" ? "bg-profit/15 text-profit" : "text-muted-foreground hover:text-foreground"
-        )}
-      >
-        <ArrowUp className="size-3.5" />
-        Long (Beli)
-      </button>
-      <button
-        type="button"
-        onClick={() => onChange("short")}
-        className={cn(
-          "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-          value === "short" ? "bg-loss/15 text-loss" : "text-muted-foreground hover:text-foreground"
-        )}
-      >
-        <ArrowDown className="size-3.5" />
-        Short (Jual)
-      </button>
-    </div>
-  );
-}
 
 function PipAndLeverageFields({
   showPips,
@@ -100,7 +75,7 @@ function ModeA() {
 
   return (
     <div className="flex flex-col gap-5">
-      <DirectionToggle value={direction} onChange={setDirection} />
+      <LabDirectionToggle value={direction} onChange={setDirection} />
       <div className="grid gap-4 sm:grid-cols-2">
         <LabField label="Harga entry" id="fa-entry">
           <LabNumberInput id="fa-entry" value={entry} onChange={setEntry} min={0} />
@@ -153,7 +128,7 @@ function ModeB() {
 
   return (
     <div className="flex flex-col gap-5">
-      <DirectionToggle value={direction} onChange={setDirection} />
+      <LabDirectionToggle value={direction} onChange={setDirection} />
       <div className="grid gap-4 sm:grid-cols-2">
         <LabField label="Harga entry" id="fb-entry">
           <LabNumberInput id="fb-entry" value={entry} onChange={setEntry} min={0} />
@@ -192,7 +167,7 @@ function ModeC() {
 
   return (
     <div className="flex flex-col gap-5">
-      <DirectionToggle value={direction} onChange={setDirection} />
+      <LabDirectionToggle value={direction} onChange={setDirection} />
       <div className="grid gap-4 sm:grid-cols-2">
         <LabField label="Harga entry" id="fc-entry">
           <LabNumberInput id="fc-entry" value={entry} onChange={setEntry} min={0} />
@@ -235,7 +210,7 @@ function ModeC() {
 
 export function FloatingCalculator() {
   return (
-    <div className="surface-card p-5 sm:p-6">
+    <LabToolPanel title="Tiga mode perhitungan floating" description="Long/short, leverage opsional, dan estimasi pip untuk forex.">
       <Tabs defaultValue="a">
         <TabsList className="mb-5 w-full sm:w-auto">
           <TabsTrigger value="a">Floating saat ini</TabsTrigger>
@@ -252,6 +227,6 @@ export function FloatingCalculator() {
           <ModeC />
         </TabsContent>
       </Tabs>
-    </div>
+    </LabToolPanel>
   );
 }

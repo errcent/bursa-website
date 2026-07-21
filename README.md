@@ -1,9 +1,9 @@
-# Bursa — Platform Edukasi Trading (Next.js)
+# Bursa ? Platform Edukasi Trading (Next.js)
 
-> **Status: PROTOTYPE LANJUTAN (P0+ selesai, P1/P2 parsial).** Frontend premium + backend parsial (Prisma, API routes, admin, chat, search). Bukan production-ready — payment real, video hosting belum. **Google OAuth (NextAuth)** tersedia untuk login/daftar; sesi client localStorage masih dipakai sebagai bridge prototype.
+> **Status: PROTOTYPE LANJUTAN (P0+ selesai, P1/P2 parsial).** Frontend premium + backend parsial (Prisma, API routes, admin, chat, search). Bukan production-ready ? payment real, video hosting belum. **Google OAuth (NextAuth)** tersedia untuk login/daftar; sesi client localStorage masih dipakai sebagai bridge prototype.
 
-📚 **Dokumentasi lengkap:** [`../Documentation/00 - Overview & Peta Dokumentasi.md`](../Documentation/00%20-%20Overview%20%26%20Peta%20Dokumentasi.md)  
-📊 **Status implementasi terkini:** [`../Documentation/16 - Engineer Onboarding Guide/15 - Status Implementasi Kode (Living Doc).md`](../Documentation/16%20-%20Engineer%20Onboarding%20Guide/15%20-%20Status%20Implementasi%20Kode%20(Living%20Doc).md)
+?? **Dokumentasi lengkap:** [`../Documentation/00 - Overview & Peta Dokumentasi.md`](../Documentation/00%20-%20Overview%20%26%20Peta%20Dokumentasi.md)  
+?? **Status implementasi terkini:** [`../Documentation/16 - Engineer Onboarding Guide/15 - Status Implementasi Kode (Living Doc).md`](../Documentation/16%20-%20Engineer%20Onboarding%20Guide/15%20-%20Status%20Implementasi%20Kode%20(Living%20Doc).md)
 
 ---
 
@@ -21,7 +21,7 @@
 
 ## Cara Menjalankan (lokal)
 
-1. Buat database gratis di [Neon](https://neon.tech) → **New Project**
+1. Buat database gratis di [Neon](https://neon.tech) ? **New Project**
 2. Salin **Pooled connection** dan **Direct connection** dari dashboard Neon
 3. Salin `.env.example` ke `.env` dan isi:
 
@@ -34,7 +34,7 @@ DIRECT_URL="postgresql://...@ep-xxx....neon.tech/neondb?sslmode=require"
 
 ```bash
 npm install
-npm run db:deploy   # pertama kali — apply migrations ke Neon
+npm run db:deploy   # pertama kali ? apply migrations ke Neon
 npm run db:seed     # data demo + akun test
 npm run dev
 ```
@@ -60,7 +60,7 @@ Buka http://localhost:3000
 | `/komunitas` | Grup chat trading (anti-screenshot internal) |
 | `/instruktur/[slug]` | Profil mentor |
 | `/kelas/[slug]` | Detail course + hero cinematic + curriculum cards |
-| `/panduan-belajar` | Kuis 8 pertanyaan → rekomendasi kelas/mentor |
+| `/panduan-belajar` | Kuis 8 pertanyaan ? rekomendasi kelas/mentor |
 | `/jadi-mentor` | Formulir aplikasi mentor (+ email admin Resend) |
 | `/belajar/...` | Video protected + catatan sidebar kanan |
 | `/checkout/...` | Mock checkout (komisi 25%) |
@@ -72,7 +72,7 @@ Buka http://localhost:3000
 
 ## Login dengan Google (NextAuth)
 
-Tombol **Lanjutkan dengan Google** di `/masuk` dan `/daftar` memakai [NextAuth.js v5](https://authjs.dev) + Google OAuth. Scope minimal: **email** dan **profil publik** (nama, foto) — tanpa akses Gmail.
+Tombol **Lanjutkan dengan Google** di `/masuk` dan `/daftar` memakai [NextAuth.js v5](https://authjs.dev) + Google OAuth. Scope minimal: **email** dan **profil publik** (nama, foto) ? tanpa akses Gmail.
 
 ### Environment variables
 
@@ -85,17 +85,17 @@ Salin dari `.env.example`:
 | `NEXTAUTH_SECRET` | Random secret (`openssl rand -base64 32`) |
 | `NEXTAUTH_URL` | URL publik tanpa trailing slash (mis. `http://localhost:3000`) |
 
-Build **tetap jalan** tanpa variabel Google — tombol menampilkan petunjuk konfigurasi.
+Build **tetap jalan** tanpa variabel Google ? tombol menampilkan petunjuk konfigurasi.
 
 ### Konfigurasi Google Cloud Console (admin)
 
-1. Buka [Google Cloud Console](https://console.cloud.google.com/) → pilih/buat project
-2. **APIs & Services** → **OAuth consent screen**
+1. Buka [Google Cloud Console](https://console.cloud.google.com/) ? pilih/buat project
+2. **APIs & Services** ? **OAuth consent screen**
    - User type: **External** (testing) atau Internal (Workspace)
    - Isi app name (Bursa), support email, logo opsional
-   - Scopes: cukup default `email`, `profile`, `openid` — **jangan** tambah Gmail/Drive
+   - Scopes: cukup default `email`, `profile`, `openid` ? **jangan** tambah Gmail/Drive
    - Tambahkan domain produksi di **Authorized domains** (mis. `bursa-website.vercel.app`)
-3. **Credentials** → **Create credentials** → **OAuth client ID**
+3. **Credentials** ? **Create credentials** ? **OAuth client ID**
    - Application type: **Web application**
    - **Authorized JavaScript origins:**
      - `http://localhost:3000` (dev)
@@ -108,9 +108,9 @@ Build **tetap jalan** tanpa variabel Google — tombol menampilkan petunjuk konf
 
 ### Alur teknis (prototype)
 
-1. User klik Google → NextAuth redirect ke Google consent
-2. Callback `/api/auth/callback/google` → upsert user di Prisma (email, nama, avatar)
-3. Redirect ke `/masuk?oauth=sync` → bridge ke localStorage session (kompatibel API existing)
+1. User klik Google ? NextAuth redirect ke Google consent
+2. Callback `/api/auth/callback/google` ? upsert user di Prisma (email, nama, avatar)
+3. Redirect ke `/masuk?oauth=sync` ? bridge ke localStorage session (kompatibel API existing)
 4. Kebijakan privasi: link di form + consent screen Google
 
 Privasi & keamanan: lihat `Documentation/18 - Cybersecurity, Privasi Data & Kepatuhan IT/`.
@@ -119,7 +119,7 @@ Privasi & keamanan: lihat `Documentation/18 - Cybersecurity, Privasi Data & Kepa
 
 ## Email transaksional (Resend)
 
-Notifikasi **aplikasi mentor baru** ke admin (HTML + lampiran PDF). Env-gated — tanpa `RESEND_API_KEY`, submit formulir tetap sukses; email tidak terkirim.
+Notifikasi **aplikasi mentor baru** ke admin (HTML + lampiran PDF). Env-gated ? tanpa `RESEND_API_KEY`, submit formulir tetap sukses; email tidak terkirim.
 
 | Variable | Keterangan |
 |---|---|
@@ -129,6 +129,42 @@ Notifikasi **aplikasi mentor baru** ke admin (HTML + lampiran PDF). Env-gated �
 | `MENTOR_APPLICATION_EMAIL_ENABLED` | Set `false` untuk nonaktifkan tanpa hapus key |
 
 Kode: `src/lib/email/*`, `src/lib/mentor-program/application-notification.ts`
+
+---
+
+## Cloudflare Turnstile (anti-spam waitlist)
+
+Widget Turnstile muncul di `/waitlist` saat **kedua** env var di bawah diset. Verifikasi token dilakukan server-side di `POST /api/waitlist`.
+
+| Variable | Keterangan |
+|---|---|
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | **Site key** (public) ? tampil di browser |
+| `TURNSTILE_SECRET_KEY` | **Secret key** (server only) ? jangan expose ke client |
+
+### Setup production (gratis)
+
+1. Login [Cloudflare Dashboard](https://dash.cloudflare.com/) ? **Turnstile**
+2. **Add widget**
+   - Widget name: `Bursa Waitlist`
+   - Widget mode: **Managed** (recommended)
+   - Domains: `localhost`, `bursa-website.vercel.app`, dan domain custom kamu
+3. Salin **Site Key** ? `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+4. Salin **Secret Key** ? `TURNSTILE_SECRET_KEY`
+5. Set di `.env` lokal **dan** Vercel ? Environment Variables ? **Production + Preview**
+6. Redeploy Vercel (`NEXT_PUBLIC_*` butuh rebuild)
+
+### Test keys (development only)
+
+Dummy keys Cloudflare yang **selalu lolos** ? sudah di `.env` lokal:
+
+```text
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=2x00000000000000000000AB
+TURNSTILE_SECRET_KEY=2x0000000000000000000000000000000AA
+```
+
+Jangan pakai test keys di production. Kosongkan kedua var untuk menonaktifkan Turnstile.
+
+Kode: `src/lib/turnstile/*`, `src/components/turnstile-widget.tsx`
 
 ---
 
@@ -152,7 +188,7 @@ Kode: `src/lib/email/*`, `src/lib/mentor-program/application-notification.ts`
 ### Database & Admin
 - Prisma schema 22 model
 - Admin CRUD: mentor, course, chat room, users, moderation
-- Data admin panel dari database — bukan hanya mock file
+- Data admin panel dari database ? bukan hanya mock file
 
 ---
 
@@ -176,10 +212,10 @@ SQLite **tidak** bisa dipakai di Vercel (filesystem ephemeral). Pakai **Neon Pos
 
 ### 1. Database Neon
 
-1. Buka https://neon.tech → sign up → **New Project** (mis. `bursa`)
+1. Buka https://neon.tech ? sign up ? **New Project** (mis. `bursa`)
 2. Di **Connection details**, salin:
-   - **Pooled connection** → untuk `DATABASE_URL`
-   - **Direct connection** → untuk `DIRECT_URL`
+   - **Pooled connection** ? untuk `DATABASE_URL`
+   - **Direct connection** ? untuk `DIRECT_URL`
 
 Format contoh:
 
@@ -190,7 +226,7 @@ DIRECT_URL=postgresql://neondb_owner:SECRET@ep-cool-name-123456.ap-southeast-1.a
 
 ### 2. Environment variables di Vercel
 
-Vercel → project **bursa-website** → **Settings** → **Environment Variables** → **Production** (dan Preview jika perlu):
+Vercel ? project **bursa-website** ? **Settings** ? **Environment Variables** ? **Production** (dan Preview jika perlu):
 
 | Name | Value |
 |---|---|
@@ -202,7 +238,9 @@ Vercel → project **bursa-website** → **Settings** → **Environment Variable
 | `NEXTAUTH_URL` | `https://bursa-website.vercel.app` (Production) |
 | `RESEND_API_KEY` | Resend API key (email aplikasi mentor) |
 | `EMAIL_FROM` | From address Resend terverifikasi |
-| `MENTOR_APPLICATION_ADMIN_EMAIL` | Opsional — override penerima admin |
+| `MENTOR_APPLICATION_ADMIN_EMAIL` | Opsional ? override penerima admin |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key (waitlist) |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key (server only) |
 
 Untuk Google OAuth, tambahkan redirect URI `https://bursa-website.vercel.app/api/auth/callback/google` di Google Cloud Console (lihat bagian Login dengan Google di atas).
 
@@ -229,7 +267,7 @@ Dashboard Vercel menampilkan **pesan commit Git terakhir yang terhubung ke deplo
 
 **Workflow disarankan:**
 
-1. `git status` � review perubahan
+1. `git status` ? review perubahan
 2. Commit dengan pesan yang menjelaskan perubahan sebenarnya
 3. `git push origin master`
 4. Biarkan Vercel auto-deploy dari GitHub, **atau** jalankan CLI deploy **setelah** push agar metadata commit selaras
@@ -243,9 +281,9 @@ Jangan deploy production hanya dari perubahan uncommitted jika Anda ingin riwaya
 
 ```
 src/
-├── app/           # Pages + API routes
-├── components/    # UI, chat, admin, search, video
-└── lib/           # db, search, chat, video, admin, auth, mock-data
+??? app/           # Pages + API routes
+??? components/    # UI, chat, admin, search, video
+??? lib/           # db, search, chat, video, admin, auth, mock-data
 prisma/            # schema, migrations, seed
 ```
 

@@ -300,20 +300,25 @@ export async function buildRevenueReport(): Promise<AdminRevenueReport> {
           mentor: { select: { id: true, user: { select: { nama: true } } } },
         },
       },
+      // Session payments (kind=SESSION) attribute revenue via the mentor, not a course (QC-20260719-47).
+      mentor: { select: { id: true, user: { select: { nama: true } } } },
     },
   });
 
   if (transactions.length > 0) {
     const lines: AdminRevenueLine[] = transactions.map((tx) => {
       const breakdown = calculateCheckoutBreakdown(tx.amount);
+      const mentorId = tx.course?.mentor.id ?? tx.mentor?.id ?? "unknown";
+      const mentorName = tx.course?.mentor.user.nama ?? tx.mentor?.user.nama ?? "—";
       return {
         id: tx.id,
         source: "transaction",
         status: "COMPLETED",
-        courseId: tx.course.id,
-        courseTitle: tx.course.title,
-        mentorId: tx.course.mentor.id,
-        mentorName: tx.course.mentor.user.nama,
+        // Session rows share a synthetic bucket so the by-course view stays coherent.
+        courseId: tx.course?.id ?? `session:${mentorId}`,
+        courseTitle: tx.course?.title ?? "Sesi 1-on-1",
+        mentorId,
+        mentorName,
         buyerId: tx.user.id,
         buyerName: tx.user.nama,
         buyerEmail: tx.user.email,

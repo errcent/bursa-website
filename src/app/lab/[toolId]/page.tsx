@@ -15,7 +15,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { toolId } = await params;
   const tool = getLabTool(toolId);
   if (!tool) return { title: "Tool tidak ditemukan" };
-  return { title: tool.title, description: tool.description };
+  return {
+    title: `${tool.title} · Bursa Lab`,
+    description: tool.description,
+  };
 }
 
 export default async function LabToolPage({ params }: Props) {
@@ -29,7 +32,7 @@ export default async function LabToolPage({ params }: Props) {
 
   return (
     <LabToolLayout
-      icon={tool.icon}
+      toolId={toolId}
       tag={tool.tag}
       title={tool.title}
       description={tool.description}

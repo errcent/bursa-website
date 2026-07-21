@@ -83,6 +83,7 @@ export function DeveloperLayoutShell({ children }: { children: React.ReactNode }
                 </nav>
                 <div className="border-t border-border p-4">
                   <SheetClose
+                    nativeButton={false}
                     render={
                       <Link
                         href="/"

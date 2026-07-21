@@ -7,7 +7,7 @@ const DISCLAIMER_COPY =
   "Bursa adalah platform edukasi, bukan broker atau aplikasi eksekusi trading. Materi membantu kamu memahami riset dan manajemen risiko. Keputusan investasi sepenuhnya ada pada kamu, dan trading tetap berisiko kehilangan modal.";
 
 const DISCLAIMER_COPY_COMPACT =
-  "Bursa adalah platform edukasi, bukan broker. Trading tetap berisiko kehilangan modal — keputusan sepenuhnya ada pada kamu.";
+  "Segala bentuk trading mengandung risiko kehilangan modal. Bursa tidak bertanggung jawab atas keputusan investasi yang diambil pengguna.";
 
 /**
  * Single source of truth for the platform's risk/compliance disclaimer copy.
@@ -23,7 +23,12 @@ export function RiskDisclaimer({
 }) {
   if (variant === "compact") {
     return (
-      <p className={cn("max-w-2xl text-xs leading-relaxed text-muted-foreground md:text-right", className)}>
+      <p
+        className={cn(
+          "max-w-[16rem] text-[11px] leading-[1.35] tracking-normal text-muted-foreground/45 sm:max-w-xs md:max-w-sm md:text-right",
+          className
+        )}
+      >
         {DISCLAIMER_COPY_COMPACT}
       </p>
     );

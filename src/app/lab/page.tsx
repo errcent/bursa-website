@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
 
-import { InfoPageHero } from "@/components/info-page-hero";
-import { LabToolCard } from "@/components/lab/lab-tool-card";
+import { LabHubContent } from "@/components/lab/lab-hub-content";
+import { Reveal } from "@/components/motion/reveal";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNavbar } from "@/components/site-navbar";
-import { Reveal } from "@/components/motion/reveal";
-import { labCategories, getLabToolsByCategory } from "@/lib/lab/tools";
 
 export const metadata: Metadata = {
-  title: "Lab",
+  title: "Bursa Lab — Tools Trading Interaktif",
   description:
-    "19 kalkulator dan simulator trading untuk saham, crypto, dan forex — manajemen risiko, mekanika trading, analisis teknikal, dan backtesting.",
+    "19 kalkulator dan simulator trading premium untuk saham, crypto, dan forex — manajemen risiko, Monte Carlo, dan backtesting. Semua berjalan di browser.",
 };
 
 export default function LabPage() {
@@ -18,43 +16,19 @@ export default function LabPage() {
     <>
       <SiteNavbar />
       <main className="flex-1">
-        <InfoPageHero
-          eyebrow="Bursa Lab"
-          title="Tools untuk trader"
-          description="19 kalkulator dan simulator interaktif untuk saham, crypto, dan forex — dari ukuran posisi dan pip value hingga Monte Carlo dan backtesting. Semua berjalan di browser, tanpa install."
-        />
+        <div className="container-page section-tight pb-16">
+          <LabHubContent />
 
-        <div className="container-page section-tight">
-          <div className="flex flex-col gap-12">
-            {labCategories.map((category) => {
-              const tools = getLabToolsByCategory(category.id);
-              if (tools.length === 0) return null;
-              return (
-                <Reveal key={category.id}>
-                  <div>
-                    <h2 className="font-heading text-lg font-semibold tracking-tight sm:text-xl">
-                      {category.title}
-                    </h2>
-                    <p className="mt-1 text-sm text-muted-foreground">{category.description}</p>
-                    <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                      {tools.map((tool) => (
-                        <LabToolCard key={tool.id} tool={tool} />
-                      ))}
-                    </div>
-                  </div>
-                </Reveal>
-              );
-            })}
-          </div>
-
-          <div className="mt-10 rounded-2xl border border-border/60 bg-accent-soft/40 p-4 sm:p-5">
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Semua kalkulator di Lab bersifat edukasi dan berjalan sepenuhnya di perangkatmu
-              (client-side) — tidak ada data yang dikirim ke server. Hasil hitungan adalah simulasi
-              berdasarkan asumsi yang kamu masukkan, bukan rekomendasi atau garansi hasil trading
-              nyata.
-            </p>
-          </div>
+          <Reveal className="mt-14">
+            <div className="rounded-2xl border border-border/60 bg-accent-soft/30 p-5 sm:p-6">
+              <p className="text-sm font-medium text-foreground/90">Catatan edukasi</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Semua perhitungan di Bursa Lab bersifat edukatif dan berjalan client-side — tidak ada
+                data input yang dikirim ke server. Hasil simulasi bergantung pada asumsi yang kamu
+                masukkan; bukan rekomendasi investasi atau jaminan performa trading nyata.
+              </p>
+            </div>
+          </Reveal>
         </div>
       </main>
       <SiteFooter />

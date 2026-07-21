@@ -1,18 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { shouldPlayNavbarIntro } from "@/lib/nav/navbar-intro-state";
-import { Code2, GraduationCap, LayoutDashboard, Menu, Shield } from "lucide-react";
+import { Code2, GraduationCap, LayoutDashboard, Menu, Search, Shield, X } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
 import { AccountMenuMobileLinks } from "@/components/account-menu-mobile-links";
 import { useAuth } from "@/components/auth-provider";
+import { useHeroNav } from "@/components/hero-nav-context";
 import { SiteNavAuth } from "@/components/site-nav-auth";
 import { SiteNavSearch } from "@/components/site-nav-search";
 import { Button } from "@/components/ui/button";
 import { getRoleNavLinks } from "@/lib/auth/roles";
+import { isSameNavDestination } from "@/lib/nav/route-navbar";
 import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { cn } from "@/lib/utils";
 import {
@@ -39,7 +41,6 @@ const baseNavLinks: {
   exact?: boolean;
   prefetch?: boolean;
 }[] = [
-  { href: "/", label: "Beranda", exact: true },
   { href: "/katalog", label: "Katalog", prefetch: true },
   { href: "/komunitas", label: "Komunitas" },
   { href: "/lab", label: "Lab" },
@@ -67,26 +68,37 @@ function RoleLinkIcon({ href }: { href: string }) {
   return <Code2 className="size-3.5 opacity-70" />;
 }
 
-export function SiteNavbar() {
+export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-anchor" }) {
   const prefersReducedMotion = useReducedMotion();
   const pathname = usePathname();
   const { session } = useAuth();
-  const isKatalog = pathname === "/katalog";
+  const { searchReveal, searchVisible } = useHeroNav();
+  const isHeroAnchor = layout === "hero-anchor";
+  const searchActive = !isHeroAnchor || searchReveal;
   const [menuOpen, setMenuOpen] = useState(false);
-  const [playIntro] = useState(() => shouldPlayNavbarIntro(pathname, false));
+  const [mobileCatalogSearchOpen, setMobileCatalogSearchOpen] = useState(false);
+  /** Deferred to mount — sessionStorage differs between SSR and client. */
+  const [runIntro, setRunIntro] = useState(false);
   const roleLinks = getRoleNavLinks(session?.role);
-  const animateIntro = playIntro && !prefersReducedMotion;
+  const primaryCtaHref = session ? "/dashboard" : "/katalog";
+  const showPrimaryCta = !isSameNavDestination(pathname, primaryCtaHref);
+  const isKatalogRoute = isSameNavDestination(pathname, "/katalog");
+  const showMobileCatalogSearch = isKatalogRoute && mobileCatalogSearchOpen;
 
-  return (
-    <div className="nav-shell">
-      <motion.header
-        className="nav-glass"
-        initial={animateIntro ? { y: -16, opacity: 0 } : false}
-        animate={{ y: 0, opacity: 1 }}
-        transition={animateIntro ? { duration: 0.5, ease: easeOut } : { duration: 0 }}
-      >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
-        <div className="flex h-14 min-h-14 items-center justify-between gap-2 px-3 sm:h-[3.75rem] sm:gap-4 sm:px-5">
+  useEffect(() => {
+    if (isHeroAnchor || prefersReducedMotion) return;
+    if (shouldPlayNavbarIntro(pathname, false)) {
+      setRunIntro(true);
+    }
+  }, [pathname, prefersReducedMotion, isHeroAnchor]);
+
+  // Hero scroll glass: strength-driven modifier for full dock→pin range (pinned = strength 1).
+  const navHeaderClassName = cn("nav-glass", isHeroAnchor && "nav-glass--hero-anchor");
+
+  const navHeaderInner = (
+    <>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
+      <div className="flex h-14 min-h-14 items-center justify-between gap-2 px-3 sm:h-[3.75rem] sm:gap-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-4 sm:gap-8">
             <Link href="/" className="flex shrink-0 items-center gap-2">
               <span className="font-heading text-lg font-semibold tracking-tight sm:text-xl">
@@ -116,15 +128,29 @@ export function SiteNavbar() {
             </nav>
           </div>
 
-          {!isKatalog && (
-            <Suspense
-              fallback={
-                <SearchSkeleton className="hidden h-9 max-w-[13rem] flex-1 animate-pulse rounded-full bg-muted lg:flex xl:max-w-xs" />
-              }
-            >
+          <Suspense
+            fallback={
+              <SearchSkeleton className="hidden h-9 max-w-[13rem] flex-1 animate-pulse rounded-full bg-muted lg:flex xl:max-w-xs" />
+            }
+          >
+            {isHeroAnchor ? (
+              <div
+                data-hero-nav-search
+                className={cn(
+                  "hero-nav-search-slot hidden lg:flex xl:max-w-xs",
+                  searchVisible && "is-visible",
+                  searchReveal && "is-interactive"
+                )}
+              >
+                <SiteNavSearch
+                  reveal={searchActive}
+                  className="w-full min-w-[8rem] max-w-none xl:max-w-xs"
+                />
+              </div>
+            ) : (
               <SiteNavSearch className="hidden max-w-[13rem] flex-1 lg:flex xl:max-w-xs" />
-            </Suspense>
-          )}
+            )}
+          </Suspense>
 
           <div className="flex items-center gap-1 sm:gap-2">
             {roleLinks.length > 0 && (
@@ -158,6 +184,45 @@ export function SiteNavbar() {
                 <SiteNavAuth />
               </Suspense>
             </div>
+            {isKatalogRoute && (
+              <>
+                {showMobileCatalogSearch ? (
+                  <div className="fixed inset-x-0 top-0 z-[250] border-b border-border/60 bg-background/98 backdrop-blur-xl lg:hidden">
+                    <div className="flex h-14 min-h-14 items-center gap-2 px-3">
+                      <Suspense fallback={<SearchSkeleton className="flex-1" />}>
+                        <SiteNavSearch
+                          className="min-w-0 flex-1"
+                          initialOpen
+                          onNavigate={() => setMobileCatalogSearchOpen(false)}
+                          onDismiss={() => setMobileCatalogSearchOpen(false)}
+                        />
+                      </Suspense>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="size-11 shrink-0"
+                        aria-label="Tutup pencarian"
+                        onClick={() => setMobileCatalogSearchOpen(false)}
+                      >
+                        <X className="size-5" />
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-11 shrink-0 lg:hidden"
+                    aria-label="Cari di katalog"
+                    onClick={() => setMobileCatalogSearchOpen(true)}
+                  >
+                    <Search className="size-5" />
+                  </Button>
+                )}
+              </>
+            )}
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger
                 render={
@@ -183,39 +248,48 @@ export function SiteNavbar() {
                 </SheetHeader>
 
                 <div className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-4">
-                  {!isKatalog && (
-                    <Suspense fallback={<SearchSkeleton className="mb-2" />}>
+                  <Suspense fallback={<SearchSkeleton className="mb-2" />}>
+                    {menuOpen ? (
                       <SiteNavSearch
                         className="mb-2 w-full"
+                        openOnFocus={false}
                         onNavigate={() => setMenuOpen(false)}
                       />
-                    </Suspense>
-                  )}
-
-                  <div className="mb-3 grid gap-2">
-                    <SheetClose
-                      render={
-                        <Link
-                          href={session ? "/dashboard" : "/katalog"}
-                          className="btn-primary flex min-h-12 items-center justify-center rounded-xl text-[15px] font-medium"
-                        />
-                      }
-                    >
-                      {session ? "Lanjut Belajar" : "Mulai Belajar"}
-                    </SheetClose>
-                    {!session && (
-                      <SheetClose
-                        render={
-                          <Link
-                            href="/daftar"
-                            className="flex min-h-12 items-center justify-center rounded-xl border border-border/70 bg-card/50 text-[15px] font-medium"
-                          />
-                        }
-                      >
-                        Daftar Gratis
-                      </SheetClose>
+                    ) : (
+                      <SearchSkeleton className="mb-2" />
                     )}
-                  </div>
+                  </Suspense>
+
+                  {(showPrimaryCta || !session) && (
+                    <div className="mb-3 grid gap-2">
+                      {showPrimaryCta && (
+                        <SheetClose
+                          nativeButton={false}
+                          render={
+                            <Link
+                              href={primaryCtaHref}
+                              className="btn-primary flex min-h-12 items-center justify-center rounded-xl text-[15px] font-medium"
+                            />
+                          }
+                        >
+                          {session ? "Lanjut Belajar" : "Mulai Belajar"}
+                        </SheetClose>
+                      )}
+                      {!session && (
+                        <SheetClose
+                          nativeButton={false}
+                          render={
+                            <Link
+                              href="/daftar"
+                              className="flex min-h-12 items-center justify-center rounded-xl border border-border/70 bg-card/50 text-[15px] font-medium"
+                            />
+                          }
+                        >
+                          Daftar Gratis
+                        </SheetClose>
+                      )}
+                    </div>
+                  )}
 
                   <nav className="flex flex-col gap-1" aria-label="Navigasi mobile">
                     {navLinks.map((link) => {
@@ -223,6 +297,7 @@ export function SiteNavbar() {
                       return (
                         <SheetClose
                           key={link.label}
+                          nativeButton={false}
                           render={
                             <Link
                               href={link.href}
@@ -263,7 +338,33 @@ export function SiteNavbar() {
             </Sheet>
           </div>
         </div>
-      </motion.header>
+    </>
+  );
+
+  return (
+    <div
+      className={cn(
+        "nav-shell",
+        layout === "default" && "sticky top-0 z-50",
+        isHeroAnchor && "nav-shell--hero-anchor"
+      )}
+      {...(isHeroAnchor ? { "data-hero-nav-shell": true } : {})}
+    >
+      {isHeroAnchor ? (
+        <header className={navHeaderClassName} data-hero-nav-glass>
+          {navHeaderInner}
+        </header>
+      ) : (
+        <motion.header
+          key={runIntro ? "navbar-intro" : "navbar-static"}
+          className={navHeaderClassName}
+          initial={runIntro ? { y: -16, opacity: 0 } : false}
+          animate={{ y: 0, opacity: 1 }}
+          transition={runIntro ? { duration: 0.5, ease: easeOut } : { duration: 0 }}
+        >
+          {navHeaderInner}
+        </motion.header>
+      )}
     </div>
   );
 }

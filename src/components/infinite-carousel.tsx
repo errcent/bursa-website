@@ -1,11 +1,14 @@
 "use client";
 
 import {
+  forwardRef,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useLayoutEffect,
   useRef,
   useState,
+  type ForwardedRef,
   type KeyboardEvent,
   type ReactNode,
 } from "react";
@@ -24,7 +27,7 @@ import { cn } from "@/lib/utils";
 
 export const DEFAULT_CAROUSEL_GAP = 16;
 export const DEFAULT_CAROUSEL_PEEK_RATIO = 0.76;
-export const DEFAULT_AUTO_SCROLL_PX_PER_SEC = 42;
+export const DEFAULT_AUTO_SCROLL_PX_PER_SEC = 30;
 const RESUME_DELAY_MS = 900;
 const RESUME_RAMP_MS = 700;
 
@@ -49,23 +52,37 @@ export interface InfiniteCarouselSlideProps {
   gap: number;
 }
 
+export type InfiniteCarouselHandle = {
+  nudge: (direction: -1 | 1) => void;
+  goToIndex: (index: number) => void;
+  pauseInteraction: () => void;
+};
+
 export interface UseInfiniteCarouselOptions<T> {
   items: T[];
   ariaLabel: string;
   getPerView?: (width: number) => number;
+  /** Fraction of container width per item when only one card is shown (mobile peek). */
+  mobilePeekRatio?: number;
   /** When set, each slide uses this CSS width (e.g. var(--landing-course-card-width)). */
   fixedItemWidth?: string | null;
   gap?: number;
   autoScrollPxPerSec?: number;
+  /** Pause auto-scroll (e.g. inactive discover tab). */
+  externalPaused?: boolean;
+  onActiveIndexChange?: (index: number) => void;
 }
 
 export function useInfiniteCarousel<T>({
   items,
   ariaLabel,
   getPerView = defaultGetPerView,
+  mobilePeekRatio = DEFAULT_CAROUSEL_PEEK_RATIO,
   fixedItemWidth = null,
   gap = DEFAULT_CAROUSEL_GAP,
   autoScrollPxPerSec = DEFAULT_AUTO_SCROLL_PX_PER_SEC,
+  externalPaused = false,
+  onActiveIndexChange,
 }: UseInfiniteCarouselOptions<T>) {
   const prefersReducedMotion = useReducedMotion() ?? false;
   const dragControls = useDragControls();
@@ -85,8 +102,11 @@ export function useInfiniteCarousel<T>({
   const pausedRef = useRef(false);
   const draggingRef = useRef(false);
   const tabHiddenRef = useRef(false);
+  const externalPausedRef = useRef(externalPaused);
   const speedRef = useRef(0);
   const resumeTimerRef = useRef<number | null>(null);
+
+  externalPausedRef.current = externalPaused;
 
   const duplicated = [...items, ...items];
 
@@ -137,7 +157,7 @@ export function useInfiniteCarousel<T>({
         itemWidth =
           containerWidth > 0
             ? perView === 1
-              ? containerWidth * DEFAULT_CAROUSEL_PEEK_RATIO
+              ? containerWidth * mobilePeekRatio
               : (containerWidth - gap * (perView - 1)) / perView
             : 0;
       }
@@ -151,7 +171,7 @@ export function useInfiniteCarousel<T>({
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [fixedItemWidth, gap, getPerView, items.length]);
+  }, [fixedItemWidth, gap, getPerView, items.length, mobilePeekRatio]);
 
   useEffect(() => {
     const syncVisibility = () => {
@@ -174,14 +194,18 @@ export function useInfiniteCarousel<T>({
         ((Math.abs(wrapOffset(value, setWidth)) % setWidth) + setWidth) % setWidth;
       const idx = Math.round(normalized / stride) % items.length;
       setActiveIndex(idx);
+      onActiveIndexChange?.(idx);
     });
-  }, [gap, items.length, layout.itemWidth, x]);
+  }, [gap, items.length, layout.itemWidth, onActiveIndexChange, x]);
 
   useAnimationFrame((_time, delta) => {
     if (prefersReducedMotion) return;
 
     const interacting =
-      pausedRef.current || draggingRef.current || tabHiddenRef.current;
+      pausedRef.current ||
+      draggingRef.current ||
+      tabHiddenRef.current ||
+      externalPausedRef.current;
     const targetSpeed = interacting ? 0 : 1;
 
     speedRef.current += ((targetSpeed - speedRef.current) * delta) / RESUME_RAMP_MS;
@@ -317,6 +341,12 @@ export interface InfiniteCarouselViewportProps<T> {
   dotsClassName?: string;
   getDotLabel?: (index: number) => string;
   liveRegionLabel?: (index: number, item: T) => string;
+  /** Hide built-in dot row (e.g. when parent renders its own). */
+  hideDots?: boolean;
+  /** Symmetric inset so the strip reads centered, not left-anchored. */
+  centered?: boolean;
+  /** Hide edge gradient fades (e.g. inside discover shell). */
+  hideEdgeFades?: boolean;
 }
 
 export function InfiniteCarouselViewport<T>({
@@ -327,6 +357,9 @@ export function InfiniteCarouselViewport<T>({
   dotsClassName,
   getDotLabel = (index) => `Ke item ${index + 1}`,
   liveRegionLabel,
+  hideDots = false,
+  centered = false,
+  hideEdgeFades = false,
 }: InfiniteCarouselViewportProps<T>) {
   const {
     ariaLabel,
@@ -354,8 +387,15 @@ export function InfiniteCarouselViewport<T>({
 
   if (items.length === 0) return null;
 
+  const singleSetWidth =
+    items.length > 0 ? items.length * (layout.itemWidth + gap) - gap : 0;
+  const centerPadding =
+    centered && layout.containerWidth > 0 && singleSetWidth > 0
+      ? Math.max(0, (layout.containerWidth - singleSetWidth) / 2)
+      : 0;
+
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative", centered && "discover-infinite-carousel", className)}>
       <div
         ref={containerRef}
         className="group/carousel relative touch-pan-y outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -381,19 +421,33 @@ export function InfiniteCarouselViewport<T>({
               : `Item ${activeIndex + 1} dari ${items.length}`
             : null}
         </div>
-        <div
-          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-background via-background/80 to-transparent sm:w-14"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-background via-background/80 to-transparent sm:w-14"
-          aria-hidden
-        />
+        {!hideEdgeFades ? (
+          <>
+            <div
+              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[var(--carousel-fade-width,2rem)] bg-gradient-to-r from-[var(--carousel-fade-color,var(--background))] via-[color-mix(in_oklch,var(--carousel-fade-color,var(--background))_50%,transparent)] to-transparent sm:w-[var(--carousel-fade-width,2.5rem)]"
+              aria-hidden
+            />
+            <div
+              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-[var(--carousel-fade-width,2rem)] bg-gradient-to-l from-[var(--carousel-fade-color,var(--background))] via-[color-mix(in_oklch,var(--carousel-fade-color,var(--background))_50%,transparent)] to-transparent sm:w-[var(--carousel-fade-width,2.5rem)]"
+              aria-hidden
+            />
+          </>
+        ) : null}
 
-        <div className="overflow-hidden">
+        <div
+          className="overflow-hidden"
+          style={
+            centered
+              ? {
+                  paddingInline: centerPadding > 0 ? centerPadding : undefined,
+                }
+              : undefined
+          }
+        >
           <motion.div
             className={cn(
-              "flex",
+              "flex w-max max-w-none",
+              centered && centerPadding === 0 && "mx-auto",
               dragging ? "cursor-grabbing" : "cursor-grab",
               !prefersReducedMotion && !paused && "motion-safe:transition-none"
             )}
@@ -447,7 +501,7 @@ export function InfiniteCarouselViewport<T>({
         )}
       </div>
 
-      {items.length > 1 && (
+      {!hideDots && items.length > 1 && (
         <div
           className={cn(
             "mt-5 flex items-center justify-center gap-1.5 sm:justify-start",
@@ -477,3 +531,67 @@ export function InfiniteCarouselViewport<T>({
     </div>
   );
 }
+
+export interface DiscoverInfiniteCarouselProps<T> {
+  items: T[];
+  ariaLabel: string;
+  getPerView: (width: number) => number;
+  gap?: number;
+  mobilePeekRatio?: number;
+  autoPlayPaused?: boolean;
+  onActiveIndexChange?: (index: number) => void;
+  getItemKey: (item: T) => string;
+  renderItem: (item: T, index: number) => ReactNode;
+  className?: string;
+}
+
+export const DiscoverInfiniteCarousel = forwardRef(function DiscoverInfiniteCarousel<T>(
+  {
+    items,
+    ariaLabel,
+    getPerView,
+    gap = DEFAULT_CAROUSEL_GAP,
+    mobilePeekRatio = DEFAULT_CAROUSEL_PEEK_RATIO,
+    autoPlayPaused = false,
+    onActiveIndexChange,
+    getItemKey,
+    renderItem,
+    className,
+  }: DiscoverInfiniteCarouselProps<T>,
+  ref: ForwardedRef<InfiniteCarouselHandle>
+) {
+  const carousel = useInfiniteCarousel({
+    items,
+    ariaLabel,
+    getPerView,
+    gap,
+    mobilePeekRatio,
+    externalPaused: autoPlayPaused,
+    onActiveIndexChange,
+  });
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      nudge: carousel.nudge,
+      goToIndex: carousel.goToIndex,
+      pauseInteraction: carousel.pauseInteraction,
+    }),
+    [carousel.nudge, carousel.goToIndex, carousel.pauseInteraction]
+  );
+
+  if (items.length === 0) return null;
+
+  return (
+    <InfiniteCarouselViewport
+      carousel={carousel}
+      getItemKey={(item, index) => `${getItemKey(item)}-${index}`}
+      renderSlide={(item, slideProps) => renderItem(item, slideProps.index % items.length)}
+      className={className}
+      hideDots
+      centered
+    />
+  );
+}) as <T>(
+  props: DiscoverInfiniteCarouselProps<T> & { ref?: ForwardedRef<InfiniteCarouselHandle> }
+) => ReactNode;

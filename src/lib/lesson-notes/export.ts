@@ -9,8 +9,6 @@ import {
 import { jsPDF } from "jspdf";
 import TurndownService from "turndown";
 
-import type { LessonNote } from "@/lib/lesson-notes/types";
-
 export type NoteExportFormat = "md" | "docx" | "pdf" | "txt" | "notion";
 
 export interface NoteExportMeta {
@@ -29,12 +27,6 @@ type BlockNode =
   | { type: "list-item"; ordered: boolean; index: number; inlines: InlineNode[] }
   | { type: "blockquote"; inlines: InlineNode[] }
   | { type: "code-block"; text: string };
-
-function formatDuration(totalSeconds: number) {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = Math.floor(totalSeconds % 60);
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
 
 function stripHtml(html: string) {
   return html
@@ -213,16 +205,7 @@ function inlinesToPlain(inlines: InlineNode[]) {
   return inlines.map((n) => n.text).join("");
 }
 
-function sortedNotes(notes: LessonNote[]) {
-  return [...notes].sort((a, b) => {
-    if (a.timestampSeconds !== b.timestampSeconds) {
-      return a.timestampSeconds - b.timestampSeconds;
-    }
-    return a.createdAt.localeCompare(b.createdAt);
-  });
-}
-
-export function buildMarkdownExport(notes: LessonNote[], meta: NoteExportMeta) {
+export function buildMarkdownExport(content: string, meta: NoteExportMeta) {
   const lines = [
     `# Catatan: ${meta.lessonTitle}`,
     "",
@@ -231,20 +214,15 @@ export function buildMarkdownExport(notes: LessonNote[], meta: NoteExportMeta) {
     "",
     "---",
     "",
+    toMarkdownBody(content) || "_(kosong)_",
+    "",
   ];
-
-  for (const note of sortedNotes(notes)) {
-    lines.push(`## [${formatDuration(note.timestampSeconds)}]`);
-    lines.push("");
-    lines.push(toMarkdownBody(note.content) || "_(kosong)_");
-    lines.push("");
-  }
 
   return lines.join("\n");
 }
 
 /** Plain-text export — no markdown markers, suitable for Notepad / email. */
-export function buildTxtExport(notes: LessonNote[], meta: NoteExportMeta) {
+export function buildTxtExport(content: string, meta: NoteExportMeta) {
   const lines = [
     `Catatan: ${meta.lessonTitle}`,
     `Kelas: ${meta.courseTitle}`,
@@ -252,22 +230,18 @@ export function buildTxtExport(notes: LessonNote[], meta: NoteExportMeta) {
     "",
     "----------------------------------------",
     "",
+    stripHtml(content) || "(kosong)",
+    "",
   ];
-
-  for (const note of sortedNotes(notes)) {
-    lines.push(`[${formatDuration(note.timestampSeconds)}]`);
-    lines.push(stripHtml(note.content) || "(kosong)");
-    lines.push("");
-  }
 
   return lines.join("\n");
 }
 
 /**
- * Notion-friendly Markdown: YAML front matter + callout-style timestamps.
+ * Notion-friendly Markdown: YAML front matter + body.
  * Import via Notion → Import → Markdown & CSV.
  */
-export function buildNotionMarkdownExport(notes: LessonNote[], meta: NoteExportMeta) {
+export function buildNotionMarkdownExport(content: string, meta: NoteExportMeta) {
   const exportedAt = (meta.exportedAt ?? new Date()).toISOString();
   const lines = [
     "---",
@@ -280,17 +254,9 @@ export function buildNotionMarkdownExport(notes: LessonNote[], meta: NoteExportM
     "",
     `Kelas: ${meta.courseTitle}`,
     "",
+    toMarkdownBody(content) || "_(kosong)_",
+    "",
   ];
-
-  for (const note of sortedNotes(notes)) {
-    const stamp = formatDuration(note.timestampSeconds);
-    lines.push(`> ⏱ **${stamp}**`);
-    lines.push("");
-    lines.push(toMarkdownBody(note.content) || "_(kosong)_");
-    lines.push("");
-    lines.push("---");
-    lines.push("");
-  }
 
   return lines.join("\n");
 }
@@ -415,7 +381,7 @@ function blocksToDocxParagraphs(blocks: BlockNode[]): Paragraph[] {
   return paragraphs;
 }
 
-export async function buildDocxBlob(notes: LessonNote[], meta: NoteExportMeta) {
+export async function buildDocxBlob(content: string, meta: NoteExportMeta) {
   const children: Paragraph[] = [
     new Paragraph({
       heading: HeadingLevel.TITLE,
@@ -433,34 +399,14 @@ export async function buildDocxBlob(notes: LessonNote[], meta: NoteExportMeta) {
     }),
   ];
 
-  const sorted = sortedNotes(notes);
-  if (sorted.length === 0) {
+  if (!noteHasVisibleContent(content)) {
     children.push(
       new Paragraph({
         children: [new TextRun({ text: "Belum ada catatan.", italics: true })],
       })
     );
-  }
-
-  for (const note of sorted) {
-    const stamp = formatDuration(note.timestampSeconds);
-    children.push(
-      new Paragraph({
-        spacing: { before: 280, after: 120 },
-        border: {
-          top: { color: "DFE0E8", space: 12, style: "single", size: 6 },
-        },
-        children: [
-          new TextRun({
-            text: stamp,
-            font: "Consolas",
-            size: 18,
-            bold: true,
-          }),
-        ],
-      })
-    );
-    children.push(...blocksToDocxParagraphs(parseBlocks(note.content)));
+  } else {
+    children.push(...blocksToDocxParagraphs(parseBlocks(content)));
   }
 
   const doc = new Document({
@@ -482,7 +428,7 @@ function wrapText(doc: jsPDF, text: string, maxWidth: number) {
   return doc.splitTextToSize(text, maxWidth) as string[];
 }
 
-export function buildPdfBlob(notes: LessonNote[], meta: NoteExportMeta) {
+export function buildPdfBlob(content: string, meta: NoteExportMeta) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -531,69 +477,54 @@ export function buildPdfBlob(notes: LessonNote[], meta: NoteExportMeta) {
     { size: 10, color: [107, 107, 117], gap: 16 }
   );
 
-  const sorted = sortedNotes(notes);
-  if (sorted.length === 0) {
+  if (!noteHasVisibleContent(content)) {
     writeLines(["Belum ada catatan."], { style: "italic", color: [107, 107, 117] });
+    return doc.output("blob");
   }
 
-  for (const note of sorted) {
-    ensureSpace(28);
-    doc.setDrawColor(223, 224, 232);
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 14;
+  const blocks = parseBlocks(content);
+  if (blocks.length === 0) {
+    writeLines(["(kosong)"], { style: "italic", color: [107, 107, 117] });
+    return doc.output("blob");
+  }
 
-    writeLines([`[${formatDuration(note.timestampSeconds)}]`], {
-      font: "courier",
-      style: "bold",
-      size: 10,
-      gap: 8,
-    });
-
-    const blocks = parseBlocks(note.content);
-    if (blocks.length === 0) {
-      writeLines(["(kosong)"], { style: "italic", color: [107, 107, 117] });
+  for (const block of blocks) {
+    if (block.type === "heading") {
+      writeLines(wrapText(doc, inlinesToPlain(block.inlines), maxWidth), {
+        style: "bold",
+        size: block.level === 1 ? 14 : block.level === 2 ? 13 : 12,
+        gap: 6,
+      });
       continue;
     }
-
-    for (const block of blocks) {
-      if (block.type === "heading") {
-        writeLines(wrapText(doc, inlinesToPlain(block.inlines), maxWidth), {
-          style: "bold",
-          size: block.level === 1 ? 14 : block.level === 2 ? 13 : 12,
-          gap: 6,
-        });
-        continue;
-      }
-      if (block.type === "code-block") {
-        writeLines(wrapText(doc, block.text, maxWidth), {
-          font: "courier",
-          size: 9,
-          gap: 8,
-        });
-        continue;
-      }
-      if (block.type === "list-item") {
-        const prefix = block.ordered ? `${block.index}. ` : "• ";
-        writeLines(wrapText(doc, `${prefix}${inlinesToPlain(block.inlines)}`, maxWidth - 12), {
-          size: 11,
-          gap: 2,
-        });
-        continue;
-      }
-      if (block.type === "blockquote") {
-        writeLines(wrapText(doc, inlinesToPlain(block.inlines), maxWidth - 16), {
-          style: "italic",
-          color: [107, 107, 117],
-          gap: 6,
-        });
-        continue;
-      }
-      writeLines(wrapText(doc, inlinesToPlain(block.inlines) || " ", maxWidth), {
-        size: 11,
-        gap: 4,
+    if (block.type === "code-block") {
+      writeLines(wrapText(doc, block.text, maxWidth), {
+        font: "courier",
+        size: 9,
+        gap: 8,
       });
+      continue;
     }
-    y += 8;
+    if (block.type === "list-item") {
+      const prefix = block.ordered ? `${block.index}. ` : "• ";
+      writeLines(wrapText(doc, `${prefix}${inlinesToPlain(block.inlines)}`, maxWidth - 12), {
+        size: 11,
+        gap: 2,
+      });
+      continue;
+    }
+    if (block.type === "blockquote") {
+      writeLines(wrapText(doc, inlinesToPlain(block.inlines), maxWidth - 16), {
+        style: "italic",
+        color: [107, 107, 117],
+        gap: 6,
+      });
+      continue;
+    }
+    writeLines(wrapText(doc, inlinesToPlain(block.inlines) || " ", maxWidth), {
+      size: 11,
+      gap: 4,
+    });
   }
 
   return doc.output("blob");
@@ -621,7 +552,7 @@ function slugify(value: string) {
 }
 
 export async function downloadNotesExport(
-  notes: LessonNote[],
+  content: string,
   meta: NoteExportMeta,
   format: NoteExportFormat
 ) {
@@ -630,35 +561,34 @@ export async function downloadNotesExport(
   const withDate = { ...meta, exportedAt };
 
   if (format === "md") {
-    const content = buildMarkdownExport(notes, withDate);
-    triggerDownload(new Blob([content], { type: "text/markdown;charset=utf-8" }), `${base}.md`);
+    const markdown = buildMarkdownExport(content, withDate);
+    triggerDownload(new Blob([markdown], { type: "text/markdown;charset=utf-8" }), `${base}.md`);
     return;
   }
 
   if (format === "txt") {
-    const content = buildTxtExport(notes, withDate);
-    triggerDownload(new Blob([content], { type: "text/plain;charset=utf-8" }), `${base}.txt`);
+    const text = buildTxtExport(content, withDate);
+    triggerDownload(new Blob([text], { type: "text/plain;charset=utf-8" }), `${base}.txt`);
     return;
   }
 
   if (format === "notion") {
-    // Notion Import accepts Markdown; front matter + callouts map cleanly.
-    const content = buildNotionMarkdownExport(notes, withDate);
+    const notion = buildNotionMarkdownExport(content, withDate);
     triggerDownload(
-      new Blob([content], { type: "text/markdown;charset=utf-8" }),
+      new Blob([notion], { type: "text/markdown;charset=utf-8" }),
       `${base}-notion.md`
     );
     return;
   }
 
   if (format === "docx") {
-    const blob = await buildDocxBlob(notes, withDate);
+    const blob = await buildDocxBlob(content, withDate);
     triggerDownload(blob, `${base}.docx`);
     return;
   }
 
   if (format === "pdf") {
-    const blob = buildPdfBlob(notes, withDate);
+    const blob = buildPdfBlob(content, withDate);
     triggerDownload(blob, `${base}.pdf`);
   }
 }

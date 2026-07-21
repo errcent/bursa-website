@@ -10,6 +10,7 @@ import {
   UserRound,
 } from "lucide-react";
 
+import { PlaylistThumbnail } from "@/components/playlist/playlist-thumbnail";
 import { Button } from "@/components/ui/button";
 import type { PlaylistDetail, PlaylistItemView } from "@/lib/playlist/types";
 import { cn } from "@/lib/utils";
@@ -79,38 +80,45 @@ export function PlaylistDetailView({ slug }: { slug: string }) {
 
   return (
     <div className="space-y-8">
-      <div className="min-w-0">
-        <Link
-          href="/playlist"
-          className="link-muted mb-4 inline-flex items-center gap-1.5 text-sm"
-        >
-          <ArrowLeft className="size-4" />
-          Semua playlist
-        </Link>
-        <p className="text-xs font-medium uppercase tracking-widest text-accent">Playlist</p>
-        <h1 className="mt-1 font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
-          {playlist.title}
-        </h1>
-        {playlist.description ? (
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            {playlist.description}
-          </p>
-        ) : null}
-        <div className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5">
-            <ListVideo className="size-3.5" />
-            {playlist.itemCount} pelajaran
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Clock className="size-3.5" />
-            {formatDuration(playlist.totalMinutes)}
-          </span>
-          {playlist.mentorCount > 0 ? (
-            <span className="inline-flex items-center gap-1.5">
-              <UserRound className="size-3.5" />
-              {playlist.mentorCount} mentor
-            </span>
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border/60">
+        <PlaylistThumbnail playlist={playlist} fillSlot className="absolute inset-0 rounded-2xl" />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"
+        />
+        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8">
+          <Link
+            href="/playlist"
+            className="link-muted mb-3 inline-flex items-center gap-1.5 text-sm text-white/80"
+          >
+            <ArrowLeft className="size-4" />
+            Semua playlist
+          </Link>
+          <p className="text-xs font-medium uppercase tracking-widest text-accent">Playlist</p>
+          <h1 className="mt-1 font-heading text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            {playlist.title}
+          </h1>
+          {playlist.description ? (
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/75">
+              {playlist.description}
+            </p>
           ) : null}
+          <div className="mt-4 flex flex-wrap gap-4 text-xs text-white/70">
+            <span className="inline-flex items-center gap-1.5">
+              <ListVideo className="size-3.5" />
+              {playlist.itemCount} video
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="size-3.5" />
+              {formatDuration(playlist.totalMinutes)}
+            </span>
+            {playlist.mentorCount > 0 ? (
+              <span className="inline-flex items-center gap-1.5">
+                <UserRound className="size-3.5" />
+                {playlist.mentorCount} mentor
+              </span>
+            ) : null}
+          </div>
         </div>
       </div>
 
@@ -133,7 +141,7 @@ export function PlaylistDetailView({ slug }: { slug: string }) {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="font-heading text-sm font-medium leading-snug group-hover:text-accent">
-                    {item.lessonTitle ?? item.courseTitle ?? "Pelajaran"}
+                    {item.lessonTitle ?? item.courseTitle ?? "Video"}
                   </p>
                   {item.courseTitle ? (
                     <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">

@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { Dices, Loader2 } from "lucide-react";
 
-import { LabField, LabNumberInput, LabResultTile } from "@/components/lab/lab-field";
+import { LabField, LabNumberInput, LabResultGrid, LabResultTile, LabToolPanel } from "@/components/lab/lab-field";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -227,7 +227,7 @@ export function MonteCarloSimulator() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="surface-card p-5 sm:p-6">
+      <LabToolPanel title="Parameter simulasi" description={`Maks. ${MAX_SIMULATIONS.toLocaleString("id-ID")} simulasi × ${MAX_TRADES} trade per jalur.`}>
         <div className="grid gap-4 sm:grid-cols-2">
           <LabField label="Modal awal" id="mc-capital" suffix="Rp">
             <LabNumberInput id="mc-capital" value={startingCapital} onChange={setStartingCapital} min={0} />
@@ -284,11 +284,11 @@ export function MonteCarloSimulator() {
             </>
           )}
         </Button>
-      </div>
+      </LabToolPanel>
 
       {result && (
         <div className="flex flex-col gap-5">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <LabResultGrid>
             <LabResultTile label="Median saldo akhir" value={formatCurrency(result.median)} />
             <LabResultTile
               label="Worst case (terburuk)"
@@ -301,9 +301,9 @@ export function MonteCarloSimulator() {
               value={`${(result.profitableShare * 100).toFixed(1)}%`}
               tone={result.profitableShare >= 0.5 ? "positive" : "negative"}
             />
-          </div>
+          </LabResultGrid>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <LabResultGrid className="lg:grid-cols-2">
             <LabResultTile
               label="Probabilitas ruin"
               value={`${(result.ruinShare * 100).toFixed(1)}%`}
@@ -314,15 +314,9 @@ export function MonteCarloSimulator() {
               value={`${result.maxDrawdown.toFixed(1)}%`}
               tone="negative"
             />
-          </div>
+          </LabResultGrid>
 
-          <div className="surface-card p-5 sm:p-6">
-            <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="font-heading text-base font-semibold">Equity curve (contoh simulasi)</h3>
-              <p className="text-xs text-muted-foreground">
-                Satu jalur acak dari {parsed.numTrades} trade · garis putus = modal awal
-              </p>
-            </div>
+          <LabToolPanel title="Equity curve (contoh simulasi)" description={`Satu jalur acak dari ${parsed.numTrades} trade · garis putus = modal awal`}>
             <EquityCurveChart curve={result.equityCurve} startingCapital={result.startingCapital} />
             <div className="mt-2 flex justify-between text-xs text-muted-foreground">
               <span>Trade 0</span>
@@ -331,16 +325,12 @@ export function MonteCarloSimulator() {
               </span>
               <span>Trade {result.equityCurve[result.equityCurve.length - 1]?.trade ?? 0}</span>
             </div>
-          </div>
+          </LabToolPanel>
 
-          <div className="surface-card p-5 sm:p-6">
-            <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="font-heading text-base font-semibold">Distribusi saldo akhir</h3>
-              <p className="text-xs text-muted-foreground">
-                {result.endings.length.toLocaleString("id-ID")} simulasi
-              </p>
-            </div>
-
+          <LabToolPanel
+            title="Distribusi saldo akhir"
+            description={`${result.endings.length.toLocaleString("id-ID")} simulasi`}
+          >
             <div className="flex h-48 items-end gap-1">
               {result.bins.map((bin, i) => {
                 const heightPct = Math.max(2, (bin.count / maxBinCount) * 100);
@@ -369,7 +359,7 @@ export function MonteCarloSimulator() {
               <span>Garis biru = titik modal awal</span>
               <span>{formatCompact(result.best)}</span>
             </div>
-          </div>
+          </LabToolPanel>
         </div>
       )}
     </div>

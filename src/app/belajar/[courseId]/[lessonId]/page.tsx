@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { ChevronLeft } from "lucide-react";
 
 import { LearningWorkspace } from "@/components/learning-workspace";
-import { getCatalogCourseSlugs, getCourseBySlug } from "@/lib/catalog/server";
+import { getCatalogCourseSlugs, getCourseBySlug, getMentorBySlug } from "@/lib/catalog/server";
 
 export async function generateStaticParams() {
   const slugs = await getCatalogCourseSlugs();
@@ -41,6 +41,9 @@ export default async function LearningPage({
   const course = await getCourseBySlug(courseId);
   if (!course) notFound();
 
+  const mentor = await getMentorBySlug(course.mentorSlug);
+  if (!mentor) notFound();
+
   const lessonExists = course.modules.some((m) => m.lessons.some((l) => l.id === lessonId));
   if (!lessonExists) notFound();
 
@@ -62,7 +65,7 @@ export default async function LearningPage({
         </span>
       </header>
       <div className="flex min-h-0 flex-1 flex-col">
-        <LearningWorkspace course={course} currentLessonId={lessonId} />
+        <LearningWorkspace course={course} currentLessonId={lessonId} mentor={mentor} />
       </div>
     </div>
   );

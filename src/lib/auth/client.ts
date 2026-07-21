@@ -24,10 +24,10 @@ let cachedSessionRaw: string | null | undefined;
 let cachedSession: AuthSession | null = null;
 
 const DEMO_USER: StoredUser = {
-  id: "user-demo-dinda",
-  name: "Dinda Ramadhani",
+  id: "user-demo-andi",
+  name: "Andi Rahayu",
   email: "demo@bursa.id",
-  username: "dinda_r",
+  username: "andi_r",
   phone: "+6281110000002",
   password: hashPasswordForStorage("demo1234"),
   role: "learner",
@@ -327,7 +327,51 @@ export function loginWithOAuth(input: {
   return { ok: true, session };
 }
 
-export function login(input: LoginInput): { ok: true; session: AuthSession } | { ok: false; error: string } {
+export function login(
+  input: LoginInput
+): { ok: true; session: AuthSession } | { ok: false; error: string } {
+  // Sync entry — local fallback when API unavailable (offline dev).
+  return loginLocal(input);
+}
+
+export async function loginWithServer(
+  input: LoginInput
+): Promise<{ ok: true; session: AuthSession } | { ok: false; error: string }> {
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    const data = (await res.json().catch(() => ({}))) as {
+      user?: {
+        id: string;
+        email: string;
+        name: string;
+        username?: string | null;
+        phone?: string | null;
+        role?: string;
+      };
+      error?: string;
+    };
+
+    if (res.ok && data.user) {
+      return applyServerUserSession(data.user);
+    }
+    if (data.error) {
+      return { ok: false, error: data.error };
+    }
+  } catch {
+    // fall through to local prototype auth
+  }
+
+  return loginLocal(input);
+}
+
+function loginLocal(
+  input: LoginInput
+): { ok: true; session: AuthSession } | { ok: false; error: string } {
   const user = findStoredUserByIdentifier(input.identifier);
 
   if (!user) {
@@ -346,6 +390,81 @@ export function login(input: LoginInput): { ok: true; session: AuthSession } | {
   // Heal missing Prisma rows for older localStorage-only accounts.
   void ensurePrismaUser(session);
   return { ok: true, session };
+}
+
+function applyServerUserSession(apiUser: {
+  id: string;
+  email: string;
+  name: string;
+  username?: string | null;
+  phone?: string | null;
+  role?: string;
+}): { ok: true; session: AuthSession } | { ok: false; error: string } {
+  const email = apiUser.email.trim().toLowerCase();
+  const users = readUsers();
+  const existingIdx = users.findIndex((u) => u.email === email);
+  const stored: StoredUser = {
+    id: apiUser.id,
+    name: apiUser.name,
+    email,
+    username: apiUser.username ?? null,
+    phone: apiUser.phone ?? null,
+    password: existingIdx >= 0 ? users[existingIdx].password : "",
+    role: apiUser.role ? prismaRoleToClient(apiUser.role) : roleForEmail(email),
+    createdAt: existingIdx >= 0 ? users[existingIdx].createdAt : new Date().toISOString(),
+    avatarUrl: existingIdx >= 0 ? users[existingIdx].avatarUrl : null,
+  };
+
+  if (existingIdx >= 0) {
+    const next = [...users];
+    next[existingIdx] = stored;
+    writeUsers(next);
+  } else {
+    writeUsers([...users, stored]);
+  }
+
+  const session = toSession(stored);
+  const deviceResult = registerDeviceOnLogin(session.userId);
+  if (!deviceResult.ok) {
+    return { ok: false, error: deviceResult.error };
+  }
+  setSession(session);
+  return { ok: true, session };
+}
+
+export async function registerWithServer(
+  input: RegisterInput
+): Promise<{ ok: true; session: AuthSession } | { ok: false; error: string }> {
+  try {
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    const data = (await res.json().catch(() => ({}))) as {
+      user?: {
+        id: string;
+        email: string;
+        name: string;
+        username?: string | null;
+        phone?: string | null;
+        role?: string;
+      };
+      error?: string;
+    };
+
+    if (res.ok && data.user) {
+      return applyServerUserSession(data.user);
+    }
+    if (data.error) {
+      return { ok: false, error: data.error };
+    }
+  } catch {
+    // fall through
+  }
+
+  return register(input);
 }
 
 export function register(
@@ -437,6 +556,9 @@ export async function ensurePrismaUser(
 
 export function logout() {
   if (isBrowser()) {
+    void fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(
+      () => undefined
+    );
     try {
       sessionStorage.setItem(LOGOUT_FLAG_KEY, "1");
       const url = new URL(window.location.href);

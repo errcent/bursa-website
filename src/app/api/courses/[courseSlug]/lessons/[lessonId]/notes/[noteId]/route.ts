@@ -4,7 +4,7 @@ import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { db } from "@/lib/db";
 import { serializeNote } from "@/lib/lesson-notes/serialize";
 import { findLessonByCourseAndLegacyId } from "@/lib/lesson-qa/resolve-lesson";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { updateLessonNoteSchema } from "@/lib/validations/api";
 
 type RouteContext = {
@@ -28,14 +28,12 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return jsonError("Note not found", 404);
     }
 
-    const user = await resolveRequestUser({
-      userId: body.userId,
-      email: body.email,
-      name: body.name,
-      role: body.role,
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: true,
+      claimedUserId: body.userId,
     });
     if (!user) {
-      return jsonError("User not found", 404);
+      return jsonError("Autentikasi diperlukan.", 401);
     }
 
     if (existing.userId !== user.id) {
@@ -88,14 +86,12 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       return jsonError("Note not found", 404);
     }
 
-    const user = await resolveRequestUser({
-      userId: body.userId,
-      email: body.email,
-      name: body.name,
-      role: body.role,
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: true,
+      claimedUserId: body.userId,
     });
     if (!user) {
-      return jsonError("User not found", 404);
+      return jsonError("Autentikasi diperlukan.", 401);
     }
 
     if (existing.userId !== user.id) {

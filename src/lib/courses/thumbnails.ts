@@ -1,31 +1,33 @@
-import type { Instrument } from "@/lib/types";
+import type { ThumbnailKind } from "@/lib/thumbnails/ai-prompt-builder";
+import {
+  aiThumbnailApiPath,
+  aiThumbnailStaticPath,
+  resolveAiThumbnailUrl,
+} from "@/lib/thumbnails/resolve";
 
-/** Static seed/demo thumbnails committed under public/courses/. */
+/** @deprecated Prefer resolveCourseThumbnailUrl — kept for admin upload paths. */
 export const COURSE_THUMBNAIL_DIR = "/courses";
 
 /** Admin uploads land under public/uploads/courses/ (gitignored). */
 export const COURSE_UPLOAD_DIR = "/uploads/courses";
 
-const INSTRUMENT_THEMES: Record<
-  Instrument,
-  { from: string; to: string; accent: string; label: string }
-> = {
-  Saham: { from: "#0b3d2e", to: "#14532d", accent: "#34d399", label: "Saham" },
-  Crypto: { from: "#3d2208", to: "#78350f", accent: "#fbbf24", label: "Crypto" },
-  Forex: { from: "#0c2d4a", to: "#164e63", accent: "#22d3ee", label: "Forex" },
-};
-
 export function defaultCourseThumbnailPath(slug: string): string {
-  return `${COURSE_THUMBNAIL_DIR}/${slug}.svg`;
+  return aiThumbnailStaticPath("course", slug);
 }
 
 export function resolveCourseThumbnailUrl(course: {
   slug: string;
   thumbnailUrl?: string | null;
 }): string {
-  return course.thumbnailUrl?.trim() || defaultCourseThumbnailPath(course.slug);
+  const trimmed = course.thumbnailUrl?.trim();
+  if (trimmed && !trimmed.endsWith(".svg")) {
+    return trimmed;
+  }
+  return resolveAiThumbnailUrl("course", course.slug, trimmed);
 }
 
-export function getInstrumentTheme(instrument: Instrument) {
-  return INSTRUMENT_THEMES[instrument];
+export function courseThumbnailFallbackApiPath(slug: string): string {
+  return aiThumbnailApiPath("course", slug);
 }
+
+export { type ThumbnailKind };

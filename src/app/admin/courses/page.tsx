@@ -177,6 +177,8 @@ export default function AdminCoursesPage() {
         <div className="flex max-w-xs items-center gap-3">
           <CourseThumbnail
             course={{ slug: row.slug, thumbnailUrl: row.thumbnailUrl ?? undefined }}
+            fillSlot
+            objectFit="contain"
             className="size-10 shrink-0 rounded-md"
             alt={row.title}
           />
@@ -372,7 +374,7 @@ export default function AdminCoursesPage() {
                     slug: previewSlug,
                     thumbnailUrl: form.thumbnailUrl ?? defaultCourseThumbnailPath(previewSlug),
                   }}
-                  className="aspect-[16/10] w-full max-w-[220px] shrink-0 rounded-md"
+                  className="w-full max-w-[220px] shrink-0 rounded-md"
                   alt="Pratinjau thumbnail"
                 />
                 <div className="flex min-w-0 flex-1 flex-col gap-2">

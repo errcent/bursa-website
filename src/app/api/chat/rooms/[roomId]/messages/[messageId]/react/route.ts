@@ -7,7 +7,7 @@ import {
   resolveChatRoomViewerFromEmail,
 } from "@/lib/chat/db-rooms";
 import { db } from "@/lib/db";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { reactToMessageSchema } from "@/lib/validations/api";
 
 type RouteContext = {
@@ -59,15 +59,13 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return jsonError(access.error, access.status);
     }
 
-    const user = await resolveRequestUser(
-      {
-        userId: body.userId?.trim() || headerUserId || "",
-        email: email || undefined,
-        name: headerName || undefined,
-        role: headerRole || undefined,
-      },
-      { createIfMissing: true }
-    );
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: true,
+      claimedUserId: body.userId,
+    });
+    if (!user) {
+      return jsonError("Autentikasi diperlukan.", 401);
+    }
 
     if (!user) {
       return jsonError("Unauthorized", 401);

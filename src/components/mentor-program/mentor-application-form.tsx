@@ -8,8 +8,28 @@ import { Loader2 } from "lucide-react";
 import { AuthField, authInputClassName } from "@/components/auth-field";
 import { Button } from "@/components/ui/button";
 import { mentorInstruments } from "@/lib/mentor-program/content";
+import { getPriceGuidance } from "@/lib/mentor/price-guidance";
 import type { Instrument } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+const formatIdr = (value: number) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(value);
+
+/**
+ * Non-binding price guidance surfaced in the form (QC-20260719-48/44). Spans Pemula→Mahir per
+ * selected instrument so a new mentor sees a reference band. Pricing stays mentor-set — there is
+ * NO floor and NO enforcement (LOCKED).
+ */
+function priceGuidanceFor(instrument: Instrument) {
+  const low = getPriceGuidance(instrument, "Pemula");
+  const mid = getPriceGuidance(instrument, "Menengah");
+  const high = getPriceGuidance(instrument, "Mahir");
+  return { min: low.min, typical: mid.typical, max: high.max, note: mid.note };
+}
 
 const textareaClassName =
   "w-full resize-y rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm outline-none backdrop-blur-sm transition-[border-color,box-shadow] placeholder:text-muted-foreground focus:border-accent/40 focus:shadow-[0_0_20px_var(--glow)] disabled:opacity-50 min-h-[100px]";
@@ -30,6 +50,19 @@ interface FormState {
   agreedToTerms: boolean;
 }
 
+interface UploadedDocument {
+  url: string;
+  fileName: string;
+}
+
+const MAX_DOCUMENT_BYTES = 5 * 1024 * 1024;
+const ALLOWED_DOCUMENT_TYPES = new Set([
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+
 const initialState: FormState = {
   fullName: "",
   email: "",
@@ -49,9 +82,75 @@ const initialState: FormState = {
 export function MentorApplicationForm() {
   const router = useRouter();
   const [form, setForm] = useState<FormState>(initialState);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+  const [cvDocument, setCvDocument] = useState<UploadedDocument | null>(null);
+  const [certificateDocument, setCertificateDocument] = useState<UploadedDocument | null>(null);
+  const [errors, setErrors] = useState<Partial<Record<keyof FormState | "cvDocument" | "certificateDocument", string>>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadingCv, setUploadingCv] = useState(false);
+  const [uploadingCertificate, setUploadingCertificate] = useState(false);
+
+  async function uploadDocument(
+    file: File,
+    kind: "cv" | "certificate"
+  ): Promise<UploadedDocument> {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("kind", kind);
+
+    const res = await fetch("/api/mentor/applications/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const data = (await res.json()) as { url?: string; fileName?: string; error?: string };
+    if (!res.ok || !data.url || !data.fileName) {
+      throw new Error(data.error ?? "Gagal mengunggah dokumen.");
+    }
+    return { url: data.url, fileName: data.fileName };
+  }
+
+  async function handleDocumentChange(
+    kind: "cv" | "certificate",
+    file: File | null
+  ) {
+    const field = kind === "cv" ? "cvDocument" : "certificateDocument";
+    if (!file) {
+      if (kind === "cv") setCvDocument(null);
+      else setCertificateDocument(null);
+      return;
+    }
+
+    if (!ALLOWED_DOCUMENT_TYPES.has(file.type)) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: "Format tidak didukung. Gunakan PDF, JPG, PNG, atau WebP.",
+      }));
+      return;
+    }
+
+    if (file.size > MAX_DOCUMENT_BYTES) {
+      setErrors((prev) => ({ ...prev, [field]: "Ukuran file maksimal 5 MB." }));
+      return;
+    }
+
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    if (kind === "cv") setUploadingCv(true);
+    else setUploadingCertificate(true);
+
+    try {
+      const uploaded = await uploadDocument(file, kind);
+      if (kind === "cv") setCvDocument(uploaded);
+      else setCertificateDocument(uploaded);
+    } catch (error) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: error instanceof Error ? error.message : "Gagal mengunggah dokumen.",
+      }));
+    } finally {
+      if (kind === "cv") setUploadingCv(false);
+      else setUploadingCertificate(false);
+    }
+  }
 
   function toggleInstrument(instrument: Instrument) {
     setForm((prev) => {
@@ -69,7 +168,7 @@ export function MentorApplicationForm() {
   }
 
   function validate(): boolean {
-    const next: Partial<Record<keyof FormState, string>> = {};
+    const next: Partial<Record<keyof FormState | "cvDocument" | "certificateDocument", string>> = {};
 
     if (!form.fullName.trim()) next.fullName = "Nama lengkap wajib diisi.";
     if (!form.email.trim()) next.email = "Email wajib diisi.";
@@ -85,6 +184,10 @@ export function MentorApplicationForm() {
     }
     if (!form.philosophy.trim() || form.philosophy.trim().length < 30) {
       next.philosophy = "Filosofi trading minimal 30 karakter.";
+    }
+    if (!cvDocument) next.cvDocument = "CV wajib diunggah.";
+    if (uploadingCv || uploadingCertificate) {
+      next.cvDocument = "Tunggu hingga unggahan dokumen selesai.";
     }
     if (!form.agreedToTerms) next.agreedToTerms = "Kamu harus menyetujui syarat & ketentuan.";
 
@@ -120,6 +223,10 @@ export function MentorApplicationForm() {
             ? Number(form.estimatedCoursePrice)
             : undefined,
           agreedToTerms: form.agreedToTerms,
+          cvDocumentUrl: cvDocument?.url,
+          cvDocumentName: cvDocument?.fileName,
+          certificateDocumentUrl: certificateDocument?.url,
+          certificateDocumentName: certificateDocument?.fileName,
         }),
       });
 
@@ -343,6 +450,83 @@ export function MentorApplicationForm() {
             className={authInputClassName}
             disabled={isSubmitting}
           />
+        </AuthField>
+      </div>
+
+      <div className="rounded-xl border border-border bg-background/40 p-4 text-sm">
+        <p className="font-medium text-foreground">Panduan harga (referensi, tidak mengikat)</p>
+        {form.instruments.length === 0 ? (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Pilih instrumen di atas untuk melihat rentang harga referensi per level.
+          </p>
+        ) : (
+          <>
+            <ul className="mt-2 flex flex-col gap-1.5">
+              {form.instruments.map((instrument) => {
+                const guide = priceGuidanceFor(instrument);
+                return (
+                  <li
+                    key={instrument}
+                    className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5"
+                  >
+                    <span className="text-muted-foreground">{instrument}</span>
+                    <span className="text-foreground">
+                      {formatIdr(guide.min)} – {formatIdr(guide.max)}
+                      <span className="text-muted-foreground">
+                        {" "}
+                        · umum {formatIdr(guide.typical)}
+                      </span>
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-2 text-xs text-muted-foreground">{priceGuidanceFor(form.instruments[0]!).note}</p>
+          </>
+        )}
+      </div>
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <AuthField
+          label="Unggah CV"
+          id="cvDocument"
+          error={errors.cvDocument}
+          helperText="PDF atau gambar (JPG/PNG/WebP), maks 5 MB."
+        >
+          <input
+            id="cvDocument"
+            type="file"
+            accept=".pdf,image/jpeg,image/png,image/webp"
+            onChange={(e) => void handleDocumentChange("cv", e.target.files?.[0] ?? null)}
+            className={authInputClassName}
+            disabled={isSubmitting || uploadingCv}
+          />
+          {cvDocument ? (
+            <p className="mt-1 text-xs text-muted-foreground">Terunggah: {cvDocument.fileName}</p>
+          ) : null}
+        </AuthField>
+
+        <AuthField
+          label="Unggah sertifikat (opsional)"
+          id="certificateDocument"
+          error={errors.certificateDocument}
+          helperText="Sertifikasi trading, lisensi, atau credensial relevan."
+        >
+          <input
+            id="certificateDocument"
+            type="file"
+            accept=".pdf,image/jpeg,image/png,image/webp"
+            onChange={(e) =>
+              void handleDocumentChange("certificate", e.target.files?.[0] ?? null)
+            }
+            className={authInputClassName}
+            disabled={isSubmitting || uploadingCertificate}
+          />
+          {certificateDocument ? (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Terunggah: {certificateDocument.fileName}
+            </p>
+          ) : null}
         </AuthField>
       </div>
 

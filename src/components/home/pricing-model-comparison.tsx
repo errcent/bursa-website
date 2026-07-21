@@ -3,7 +3,6 @@
 import { Check, X } from "lucide-react";
 
 import { Reveal } from "@/components/motion/reveal";
-import { cn } from "@/lib/utils";
 
 const bursaPoints = [
   "Bayar sekali per kelas yang kamu pilih",
@@ -14,37 +13,55 @@ const bursaPoints = [
 const subscriptionPoints = [
   "Tetap bayar bulanan walau tidak belajar",
   "Akses hilang begitu berhenti berlangganan",
-  "Materi bisa berubah-ubah tanpa kejelasan",
+  "Materi bisa berubah tanpa kejelasan",
 ];
 
 /** Lightweight "Model Harga" comparison — pay-per-class vs. typical subscription. */
 export function PricingModelComparison() {
   return (
-    <Reveal delay={0.15} className="mt-8 sm:mt-10">
+    <Reveal delay={0.15} className="mt-14 sm:mt-16 md:mt-20">
       <div className="mx-auto max-w-3xl">
-        <p className="mb-4 text-center font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-          Model harga
+        <p className="mb-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+          Model Harga
         </p>
-        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-          <div className="rounded-xl border border-accent/25 bg-accent-soft/30 p-4 sm:p-5">
-            <p className="font-heading text-sm font-semibold">Bayar per kelas — cara Bursa</p>
-            <ul className="mt-3 space-y-2">
+        <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
+          <div className="comparison-panel comparison-panel--highlight">
+            <p className="font-heading text-base font-semibold text-foreground sm:text-lg">
+              Bayar per kelas
+            </p>
+            <p className="mt-0.5 text-xs text-accent">Cara Bursa</p>
+            <ul className="mt-5 space-y-3">
               {bursaPoints.map((point) => (
-                <li key={point} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <Check className="mt-0.5 size-3.5 shrink-0 text-accent" strokeWidth={2.5} />
+                <li
+                  key={point}
+                  className="flex items-start gap-2.5 text-sm leading-relaxed text-foreground/90"
+                >
+                  <Check
+                    className="mt-0.5 size-4 shrink-0 text-accent"
+                    strokeWidth={2}
+                  />
                   {point}
                 </li>
               ))}
             </ul>
           </div>
-          <div className={cn("rounded-xl border border-border/60 bg-surface/40 p-4 sm:p-5")}>
-            <p className="font-heading text-sm font-semibold text-muted-foreground">
-              Langganan bulanan — model umum lainnya
+          <div className="comparison-panel comparison-panel--muted">
+            <p className="font-heading text-base font-semibold text-muted-foreground sm:text-lg">
+              Langganan bulanan
             </p>
-            <ul className="mt-3 space-y-2">
+            <p className="mt-0.5 text-xs text-muted-foreground/70">
+              Model umum lainnya
+            </p>
+            <ul className="mt-5 space-y-3">
               {subscriptionPoints.map((point) => (
-                <li key={point} className="flex items-start gap-2 text-sm text-muted-foreground/80">
-                  <X className="mt-0.5 size-3.5 shrink-0 text-muted-foreground/60" strokeWidth={2.5} />
+                <li
+                  key={point}
+                  className="flex items-start gap-2.5 text-sm leading-relaxed text-muted-foreground/80"
+                >
+                  <X
+                    className="mt-0.5 size-4 shrink-0 text-muted-foreground/50"
+                    strokeWidth={2}
+                  />
                   {point}
                 </li>
               ))}

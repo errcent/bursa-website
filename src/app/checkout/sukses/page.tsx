@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { CheckoutSuccessClient } from "@/components/checkout-success-client";
-import { getCourseBySlug } from "@/lib/mock-data";
+import { getCourseBySlug, getMentorBySlug } from "@/lib/catalog/server";
+import type { Course, Mentor } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Pembayaran Berhasil (Simulasi)",
@@ -16,11 +17,17 @@ export default async function CheckoutSuccessPage({
   searchParams: Promise<{ course?: string }>;
 }) {
   const { course: courseSlug } = await searchParams;
-  if (!courseSlug || !getCourseBySlug(courseSlug)) notFound();
+  if (!courseSlug) notFound();
+
+  const course = await getCourseBySlug(courseSlug);
+  if (!course) notFound();
+
+  const mentor = await getMentorBySlug(course.mentorSlug);
+  if (!mentor) notFound();
 
   return (
     <Suspense fallback={<div className="flex flex-1 items-center justify-center py-24" />}>
-      <CheckoutSuccessClient courseSlug={courseSlug} />
+      <CheckoutSuccessClient course={course} mentor={mentor} />
     </Suspense>
   );
 }

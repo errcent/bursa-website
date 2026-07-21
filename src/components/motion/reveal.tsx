@@ -68,7 +68,7 @@ export function Reveal({
         filter: "blur(0px) brightness(1)",
         rotate: 0,
       }}
-      viewport={{ once, margin: "-8% 0px" }}
+      viewport={{ once, margin: "0px 0px -5% 0px", amount: 0.15 }}
       transition={{ ...snapInTransition, delay }}
       {...props}
     >
@@ -126,7 +126,7 @@ export function Stagger({
       variants={snapStaggerContainer}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "-5% 0px" }}
+      viewport={{ once: true, margin: "0px 0px -5% 0px", amount: 0.15 }}
       transition={{ delayChildren: delay }}
     >
       {children}

@@ -32,7 +32,7 @@ export function LoginForm() {
     }
   }, [isLoading, session, router, next]);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setFieldErrors({});
@@ -46,7 +46,7 @@ export function LoginForm() {
     }
 
     setIsSubmitting(true);
-    const result = login({ identifier, password });
+    const result = await login({ identifier, password });
 
     if (!result.ok) {
       setIsSubmitting(false);
@@ -154,7 +154,7 @@ export function LoginForm() {
         <p className="font-medium text-foreground">Mode demo (prototype)</p>
         <p className="mt-1">
           Learner: <span className="font-mono">demo@bursa.id</span>,{" "}
-          <span className="font-mono">dinda_r</span>, atau{" "}
+          <span className="font-mono">andi_r</span>, atau{" "}
           <span className="font-mono">+6281110000002</span> — password{" "}
           <span className="font-mono">demo1234</span>
         </p>

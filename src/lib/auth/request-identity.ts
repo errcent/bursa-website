@@ -2,12 +2,16 @@ import type { User } from "@prisma/client";
 
 import { auth } from "@/auth";
 
-import { isPrototypeMode } from "@/lib/auth/prototype";
+import { resolveMobileJwtEmail } from "@/lib/auth/mobile-request";
+import {
+  readWebSessionToken,
+  verifyWebSessionToken,
+} from "@/lib/auth/web-session";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
 
 /**
  * Resolve a trusted caller email for privileged API routes.
- * Production: NextAuth session cookie only.
+ * Production: NextAuth session cookie or mobile Bearer JWT.
  * Prototype: falls back to x-user-email (localStorage bridge).
  */
 export async function resolveTrustedEmail(request: Request): Promise<string | null> {
@@ -15,7 +19,16 @@ export async function resolveTrustedEmail(request: Request): Promise<string | nu
   const sessionEmail = session?.user?.email?.trim().toLowerCase();
   if (sessionEmail) return sessionEmail;
 
-  if (!isPrototypeMode()) return null;
+  const mobileEmail = await resolveMobileJwtEmail(request);
+  if (mobileEmail) return mobileEmail;
+
+  const webToken = readWebSessionToken(request);
+  if (webToken) {
+    const webSession = await verifyWebSessionToken(webToken);
+    if (webSession) return webSession.email;
+  }
+
+  if (process.env.NODE_ENV !== "development") return null;
 
   return request.headers.get("x-user-email")?.trim().toLowerCase() ?? null;
 }
@@ -26,19 +39,30 @@ export async function resolveTrustedEmail(request: Request): Promise<string | nu
  */
 export async function resolveAuthenticatedUser(
   request: Request,
-  options?: { createIfMissing?: boolean; claimedUserId?: string | null }
+  options?: {
+    createIfMissing?: boolean;
+    claimedUserId?: string | null;
+    name?: string;
+    role?: string;
+    username?: string;
+    phone?: string;
+  }
 ): Promise<User | null> {
   const email = await resolveTrustedEmail(request);
   if (!email) return null;
 
   const user = await resolveRequestUser(
-    { userId: "", email },
+    {
+      userId: "",
+      email,
+      name: options?.name,
+      role: options?.role,
+      username: options?.username,
+      phone: options?.phone,
+    },
     { createIfMissing: options?.createIfMissing ?? false }
   );
   if (!user) return null;
-
-  const claimed = options?.claimedUserId?.trim();
-  if (claimed && claimed !== user.id) return null;
 
   return user;
 }

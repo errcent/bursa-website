@@ -13,26 +13,27 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getSession } from "@/lib/auth/client";
 import { buildLoginHref } from "@/lib/auth/redirect";
 import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
-import { formatRupiah, getCourseBySlug, getMentorBySlug } from "@/lib/mock-data";
+import { formatRupiah } from "@/lib/mock-data";
 import { enrollUser } from "@/lib/video/protection";
+import type { Course, Mentor } from "@/lib/types";
 
-export function CheckoutSuccessClient({ courseSlug }: { courseSlug: string }) {
+export function CheckoutSuccessClient({
+  course,
+  mentor,
+}: {
+  course: Course;
+  mentor: Mentor;
+}) {
   const { session, isLoading: authLoading } = useAuth();
   const searchParams = useSearchParams();
-  const slug = courseSlug || searchParams.get("course") || "";
+  const slug = course.slug || searchParams.get("course") || "";
   const successPath = slug ? `/checkout/sukses?course=${encodeURIComponent(slug)}` : "/checkout/sukses";
   const loginHref = buildLoginHref(successPath);
-
-  const course = getCourseBySlug(slug);
-  const mentor = course ? getMentorBySlug(course.mentorSlug) : undefined;
 
   useEffect(() => {
     const active = session ?? getSession();
@@ -60,7 +61,7 @@ export function CheckoutSuccessClient({ courseSlug }: { courseSlug: string }) {
     });
   }, [session, slug]);
 
-  if (!course || !mentor) {
+  if (!slug) {
     return (
       <>
         <SiteNavbar />
@@ -125,12 +126,12 @@ export function CheckoutSuccessClient({ courseSlug }: { courseSlug: string }) {
               Mode Demo
             </Badge>
 
-            <Card className="mt-10 w-full max-w-lg border-border bg-card">
-              <CardHeader>
-                <CardTitle>Detail Pesanan</CardTitle>
-                <CardDescription>ID simulasi: {orderId}</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-4">
+            <Card className="surface-card mt-10 w-full max-w-lg overflow-hidden border-0 bg-transparent shadow-none">
+              <div className="border-b border-border/60 px-6 py-5 text-left">
+                <h2 className="font-heading text-base font-medium">Detail Pesanan</h2>
+                <p className="mt-1 text-sm text-muted-foreground">ID simulasi: {orderId}</p>
+              </div>
+              <CardContent className="flex flex-col gap-4 px-6 py-5">
                 <div>
                   <p className="font-heading text-sm font-medium">{course.title}</p>
                   <p className="mt-1 text-xs text-muted-foreground">Mentor: {mentor.name}</p>

@@ -217,7 +217,7 @@ export function SearchDropdown({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.12, ease: easeOut }}
+            transition={{ duration: 0.22, ease: easeOut }}
             aria-hidden
             className="pointer-events-none fixed inset-0 z-[190] bg-black/60"
           />
@@ -226,7 +226,7 @@ export function SearchDropdown({
             initial={{ y: -6, scale: 0.98, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: -6, scale: 0.98, opacity: 0 }}
-            transition={{ duration: 0.16, ease: easeOut }}
+            transition={{ duration: 0.22, ease: easeOut }}
             data-search-dropdown=""
             style={{
               top: coords.top,

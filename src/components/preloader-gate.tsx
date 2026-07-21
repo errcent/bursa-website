@@ -3,12 +3,16 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 
-import { IntroPreloader, INTRO_REVEAL_START_MS } from "@/components/intro-preloader";
+import {
+  IntroPreloader,
+  INTRO_REVEAL_DURATION_S,
+  INTRO_REVEAL_EASE,
+  INTRO_REVEAL_START_MS,
+} from "@/components/intro-preloader";
 
 const SESSION_KEY = "bursa-intro-seen";
-const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 /** Hard cap so a stuck intro never leaves the page unresponsive. */
-const INTRO_FAILSAFE_MS = 3500;
+const INTRO_FAILSAFE_MS = 5500;
 
 type Phase = "intro" | "revealing" | "done";
 
@@ -17,37 +21,44 @@ function clearIntroPending() {
   document.body.style.overflow = "";
 }
 
+function readShouldPlayIntro(): boolean {
+  try {
+    return sessionStorage.getItem(SESSION_KEY) !== "1";
+  } catch {
+    return false;
+  }
+}
+
 export function PreloaderGate({ children }: { children: React.ReactNode }) {
   const prefersReducedMotion = useReducedMotion();
+  // SSR and first client paint must match: children only, no overlay.
   const [phase, setPhase] = useState<Phase>("done");
   const [showOverlay, setShowOverlay] = useState(false);
 
   useLayoutEffect(() => {
     if (prefersReducedMotion) {
       clearIntroPending();
+      setPhase("done");
+      setShowOverlay(false);
       return;
     }
 
-    let skipIntro = false;
-    try {
-      skipIntro = sessionStorage.getItem(SESSION_KEY) === "1";
-    } catch {
-      skipIntro = true;
-    }
-
-    if (skipIntro) {
+    if (!readShouldPlayIntro()) {
       clearIntroPending();
+      setPhase("done");
+      setShowOverlay(false);
       return;
     }
 
+    document.documentElement.classList.add("intro-pending");
     document.body.style.overflow = "hidden";
     setPhase("intro");
     setShowOverlay(true);
   }, [prefersReducedMotion]);
 
   useEffect(() => {
-    if (phase === "intro" || phase === "revealing" || phase === "done") {
-      document.documentElement.classList.remove("intro-pending");
+    if (phase === "revealing" || phase === "done") {
+      clearIntroPending();
     }
   }, [phase]);
 
@@ -84,7 +95,7 @@ export function PreloaderGate({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {showOverlay && <IntroPreloader onComplete={handleIntroComplete} />}
+      {showOverlay ? <IntroPreloader onComplete={handleIntroComplete} /> : null}
 
       <motion.div
         data-app-content
@@ -92,15 +103,26 @@ export function PreloaderGate({ children }: { children: React.ReactNode }) {
         initial={false}
         animate={
           contentHidden
-            ? { opacity: 0, y: 20 }
-            : { opacity: 1, y: 0 }
+            ? { opacity: 0, scale: 1.018, y: 8, filter: "blur(3px)" }
+            : contentAnimating
+              ? { opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }
+              : false
         }
         transition={
           contentAnimating
-            ? { duration: 0.5, ease: REVEAL_EASE }
+            ? { duration: INTRO_REVEAL_DURATION_S, ease: INTRO_REVEAL_EASE }
             : { duration: 0 }
         }
-        style={contentHidden ? { pointerEvents: "none" } : undefined}
+        style={
+          contentHidden || contentAnimating
+            ? {
+                pointerEvents: contentHidden ? "none" : undefined,
+                visibility: contentHidden ? "hidden" : "visible",
+                willChange: "transform, opacity, filter",
+                transform: "translateZ(0)",
+              }
+            : undefined
+        }
       >
         {children}
       </motion.div>

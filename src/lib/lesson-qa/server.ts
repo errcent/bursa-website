@@ -4,22 +4,6 @@ import { db } from "@/lib/db";
 
 const MENTOR_ROLES: UserRole[] = ["MENTOR", "ADMIN"];
 
-const ROLE_MAP: Record<string, UserRole> = {
-  learner: "LEARNER",
-  mentor: "MENTOR",
-  admin: "ADMIN",
-  developer: "DEVELOPER",
-  LEARNER: "LEARNER",
-  MENTOR: "MENTOR",
-  ADMIN: "ADMIN",
-  DEVELOPER: "DEVELOPER",
-};
-
-function mapClientRole(role?: string): UserRole {
-  if (!role) return "LEARNER";
-  return ROLE_MAP[role] ?? "LEARNER";
-}
-
 /**
  * Resolve a client-auth session user to a Prisma User.
  * Client auth uses localStorage IDs that often differ from DB cuids, so we
@@ -60,6 +44,9 @@ export async function resolveRequestUser(
 
     if (!createIfMissing) return null;
 
+    // SECURITY (QC-20260719-39): never mint a role from client input on auto-provision.
+    // Newly bridged users are always LEARNER; MENTOR/ADMIN are granted only through the
+    // dedicated admin flow. `input.role` is intentionally ignored here.
     return db.user.create({
       data: {
         email,
@@ -67,7 +54,7 @@ export async function resolveRequestUser(
         nama: input.name?.trim() || email.split("@")[0] || "Pengguna",
         username: input.username?.trim().toLowerCase() || null,
         phone: input.phone ?? null,
-        role: mapClientRole(input.role),
+        role: "LEARNER",
       },
     });
   }

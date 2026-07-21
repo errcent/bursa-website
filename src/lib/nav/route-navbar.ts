@@ -22,3 +22,8 @@ export function routeHasNavbar(pathname: string): boolean {
     (prefix) => path === prefix || path.startsWith(`${prefix}/`)
   );
 }
+
+/** True when `href` resolves to the current route (exact or nested). */
+export function isSameNavDestination(pathname: string, href: string): boolean {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}

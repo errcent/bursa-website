@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { SessionBookingPage } from "@/components/session-booking";
-import { getMentorBySlug } from "@/lib/mock-data";
+import { getMentorBySlug } from "@/lib/catalog/server";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -10,7 +10,7 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const mentor = getMentorBySlug(slug);
+  const mentor = await getMentorBySlug(slug);
   if (!mentor) return {};
   return {
     title: `Jadwal Sesi 1-on-1 · ${mentor.name}`,
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function MentorSessionPage({ params }: PageProps) {
   const { slug } = await params;
-  const mentor = getMentorBySlug(slug);
+  const mentor = await getMentorBySlug(slug);
   if (!mentor) notFound();
 
   if (!mentor.availableFor1on1) {

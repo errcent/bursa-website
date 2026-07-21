@@ -10,7 +10,8 @@ export function resolvePlayableVideoUrl(
 ): string {
   for (const candidate of candidates) {
     const trimmed = candidate?.trim();
-    if (trimmed) return trimmed;
+    if (!trimmed || trimmed.startsWith("bunny:")) continue;
+    return trimmed;
   }
   return DEMO_VIDEO_URL;
 }

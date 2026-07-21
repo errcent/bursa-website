@@ -48,14 +48,20 @@ type DbCourseListing = Prisma.CourseGetPayload<{
     level: true;
     price: true;
     rating: true;
+    ratingCount: true;
+    bayesianRating: true;
+    decayedRating: true;
     studentsCount: true;
+    paidStudentsCount: true;
     durationHours: true;
     shortDescription: true;
     thumbnailUrl: true;
     outcomes: true;
     createdAt: true;
+    contentUpdatedAt: true;
     mentor: { select: { slug: true } };
     _count: { select: { modules: true } };
+    modules: { select: { _count: { select: { lessons: true } } } };
   };
 }>;
 
@@ -90,6 +96,7 @@ function mapCatalogCourse(course: DbCourseDetail): Course {
     level: levelToUi(course.level),
     price: course.price,
     rating: course.rating,
+    ratingCount: course.ratingCount,
     studentsCount: course.studentsCount,
     durationHours: course.durationHours,
     shortDescription: course.shortDescription,
@@ -104,6 +111,7 @@ function mapCatalogCourse(course: DbCourseDetail): Course {
           .map((lesson) => ({
             id: lesson.legacyId ?? lesson.id,
             title: lesson.title,
+            description: lesson.description ?? undefined,
             durationMinutes: lesson.durationMinutes,
             preview: lesson.isPreviewGratis,
           })),
@@ -120,14 +128,20 @@ function mapCatalogListingCourse(course: DbCourseListing): Course {
     level: levelToUi(course.level),
     price: course.price,
     rating: course.rating,
+    ratingCount: course.ratingCount,
+    bayesianRating: course.bayesianRating,
+    decayedRating: course.decayedRating,
     studentsCount: course.studentsCount,
+    paidStudentsCount: course.paidStudentsCount,
     durationHours: course.durationHours,
     shortDescription: course.shortDescription,
     thumbnailUrl: course.thumbnailUrl ?? undefined,
     outcomes: (course.outcomes as string[]) ?? [],
     modules: [],
     moduleCount: course._count.modules,
+    lessonCount: course.modules.reduce((sum, mod) => sum + mod._count.lessons, 0),
     createdAt: course.createdAt.toISOString(),
+    contentUpdatedAt: course.contentUpdatedAt?.toISOString(),
   };
 }
 
@@ -144,16 +158,22 @@ async function fetchCatalogCoursesListing(): Promise<Course[]> {
       level: true,
       price: true,
       rating: true,
+      ratingCount: true,
+      bayesianRating: true,
+      decayedRating: true,
       studentsCount: true,
+      paidStudentsCount: true,
       durationHours: true,
       shortDescription: true,
       thumbnailUrl: true,
       outcomes: true,
       createdAt: true,
+      contentUpdatedAt: true,
       mentor: { select: { slug: true } },
       _count: { select: { modules: true } },
+      modules: { select: { _count: { select: { lessons: true } } } },
     },
-    orderBy: [{ studentsCount: "desc" }, { updatedAt: "desc" }],
+    orderBy: [{ paidStudentsCount: "desc" }, { updatedAt: "desc" }],
   });
 
   return courses.map(mapCatalogListingCourse);
@@ -279,6 +299,51 @@ export async function getCatalogCourseSlugs(): Promise<string[]> {
   return courses.map((c) => c.slug);
 }
 
+/** Published reviews for a single course detail page. */
+export async function getCourseReviews(courseSlug: string, limit = 4) {
+  const course = await db.course.findFirst({
+    where: {
+      slug: courseSlug,
+      isPublished: true,
+      mentor: { verificationStatus: VerificationStatus.VERIFIED },
+    },
+    select: { id: true },
+  });
+  if (!course) return [];
+
+  const reviews = await db.review.findMany({
+    where: { courseId: course.id, comment: { not: "" } },
+    include: { user: { select: { nama: true } } },
+    orderBy: [{ rating: "desc" }, { createdAt: "desc" }],
+    take: limit,
+  });
+
+  return reviews.map((review) => {
+    const parts = review.user.nama.trim().split(/\s+/).filter(Boolean);
+    const initials =
+      parts.length === 0
+        ? "?"
+        : parts.length === 1
+          ? parts[0].slice(0, 2).toUpperCase()
+          : `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+
+    const diffMs = Date.now() - review.createdAt.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    let date: string;
+    if (diffDays < 7) date = `${diffDays || 1} hari lalu`;
+    else if (diffDays < 30) date = `${Math.floor(diffDays / 7)} minggu lalu`;
+    else date = review.createdAt.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+
+    return {
+      name: review.user.nama,
+      initials,
+      rating: review.rating,
+      comment: review.comment,
+      date,
+    };
+  });
+}
+
 /** Recent reviews across all courses taught by a mentor. */
 export async function getMentorReviews(mentorSlug: string, limit = 10) {
   const mentor = await db.mentorProfile.findFirst({
@@ -323,4 +388,50 @@ export function revalidateCatalog() {
   revalidatePath("/katalog");
   revalidatePath("/");
   revalidatePath("/playlist");
+}
+
+/** Top-rated reviews for homepage social proof — from live Review rows. */
+export async function getFeaturedReviews(limit = 6) {
+  const reviews = await db.review.findMany({
+    where: { comment: { not: "" } },
+    include: {
+      user: { select: { nama: true } },
+      course: {
+        select: {
+          title: true,
+          mentor: {
+            select: {
+              user: { select: { nama: true } },
+            },
+          },
+        },
+      },
+    },
+    orderBy: [{ rating: "desc" }, { createdAt: "desc" }],
+    take: limit,
+  });
+
+  return reviews.map((review) => {
+    const parts = review.user.nama.trim().split(/\s+/).filter(Boolean);
+    const initials =
+      parts.length === 0
+        ? "?"
+        : parts.length === 1
+          ? parts[0].slice(0, 2).toUpperCase()
+          : `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+
+    return {
+      name: review.user.nama,
+      initials,
+      rating: review.rating,
+      comment: review.comment,
+      date: review.createdAt.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }),
+      courseTag: review.course.title,
+      mentorTag: review.course.mentor.user.nama,
+    };
+  });
 }

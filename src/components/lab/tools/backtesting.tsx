@@ -2,7 +2,14 @@
 
 import { useMemo, useState } from "react";
 
-import { LabField, LabNumberInput, LabResultTile } from "@/components/lab/lab-field";
+import {
+  LabField,
+  LabNumberInput,
+  LabResultGrid,
+  LabResultTile,
+  LabToolPanel,
+  labInputClassName,
+} from "@/components/lab/lab-field";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   generateSamplePrices,
@@ -10,6 +17,7 @@ import {
   parsePrices,
   rsiBacktest,
 } from "@/lib/lab/backtesting";
+import { Button } from "@/components/ui/button";
 
 function fmt(n: number, d = 2): string {
   return n.toLocaleString("id-ID", { maximumFractionDigits: d });
@@ -34,46 +42,52 @@ export function BacktesterTool() {
   const loadSample = () => setPrices(generateSamplePrices(200).join(", "));
 
   return (
-    <div className="surface-card p-5 sm:p-6">
-      <LabField label="Data harga (pisahkan koma)" id="bt-prices" helperText="Kosongkan untuk menggunakan data sample otomatis">
-        <input id="bt-prices" value={prices} onChange={(e) => setPrices(e.target.value)}
-          className="w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm outline-none" />
+    <LabToolPanel
+      title="Backtester aturan sederhana"
+      description="Kosongkan data harga untuk memakai sample otomatis (200 bar). Tidak termasuk biaya trading."
+      footer={
+        <Button type="button" variant="outline" onClick={loadSample} className="h-9">
+          Muat data sample
+        </Button>
+      }
+    >
+      <LabField label="Data harga (pisahkan koma)" id="bt-prices" helperText="Minimal 30 bar untuk hasil bermakna">
+        <input id="bt-prices" value={prices} onChange={(e) => setPrices(e.target.value)} className={labInputClassName} />
       </LabField>
-      <button type="button" onClick={loadSample} className="mt-2 text-sm text-accent hover:underline">Muat data sample</button>
 
       <Tabs defaultValue="ma" className="mt-6">
-        <TabsList>
+        <TabsList className="mb-4">
           <TabsTrigger value="ma">MA Crossover</TabsTrigger>
           <TabsTrigger value="rsi">RSI</TabsTrigger>
         </TabsList>
         <TabsContent value="ma">
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Fast MA" id="bt-fast"><LabNumberInput id="bt-fast" value={fast} onChange={setFast} min={1} /></LabField>
             <LabField label="Slow MA" id="bt-slow"><LabNumberInput id="bt-slow" value={slow} onChange={setSlow} min={2} /></LabField>
           </div>
           <ResultPanel result={maResult} />
         </TabsContent>
         <TabsContent value="rsi">
-          <div className="mt-4 grid gap-4 sm:grid-cols-3">
-            <LabField label="RSI period" id="bt-rsi-p"><LabNumberInput id="bt-rsi-p" value={rsiPeriod} onChange={setRsiPeriod} min={2} /></LabField>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <LabField label="Periode RSI" id="bt-rsi-p"><LabNumberInput id="bt-rsi-p" value={rsiPeriod} onChange={setRsiPeriod} min={2} /></LabField>
             <LabField label="Oversold" id="bt-os"><LabNumberInput id="bt-os" value={oversold} onChange={setOversold} min={0} max={50} /></LabField>
             <LabField label="Overbought" id="bt-ob"><LabNumberInput id="bt-ob" value={overbought} onChange={setOverbought} min={50} max={100} /></LabField>
           </div>
           <ResultPanel result={rsiResult} />
         </TabsContent>
       </Tabs>
-    </div>
+    </LabToolPanel>
   );
 }
 
 function ResultPanel({ result }: { result: ReturnType<typeof maCrossoverBacktest> }) {
   return (
-    <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <LabResultGrid>
       <LabResultTile label="Total return" value={`${fmt(result.totalReturn)}%`} tone={result.totalReturn > 0 ? "positive" : "negative"} />
       <LabResultTile label="Win rate" value={`${fmt(result.winRate)}%`} />
       <LabResultTile label="Max drawdown" value={`${fmt(result.maxDrawdown)}%`} tone="negative" />
       <LabResultTile label="Sharpe ratio" value={fmt(result.sharpe)} />
       <LabResultTile label="Jumlah trade" value={`${result.trades.length}`} className="sm:col-span-2 lg:col-span-4" />
-    </div>
+    </LabResultGrid>
   );
 }

@@ -14,10 +14,12 @@ export async function POST(request: Request) {
       return jsonError(parsed.error.issues.map((i) => i.message).join(", "), 422);
     }
 
-    const { portfolioUrl, ...rest } = parsed.data;
-    const application = createMentorApplication({
+    const { portfolioUrl, certificateDocumentUrl, certificateDocumentName, ...rest } = parsed.data;
+    const application = await createMentorApplication({
       ...rest,
       portfolioUrl: portfolioUrl || undefined,
+      certificateDocumentUrl: certificateDocumentUrl || undefined,
+      certificateDocumentName: certificateDocumentName || undefined,
     });
 
     void notifyAdminOfMentorApplication(application).catch((error) => {

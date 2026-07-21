@@ -2,8 +2,20 @@ import { NextResponse } from "next/server";
 
 import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { db } from "@/lib/db";
+import { resolveSignedPlaybackUrl } from "@/lib/video/bunny";
 import { DEMO_VIDEO_URL } from "@/lib/video/demo";
+import { issuePlaybackHeartbeatToken } from "@/lib/video/playback-heartbeat";
 import { generatePlaybackToken } from "@/lib/video/protection";
+
+function resolveLessonVideoUrl(stored: string | null | undefined): string {
+  const signed = resolveSignedPlaybackUrl(stored);
+  if (signed?.url) return signed.url;
+
+  const trimmed = stored?.trim();
+  if (trimmed && !trimmed.startsWith("bunny:")) return trimmed;
+
+  return DEMO_VIDEO_URL;
+}
 
 async function getLessonContext(courseSlug: string, lessonId: string) {
   return db.lesson.findFirst({
@@ -102,9 +114,16 @@ export async function POST(request: Request) {
           userId: "guest",
         };
 
+    // Enrolled viewers also get a signed heartbeat token so watch time can be verified
+    // server-side (completion gate, QC-20260719-46). Guests/previews don't accrue watch time.
+    const heartbeat = viewerId
+      ? issuePlaybackHeartbeatToken(viewerId, lessonId)
+      : null;
+
     return NextResponse.json({
       ...tokenPayload,
-      videoUrl: lesson.videoUrl ?? DEMO_VIDEO_URL,
+      ...(heartbeat ?? {}),
+      videoUrl: resolveLessonVideoUrl(lesson.videoUrl),
       isPreview: previewMode,
       courseId,
     });

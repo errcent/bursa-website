@@ -48,6 +48,26 @@ export function courseCarouselGetScrollPerView(width: number) {
 export const landingCourseGetScrollPerView = courseCarouselGetScrollPerView;
 export const catalogCourseGetScrollPerView = courseCarouselGetScrollPerView;
 
+/** Home discover section — slightly denser than landing/catalog, but still readable. */
+export function discoverCourseGetScrollPerView(width: number) {
+  if (width < 768) return 1;
+  if (width >= 1100) return 4.6;
+  if (width >= 900) return 3.8;
+  if (width >= 620) return 2.8;
+  return 2;
+}
+
+export function discoverMentorGetScrollPerView(width: number) {
+  if (width < 768) return 1;
+  if (width >= 1100) return 5.6;
+  if (width >= 900) return 4.6;
+  if (width >= 620) return 3.6;
+  return 2.4;
+}
+
+/** Mobile peek for discover — smaller than default 0.76 but not cramped. */
+export const DISCOVER_MOBILE_PEEK_RATIO = 0.68;
+
 /**
  * Mentor tiles are narrower/simpler than course cards, so more fit per row:
  * ~3.2 at md, ~4.2 at lg, ~5.2 at xl. Also desktop-only, same reasoning as above.
@@ -61,9 +81,13 @@ export function mentorCarouselGetScrollPerView(width: number) {
 
 export const mentorGetScrollPerView = mentorCarouselGetScrollPerView;
 
+export const SCROLL_CAROUSEL_AUTOPLAY_INTERVAL_MS = 4500;
+const SCROLL_CAROUSEL_AUTOPLAY_RESUME_MS = 8000;
+
 export type ScrollCarouselHandle = {
   scrollByStep: (direction: -1 | 1) => void;
   scrollToIndex: (index: number) => void;
+  pauseAutoPlay: () => void;
 };
 
 interface ScrollCarouselProps {
@@ -86,6 +110,11 @@ interface ScrollCarouselProps {
     canScrollLeft: boolean;
     canScrollRight: boolean;
   }) => void;
+  /** Advance one slide on an interval; loops to the start at the end. */
+  autoPlay?: boolean;
+  autoPlayInterval?: number;
+  /** When true, the timer does not advance (e.g. inactive discover tab). */
+  autoPlayPaused?: boolean;
 }
 
 export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselProps>(
@@ -103,6 +132,9 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       hideArrows = false,
       onActiveIndexChange,
       onScrollStateChange,
+      autoPlay = false,
+      autoPlayInterval = SCROLL_CAROUSEL_AUTOPLAY_INTERVAL_MS,
+      autoPlayPaused = false,
     },
     ref
   ) {
@@ -110,6 +142,14 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [itemWidth, setItemWidth] = useState<number | null>(null);
+  const canScrollRightRef = useRef(canScrollRight);
+  const autoPlayPausedRef = useRef(autoPlayPaused);
+  const interactionPausedRef = useRef(false);
+  const hoverPausedRef = useRef(false);
+  const resumeTimerRef = useRef<number | null>(null);
+
+  canScrollRightRef.current = canScrollRight;
+  autoPlayPausedRef.current = autoPlayPaused;
 
   const childItems = Children.toArray(children).filter(
     (child): child is ReactElement => isValidElement(child)
@@ -215,19 +255,71 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
     [gap, itemWidth]
   );
 
-  useImperativeHandle(ref, () => ({ scrollByStep, scrollToIndex }), [scrollByStep, scrollToIndex]);
+  const pauseAutoPlayForInteraction = useCallback(() => {
+    interactionPausedRef.current = true;
+    if (resumeTimerRef.current) window.clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = window.setTimeout(() => {
+      interactionPausedRef.current = false;
+    }, SCROLL_CAROUSEL_AUTOPLAY_RESUME_MS);
+  }, []);
+
+  useImperativeHandle(
+    ref,
+    () => ({ scrollByStep, scrollToIndex, pauseAutoPlay: pauseAutoPlayForInteraction }),
+    [scrollByStep, scrollToIndex, pauseAutoPlayForInteraction]
+  );
+
+  useEffect(() => {
+    if (!autoPlay || childItems.length <= 1) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) return;
+
+    let intervalId: number | null = null;
+
+    const tick = () => {
+      if (
+        autoPlayPausedRef.current ||
+        interactionPausedRef.current ||
+        hoverPausedRef.current ||
+        document.hidden
+      ) {
+        return;
+      }
+
+      if (canScrollRightRef.current) {
+        scrollByStep(1);
+      } else {
+        scrollToIndex(0);
+      }
+    };
+
+    intervalId = window.setInterval(tick, autoPlayInterval);
+
+    return () => {
+      if (intervalId !== null) window.clearInterval(intervalId);
+    };
+  }, [autoPlay, autoPlayInterval, childItems.length, scrollByStep, scrollToIndex]);
+
+  useEffect(() => {
+    return () => {
+      if (resumeTimerRef.current) window.clearTimeout(resumeTimerRef.current);
+    };
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "ArrowLeft") {
         e.preventDefault();
+        pauseAutoPlayForInteraction();
         scrollByStep(-1);
       } else if (e.key === "ArrowRight") {
         e.preventDefault();
+        pauseAutoPlayForInteraction();
         scrollByStep(1);
       }
     },
-    [scrollByStep]
+    [pauseAutoPlayForInteraction, scrollByStep]
   );
 
   if (childItems.length === 0) return null;
@@ -236,19 +328,27 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
   const showArrows = !hideArrows && canScrollAny;
 
   return (
-    <div className={cn("group/scroll-carousel relative w-full min-w-0 max-w-full", className)}>
+    <div
+      className={cn("group/scroll-carousel relative w-full min-w-0 max-w-full", className)}
+      onPointerEnter={() => {
+        hoverPausedRef.current = true;
+      }}
+      onPointerLeave={() => {
+        hoverPausedRef.current = false;
+      }}
+    >
       {canScrollAny && (
         <>
           <div
             className={cn(
-              "pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-8 bg-gradient-to-r from-background via-background/80 to-transparent transition-opacity duration-200 sm:block sm:w-16",
+              "pointer-events-none absolute inset-y-0 left-0 z-10 w-[var(--carousel-fade-width,2rem)] bg-gradient-to-r from-[var(--carousel-fade-color,var(--background))] via-[color-mix(in_oklch,var(--carousel-fade-color,var(--background))_55%,transparent)] to-transparent transition-opacity duration-300 sm:w-[var(--carousel-fade-width,2.5rem)]",
               canScrollLeft ? "opacity-100" : "opacity-0"
             )}
             aria-hidden
           />
           <div
             className={cn(
-              "pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-8 bg-gradient-to-l from-background via-background/80 to-transparent transition-opacity duration-200 sm:block sm:w-16",
+              "pointer-events-none absolute inset-y-0 right-0 z-10 w-[var(--carousel-fade-width,2rem)] bg-gradient-to-l from-[var(--carousel-fade-color,var(--background))] via-[color-mix(in_oklch,var(--carousel-fade-color,var(--background))_55%,transparent)] to-transparent transition-opacity duration-300 sm:w-[var(--carousel-fade-width,2.5rem)]",
               canScrollRight ? "opacity-100" : "opacity-0"
             )}
             aria-hidden
@@ -286,6 +386,8 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
         ref={viewportRef}
         tabIndex={0}
         onKeyDown={handleKeyDown}
+        onPointerDown={pauseAutoPlayForInteraction}
+        onTouchStart={pauseAutoPlayForInteraction}
         aria-roledescription="carousel"
         aria-label={ariaLabel}
         className={cn(
@@ -294,7 +396,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
           viewportClassName
         )}
       >
-        <div className="flex pb-1" style={{ gap }}>
+        <div className="carousel-scroll-track flex pb-1" style={{ gap }}>
           {childItems.map((child) => (
             <div
               key={child.key ?? undefined}

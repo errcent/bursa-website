@@ -8,8 +8,10 @@ import {
   LearningTimeAvailability,
   LearningTradingStyle,
 } from "@prisma/client";
+import type { LearningExperience } from "@prisma/client";
 
 import { instrumentFromUi, instrumentToUi, levelToUi } from "@/lib/admin/server";
+import { courseQualityScore } from "@/lib/catalog/ranking";
 import { getCatalogCourses, getCatalogMentors } from "@/lib/catalog/server";
 import type {
   LearningGuidanceAnswers,
@@ -18,9 +20,28 @@ import type {
   ScoredCourse,
   ScoredMentor,
 } from "@/lib/learning/guidance/types";
-import type { Course, Mentor } from "@/lib/types";
+import type { Course, Level, Mentor } from "@/lib/types";
 
 const LEVEL_ORDER: CourseLevel[] = [CourseLevel.PEMULA, CourseLevel.MENENGAH, CourseLevel.MAHIR];
+
+const QUALITY_TIEBREAKER_MAX = 12;
+
+/** Prisma enum values as literals — safe before `prisma generate` refreshes runtime exports. */
+const EXPERIENCE_TIER = {
+  NEVER: "NEVER",
+  DEMO: "DEMO",
+  REGULAR: "REGULAR",
+  PROFITABLE: "PROFITABLE",
+} as const satisfies Record<string, LearningExperience>;
+
+function uiLevelToCourseLevel(level: Level): CourseLevel {
+  const map: Record<Level, CourseLevel> = {
+    Pemula: CourseLevel.PEMULA,
+    Menengah: CourseLevel.MENENGAH,
+    Mahir: CourseLevel.MAHIR,
+  };
+  return map[level];
+}
 
 function experienceToLevel(experience: LearningGuidanceAnswers["experience"]): CourseLevel {
   const map: Record<LearningGuidanceAnswers["experience"], CourseLevel> = {
@@ -30,6 +51,26 @@ function experienceToLevel(experience: LearningGuidanceAnswers["experience"]): C
     profitable: CourseLevel.MAHIR,
   };
   return map[experience];
+}
+
+function experienceToTier(experience: LearningGuidanceAnswers["experience"]): LearningExperience {
+  const map: Record<LearningGuidanceAnswers["experience"], LearningExperience> = {
+    never: EXPERIENCE_TIER.NEVER,
+    demo: EXPERIENCE_TIER.DEMO,
+    regular: EXPERIENCE_TIER.REGULAR,
+    profitable: EXPERIENCE_TIER.PROFITABLE,
+  };
+  return map[experience];
+}
+
+function tierToExperience(tier: LearningExperience): LearningGuidanceAnswers["experience"] {
+  const map: Record<LearningExperience, LearningGuidanceAnswers["experience"]> = {
+    [EXPERIENCE_TIER.NEVER]: "never",
+    [EXPERIENCE_TIER.DEMO]: "demo",
+    [EXPERIENCE_TIER.REGULAR]: "regular",
+    [EXPERIENCE_TIER.PROFITABLE]: "profitable",
+  };
+  return map[tier];
 }
 
 function tradingStyleToDb(style: LearningGuidanceAnswers["tradingStyle"]): LearningTradingStyle {
@@ -99,6 +140,7 @@ export function answersToProfileData(answers: LearningGuidanceAnswers) {
   return {
     instrument: instrumentFromUi(answers.instrument),
     experienceLevel: experienceToLevel(answers.experience),
+    experienceTier: experienceToTier(answers.experience),
     tradingStyle: tradingStyleToDb(answers.tradingStyle),
     goal: goalToDb(answers.goal),
     riskTolerance: riskToDb(answers.riskTolerance),
@@ -112,6 +154,7 @@ export function serializeProfileRecord(
   profile: {
     instrument: Instrument;
     experienceLevel: CourseLevel;
+    experienceTier: LearningExperience;
     tradingStyle: LearningTradingStyle;
     goal: LearningGoal;
     riskTolerance: LearningRiskTolerance;
@@ -124,6 +167,7 @@ export function serializeProfileRecord(
   return {
     instrument: profile.instrument,
     experienceLevel: profile.experienceLevel,
+    experienceTier: profile.experienceTier,
     tradingStyle: profile.tradingStyle,
     goal: profile.goal,
     riskTolerance: profile.riskTolerance,
@@ -138,32 +182,128 @@ function levelDistance(a: CourseLevel, b: CourseLevel): number {
   return Math.abs(LEVEL_ORDER.indexOf(a) - LEVEL_ORDER.indexOf(b));
 }
 
-function scoreCourse(course: Course, answers: LearningGuidanceAnswers, mentorsBySlug: Map<string, Mentor>): ScoredCourse {
+function qualityTiebreaker(course: Course, mentor: Mentor | undefined): number {
+  return courseQualityScore(course, mentor) * QUALITY_TIEBREAKER_MAX;
+}
+
+function scoreCapitalFit(
+  answers: LearningGuidanceAnswers,
+  courseLevel: CourseLevel,
+  reasons: string[]
+): number {
+  const capital = answers.capitalRange;
+  if (!capital || capital === "prefer_not_say") return 0;
+
+  if (capital === "under_5m") {
+    if (courseLevel === CourseLevel.PEMULA) {
+      reasons.push("Cocok untuk modal belajar kecil");
+      return 10;
+    }
+    if (courseLevel === CourseLevel.MENENGAH) return 3;
+    return -6;
+  }
+
+  if (capital === "5_20m") {
+    if (courseLevel === CourseLevel.PEMULA || courseLevel === CourseLevel.MENENGAH) {
+      reasons.push("Selaras dengan modal pemula–menengah");
+      return 6;
+    }
+    return 2;
+  }
+
+  if (capital === "20_50m") {
+    if (courseLevel === CourseLevel.MENENGAH) {
+      reasons.push("Level menengah untuk modal yang lebih fleksibel");
+      return 8;
+    }
+    return 4;
+  }
+
+  if (capital === "above_50m") {
+    if (courseLevel !== CourseLevel.PEMULA) {
+      reasons.push("Fokus manajemen risiko untuk modal signifikan");
+      return 8;
+    }
+    return 2;
+  }
+
+  return 0;
+}
+
+function scoreRiskFit(
+  answers: LearningGuidanceAnswers,
+  courseLevel: CourseLevel,
+  reasons: string[]
+): number {
+  let score = 0;
+
+  if (answers.riskTolerance === "conservative") {
+    if (courseLevel === CourseLevel.PEMULA) {
+      score += 12;
+      reasons.push("Pendekatan stabil untuk profil konservatif");
+    } else if (courseLevel === CourseLevel.MENENGAH) {
+      score += 6;
+    } else {
+      score -= 10;
+    }
+    if (answers.instrument === "Forex") {
+      reasons.push("Perhatikan leverage — mulai posisi sangat kecil");
+    }
+  } else if (answers.riskTolerance === "moderate") {
+    if (courseLevel === CourseLevel.MENENGAH) {
+      score += 8;
+      reasons.push("Level seimbang untuk risiko moderat");
+    } else if (levelDistance(courseLevel, CourseLevel.MENENGAH) === 1) {
+      score += 4;
+    }
+  } else if (answers.riskTolerance === "aggressive") {
+    if (courseLevel === CourseLevel.MAHIR) {
+      score += 10;
+      reasons.push("Mendalami strategi lanjutan");
+    } else if (courseLevel === CourseLevel.MENENGAH) {
+      score += 6;
+    } else {
+      score += 2;
+      reasons.push("Bangun fondasi sebelum naikkan risiko");
+    }
+  }
+
+  return score;
+}
+
+function scoreCourse(
+  course: Course,
+  answers: LearningGuidanceAnswers,
+  mentorsBySlug: Map<string, Mentor>
+): ScoredCourse {
   const reasons: string[] = [];
   let score = 0;
   const targetLevel = experienceToLevel(answers.experience);
   const targetLevelUi = levelToUi(targetLevel);
+  const courseLevel = uiLevelToCourseLevel(course.level);
   const mentor = mentorsBySlug.get(course.mentorSlug);
 
-  if (course.instrument === answers.instrument) {
-    score += 50;
-    reasons.push(`Sesuai fokus ${answers.instrument}`);
+  if (course.instrument !== answers.instrument) {
+    return { course, score: 0, reasons: [] };
   }
 
-  const levelGap = levelDistance(
-    targetLevel,
-    course.level === "Pemula"
-      ? CourseLevel.PEMULA
-      : course.level === "Menengah"
-        ? CourseLevel.MENENGAH
-        : CourseLevel.MAHIR
-  );
+  score += 40;
+  reasons.push(`Fokus ${answers.instrument}`);
+
+  const levelGap = levelDistance(targetLevel, courseLevel);
   if (levelGap === 0) {
     score += 30;
     reasons.push(`Level ${targetLevelUi} pas untukmu`);
   } else if (levelGap === 1) {
-    score += 15;
-    reasons.push(`Satu tingkat di atas/bawah levelmu — masih relevan`);
+    if (answers.experience === "never") {
+      score += 4;
+      reasons.push("Satu tingkat di atas — pertimbangkan setelah fondasi");
+    } else {
+      score += 15;
+      reasons.push("Satu tingkat di atas/bawah levelmu — masih relevan");
+    }
+  } else {
+    score -= 8;
   }
 
   if (answers.timeAvailability === "minimal") {
@@ -172,6 +312,8 @@ function scoreCourse(course: Course, answers: LearningGuidanceAnswers, mentorsBy
       reasons.push("Durasi ringkas untuk waktu terbatas");
     } else if (course.durationHours <= 20) {
       score += 10;
+    } else {
+      score -= 4;
     }
   } else if (answers.timeAvailability === "part_time") {
     if (course.durationHours >= 8 && course.durationHours <= 30) {
@@ -187,6 +329,10 @@ function scoreCourse(course: Course, answers: LearningGuidanceAnswers, mentorsBy
     score += 8;
     reasons.push("Cocok untuk trader aktif jangka pendek");
   }
+  if (answers.tradingStyle === "swing" && course.durationHours >= 8 && course.durationHours <= 25) {
+    score += 8;
+    reasons.push("Durasi pas untuk swing trading");
+  }
   if (answers.tradingStyle === "long_term" && course.durationHours >= 12) {
     score += 8;
     reasons.push("Mendukung strategi jangka panjang");
@@ -198,11 +344,23 @@ function scoreCourse(course: Course, answers: LearningGuidanceAnswers, mentorsBy
   }
   if (answers.goal === "side_income" && course.level === "Menengah") {
     score += 8;
+    reasons.push("Level praktis untuk penghasilan sampingan");
   }
-  if (answers.goal === "retirement" && answers.riskTolerance === "conservative" && course.level !== "Mahir") {
-    score += 6;
+  if (answers.goal === "wealth" && (course.level === "Menengah" || course.level === "Mahir")) {
+    score += 8;
+    reasons.push("Mendukung akumulasi jangka menengah");
+  }
+  if (
+    answers.goal === "retirement" &&
+    answers.riskTolerance === "conservative" &&
+    course.level !== "Mahir"
+  ) {
+    score += 8;
     reasons.push("Pendekatan stabil untuk tujuan jangka panjang");
   }
+
+  score += scoreRiskFit(answers, courseLevel, reasons);
+  score += scoreCapitalFit(answers, courseLevel, reasons);
 
   if (answers.learningFormat === "live" && mentor?.availableFor1on1) {
     score += 15;
@@ -214,10 +372,14 @@ function scoreCourse(course: Course, answers: LearningGuidanceAnswers, mentorsBy
   }
   if (answers.learningFormat === "video") {
     score += 5;
+    reasons.push("Belajar mandiri dengan video terstruktur");
+  }
+  if (answers.learningFormat === "mixed") {
+    score += 8;
+    reasons.push("Format fleksibel — video, live, dan komunitas");
   }
 
-  score += Math.min(course.rating * 4, 20);
-  score += Math.min(Math.log10(course.studentsCount + 1) * 5, 15);
+  score += qualityTiebreaker(course, mentor);
 
   return { course, score, reasons: reasons.slice(0, 3) };
 }
@@ -226,10 +388,12 @@ function scoreMentor(mentor: Mentor, answers: LearningGuidanceAnswers): ScoredMe
   const reasons: string[] = [];
   let score = 0;
 
-  if (mentor.instruments.includes(answers.instrument)) {
-    score += 40;
-    reasons.push(`Spesialis ${answers.instrument}`);
+  if (!mentor.instruments.includes(answers.instrument)) {
+    return { mentor, score: 0, reasons: [] };
   }
+
+  score += 40;
+  reasons.push(`Spesialis ${answers.instrument}`);
 
   if (answers.learningFormat === "live" && mentor.availableFor1on1) {
     score += 20;
@@ -240,21 +404,33 @@ function scoreMentor(mentor: Mentor, answers: LearningGuidanceAnswers): ScoredMe
     score += 12;
     reasons.push("Pengalaman mendalam untuk trader lanjutan");
   }
-  if ((answers.experience === "never" || answers.experience === "demo") && mentor.yearsExperience >= 3) {
-    score += 8;
+  if (
+    (answers.experience === "never" || answers.experience === "demo") &&
+    mentor.yearsExperience >= 3
+  ) {
+    score += 10;
     reasons.push("Pengalaman mengajar pemula");
+  }
+
+  if (answers.riskTolerance === "conservative" && mentor.yearsExperience >= 5) {
+    score += 6;
+    reasons.push("Track record mentor untuk disiplin risiko");
   }
 
   if (answers.learningFormat === "community" && mentor.studentsCount >= 100) {
     score += 10;
     reasons.push("Komunitas murid yang besar");
   }
+  if (answers.learningFormat === "mixed") {
+    score += 6;
+    reasons.push("Mentor dengan berbagai format belajar");
+  }
 
-  score += mentor.rating * 5;
-  score += Math.min(Math.log10(mentor.studentsCount + 1) * 6, 18);
+  score += Math.min(mentor.rating * 3, 15);
 
   if (mentor.verified) {
-    score += 5;
+    score += 8;
+    reasons.push("Mentor terverifikasi");
   }
 
   return { mentor, score, reasons: reasons.slice(0, 3) };
@@ -284,25 +460,41 @@ function buildPathNarrative(answers: LearningGuidanceAnswers): {
 
   const riskNote =
     answers.riskTolerance === "conservative"
-      ? "Dengan profil risiko konservatif, mulai dari manajemen risiko dan posisi kecil."
+      ? answers.instrument === "Forex"
+        ? "Profil konservatif + Forex: mulai tanpa leverage tinggi dan posisi sangat kecil."
+        : "Dengan profil risiko konservatif, mulai dari manajemen risiko dan posisi kecil."
       : answers.riskTolerance === "aggressive"
         ? "Profil agresif — pastikan disiplin stop-loss dan jangan over-leverage."
         : "Dengan risiko seimbang, kombinasikan teori dengan latihan terukur.";
 
+  const capitalNote =
+    answers.capitalRange && answers.capitalRange !== "prefer_not_say"
+      ? answers.capitalRange === "under_5m"
+        ? " Modal kecil — prioritaskan belajar di demo sebelum live."
+        : answers.capitalRange === "above_50m"
+          ? " Modal signifikan — manajemen risiko harus jadi prioritas #1."
+          : ""
+      : "";
+
+  const experienceStep =
+    answers.experience === "never"
+      ? "Mulai dari akun demo dan kelas Pemula — jangan loncat ke live sebelum paham risk management."
+      : `Mulai dari kelas level ${levelLabel} di ${answers.instrument} untuk fondasi yang tepat.`;
+
   return {
     pathTitle: `Jalur ${answers.instrument} · ${levelLabel}`,
-    summary: `Kamu fokus ke ${answers.instrument} dengan gaya ${styleLabel} untuk ${goalLabel}. ${riskNote}`,
+    summary: `Kamu fokus ke ${answers.instrument} dengan gaya ${styleLabel} untuk ${goalLabel}. ${riskNote}${capitalNote}`,
     pathSteps: [
-      `Mulai dari kelas level ${levelLabel} di ${answers.instrument} untuk fondasi yang tepat.`,
+      experienceStep,
       answers.learningFormat === "live"
         ? "Manfaatkan sesi live mentor untuk validasi strategi secara langsung."
         : answers.learningFormat === "community"
           ? "Gabung komunitas mentor untuk belajar dari diskusi dan studi kasus."
-          : "Ikuti modul video secara berurutan — jangan loncat sebelum paham risk management.",
+          : "Ikuti video secara berurutan — jangan loncat sebelum paham risk management.",
       answers.timeAvailability === "minimal"
         ? "Alokasikan 20–30 menit per hari; konsistensi lebih penting dari durasi."
         : "Jadwalkan 3–5 sesi belajar per minggu dan catat setiap evaluasi trading.",
-      "Setelah kelas dasar, review ulang panduan ini jika tujuan atau instrumenmu berubah.",
+      "Rekomendasi ini berdasarkan jawabanmu — bukan jaminan hasil. Review ulang jika tujuan atau instrumenmu berubah.",
     ],
   };
 }
@@ -316,22 +508,16 @@ export async function computeLearningGuidance(
   const mentorsBySlug = new Map(mentors.map((m) => [m.slug, m]));
 
   const scoredCourses = courses
-    .filter((c) => c.instrument === answers.instrument || mentorsBySlug.get(c.mentorSlug)?.instruments.includes(answers.instrument))
-    .map((course) => scoreCourse(course, answers, mentorsBySlug))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 4);
-
-  const fallbackCourses = courses
     .filter((c) => c.instrument === answers.instrument)
     .map((course) => scoreCourse(course, answers, mentorsBySlug))
+    .filter((entry) => entry.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 4);
-
-  const finalCourses = scoredCourses.length > 0 ? scoredCourses : fallbackCourses;
 
   const scoredMentors = mentors
     .filter((m) => m.instruments.includes(answers.instrument))
     .map((mentor) => scoreMentor(mentor, answers))
+    .filter((entry) => entry.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
 
@@ -339,7 +525,7 @@ export async function computeLearningGuidance(
 
   return {
     ...narrative,
-    courses: finalCourses,
+    courses: scoredCourses,
     mentors: scoredMentors,
     profile:
       profile ??
@@ -350,12 +536,10 @@ export async function computeLearningGuidance(
   };
 }
 
-export function answersFromProfileRecord(profile: LearningGuidanceProfileRecord): LearningGuidanceAnswers {
-  const experienceMap: Record<CourseLevel, LearningGuidanceAnswers["experience"]> = {
-    PEMULA: "demo",
-    MENENGAH: "regular",
-    MAHIR: "profitable",
-  };
+export function answersFromProfileRecord(
+  profile: LearningGuidanceProfileRecord
+): LearningGuidanceAnswers {
+  const experience = tierToExperience(profile.experienceTier);
 
   const styleMap: Record<LearningTradingStyle, LearningGuidanceAnswers["tradingStyle"]> = {
     SCALPING: "scalping",
@@ -401,7 +585,7 @@ export function answersFromProfileRecord(profile: LearningGuidanceProfileRecord)
 
   return {
     instrument: instrumentToUi(profile.instrument),
-    experience: experienceMap[profile.experienceLevel],
+    experience,
     tradingStyle: styleMap[profile.tradingStyle],
     goal: goalMap[profile.goal],
     riskTolerance: riskMap[profile.riskTolerance],

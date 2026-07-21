@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const STORAGE_KEY = "bursa-cookie-consent";
+const CONSENT_EVENT = "bursa-cookie-consent";
 
 type ConsentState = "accepted" | "essential-only";
 
@@ -26,6 +27,7 @@ export function CookieConsentBanner() {
   function save(value: ConsentState) {
     try {
       localStorage.setItem(STORAGE_KEY, value);
+      window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: value }));
     } catch {
       /* ignore */
     }

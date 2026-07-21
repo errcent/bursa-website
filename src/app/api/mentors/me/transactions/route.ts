@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
           transaction: {
             include: {
               course: { select: { title: true, slug: true } },
+              mentorSession: { select: { startAt: true } },
               user: { select: { nama: true } },
             },
           },
@@ -46,8 +47,10 @@ export async function GET(request: NextRequest) {
         id: row.id,
         transactionId: row.transactionId,
         createdAt: row.createdAt.toISOString(),
-        courseTitle: row.transaction.course.title,
-        courseSlug: row.transaction.course.slug,
+        // Session-payment ledger rows (kind=SESSION) have no course (QC-20260719-47).
+        kind: row.transaction.kind,
+        courseTitle: row.transaction.course?.title ?? "Sesi 1-on-1",
+        courseSlug: row.transaction.course?.slug ?? null,
         learnerInitials: maskLearnerInitials(row.transaction.user.nama),
         grossAmount: row.grossAmount,
         commissionPct: row.commissionPct,

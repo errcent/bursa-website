@@ -4,8 +4,9 @@ import { getSitemapEntries } from "@/lib/search/seo";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursa.id";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return getSitemapEntries().map((entry) => ({
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const entries = await getSitemapEntries();
+  return entries.map((entry) => ({
     url: `${SITE_URL}${entry.url}`,
     lastModified: new Date(),
     changeFrequency: entry.changeFrequency,

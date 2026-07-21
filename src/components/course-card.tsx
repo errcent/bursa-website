@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { Flame } from "lucide-react";
 
+import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
 import { CourseThumbnail } from "@/components/course-thumbnail";
 import { LevelBadge } from "@/components/instrument-badge";
 import { useMyLearning } from "@/hooks/use-my-learning";
 import { courseEnrollmentFromLearning } from "@/lib/learning/enrollment";
-import { getMentorBySlug } from "@/lib/mock-data";
+import { useCatalogIndex } from "@/hooks/use-catalog-index";
 import { formatRating, cn, hasRating } from "@/lib/utils";
-import type { Course } from "@/lib/types";
+import type { Course, Mentor } from "@/lib/types";
 
 export type CourseCardEnrollment = {
   progressPercent: number;
@@ -18,18 +19,16 @@ export type CourseCardEnrollment = {
   lastLessonId?: string;
 };
 
-function courseLessonCount(course: Course): number | undefined {
+function courseVideoCount(course: Course): number | undefined {
+  if (course.lessonCount != null && course.lessonCount > 0) return course.lessonCount;
   if (!course.modules?.length) return undefined;
   return course.modules.reduce((total, mod) => total + mod.lessons.length, 0);
 }
 
 function courseMetaLabel(course: Course): string {
   const durationLabel = `${course.durationHours} jam`;
-  const lessonCount = courseLessonCount(course);
-  if (lessonCount !== undefined) return `${lessonCount} pelajaran · ${durationLabel}`;
-  // Listing queries (catalog API) skip the full module payload and only carry
-  // a count — still worth surfacing so the pill isn't just a bare duration.
-  if (course.moduleCount) return `${course.moduleCount} modul · ${durationLabel}`;
+  const videoCount = courseVideoCount(course);
+  if (videoCount !== undefined) return `${videoCount} video · ${durationLabel}`;
   return durationLabel;
 }
 
@@ -38,6 +37,9 @@ export function CourseCard({
   className,
   enrollment: enrollmentProp,
   isBestseller = false,
+  mentor: mentorProp,
+  variant = "default",
+  hideBookmark = false,
 }: {
   course: Course;
   className?: string;
@@ -45,11 +47,21 @@ export function CourseCard({
   enrollment?: CourseCardEnrollment | null;
   /** Highlights the #1 popular course with a bestseller ribbon. */
   isBestseller?: boolean;
+  /** Optional mentor payload — avoids mock lookup when parent already has catalog data. */
+  mentor?: Mentor | null;
+  /** "featured" — cinematic overlay card for landing carousel; "catalog" — title below thumbnail. */
+  variant?: "default" | "featured" | "catalog";
+  /** Hide bookmark toggle (e.g. landing page). */
+  hideBookmark?: boolean;
 }) {
   const { bySlug } = useMyLearning();
+  const { index: catalogIndex } = useCatalogIndex();
   const enrollment =
     enrollmentProp ?? courseEnrollmentFromLearning(bySlug.get(course.slug));
-  const mentor = getMentorBySlug(course.mentorSlug);
+  const mentor =
+    mentorProp ??
+    catalogIndex?.mentors.find((item) => item.slug === course.mentorSlug) ??
+    null;
   const enrolled = Boolean(enrollment);
   const progressPercent = Math.min(
     100,
@@ -66,19 +78,30 @@ export function CourseCard({
       : mentor.name
     : course.instrument;
 
+  const isFeatured = variant === "featured";
+  const isCatalog = variant === "catalog";
+
   return (
     <Link
       href={href}
+      prefetch={false}
       className={cn(
-        "@container group relative block w-full overflow-hidden rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "@container group relative block w-full outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        isCatalog ? "overflow-visible" : "overflow-hidden",
+        isFeatured ? "rounded-2xl shadow-lg transition-shadow duration-300 hover:shadow-xl" : "rounded-xl",
         className
       )}
     >
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-surface-2">
+      <div
+        className={cn(
+          "relative aspect-[16/10] w-full min-h-0 overflow-hidden bg-surface-2",
+          isFeatured ? "rounded-2xl" : "rounded-xl"
+        )}
+      >
         <CourseThumbnail
           course={course}
-          mentor={mentor}
-          withScrim
+          withScrim={!isCatalog}
+          fillSlot
           className="absolute inset-0"
           alt={course.title}
           progressPercent={enrolled ? progressPercent : undefined}
@@ -100,22 +123,64 @@ export function CourseCard({
           </span>
         )}
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-1.5 p-2.5 pb-3">
-          <div className="min-w-0 flex-1">
-            <h3 className="line-clamp-2 font-heading text-sm font-semibold leading-tight text-white @[280px]:text-[15px]">
-              {course.title}
-            </h3>
-            {subtitle && (
-              <p className="mt-1 truncate text-[11px] font-light text-white/70">
-                {subtitle}
-              </p>
-            )}
+        {!hideBookmark ? (
+          <div className="absolute bottom-2.5 left-2.5 z-20">
+            <BookmarkToggleButton bookmarkRef={{ type: "course", slug: course.slug }} />
           </div>
-          <span className="hidden shrink-0 whitespace-nowrap rounded-full bg-black/45 px-2 py-1 text-[10px] font-medium text-white/85 backdrop-blur-sm @[220px]:inline">
+        ) : null}
+
+        {!isCatalog ? (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-1.5 p-2.5 pb-3">
+            <div className="min-w-0 flex-1">
+              <h3
+                className={cn(
+                  "line-clamp-2 font-heading font-semibold leading-tight text-white",
+                  isFeatured
+                    ? "text-base @[280px]:text-lg"
+                    : "text-sm @[280px]:text-[15px]"
+                )}
+              >
+                {course.title}
+              </h3>
+              {subtitle && (
+                <p
+                  className={cn(
+                    "mt-1 truncate font-light text-white/70",
+                    isFeatured ? "text-xs @[280px]:text-[13px]" : "text-[11px]"
+                  )}
+                >
+                  {subtitle}
+                </p>
+              )}
+            </div>
+            <span
+              className={cn(
+                "hidden shrink-0 whitespace-nowrap rounded-full bg-black/45 px-2 py-1 font-medium text-white/85 backdrop-blur-sm @[220px]:inline",
+                isFeatured ? "text-[11px]" : "text-[10px]"
+              )}
+            >
+              {courseMetaLabel(course)}
+            </span>
+          </div>
+        ) : (
+          <span className="pointer-events-none absolute bottom-2.5 right-2.5 z-10 shrink-0 whitespace-nowrap rounded-full bg-black/45 px-2 py-1 text-[10px] font-medium text-white/85 backdrop-blur-sm @[220px]:text-[11px]">
             {courseMetaLabel(course)}
           </span>
-        </div>
+        )}
       </div>
+
+      {isCatalog ? (
+        <div className="pt-2">
+          <h3 className="line-clamp-2 font-heading text-sm font-semibold leading-snug text-foreground @[280px]:text-[15px]">
+            {course.title}
+          </h3>
+          {subtitle ? (
+            <p className="mt-0.5 truncate text-[11px] font-light text-muted-foreground @[280px]:text-xs">
+              {subtitle}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
     </Link>
   );
 }

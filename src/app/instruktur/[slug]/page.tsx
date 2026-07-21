@@ -14,8 +14,8 @@ import {
   getCatalogMentorSlugs,
   getCoursesByMentor,
   getMentorBySlug,
-  getMentorReviews,
 } from "@/lib/catalog/server";
+import { resolveMentorAvatarUrl } from "@/lib/mentors/avatar";
 import { formatRating } from "@/lib/utils";
 
 export async function generateStaticParams() {
@@ -46,10 +46,7 @@ export default async function MentorProfilePage({
   const mentor = await getMentorBySlug(slug);
   if (!mentor) notFound();
 
-  const [mentorCourses, mentorReviews] = await Promise.all([
-    getCoursesByMentor(mentor.slug),
-    getMentorReviews(mentor.slug),
-  ]);
+  const mentorCourses = await getCoursesByMentor(mentor.slug);
 
   const statCards = [
     { icon: Users, label: "Total Siswa", value: mentor.studentsCount.toLocaleString("id-ID") },
@@ -58,6 +55,7 @@ export default async function MentorProfilePage({
     { icon: Calendar, label: "Pengalaman", value: `${mentor.yearsExperience} tahun` },
   ];
   const mentorFirstName = mentor.name.split(",")[0];
+  const avatarSrc = resolveMentorAvatarUrl(mentor);
 
   return (
     <>
@@ -66,9 +64,9 @@ export default async function MentorProfilePage({
         <div className="hero-cinematic border-b border-border">
           <div className="container-page flex flex-col gap-8 py-16 sm:flex-row sm:items-center">
             <Avatar className="size-32 border border-border sm:size-36">
-              {mentor.avatarUrl ? (
+              {avatarSrc ? (
                 <AvatarImage
-                  src={mentor.avatarUrl}
+                  src={avatarSrc}
                   alt={`Foto ${mentor.name}`}
                   className="object-cover object-top"
                 />
@@ -176,41 +174,6 @@ export default async function MentorProfilePage({
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">Belum ada kelas yang dipublikasikan.</p>
-              )}
-            </section>
-
-            <section>
-              <h2 className="section-title mb-1">Social proof</h2>
-              <p className="mb-4 text-sm text-muted-foreground">
-                Ulasan siswa dan status review tim ditampilkan sebagai referensi tambahan saat
-                memilih kelas.
-              </p>
-              {mentorReviews.length > 0 ? (
-                <div className="flex flex-col gap-4">
-                  {mentorReviews.map((review) => (
-                    <div key={`${review.name}-${review.date}`} className="surface-card p-5">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Avatar size="sm">
-                            <AvatarFallback className="bg-surface-2 text-xs">
-                              {review.initials}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="text-sm font-medium">{review.name}</p>
-                            <p className="text-xs text-muted-foreground">{review.date}</p>
-                          </div>
-                        </div>
-                        <span className="flex items-center gap-1 text-xs">
-                          <Star className="size-3.5 fill-foreground" /> {formatRating(review.rating)}
-                        </span>
-                      </div>
-                      <p className="mt-3 text-sm text-muted-foreground">{review.comment}</p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">Belum ada ulasan untuk kelas mentor ini.</p>
               )}
             </section>
           </div>

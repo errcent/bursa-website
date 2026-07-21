@@ -2,7 +2,13 @@
 
 import { useMemo, useState } from "react";
 
-import { LabField, LabNumberInput, LabResultTile } from "@/components/lab/lab-field";
+import {
+  LabField,
+  LabNumberInput,
+  LabResultGrid,
+  LabResultTile,
+  LabToolPanel,
+} from "@/components/lab/lab-field";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { tradeExpectancy } from "@/lib/lab/performance";
 import { cn } from "@/lib/utils";
@@ -69,7 +75,7 @@ export function TradeExpectancyCalculator() {
       </TabsList>
 
       <TabsContent value="calculator">
-        <div className="surface-card p-5 sm:p-6">
+        <LabToolPanel title="Parameter strategi">
           <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Win rate" id="te-wr" suffix="%">
               <LabNumberInput id="te-wr" value={winRate} onChange={setWinRate} min={0} max={100} />
@@ -85,20 +91,19 @@ export function TradeExpectancyCalculator() {
             </LabField>
           </div>
           {result && (
-            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <LabResultGrid>
               <LabResultTile label="Expectancy (R)" value={fmt(result.expectancyR)} tone={result.expectancyR > 0 ? "positive" : "negative"} />
               <LabResultTile label="Expectancy (Rp)" value={`Rp ${fmt(result.expectancyNominal, 0)}`} />
               <LabResultTile label="Total expected" value={`Rp ${fmt(result.totalExpected, 0)}`} tone={result.totalExpected > 0 ? "positive" : "negative"} />
               <LabResultTile label="Profit factor" value={fmt(result.profitFactor)} />
-            </div>
+            </LabResultGrid>
           )}
-        </div>
+        </LabToolPanel>
       </TabsContent>
 
       <TabsContent value="matrix">
         <div className="flex flex-col gap-6">
-          <div className="surface-card p-5 sm:p-6">
-            <h3 className="mb-4 font-heading text-base font-semibold">Cek strategi kamu</h3>
+          <LabToolPanel title="Cek strategi kamu">
             <div className="grid gap-4 sm:grid-cols-2">
               <LabField label="Win rate kamu" id="mx-winrate" suffix="%">
                 <LabNumberInput id="mx-winrate" value={winRate} onChange={setWinRate} min={0} max={100} />
@@ -122,15 +127,9 @@ export function TradeExpectancyCalculator() {
               {tone === "neutral" &&
                 "Kombinasi ini mendekati titik impas (break-even) — belum jelas untung atau rugi secara matematis."}
             </p>
-          </div>
+          </LabToolPanel>
 
-          <div className="surface-card overflow-x-auto p-5 sm:p-6">
-            <h3 className="mb-1 font-heading text-base font-semibold">Matriks expectancy (dalam R)</h3>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Baris = win rate, kolom = rasio risk:reward. Sel yang ditandai lingkaran biru adalah titik
-              terdekat dengan input kamu di atas.
-            </p>
-
+          <LabToolPanel title="Matriks expectancy (dalam R)" description="Baris = win rate, kolom = R:R. Lingkaran biru = input kamu.">
             <table className="w-full min-w-[560px] border-collapse text-sm">
               <thead>
                 <tr>
@@ -187,7 +186,7 @@ export function TradeExpectancyCalculator() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </LabToolPanel>
         </div>
       </TabsContent>
     </Tabs>

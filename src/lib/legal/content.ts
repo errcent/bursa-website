@@ -39,7 +39,7 @@ export const termsOfService: LegalDocument = {
       ],
       bullets: [
         "Katalog kelas dan profil mentor",
-        "Ruang belajar terstruktur dengan modul dan progress",
+        "Ruang belajar terstruktur dengan video dan progress",
         "Komunitas diskusi dan sinyal internal (untuk anggota berlangganan ruang tertentu)",
         "Pembayaran kelas langsung ke mentor dengan komisi platform",
       ],
@@ -78,8 +78,8 @@ export const termsOfService: LegalDocument = {
       id: "ulasan",
       title: "6. Rating & Ulasan",
       paragraphs: [
-        "Murid hanya dapat memberi rating dan ulasan setelah menyelesaikan minimal satu modul penuh di kelas tersebut. Kebijakan ini menjaga kualitas ulasan dan mengurangi review palsu.",
-        "Satu akun hanya boleh mengirim satu ulasan per kelas. Ulasan yang melanggar aturan komunitas dapat dihapus oleh tim moderasi.",
+        "Fitur rating, ulasan, dan komentar publik dari pengguna saat ini tidak tersedia di platform.",
+        "Rating agregat yang ditampilkan pada kartu kelas (jika ada) berasal dari data internal platform, bukan dari formulir ulasan terbuka pengguna.",
       ],
     },
     {

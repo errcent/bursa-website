@@ -26,7 +26,6 @@ import {
 } from "@/lib/video/fullscreen";
 import {
   applyVideoProtection,
-  generatePlaybackToken,
   type ProtectionViolationType,
   watermarkConfig,
 } from "@/lib/video/protection";
@@ -56,6 +55,14 @@ export interface ProtectedVideoPlayerProps {
   seekRequestSeconds?: number | null;
   onTimeUpdate?: (seconds: number) => void;
   onProtectionViolation?: (type: ProtectionViolationType, lessonId: string) => void;
+  /** Device mockup — skip DRM/blur/watermark and use demo playback. */
+  mockupMode?: boolean;
+  /** Inset fullscreen for device mockup scroll (not browser Fullscreen API). */
+  simulatedFullscreen?: boolean;
+  /** Pulse the fullscreen control (mockup scroll cue). */
+  highlightFullscreenControl?: boolean;
+  /** Auto-play video in mockup demos. */
+  mockupAutoPlay?: boolean;
 }
 
 export function ProtectedVideoPlayer({
@@ -72,9 +79,15 @@ export function ProtectedVideoPlayer({
   seekRequestSeconds = null,
   onTimeUpdate,
   onProtectionViolation,
+  mockupMode = false,
+  simulatedFullscreen = false,
+  highlightFullscreenControl = false,
+  mockupAutoPlay = false,
 }: ProtectedVideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  /** Signed server heartbeat token — enables verified watch-time accrual (QC-20260719-46). */
+  const heartbeatTokenRef = useRef<string | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -89,14 +102,20 @@ export function ProtectedVideoPlayer({
   const [showControls, setShowControls] = useState(true);
   const [isBlurred, setIsBlurred] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
-  const [tokenReady, setTokenReady] = useState(isPreview);
+  const [tokenReady, setTokenReady] = useState(isPreview || mockupMode);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [playbackError, setPlaybackError] = useState<string | null>(null);
   const [resolvedSrc, setResolvedSrc] = useState(() =>
     resolvePlayableVideoUrl(videoSrc, DEMO_VIDEO_URL)
   );
 
-  const isProtected = !isPreview;
+  const usesDemoPlayback = isPreview || mockupMode;
+  const playbackSrc = usesDemoPlayback
+    ? resolvePlayableVideoUrl(videoSrc, DEMO_VIDEO_URL)
+    : resolvedSrc;
+  const isPlaybackReady = usesDemoPlayback || tokenReady;
+
+  const isProtected = !isPreview && !mockupMode;
   const wmConfig = watermarkConfig(userId ?? "guest", userEmail ?? "tamu@bursa.id");
 
   const chapterMarkers = useMemoChapterMarkers(duration);
@@ -126,13 +145,7 @@ export function ProtectedVideoPlayer({
   );
 
   useEffect(() => {
-    if (isPreview) {
-      setTokenReady(true);
-      setTokenError(null);
-      setPlaybackError(null);
-      setResolvedSrc(resolvePlayableVideoUrl(videoSrc, DEMO_VIDEO_URL));
-      return;
-    }
+    if (usesDemoPlayback) return;
 
     if (!userId) {
       setTokenReady(false);
@@ -148,6 +161,7 @@ export function ProtectedVideoPlayer({
       try {
         const res = await fetch("/api/video/playback-token", {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             userId,
@@ -160,10 +174,7 @@ export function ProtectedVideoPlayer({
 
         if (!res.ok) {
           const data = (await res.json().catch(() => ({}))) as { error?: string };
-          // Enrolled clients may race ahead of local enrollment sync; allow
-          // playback when the workspace already confirmed course access.
           if (hasAccess && !cancelled) {
-            generatePlaybackToken(userId!, lessonId);
             setResolvedSrc(resolvePlayableVideoUrl(videoSrc, DEMO_VIDEO_URL));
             setTokenReady(true);
             setTokenError(null);
@@ -174,9 +185,13 @@ export function ProtectedVideoPlayer({
           return;
         }
 
-        const data = (await res.json()) as { token: string; videoUrl?: string };
+        const data = (await res.json()) as {
+          token: string;
+          videoUrl?: string;
+          heartbeatToken?: string;
+        };
         if (!cancelled) {
-          generatePlaybackToken(userId!, lessonId);
+          heartbeatTokenRef.current = data.heartbeatToken ?? null;
           setResolvedSrc(resolvePlayableVideoUrl(data.videoUrl, videoSrc, DEMO_VIDEO_URL));
           setTokenReady(true);
           setTokenError(null);
@@ -184,7 +199,6 @@ export function ProtectedVideoPlayer({
         }
       } catch {
         if (!cancelled) {
-          generatePlaybackToken(userId!, lessonId);
           setResolvedSrc(resolvePlayableVideoUrl(videoSrc, DEMO_VIDEO_URL));
           setTokenReady(true);
           setTokenError(null);
@@ -197,7 +211,45 @@ export function ProtectedVideoPlayer({
     return () => {
       cancelled = true;
     };
-  }, [courseId, hasAccess, isPreview, lessonId, userEmail, userId, videoSrc]);
+  }, [courseId, hasAccess, lessonId, userEmail, userId, usesDemoPlayback, videoSrc]);
+
+  const controlsVisible = mockupMode || showControls;
+
+  // Server-verified watch time (QC-20260719-46): while an enrolled learner is playing, ping the
+  // heartbeat endpoint with the current playhead so the server can accrue verified watch time.
+  // Guests / previews don't accrue. Completion elsewhere is gated on this server value.
+  useEffect(() => {
+    if (isPreview || !isPlaying || !userId) return;
+    const token = heartbeatTokenRef.current;
+    if (!token) return;
+
+    let cancelled = false;
+    const sendHeartbeat = () => {
+      const video = videoRef.current;
+      if (cancelled || !video) return;
+      void fetch("/api/video/heartbeat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(userEmail ? { "x-user-email": userEmail } : {}),
+        },
+        body: JSON.stringify({
+          userId,
+          token,
+          lessonId,
+          position: Math.floor(video.currentTime),
+        }),
+        keepalive: true,
+      }).catch(() => undefined);
+    };
+
+    sendHeartbeat();
+    const intervalId = setInterval(sendHeartbeat, 15_000);
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, [isPlaying, isPreview, userId, userEmail, lessonId]);
 
   useEffect(() => {
     if (!isProtected || !containerRef.current) return;
@@ -208,7 +260,7 @@ export function ProtectedVideoPlayer({
     });
 
     return cleanup;
-  }, [isProtected, logViolation, tokenReady]);
+  }, [isProtected, isPlaybackReady, logViolation]);
 
   useEffect(() => {
     const syncFullscreenState = () => {
@@ -221,7 +273,7 @@ export function ProtectedVideoPlayer({
     ];
 
     return () => cleanups.forEach((cleanup) => cleanup());
-  }, [tokenReady]);
+  }, [isPlaybackReady]);
 
   useEffect(() => {
     const handleFocus = () => {
@@ -237,6 +289,8 @@ export function ProtectedVideoPlayer({
   }, [isProtected]);
 
   useEffect(() => {
+    if (mockupMode) return;
+
     let hideTimer: ReturnType<typeof setTimeout>;
     const resetTimer = () => {
       setShowControls(true);
@@ -256,7 +310,7 @@ export function ProtectedVideoPlayer({
       container?.removeEventListener("mousemove", resetTimer);
       container?.removeEventListener("touchstart", resetTimer);
     };
-  }, [isPlaying]);
+  }, [isPlaying, mockupMode]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -274,7 +328,7 @@ export function ProtectedVideoPlayer({
       video.textTracks.removeEventListener("addtrack", syncSubtitleTracks);
       video.textTracks.removeEventListener("removetrack", syncSubtitleTracks);
     };
-  }, [resolvedSrc, tokenReady]);
+  }, [playbackSrc, isPlaybackReady]);
 
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
@@ -306,7 +360,7 @@ export function ProtectedVideoPlayer({
     const video = videoRef.current;
     if (!video) return;
 
-    if (resolvedSrc !== DEMO_VIDEO_URL) {
+    if (playbackSrc !== DEMO_VIDEO_URL) {
       setPlaybackError(null);
       setResolvedSrc(DEMO_VIDEO_URL);
       video.load();
@@ -318,7 +372,7 @@ export function ProtectedVideoPlayer({
     setPlaybackError(
       "Sumber video tidak tersedia atau format tidak didukung. Silakan muat ulang halaman atau hubungi dukungan."
     );
-  }, [resolvedSrc]);
+  }, [playbackSrc]);
 
   useEffect(() => {
     if (seekRequestSeconds == null || !Number.isFinite(seekRequestSeconds)) return;
@@ -356,6 +410,17 @@ export function ProtectedVideoPlayer({
   const handleLoadedMetadata = useCallback(() => {
     syncDuration();
   }, [syncDuration]);
+
+  useEffect(() => {
+    if (!mockupMode || !mockupAutoPlay) return;
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+    void video.play().then(
+      () => setIsPlaying(true),
+      () => setIsPlaying(false)
+    );
+  }, [mockupMode, mockupAutoPlay, playbackSrc, simulatedFullscreen]);
 
   const seekTo = useCallback(
     (clientX: number) => {
@@ -432,8 +497,9 @@ export function ProtectedVideoPlayer({
   }, []);
 
   const playerShellClass = cn(
-    "aspect-video overflow-hidden rounded-xl border border-border",
-    className
+    !simulatedFullscreen && "aspect-video overflow-hidden rounded-xl border border-border",
+    simulatedFullscreen && "h-full min-h-0 overflow-hidden rounded-none border-0",
+    className,
   );
 
   if (tokenError) {
@@ -444,7 +510,7 @@ export function ProtectedVideoPlayer({
     );
   }
 
-  if (!tokenReady) {
+  if (!isPlaybackReady) {
     return (
       <div
         className={cn(
@@ -485,14 +551,15 @@ export function ProtectedVideoPlayer({
         "video-player-shell group/player relative bg-black",
         playerShellClass,
         isProtected && "select-none [-webkit-touch-callout:none]",
-        isBlurred && isProtected && "[&_video]:blur-xl"
+        isBlurred && isProtected && "[&_video]:blur-xl",
+        simulatedFullscreen && "video-player-shell--simulated-fullscreen",
       )}
       onContextMenu={isProtected ? (e) => e.preventDefault() : undefined}
     >
       <video
         ref={videoRef}
-        key={resolvedSrc}
-        src={resolvedSrc}
+        key={playbackSrc}
+        src={playbackSrc}
         className="size-full object-contain"
         playsInline
         preload="metadata"
@@ -534,7 +601,7 @@ export function ProtectedVideoPlayer({
 
       <VideoControlBar
         isPlaying={isPlaying}
-        showControls={showControls}
+        showControls={controlsVisible}
         currentTime={currentTime}
         duration={duration}
         volume={volume}
@@ -545,10 +612,11 @@ export function ProtectedVideoPlayer({
           ...option,
           disabled: option.value !== "Auto",
         }))}
-        isFullscreen={isFullscreen}
+        isFullscreen={simulatedFullscreen || isFullscreen}
         subtitlesEnabled={subtitlesEnabled}
         hasSubtitleTracks={hasSubtitleTracks}
         chapterMarkers={chapterMarkers}
+        highlightFullscreenControl={highlightFullscreenControl}
         onRevealControls={revealControls}
         onTogglePlay={togglePlay}
         onSeek={handleSeek}

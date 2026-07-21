@@ -15,11 +15,20 @@ export function isGoogleOAuthConfigured(): boolean {
 
 /** NextAuth v5 accepts AUTH_SECRET; we also support NEXTAUTH_SECRET for ops docs. */
 export function getAuthSecret(): string {
-  return (
-    process.env.AUTH_SECRET?.trim() ||
-    process.env.NEXTAUTH_SECRET?.trim() ||
-    "bursa-build-placeholder-secret-not-for-production"
-  );
+  const secret =
+    process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim();
+
+  if (secret) return secret;
+
+  const isBuildPhase =
+    process.env.NEXT_PHASE === "phase-production-build" ||
+    process.env.NEXT_PHASE === "phase-development-build";
+
+  if (process.env.NODE_ENV === "production" && !isBuildPhase) {
+    throw new Error("AUTH_SECRET or NEXTAUTH_SECRET is required in production");
+  }
+
+  return "bursa-build-placeholder-secret-not-for-production";
 }
 
 function mapClientRole(email: string, roleHint?: string): UserRole {

@@ -8,6 +8,8 @@ export interface AvailabilitySlot {
   bookedByName?: string | null;
   notes?: string | null;
   createdAt: string;
+  commitmentFee?: number;
+  attendanceStatus?: string;
 }
 
 export interface SlotFormInput {

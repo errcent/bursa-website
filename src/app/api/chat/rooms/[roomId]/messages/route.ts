@@ -13,7 +13,7 @@ import {
 } from "@/lib/chat/room-kinds";
 import { resolveLastReadMessageId } from "@/lib/chat/unread";
 import { db } from "@/lib/db";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
+import { resolveAuthenticatedUser, resolveTrustedEmail } from "@/lib/auth/request-identity";
 import { createChatMessageSchema } from "@/lib/validations/api";
 
 type RouteContext = {
@@ -29,23 +29,12 @@ async function resolveUser(
   body?: { userId?: string; name?: string; role?: string },
   options?: { createIfMissing?: boolean }
 ) {
-  const email = request.headers.get("x-user-email")?.trim().toLowerCase();
-  const headerUserId = request.headers.get("x-user-id")?.trim();
-  const headerName = request.headers.get("x-user-name")?.trim();
-  const headerRole = request.headers.get("x-user-role")?.trim();
-  const userId = body?.userId?.trim() || headerUserId || "";
-
-  if (!email && !userId) return null;
-
-  return resolveRequestUser(
-    {
-      userId,
-      email: email || undefined,
-      name: body?.name || headerName || undefined,
-      role: body?.role || headerRole || undefined,
-    },
-    { createIfMissing: options?.createIfMissing ?? true }
-  );
+  return resolveAuthenticatedUser(request, {
+    createIfMissing: options?.createIfMissing ?? true,
+    claimedUserId: body?.userId,
+    name: body?.name,
+    role: body?.role,
+  });
 }
 
 async function isHubOwner(userId: string, mentorId: string | null | undefined) {
@@ -87,7 +76,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
             )?.id ?? null,
         }
       : await resolveChatRoomViewerFromEmail(
-          request.headers.get("x-user-email"),
+          await resolveTrustedEmail(request),
           {
             createIfMissing: true,
             userId: request.headers.get("x-user-id"),

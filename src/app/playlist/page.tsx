@@ -6,7 +6,7 @@ import { SiteNavbar } from "@/components/site-navbar";
 
 export const metadata = {
   title: "Playlist",
-  description: "Playlist kurasi Bursa — jalur belajar yang disusun tim Bursa dari modul-modul terpilih.",
+  description: "Playlist kurasi Bursa — jalur belajar yang disusun tim Bursa dari video-video terpilih.",
 };
 
 export default function PlaylistPage() {

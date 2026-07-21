@@ -24,6 +24,15 @@ model User {
   username                       String?                   @unique
   /// E.164 or Indonesian +62... format.
   phone                          String?                   @unique
+  /// Set once the email is verified (magic link / OTP). Gate for public/ranking metrics (QC-20260719-26).
+  emailVerifiedAt                DateTime?
+  /// Set once the phone is verified. Second identity anchor for Sybil resistance (QC-20260719-26).
+  phoneVerifiedAt                DateTime?
+  /// Non-cash platform credit (Rupiah) usable toward ANOTHER course. NEVER a refund (QC-20260719-33).
+  platformCreditBalance          Int                       @default(0)
+  /// Reporter reputation counters for weighted moderation (QC-20260719-40).
+  moderationReportsUpheld        Int                       @default(0)
+  moderationReportsDismissed     Int                       @default(0)
   adminAuditLogs                 AdminAuditLog[]
   AiConversation                 AiConversation[]
   AiUsageLog                     AiUsageLog[]
@@ -52,6 +61,51 @@ model User {
   transactions                   Transaction[]
   watchlistItems                 WatchlistItem[]
   learningGuidanceProfile        LearningGuidanceProfile?
+  activeSessions                 UserSession[]
+  refreshTokens                  RefreshToken[]
+  courseDisputes                 CourseDispute[]
+  pollVotes                      PollVote[]
+}
+
+/// Active device/session anchors for lifetime-access excludability — concurrent
+/// session cap, per-user watermark identity, and anomaly detection (QC-20260719-38).
+/// This is NOT a change to price/lifetime (LOCKED); it only limits credential sharing.
+model UserSession {
+  id         String          @id @default(cuid())
+  userId     String
+  /// Hashed device fingerprint (never raw). Stable per browser/app install.
+  deviceHash String
+  ipHash     String?
+  userAgent  String?
+  platform   ClientPlatform  @default(WEB)
+  pushToken  String?
+  createdAt  DateTime        @default(now())
+  lastSeenAt DateTime        @default(now())
+  revokedAt  DateTime?
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+
+  @@unique([userId, deviceHash])
+  @@index([userId, revokedAt])
+  @@index([userId, lastSeenAt])
+}
+
+/// Opaque refresh tokens for native mobile clients (hashed at rest).
+model RefreshToken {
+  id            String          @id @default(cuid())
+  userId        String
+  userSessionId String?
+  tokenHash     String          @unique
+  deviceHash    String
+  platform      ClientPlatform  @default(IOS)
+  expiresAt     DateTime
+  revokedAt     DateTime?
+  createdAt     DateTime        @default(now())
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userSession   UserSession?    @relation(fields: [userSessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
 }
 
 /// Quiz answers from the learning-path onboarding ("jembatannya").
@@ -60,6 +114,8 @@ model LearningGuidanceProfile {
   userId           String                   @unique
   instrument       Instrument
   experienceLevel  CourseLevel
+  /// Preserves never vs demo nuance (both map to PEMULA experienceLevel).
+  experienceTier   LearningExperience       @default(DEMO)
   tradingStyle     LearningTradingStyle
   goal             LearningGoal
   riskTolerance    LearningRiskTolerance
@@ -107,7 +163,13 @@ model MentorProfile {
   rating             Float                    @default(0)
   trackRecord        Json
   availableFor1on1   Boolean                  @default(false)
+  /// Legacy free-form display string. Deprecated — use sessionPriceInt for logic (QC-20260719-22).
   sessionPrice       String?
+  /// Validated numeric 1-on-1 session price (Rupiah). Source of truth for commitment fee & ledger.
+  sessionPriceInt    Int?
+  /// Distinct COMPLETED paid buyers across this mentor's courses — the only student
+  /// metric allowed to drive ranking/discovery (QC-20260719-26/27). Derived, never self-set.
+  paidStudentsCount  Int                      @default(0)
   createdAt          DateTime                 @default(now())
   updatedAt          DateTime                 @updatedAt
   socialLinks        Json?
@@ -118,56 +180,81 @@ model MentorProfile {
   availabilitySlots  MentorAvailabilitySlot[]
   user               User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   tradingSignals     TradingSignal[]
+  /// Session-payment ledger rows (kind=SESSION) attributed to this mentor (QC-20260719-22/47).
+  sessionTransactions Transaction[]
 
   @@index([verificationStatus, studentsCount])
 }
 
 /// Admin-managed time slots for mentor 1-on-1 sessions.
 model MentorAvailabilitySlot {
-  id               String        @id @default(cuid())
+  id               String                  @id @default(cuid())
   mentorId         String
   startAt          DateTime
   endAt            DateTime
-  isBooked         Boolean       @default(false)
+  isBooked         Boolean                 @default(false)
   bookedByUserId   String?
   createdByAdminId String?
   notes            String?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  bookedBy         User?         @relation("SessionBookings", fields: [bookedByUserId], references: [id])
-  createdByAdmin   User?         @relation("SessionSlotsCreated", fields: [createdByAdminId], references: [id])
-  mentor           MentorProfile @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  /// Booking lifecycle for no-show/cancel accountability (QC-20260719-21).
+  bookedAt         DateTime?
+  cancelledAt      DateTime?
+  /// One-time commitment fee (Rupiah) captured at booking; forfeited on no-show. Not recurring (LOCKED).
+  commitmentFee    Int                     @default(0)
+  attendanceStatus SessionAttendanceStatus @default(SCHEDULED)
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+  bookedBy         User?                   @relation("SessionBookings", fields: [bookedByUserId], references: [id])
+  createdByAdmin   User?                   @relation("SessionSlotsCreated", fields: [createdByAdminId], references: [id])
+  mentor           MentorProfile           @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  /// On-platform session-payment ledger rows for this booking (QC-20260719-22/47).
+  transactions     Transaction[]
 
   @@index([mentorId, startAt])
   @@index([mentorId, isBooked, startAt])
+  @@index([bookedByUserId, isBooked])
 }
 
 model Course {
-  id               String                @id @default(cuid())
-  slug             String                @unique
-  title            String
-  mentorId         String
-  instrument       Instrument
-  level            CourseLevel
-  price            Int
-  rating           Float                 @default(0)
-  studentsCount    Int                   @default(0)
-  durationHours    Int
-  shortDescription String
-  outcomes         Json
-  isPublished      Boolean               @default(true)
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
-  thumbnailUrl     String?
-  mentor           MentorProfile         @relation(fields: [mentorId], references: [id])
-  changeRequests   CourseChangeRequest[]
-  enrollments      Enrollment[]
-  modules          Module[]
-  playlistItems    PlaylistItem[]
-  reviews          Review[]
-  transactions     Transaction[]
+  id                String                @id @default(cuid())
+  slug              String                @unique
+  title             String
+  mentorId          String
+  instrument        Instrument
+  level             CourseLevel
+  price             Int
+  rating            Float                 @default(0)
+  /// Number of reviews behind `rating` — shown to users and used for min-sample downweight (QC-20260719-17).
+  ratingCount       Int                   @default(0)
+  /// Bayesian-shrunk rating (prior = platform mean) used for ranking to resist low-n gaming (QC-20260719-17).
+  bayesianRating    Float                 @default(0)
+  /// Time-weighted rating with recency decay — surfaces stale 5★ content (QC-20260719-18/01).
+  decayedRating     Float                 @default(0)
+  /// When rating aggregates were last recomputed — powers "terakhir diperbarui" staleness badge.
+  ratingUpdatedAt   DateTime?
+  studentsCount     Int                   @default(0)
+  /// Distinct COMPLETED paid buyers — the only popularity signal allowed in ranking (QC-20260719-27).
+  paidStudentsCount Int                   @default(0)
+  durationHours     Int
+  shortDescription  String
+  outcomes          Json
+  isPublished       Boolean               @default(true)
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  /// Last time course content was materially updated — staleness penalty input (QC-20260719-18).
+  contentUpdatedAt  DateTime?
+  thumbnailUrl      String?
+  mentor            MentorProfile         @relation(fields: [mentorId], references: [id])
+  changeRequests    CourseChangeRequest[]
+  disputes          CourseDispute[]
+  enrollments       Enrollment[]
+  modules           Module[]
+  playlistItems     PlaylistItem[]
+  reviews           Review[]
+  transactions      Transaction[]
 
   @@index([isPublished, studentsCount])
+  @@index([isPublished, paidStudentsCount])
 }
 
 model Module {
@@ -240,11 +327,16 @@ model Enrollment {
   id        String   @id @default(cuid())
   userId    String
   courseId  String
+  /// True only when backed by a COMPLETED paid Transaction — separates paid buyers
+  /// from free/auto-provisioned enrollments for ranking & eligibility (QC-20260719-26/27).
+  isPaid    Boolean  @default(false)
   createdAt DateTime @default(now())
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
+  @@index([courseId])
+  @@index([courseId, isPaid])
 }
 
 model LessonProgress {
@@ -252,7 +344,15 @@ model LessonProgress {
   userId         String
   lessonId       String
   completed      Boolean  @default(false)
+  /// Client-reported resume position — display only, NOT trusted for completion (QC-20260719-46).
   watchedSeconds Int      @default(0)
+  /// Server-accumulated verified watch time via signed playback heartbeats. Sole gate for
+  /// `completed=true` — client cannot inflate it (QC-20260719-16/46).
+  verifiedWatchedSeconds Int      @default(0)
+  /// Last heartbeat wall-clock timestamp — bounds per-ping credit against replay/seek cheating.
+  lastHeartbeatAt        DateTime?
+  /// Last verified playhead position (seconds) — advancement is credited, seeks/rewinds are not.
+  heartbeatPosition      Int      @default(0)
   updatedAt      DateTime @updatedAt
   lesson         Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -263,28 +363,52 @@ model LessonProgress {
 model Transaction {
   id               String            @id @default(cuid())
   userId           String
-  courseId         String
+  /// Course purchase link. NULL for 1-on-1 session payments (QC-20260719-22/47).
+  courseId         String?
+  /// 1-on-1 session booking link. NULL for course purchases (QC-20260719-22/47).
+  mentorSessionId  String?
+  /// Denormalized mentor for SESSION payments (course payments derive mentor via course).
+  mentorId         String?
   amount           Int
+  /// Discriminates course purchases from 1-on-1 session payments so a single ledger
+  /// (Transaction + CommissionRecord 25%) can span both revenue lines (QC-20260719-22/47).
+  kind             TransactionKind   @default(COURSE)
   status           TransactionStatus @default(PENDING)
+  /// Idempotency guard against duplicate COMPLETED transactions per (user,course/session) or retry (QC-20260719-30).
+  idempotencyKey   String?           @unique
   createdAt        DateTime          @default(now())
   commissionRecord CommissionRecord?
-  course           Course            @relation(fields: [courseId], references: [id])
-  user             User              @relation(fields: [userId], references: [id])
+  course           Course?                 @relation(fields: [courseId], references: [id])
+  mentorSession    MentorAvailabilitySlot? @relation(fields: [mentorSessionId], references: [id])
+  mentor           MentorProfile?          @relation(fields: [mentorId], references: [id])
+  user             User                    @relation(fields: [userId], references: [id])
 
   @@index([courseId, createdAt])
+  @@index([status])
+  @@index([userId, courseId, status])
+  @@index([mentorSessionId])
+  @@index([mentorId, kind])
 }
 
 model Review {
-  id        String   @id @default(cuid())
-  userId    String
-  courseId  String
-  rating    Int
-  comment   String
-  createdAt DateTime @default(now())
-  course    Course   @relation(fields: [courseId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  id               String   @id @default(cuid())
+  userId           String
+  courseId         String
+  rating           Int
+  comment          String
+  /// True only if the reviewer has a COMPLETED paid Transaction for the course (QC-20260719-15).
+  verifiedPurchase Boolean  @default(false)
+  /// Set by reciprocal-ring / mentor-affiliation detection; flagged reviews are excluded
+  /// from public aggregates and queued for moderation (QC-20260719-34).
+  isFlagged        Boolean  @default(false)
+  flagReason       String?
+  createdAt        DateTime @default(now())
+  course           Course   @relation(fields: [courseId], references: [id])
+  user             User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, courseId])
+  @@index([courseId])
+  @@index([courseId, createdAt])
 }
 
 model Note {
@@ -464,31 +588,59 @@ model ChatAuditLog {
 }
 
 model TradingSignal {
-  id          String          @id @default(cuid())
-  roomId      String
-  mentorId    String
-  ticker      String
-  instrument  Instrument
-  direction   SignalDirection
-  entryPrice  Float
-  targetPrice Float?
-  stopLoss    Float?
-  rationale   String?
-  status      SignalStatus    @default(ACTIVE)
-  createdAt   DateTime        @default(now())
-  closedAt    DateTime?
-  mentor      MentorProfile   @relation(fields: [mentorId], references: [id])
-  room        ChatRoom        @relation(fields: [roomId], references: [id])
+  id                String          @id @default(cuid())
+  roomId            String
+  mentorId          String
+  ticker            String
+  instrument        Instrument
+  direction         SignalDirection
+  entryPrice        Float
+  targetPrice       Float?
+  stopLoss          Float?
+  rationale         String?
+  status            SignalStatus    @default(ACTIVE)
+  /// Optional forced-resolution deadline; expiry auto-resolves the signal (QC-20260719-19).
+  expiresAt         DateTime?
+  /// Platform-computed outcome — mentors cannot delete losing signals (QC-20260719-19).
+  outcome           SignalOutcome   @default(PENDING)
+  /// Platform-computed realized return vs entryPrice at resolution (percent).
+  realizedReturnPct Float?
+  resolvedAt        DateTime?
+  createdAt         DateTime        @default(now())
+  closedAt          DateTime?
+  mentor            MentorProfile   @relation(fields: [mentorId], references: [id])
+  room              ChatRoom        @relation(fields: [roomId], references: [id])
+
+  @@index([mentorId, outcome])
+  @@index([status, expiresAt])
 }
 
 model TradingPoll {
-  id        String    @id @default(cuid())
+  id        String     @id @default(cuid())
   roomId    String
   question  String
+  /// Option definitions only (id + label + cached count). Voter identities live in
+  /// PollVote, never returned to viewers (QC-20260719-23) and bounded in size (QC-20260719-41).
   options   Json
   expiresAt DateTime?
-  createdAt DateTime  @default(now())
-  room      ChatRoom  @relation(fields: [roomId], references: [id])
+  createdAt DateTime   @default(now())
+  room      ChatRoom   @relation(fields: [roomId], references: [id])
+  votes     PollVote[]
+}
+
+/// Normalized poll vote — one row per (poll,user). Keeps voter identity server-side
+/// (ballot secrecy, QC-20260719-23) and bounds JSON growth (QC-20260719-41).
+model PollVote {
+  id        String      @id @default(cuid())
+  pollId    String
+  optionId  String
+  userId    String
+  createdAt DateTime    @default(now())
+  poll      TradingPoll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, userId])
+  @@index([pollId, optionId])
 }
 
 model AdminAuditLog {
@@ -504,17 +656,23 @@ model AdminAuditLog {
 }
 
 model ContentModerationQueue {
-  id          String           @id @default(cuid())
-  contentType String
-  contentId   String
-  reportedBy  String?
-  reason      String
-  status      ModerationStatus @default(PENDING)
-  reviewedBy  String?
-  createdAt   DateTime         @default(now())
-  reviewedAt  DateTime?
-  reporter    User?            @relation("ReportedBy", fields: [reportedBy], references: [id])
-  reviewer    User?            @relation("ReviewedBy", fields: [reviewedBy], references: [id])
+  id             String                @id @default(cuid())
+  contentType    String
+  contentId      String
+  reportedBy     String?
+  reason         String
+  status         ModerationStatus      @default(PENDING)
+  /// Snapshot of reporter reputation weight at report time (QC-20260719-40).
+  reporterWeight Float                 @default(1)
+  /// Outcome vs the reporter — drives reporter reputation (QC-20260719-40).
+  resolution     ModerationResolution?
+  reviewedBy     String?
+  createdAt      DateTime              @default(now())
+  reviewedAt     DateTime?
+  reporter       User?                 @relation("ReportedBy", fields: [reportedBy], references: [id])
+  reviewer       User?                 @relation("ReviewedBy", fields: [reviewedBy], references: [id])
+
+  @@index([status, createdAt])
 }
 
 /// Mentor proposes structural branch changes (add/rename/mode/remove). Admin approves.
@@ -585,18 +743,26 @@ model PlatformConfig {
   updatedAt DateTime @updatedAt
 }
 
+enum KnowledgeChunkSensitivity {
+  PUBLIC
+  INTERNAL
+}
+
 /// RAG knowledge chunks indexed from vault docs (scripts/index-docs.ts).
 model KnowledgeChunk {
-  id         String                 @id @default(cuid())
-  sourceDoc  String
-  heading    String
-  content    String
-  embedding  Unsupported("vector")?
-  tokenCount Int                    @default(0)
-  updatedAt  DateTime               @updatedAt
-  createdAt  DateTime               @default(now())
+  id          String                    @id @default(cuid())
+  sourceDoc   String
+  heading     String
+  content     String
+  sensitivity KnowledgeChunkSensitivity @default(PUBLIC)
+  allowedRoles  String[]                  @default([])
+  embedding   Unsupported("vector")?
+  tokenCount  Int                       @default(0)
+  updatedAt   DateTime                  @updatedAt
+  createdAt   DateTime                  @default(now())
 
   @@index([sourceDoc])
+  @@index([sensitivity])
 }
 
 model AiConversation {
@@ -653,6 +819,10 @@ model CommissionRecord {
   netMentorAmount  Int
   payoutStatus     PayoutStatus  @default(PENDING)
   payoutPeriod     String?
+  /// Published payout SLA target (period cut-off + T+X). Enables ETA & hold-up audit (QC-20260719-14).
+  payoutDueAt      DateTime?
+  /// Timestamp when payout actually reached PAID — for SLA reconciliation (QC-20260719-14).
+  paidAt           DateTime?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   mentor           MentorProfile @relation(fields: [mentorId], references: [id])
@@ -660,6 +830,7 @@ model CommissionRecord {
 
   @@index([mentorId, createdAt])
   @@index([payoutStatus, payoutPeriod])
+  @@index([payoutStatus, payoutDueAt])
 }
 
 enum UserRole {
@@ -667,6 +838,12 @@ enum UserRole {
   MENTOR
   ADMIN
   DEVELOPER
+}
+
+enum ClientPlatform {
+  WEB
+  IOS
+  ANDROID
 }
 
 enum KycStatus {
@@ -692,6 +869,13 @@ enum CourseLevel {
   PEMULA
   MENENGAH
   MAHIR
+}
+
+enum LearningExperience {
+  NEVER
+  DEMO
+  REGULAR
+  PROFITABLE
 }
 
 enum LearningTradingStyle {
@@ -739,6 +923,14 @@ enum TransactionStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+/// Revenue line a Transaction belongs to. SESSION rows are 1-on-1 booking payments
+/// (courseId NULL, mentorSessionId set); both kinds feed the same 25% commission ledger
+/// (QC-20260719-22/47). NOTE: REFUNDED status is never wired to any user flow (LOCKED: no refund).
+enum TransactionKind {
+  COURSE
+  SESSION
 }
 
 enum ChatRoomTier {
@@ -800,6 +992,51 @@ enum SignalStatus {
   ACTIVE
   CLOSED
   CANCELLED
+}
+
+/// Platform-computed signal outcome (immutable audit trail, QC-20260719-19).
+enum SignalOutcome {
+  PENDING
+  HIT_TARGET
+  HIT_STOP
+  EXPIRED
+  MANUAL_CLOSE
+}
+
+/// Session booking attendance lifecycle (QC-20260719-21).
+enum SessionAttendanceStatus {
+  SCHEDULED
+  ATTENDED
+  NO_SHOW
+  CANCELLED
+  FORFEITED
+}
+
+/// Moderation outcome vs the reporter — feeds reporter reputation (QC-20260719-40).
+enum ModerationResolution {
+  UPHELD
+  DISMISSED
+}
+
+/// Post-purchase dissatisfaction categories for the NO-REFUND dispute flow (QC-20260719-33).
+enum CourseDisputeCategory {
+  CONTENT_QUALITY
+  OUTDATED
+  MISLEADING
+  TECHNICAL
+  ACCESS
+  OTHER
+}
+
+/// NO-REFUND dispute lifecycle. Resolutions are remediation/credit/replacement —
+/// there is deliberately NO "REFUNDED" state (founder override, QC-20260719-33).
+enum CourseDisputeStatus {
+  OPEN
+  MENTOR_REVIEW
+  RESOLVED_IMPROVED
+  RESOLVED_CREDIT
+  RESOLVED_REPLACEMENT
+  DISMISSED
 }
 
 enum ModerationStatus {
@@ -876,21 +1113,56 @@ enum DataSubjectRequestStatus {
   REJECTED
 }
 
+enum MentorApplicationStatus {
+  PENDING
+  REVIEWING
+  APPROVED
+  REJECTED
+}
+
+/// Public mentor onboarding form — persists across serverless cold starts.
+model MentorApplication {
+  id                      String                  @id @default(cuid())
+  fullName                String
+  email                   String
+  phone                   String
+  professionalTitle       String
+  instruments             Json
+  yearsExperience         Int
+  licenseLabel            String?
+  bio                     String                  @db.Text
+  philosophy              String                  @db.Text
+  portfolioUrl            String?
+  hasExistingContent      Boolean                 @default(false)
+  estimatedCoursePrice    Int?
+  agreedToTerms           Boolean
+  cvDocumentUrl           String?
+  cvDocumentName          String?
+  certificateDocumentUrl  String?
+  certificateDocumentName String?
+  status                  MentorApplicationStatus @default(PENDING)
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
+}
+
 model PublicDocument {
-  id              String           @id @default(cuid())
+  id              String         @id @default(cuid())
   slug            String
   portal          DocumentPortal
   title           String
   eyebrow         String
   description     String
-  markdownBody    String           @db.Text
-  status          DocumentStatus   @default(DRAFT)
-  version         Int              @default(1)
+  markdownBody    String         @db.Text
+  status          DocumentStatus @default(DRAFT)
+  version         Int            @default(1)
   publishedAt     DateTime?
   sourceVaultPath String?
-  sortOrder       Int              @default(0)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  sortOrder       Int            @default(0)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
   @@unique([portal, slug])
   @@index([portal, status])
@@ -909,4 +1181,50 @@ model DataSubjectRequest {
 
   @@index([status, createdAt])
   @@index([email])
+}
+
+/// Public waitlist sign-ups — pre-launch email capture (UU PDP consent required).
+model WaitlistEntry {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  consentGiven Boolean  @default(true)
+  source       String?
+  utmSource    String?
+  utmMedium    String?
+  utmCampaign  String?
+  utmContent   String?
+  /// SHA-256 prefix of client IP for abuse detection — not raw PII.
+  ipHash       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+/// NO-REFUND remediation flow for post-purchase dissatisfaction (founder override, QC-20260719-33).
+/// Replaces the rejected refund-window recommendation. Mentors are obligated to fix/improve
+/// content; platform may issue non-cash credit toward ANOTHER course or replacement access.
+/// There is NO money-back path anywhere in this model.
+model CourseDispute {
+  id                   String                @id @default(cuid())
+  userId               String
+  courseId             String
+  /// Optional link to the purchase this dispute concerns (never used to reverse the charge).
+  transactionId        String?
+  category             CourseDisputeCategory
+  description          String                @db.Text
+  status               CourseDisputeStatus   @default(OPEN)
+  /// Mentor's remediation commitment / response.
+  mentorResponse       String?               @db.Text
+  resolutionNote       String?               @db.Text
+  /// Non-cash platform credit granted toward ANOTHER course (Rupiah). NEVER a refund.
+  platformCreditIssued Int                   @default(0)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course               Course                @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([status, createdAt])
+  @@index([courseId, status])
 }

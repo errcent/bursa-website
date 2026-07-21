@@ -63,6 +63,8 @@ export const createTradingSignalSchema = z.object({
   targetPrice: z.number().positive().optional(),
   stopLoss: z.number().positive().optional(),
   rationale: z.string().max(1000).optional(),
+  /** Forced-resolution horizon so losing signals cannot stay "open" forever (QC-20260719-19). */
+  expiryHours: z.number().positive().max(8760).optional(),
 });
 
 export const createTradingPollSchema = z.object({
@@ -135,6 +137,10 @@ export const mentorApplicationSchema = z.object({
   agreedToTerms: z
     .boolean()
     .refine((val) => val === true, { message: "Kamu harus menyetujui syarat & ketentuan." }),
+  cvDocumentUrl: z.string().min(1, "CV wajib diunggah."),
+  cvDocumentName: z.string().min(1, "Nama file CV wajib diisi."),
+  certificateDocumentUrl: z.string().optional(),
+  certificateDocumentName: z.string().optional(),
 });
 
 export const createLessonQuestionSchema = z.object({

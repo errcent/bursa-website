@@ -4,6 +4,11 @@ import bcrypt from "bcryptjs";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { checkRateLimit, clientIp } from "@/lib/auth/rate-limit";
+import {
+  signWebSessionToken,
+  webSessionCookieOptions,
+  WEB_SESSION_COOKIE,
+} from "@/lib/auth/web-session";
 import { db } from "@/lib/db";
 import { registerSchema } from "@/lib/auth/validation";
 
@@ -35,7 +40,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return jsonOk(
+    const token = await signWebSessionToken({ id: user.id, email: user.email });
+    const response = jsonOk(
       {
         user: {
           id: user.id,
@@ -48,6 +54,8 @@ export async function POST(request: NextRequest) {
       },
       201
     );
+    response.cookies.set(WEB_SESSION_COOKIE, token, webSessionCookieOptions());
+    return response;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       const target = (error.meta?.target as string[] | undefined)?.join(", ") ?? "field";

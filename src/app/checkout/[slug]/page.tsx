@@ -7,10 +7,15 @@ import { CheckoutForm } from "@/components/checkout-form";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { Badge } from "@/components/ui/badge";
-import { courses, getCourseBySlug, getMentorBySlug } from "@/lib/mock-data";
+import {
+  getCatalogCourseSlugs,
+  getCourseBySlug,
+  getMentorBySlug,
+} from "@/lib/catalog/server";
 
-export function generateStaticParams() {
-  return courses.map((course) => ({ slug: course.slug }));
+export async function generateStaticParams() {
+  const slugs = await getCatalogCourseSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -19,7 +24,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const course = getCourseBySlug(slug);
+  const course = await getCourseBySlug(slug);
   if (!course) return {};
   return {
     title: `Checkout — ${course.title}`,
@@ -33,39 +38,39 @@ export default async function CheckoutPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const course = getCourseBySlug(slug);
+  const course = await getCourseBySlug(slug);
   if (!course) notFound();
 
-  const mentor = getMentorBySlug(course.mentorSlug);
+  const mentor = await getMentorBySlug(course.mentorSlug);
   if (!mentor) notFound();
 
   return (
     <>
       <SiteNavbar />
       <main className="flex-1">
-        <div className="hero-cinematic page-header-strip">
-          <div className="container-page py-10">
+        <div className="hero-cinematic page-header-strip border-b border-border/40">
+          <div className="container-page py-10 sm:py-12">
             <Link
               href={`/kelas/${course.slug}`}
-              className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="link-muted mb-5 inline-flex items-center gap-1.5"
             >
               <ArrowLeft className="size-4" />
               Kembali ke detail kelas
             </Link>
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="font-heading text-2xl font-medium sm:text-3xl">Checkout</h1>
+              <h1 className="section-title">Checkout</h1>
               <Badge variant="outline" className="border-amber-400/30 bg-amber-400/10 text-amber-200">
                 Simulasi — Tanpa Pembayaran Real
               </Badge>
             </div>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            <p className="section-copy mt-3 max-w-2xl">
               Murid membayar langsung ke mentor (bukan per modul). Total yang ditampilkan adalah
               jumlah yang Anda bayar untuk akses kelas selamanya.
             </p>
           </div>
         </div>
 
-        <div className="container-page py-10">
+        <div className="container-page py-10 sm:py-12">
           <CheckoutForm course={course} mentor={mentor} />
         </div>
       </main>

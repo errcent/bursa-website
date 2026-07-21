@@ -1,10 +1,10 @@
 import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { db } from "@/lib/db";
 import { serializeNote } from "@/lib/lesson-notes/serialize";
 import { findLessonByCourseAndLegacyId } from "@/lib/lesson-qa/resolve-lesson";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
 import { createLessonNoteSchema } from "@/lib/validations/api";
 
 type RouteContext = {
@@ -14,27 +14,15 @@ type RouteContext = {
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { courseSlug, lessonId } = await context.params;
-    const viewerEmail = request.nextUrl.searchParams.get("email") ?? undefined;
-    const viewerUserId = request.nextUrl.searchParams.get("userId") ?? undefined;
 
-    if (!viewerEmail && !viewerUserId) {
+    const user = await resolveAuthenticatedUser(request, { createIfMissing: false });
+    if (!user) {
       return jsonError("Authentication required", 401);
     }
 
     const lesson = await findLessonByCourseAndLegacyId(courseSlug, lessonId);
     if (!lesson) {
       return jsonError("Lesson not found", 404);
-    }
-
-    const user = await resolveRequestUser(
-      {
-        userId: viewerUserId ?? "anonymous",
-        email: viewerEmail,
-      },
-      { createIfMissing: false }
-    );
-    if (!user) {
-      return jsonOk({ notes: [] });
     }
 
     const notes = await db.note.findMany({
@@ -58,14 +46,36 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return jsonError("Lesson not found", 404);
     }
 
-    const user = await resolveRequestUser({
-      userId: body.userId,
-      email: body.email,
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: true,
+      claimedUserId: body.userId,
       name: body.name,
       role: body.role,
     });
     if (!user) {
-      return jsonError("User not found", 404);
+      return jsonError("Autentikasi diperlukan.", 401);
+    }
+
+    const existing = await db.note.findFirst({
+      where: { lessonId: lesson.id, userId: user.id },
+      orderBy: { createdAt: "asc" },
+    });
+
+    if (existing) {
+      const note = await db.note.update({
+        where: { id: existing.id },
+        data: { content: body.content },
+      });
+
+      await db.note.deleteMany({
+        where: {
+          lessonId: lesson.id,
+          userId: user.id,
+          id: { not: existing.id },
+        },
+      });
+
+      return jsonOk({ note: serializeNote(note) });
     }
 
     const note = await db.note.create({

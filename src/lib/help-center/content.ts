@@ -49,7 +49,7 @@ export const helpFaqs: HelpFaq[] = [
     category: "Pembayaran",
     question: "Apakah pembelian kelas bisa di-refund?",
     answer:
-      "Pembelian kelas bersifat final. Sebelum checkout, baca deskripsi kelas, preview modul, dan ulasan murid. Jika ada masalah teknis (akses tidak aktif setelah pembayaran), hubungi support dengan bukti transaksi.",
+      "Pembelian kelas bersifat final. Sebelum checkout, baca deskripsi kelas, preview video gratis, dan ulasan murid. Jika ada masalah teknis (akses tidak aktif setelah pembayaran), hubungi support dengan bukti transaksi.",
   },
   {
     id: "bayar-invoice",
@@ -70,14 +70,14 @@ export const helpFaqs: HelpFaq[] = [
     category: "Belajar",
     question: "Apakah progress belajar tersimpan antar perangkat?",
     answer:
-      "Ya. Progress, catatan lesson, dan bookmark tersinkron via akun Bursa. Masuk dengan akun yang sama di desktop atau mobile untuk melanjutkan dari posisi terakhir.",
+      "Progress belajar dan catatan video tersinkron via akun Bursa — masuk dengan akun yang sama di desktop atau mobile untuk melanjutkan dari posisi terakhir. Simpanan kelas/video (bookmark) saat ini tersimpan di perangkat browser atau aplikasi; sinkron antar perangkat untuk bookmark sedang dalam rencana.",
   },
   {
     id: "belajar-sertifikat",
     category: "Belajar",
     question: "Apakah ada sertifikat setelah menyelesaikan kelas?",
     answer:
-      "Beberapa kelas menyediakan sertifikat penyelesaian setelah semua modul selesai. Badge sertifikat tampil di profil jika mentor mengaktifkan fitur tersebut untuk kelasnya.",
+      "Beberapa kelas menyediakan sertifikat penyelesaian setelah semua video selesai. Badge sertifikat tampil di profil jika mentor mengaktifkan fitur tersebut untuk kelasnya.",
   },
   {
     id: "komunitas-join",

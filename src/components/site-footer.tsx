@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 import { RiskDisclaimer } from "@/components/risk-disclaimer";
+import { AppDownloadBadges } from "@/components/app-download-badges";
 import {
   Accordion,
   AccordionContent,
@@ -89,7 +90,7 @@ function SocialLinkButtons() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Bursa di ${link.label}`}
-            className="inline-flex size-9 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-colors hover:border-accent/40 hover:text-foreground"
+            className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-accent"
           >
             <Icon className="size-4" />
           </a>
@@ -102,10 +103,7 @@ function SocialLinkButtons() {
 const footerColumns = [
   {
     title: "Jelajahi",
-    links: [
-      { label: "Semua Kelas", href: "/katalog" },
-      { label: "Mentor", href: "/katalog?view=instruktur" },
-    ],
+    links: [{ label: "Semua Kelas", href: "/katalog" }],
   },
   {
     title: "Platform",
@@ -139,7 +137,7 @@ function isFooterLinkActive(pathname: string, href: string, searchParams: URLSea
   }
 
   if (hrefPath === "/katalog") {
-    return pathname === "/katalog" && searchParams.get("view") !== "instruktur";
+    return pathname === "/katalog";
   }
 
   return pathname === hrefPath || pathname.startsWith(`${hrefPath}/`);
@@ -279,9 +277,7 @@ function FooterLinkColumnsFallback() {
 
 export function SiteFooter() {
   return (
-    <footer className="footer-glass relative mt-auto overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
-
+    <footer className="footer-glass relative mt-auto overflow-hidden pt-8">
       <div className="container-page grid gap-8 py-12 sm:gap-10 sm:py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="flex flex-col gap-4">
           <span className="font-heading text-xl font-semibold tracking-tight">Bursa</span>
@@ -290,6 +286,7 @@ export function SiteFooter() {
             dan proses belajar yang terstruktur.
           </p>
           <SocialLinkButtons />
+          <AppDownloadBadges className="pt-1" />
         </div>
 
         <Suspense fallback={<FooterLinkColumnsFallback />}>
@@ -298,9 +295,11 @@ export function SiteFooter() {
         </Suspense>
       </div>
 
-      <div className="border-t border-border/60">
-        <div className="container-page flex flex-col gap-3 py-6 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} Bursa Trading Academy. Seluruh hak cipta dilindungi.</p>
+      <div className="border-t border-border/30">
+        <div className="container-page flex flex-col gap-5 py-8 md:flex-row md:items-end md:justify-between">
+          <p className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground/45 uppercase">
+            © {new Date().getFullYear()} Bursa
+          </p>
           <RiskDisclaimer variant="compact" />
         </div>
       </div>

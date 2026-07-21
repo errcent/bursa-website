@@ -69,7 +69,7 @@ export function enrollUser(userId: string, courseId: string) {
 }
 
 export function isEnrolled(userId: string, courseId: string): boolean {
-  if (userId === "user-demo-dinda") return true;
+  if (userId === "user-demo-andi") return true;
   return readEnrollments().some((e) => e.userId === userId && e.courseId === courseId);
 }
 

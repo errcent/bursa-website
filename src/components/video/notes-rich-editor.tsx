@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import type { Editor } from "@tiptap/react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
@@ -26,7 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const BUBBLE_MENU_DELAY_MS = 400;
+const BUBBLE_MENU_Z_INDEX = 9999;
 
 interface NotesRichEditorProps {
   content: string;
@@ -36,8 +36,19 @@ interface NotesRichEditorProps {
   className?: string;
   minHeightClass?: string;
   autofocus?: boolean;
-  /** Fixed toolbar — off by default; formatting via bubble menu + keyboard shortcuts */
+  /**
+   * compact — toolbar tetap (B/I/U/coret, daftar) — default, paling mudah di mobile
+   * full — toolbar lengkap + heading/undo
+   * bubble — hanya popup saat seleksi teks
+   * none — tanpa toolbar
+   */
+  toolbar?: "compact" | "full" | "bubble" | "none";
+  /** @deprecated Prefer `toolbar="full"` */
   showToolbar?: boolean;
+  /** Tanpa border/card — langsung area tulis */
+  bare?: boolean;
+  /** Isi parent flex; konten editor scroll di dalam area */
+  fillHeight?: boolean;
   ariaLabel?: string;
   onBlur?: () => void;
 }
@@ -105,61 +116,108 @@ function BubbleToolbarButton({
   );
 }
 
+function CompactFormattingToolbar({
+  editor,
+  bare,
+  className,
+}: {
+  editor: Editor;
+  bare?: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      role="toolbar"
+      aria-label="Format catatan"
+      className={cn(
+        "flex flex-wrap items-center gap-0.5 px-0.5 py-1",
+        bare
+          ? "border-b border-border/40"
+          : "border-b border-border bg-muted/30 px-1.5",
+        className
+      )}
+    >
+      <ToolbarButton
+        label="Tebal (Ctrl+B)"
+        active={editor.isActive("bold")}
+        onClick={() => editor.chain().focus().toggleBold().run()}
+      >
+        <Bold className="size-3.5" />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Miring (Ctrl+I)"
+        active={editor.isActive("italic")}
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+      >
+        <Italic className="size-3.5" />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Garis bawah (Ctrl+U)"
+        active={editor.isActive("underline")}
+        onClick={() => editor.chain().focus().toggleUnderline().run()}
+      >
+        <UnderlineIcon className="size-3.5" />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Coret"
+        active={editor.isActive("strike")}
+        onClick={() => editor.chain().focus().toggleStrike().run()}
+      >
+        <Strikethrough className="size-3.5" />
+      </ToolbarButton>
+      <ToolbarDivider />
+      <ToolbarButton
+        label="Daftar"
+        active={editor.isActive("bulletList")}
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+      >
+        <List className="size-3.5" />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Daftar bernomor"
+        active={editor.isActive("orderedList")}
+        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+      >
+        <ListOrdered className="size-3.5" />
+      </ToolbarButton>
+      <ToolbarButton
+        label="Tautan"
+        active={editor.isActive("link")}
+        onClick={() => {
+          if (editor.isActive("link")) {
+            editor.chain().focus().unsetLink().run();
+            return;
+          }
+          const previous = editor.getAttributes("link").href as string | undefined;
+          const url = window.prompt("URL tautan", previous ?? "https://");
+          if (!url) return;
+          editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+        }}
+      >
+        <Link2 className="size-3.5" />
+      </ToolbarButton>
+    </div>
+  );
+}
+
 function SelectionBubbleMenu({ editor }: { editor: Editor }) {
-  const [visible, setVisible] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    const clearTimer = () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-
-    const handleSelectionUpdate = () => {
-      const { empty } = editor.state.selection;
-      clearTimer();
-
-      if (empty) {
-        setVisible(false);
-        return;
-      }
-
-      timerRef.current = setTimeout(() => {
-        const { empty: stillEmpty } = editor.state.selection;
-        setVisible(!stillEmpty);
-      }, BUBBLE_MENU_DELAY_MS);
-    };
-
-    const handleBlur = () => {
-      clearTimer();
-      setVisible(false);
-    };
-
-    editor.on("selectionUpdate", handleSelectionUpdate);
-    editor.on("blur", handleBlur);
-
-    return () => {
-      editor.off("selectionUpdate", handleSelectionUpdate);
-      editor.off("blur", handleBlur);
-      clearTimer();
-    };
-  }, [editor]);
-
   return (
     <BubbleMenu
       editor={editor}
-      shouldShow={() => visible}
+      shouldShow={({ state, editor: ed }) =>
+        ed.isEditable && !state.selection.empty && state.selection.from !== state.selection.to
+      }
       options={{
         offset: 8,
         placement: "top",
+        strategy: "fixed",
       }}
     >
       <div
         role="toolbar"
         aria-label="Format teks terpilih"
         className="flex items-center gap-0.5 rounded-xl border border-border bg-popover px-1 py-1 shadow-lg"
+        style={{ zIndex: BUBBLE_MENU_Z_INDEX }}
       >
         <BubbleToolbarButton
           label="Tebal (Ctrl+B)"
@@ -348,10 +406,14 @@ export function NotesRichEditor({
   className,
   minHeightClass = "min-h-[120px]",
   autofocus = false,
-  showToolbar = false,
+  toolbar = "compact",
+  showToolbar,
+  bare = false,
+  fillHeight = false,
   ariaLabel,
   onBlur,
 }: NotesRichEditorProps) {
+  const toolbarMode = showToolbar === true ? "full" : showToolbar === false ? toolbar : toolbar;
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -376,8 +438,10 @@ export function NotesRichEditor({
       attributes: {
         class: cn(
           "prose-notes outline-none",
-          minHeightClass,
-          "px-3 py-2.5 text-sm leading-relaxed text-foreground"
+          fillHeight ? "min-h-full" : minHeightClass,
+          bare
+            ? "px-0 py-1 text-sm leading-relaxed text-foreground"
+            : "px-3 py-2.5 text-sm leading-relaxed text-foreground"
         ),
         ...(ariaLabel ? { "aria-label": ariaLabel } : {}),
       },
@@ -402,7 +466,7 @@ export function NotesRichEditor({
     return (
       <div
         className={cn(
-          "rounded-lg border border-border bg-surface",
+          !bare && "rounded-lg border border-border bg-surface",
           minHeightClass,
           className
         )}
@@ -410,11 +474,34 @@ export function NotesRichEditor({
     );
   }
 
+  const editorBody = <EditorContent editor={editor} />;
+
   return (
-    <div className={cn("overflow-hidden rounded-lg border border-border bg-surface", className)}>
-      {editable && showToolbar && <FixedToolbar editor={editor} />}
-      <EditorContent editor={editor} />
-      {editable && !showToolbar && <SelectionBubbleMenu editor={editor} />}
+    <div
+      className={cn(
+        !bare && "rounded-lg border border-border bg-surface",
+        fillHeight && "flex min-h-0 flex-col",
+        toolbarMode === "bubble" && bare
+          ? "overflow-visible"
+          : !bare && "overflow-hidden",
+        fillHeight && "overflow-hidden",
+        className
+      )}
+    >
+      {editable && toolbarMode === "full" && <FixedToolbar editor={editor} />}
+      {editable && toolbarMode === "compact" && (
+        <CompactFormattingToolbar
+          editor={editor}
+          bare={bare}
+          className={fillHeight ? "shrink-0" : undefined}
+        />
+      )}
+      {fillHeight ? (
+        <div className="min-h-0 flex-1 overflow-y-auto">{editorBody}</div>
+      ) : (
+        editorBody
+      )}
+      {editable && toolbarMode === "bubble" && <SelectionBubbleMenu editor={editor} />}
     </div>
   );
 }

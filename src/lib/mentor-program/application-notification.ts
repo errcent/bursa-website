@@ -42,6 +42,20 @@ interface ApplicationField {
   fullWidth?: boolean;
 }
 
+function formatDocuments(application: MentorApplication): string {
+  const lines: string[] = [];
+  if (application.cvDocument) {
+    lines.push(`CV: ${application.cvDocument.fileName} (${application.cvDocument.url})`);
+  }
+  if (application.certificateDocument) {
+    lines.push(
+      `Sertifikat: ${application.certificateDocument.fileName} (${application.certificateDocument.url})`
+    );
+  }
+  if (lines.length === 0) return "Tidak ada dokumen terunggah.";
+  return lines.join("\n");
+}
+
 function buildApplicationFields(application: MentorApplication): ApplicationField[] {
   return [
     { label: "ID Aplikasi", value: application.id },
@@ -71,8 +85,7 @@ function buildApplicationFields(application: MentorApplication): ApplicationFiel
     { label: "Filosofi Trading", value: application.philosophy, fullWidth: true },
     {
       label: "Dokumen Terunggah",
-      value:
-        "Tidak ada — formulir saat ini tidak memiliki unggahan berkas (hanya data teks & link portofolio).",
+      value: formatDocuments(application),
       fullWidth: true,
     },
   ];

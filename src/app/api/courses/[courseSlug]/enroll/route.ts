@@ -7,6 +7,7 @@ import { ensureHubMembershipForCourseEnrollment } from "@/lib/chat/db-rooms";
 import { db } from "@/lib/db";
 import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
+import { createCommissionRecordForTransaction } from "@/lib/mentor/commission";
 import { recalculateStatsForCourse } from "@/lib/stats/server";
 
 type RouteContext = {
@@ -100,24 +101,54 @@ export async function POST(request: NextRequest, context: RouteContext) {
       },
     });
 
-    const enrollment = await db.enrollment.upsert({
-      where: {
-        userId_courseId: { userId: user.id, courseId: course.id },
-      },
-      create: { userId: user.id, courseId: course.id },
-      update: {},
-    });
+    const isPaidEnrollment = course.price > 0;
 
-    if (!existing) {
-      await db.transaction.create({
-        data: {
-          userId: user.id,
-          courseId: course.id,
-          amount: course.price,
-          status: "COMPLETED",
+    // Atomic: enrollment + transaction + commission written together so a mid-way
+    // failure cannot leave an enrollment without a matching ledger entry (QC-20260719-36).
+    const enrollment = await db.$transaction(async (tx) => {
+      const enrollmentRow = await tx.enrollment.upsert({
+        where: {
+          userId_courseId: { userId: user.id, courseId: course.id },
         },
+        create: { userId: user.id, courseId: course.id, isPaid: isPaidEnrollment },
+        update: isPaidEnrollment ? { isPaid: true } : {},
       });
-    }
+
+      if (!existing) {
+        // Idempotency guard against duplicate COMPLETED transactions on retry (QC-20260719-30).
+        const idempotencyKey = `enroll:${user.id}:${course.id}`;
+        const alreadyBooked = await tx.transaction.findUnique({
+          where: { idempotencyKey },
+          select: { id: true },
+        });
+
+        if (!alreadyBooked) {
+          const transaction = await tx.transaction.create({
+            data: {
+              userId: user.id,
+              courseId: course.id,
+              amount: course.price,
+              status: "COMPLETED",
+              idempotencyKey,
+            },
+          });
+
+          // Commission ledger is created atomically with the transaction (QC-20260719-13).
+          if (isPaidEnrollment) {
+            await createCommissionRecordForTransaction(
+              {
+                transactionId: transaction.id,
+                mentorId: course.mentorId,
+                grossAmount: course.price,
+              },
+              tx
+            );
+          }
+        }
+      }
+
+      return enrollmentRow;
+    });
 
     const hub = KOMUNITAS_ENABLED
       ? await ensureHubMembershipForCourseEnrollment({

@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -25,6 +26,7 @@ import {
   saveRecentSearch,
 } from "@/lib/search/engine";
 import { useDebouncedSearch } from "@/lib/search/use-debounced-search";
+import { useCatalogIndex } from "@/hooks/use-catalog-index";
 import { cn } from "@/lib/utils";
 
 interface SiteNavSearchProps {
@@ -32,6 +34,14 @@ interface SiteNavSearchProps {
   inputClassName?: string;
   placeholder?: string;
   onNavigate?: () => void;
+  /** When false, closes the dropdown and blocks interaction (hero docked nav). */
+  reveal?: boolean;
+  /** When false, skip opening the dropdown on input focus (e.g. mobile sheet autofocus). */
+  openOnFocus?: boolean;
+  /** Start with dropdown open and focus input (mobile overlay mount). */
+  initialOpen?: boolean;
+  /** Called when the dropdown closes via escape or outside click. */
+  onDismiss?: () => void;
 }
 
 export function SiteNavSearch({
@@ -39,6 +49,10 @@ export function SiteNavSearch({
   inputClassName,
   placeholder = "Cari kelas, mentor, atau topik...",
   onNavigate,
+  reveal = true,
+  openOnFocus = true,
+  initialOpen = false,
+  onDismiss,
 }: SiteNavSearchProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -46,7 +60,7 @@ export function SiteNavSearch({
   const listboxId = useId();
 
   const [value, setValue] = useState("");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initialOpen);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
@@ -54,10 +68,17 @@ export function SiteNavSearch({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const trending = useMemo(() => getTrendingSuggestions(), []);
-  const popularCourses = useMemo(() => getPopularCourses(3), []);
-  const popularMentors = useMemo(() => getPopularMentors(2), []);
+  const { index: catalogIndex } = useCatalogIndex();
+  const popularCourses = useMemo(
+    () => (catalogIndex ? getPopularCourses(catalogIndex, 3) : []),
+    [catalogIndex]
+  );
+  const popularMentors = useMemo(
+    () => (catalogIndex ? getPopularMentors(catalogIndex, 2) : []),
+    [catalogIndex]
+  );
 
-  const { results } = useDebouncedSearch(value, 8);
+  const { results } = useDebouncedSearch(value, catalogIndex, 8);
 
   useEffect(() => {
     if (pathname === "/katalog") {
@@ -74,6 +95,17 @@ export function SiteNavSearch({
   }, [value, open]);
 
   useEffect(() => {
+    if (reveal) return;
+    setOpen(false);
+    inputRef.current?.blur();
+  }, [reveal]);
+
+  useLayoutEffect(() => {
+    if (!initialOpen || !reveal) return;
+    inputRef.current?.focus();
+  }, [initialOpen, reveal]);
+
+  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Node | null;
       if (!target) return;
@@ -86,11 +118,12 @@ export function SiteNavSearch({
       }
       if (containerRef.current && !containerRef.current.contains(target)) {
         setOpen(false);
+        onDismiss?.();
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [onDismiss]);
 
   const navigate = useCallback(
     (href: string, query?: string) => {
@@ -142,6 +175,7 @@ export function SiteNavSearch({
     } else if (event.key === "Escape") {
       setOpen(false);
       inputRef.current?.blur();
+      onDismiss?.();
     } else if (event.key === "Enter" && activeIndex >= 0 && items[activeIndex]) {
       event.preventDefault();
       navigate(items[activeIndex], value.trim() || undefined);
@@ -149,12 +183,17 @@ export function SiteNavSearch({
   }
 
   return (
-    <div ref={containerRef} className={cn("relative", open && "z-[210]", className)}>
+    <div
+      ref={containerRef}
+      className={cn("relative", open && reveal && "z-[210]", className)}
+      aria-hidden={!reveal}
+    >
       <form
         onSubmit={handleSubmit}
         className={cn(
-          "flex items-center gap-2 rounded-full border border-border bg-white/[0.03] px-3 py-1.5 text-sm text-muted-foreground transition-colors focus-within:border-accent/20 focus-within:bg-white/[0.05] focus-within:text-foreground focus-within:shadow-[0_0_0_3px_var(--glow)]",
-          open && "border-accent/25 bg-white/[0.05] shadow-[0_0_0_3px_var(--glow)]"
+          "flex items-center gap-2 rounded-full border border-border bg-white/[0.03] px-3 py-1.5 text-sm text-muted-foreground transition-[opacity,transform,border-color,background-color,box-shadow] duration-300 ease-out focus-within:border-accent/20 focus-within:bg-white/[0.05] focus-within:text-foreground focus-within:shadow-[0_0_0_3px_var(--glow)]",
+          open && reveal && "border-accent/25 bg-white/[0.05] shadow-[0_0_0_3px_var(--glow)]",
+          !reveal && "pointer-events-none opacity-0"
         )}
         role="search"
       >
@@ -168,16 +207,18 @@ export function SiteNavSearch({
             value={value}
             onChange={(event) => {
               setValue(event.target.value);
-              setOpen(true);
+              if (reveal) setOpen(true);
             }}
-            onFocus={() => setOpen(true)}
+            onFocus={() => reveal && openOnFocus && setOpen(true)}
+            onClick={() => reveal && setOpen(true)}
             onKeyDown={handleKeyDown}
             placeholder=""
             aria-label={placeholder}
-            aria-expanded={open}
+            aria-expanded={open && reveal}
             aria-controls={listboxId}
             aria-autocomplete="list"
             autoComplete="off"
+            tabIndex={reveal ? 0 : -1}
             className={cn(
               "w-full min-w-0 bg-transparent text-base text-foreground outline-none sm:text-sm",
               inputClassName
@@ -188,7 +229,7 @@ export function SiteNavSearch({
 
       <div id={listboxId}>
         <SearchDropdown
-          open={open}
+          open={open && reveal}
           query={value}
           results={results}
           trending={trending}

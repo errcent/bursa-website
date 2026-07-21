@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Play } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
@@ -19,22 +20,23 @@ export function CourseDetailMobileCheckout({
 
   if (loading) {
     return (
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-3 backdrop-blur sm:hidden">
-        <div className="h-12 w-full animate-pulse rounded-lg bg-muted/40" />
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 p-3 backdrop-blur-md sm:hidden"
+        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+      >
+        <div className="h-12 w-full animate-pulse rounded-full bg-muted/40" />
       </div>
     );
   }
 
   if (enrolled) {
     return (
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-3 backdrop-blur sm:hidden">
-        <div className="mb-2 rounded-lg border border-emerald/20 bg-emerald/5 px-3 py-2">
-          <p className="text-xs font-medium text-emerald">Sudah berlangganan</p>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">
-            Lanjut belajar atau buka komunitas mentor.
-          </p>
-        </div>
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 p-3 backdrop-blur-md sm:hidden"
+        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+      >
         <Button className="h-12 w-full btn-primary text-sm font-semibold" render={<Link href={learnHref} />}>
+          <Play className="size-4 fill-current" />
           Lanjut Belajar
         </Button>
       </div>
@@ -42,22 +44,22 @@ export function CourseDetailMobileCheckout({
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-3 backdrop-blur sm:hidden">
-      <div className="mb-2 rounded-lg border border-border bg-card px-3 py-2">
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">Bayar ke mentor (sekali untuk 1 kelas)</p>
-          <p className="font-mono text-sm font-semibold">{priceLabel}</p>
+    <div
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 backdrop-blur-md sm:hidden"
+      style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+    >
+      <div className="flex items-center gap-3 px-3 pt-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] text-muted-foreground">Sekali bayar · akses selamanya</p>
+          <p className="font-heading text-lg font-semibold tabular-nums">{priceLabel}</p>
         </div>
-        <p className="mt-1 text-[11px] text-muted-foreground">
-          Bukan biaya per modul/lesson, langsung lanjut ke checkout aman.
-        </p>
+        <Button
+          className="h-11 shrink-0 px-6 btn-primary text-sm font-semibold"
+          render={<Link href={checkoutHref} />}
+        >
+          Checkout
+        </Button>
       </div>
-      <Button
-        className="h-12 w-full btn-primary text-sm font-semibold"
-        render={<Link href={checkoutHref} />}
-      >
-        Checkout Sekarang
-      </Button>
     </div>
   );
 }

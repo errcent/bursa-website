@@ -9,15 +9,15 @@ import { Reveal } from "@/components/motion/reveal";
 export const metadata: Metadata = {
   title: "Panduan Belajar — Temukan Jalur yang Tepat",
   description:
-    "Kuis singkat untuk menemukan kelas dan mentor trading yang sesuai profil, tujuan, dan toleransi risikomu.",
+    "Quiz singkat untuk rekomendasi kelas dan mentor trading yang disesuaikan dengan profil, tujuan, dan toleransi risikomu.",
 };
 
 export default function PanduanBelajarPage() {
   return (
     <>
       <SiteNavbar />
-      <main className="flex-1 overflow-x-clip pb-10">
-        <div className="hero-cinematic relative overflow-hidden border-b border-border/60 py-8 sm:py-14">
+      <main className="flex-1 overflow-x-clip pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))]">
+        <div className="hero-cinematic page-header-strip relative overflow-hidden border-b border-border/40 py-10 sm:py-14">
           <HeroLivingBackground />
           <div className="container-page relative z-10">
             <Reveal>
@@ -25,16 +25,16 @@ export default function PanduanBelajarPage() {
               <h1 className="page-hero-title text-gradient max-w-3xl">
                 Temukan Jalur Belajar yang Tepat
               </h1>
-              <p className="section-copy mt-3 max-w-2xl">
-                Banyak trader kehilangan waktu karena belajar dari mentor atau modul yang tidak
-                sesuai profilnya. Jawab 8 pertanyaan singkat — kami bantu arahkan ke kelas dan
-                mentor yang relevan.
+              <p className="section-copy mt-4 max-w-2xl text-base sm:text-[1.05rem]">
+                Banyak trader kehilangan waktu karena belajar dari mentor atau kelas yang tidak
+                sesuai profilnya. Jawab beberapa pertanyaan singkat — sekitar 2 menit — dan dapatkan
+                rekomendasi kelas & mentor yang disesuaikan dengan tujuan, level, dan ritme belajarmu.
               </p>
             </Reveal>
           </div>
         </div>
 
-        <div className="container-page section-spacious">
+        <div className="container-page section-tight">
           <LearningGuidanceQuiz />
         </div>
       </main>

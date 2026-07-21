@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { DM_Sans, Inter } from "next/font/google";
 import Script from "next/script";
-import { Inter, JetBrains_Mono, Montserrat, Montserrat_Alternates } from "next/font/google";
 
-import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
+import { PostHogProvider } from "@/components/analytics/posthog-provider";
 import { NextAuthProvider } from "@/components/next-auth-provider";
 import { LanguageProvider } from "@/components/language-provider";
 import { CursorGlow } from "@/components/cursor-glow";
@@ -24,26 +24,11 @@ const fontSans = Inter({
   display: "swap",
 });
 
-/** Headings, bold text, buttons */
-const fontHeading = Montserrat({
+/** Headings, bold text, buttons, brand wordmark */
+const fontHeading = DM_Sans({
   variable: "--font-heading",
   subsets: ["latin"],
   weight: ["600", "700", "800"],
-  display: "swap",
-});
-
-/** Preloader brand wordmark only ("bursanalar.") */
-const fontBrandAlt = Montserrat_Alternates({
-  variable: "--font-brand-alt",
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  display: "swap",
-});
-
-/** Tags, badges, terminal labels */
-const fontMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
   display: "swap",
 });
 
@@ -51,6 +36,9 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
+
+/** Runs before first paint so intro-pending CSS hides content until PreloaderGate hydrates. */
+const INTRO_PENDING_SCRIPT = `(function(){try{if(!sessionStorage.getItem("bursa-intro-seen")){document.documentElement.classList.add("intro-pending")}}catch(e){}})();`;
 
 export const metadata: Metadata = {
   title: {
@@ -69,30 +57,31 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${fontSans.variable} ${fontHeading.variable} ${fontBrandAlt.variable} ${fontMono.variable} h-full antialiased`}
+      className={`${fontSans.variable} ${fontHeading.variable} dark h-full antialiased`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col overflow-x-hidden bg-background text-foreground">
+        <Script
+          id="bursa-intro-pending"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: INTRO_PENDING_SCRIPT }}
+        />
         <SearchSeoJsonLd />
-        <Script id="bursa-intro-pending" strategy="beforeInteractive">
-          {`(function(){try{if(!sessionStorage.getItem("bursa-intro-seen")){document.documentElement.classList.add("intro-pending")}}catch(e){}})();`}
-        </Script>
-        <ThemeProvider>
-          <CursorGlow />
-          <PreloaderGate>
-            <NavbarRouteTracker />
-            <NextAuthProvider>
-              <AuthProvider>
-                <LanguageProvider>
-                  {children}
-                  <StickyBottomCta />
-                  <CookieConsentBanner />
-                </LanguageProvider>
-              </AuthProvider>
-            </NextAuthProvider>
-          </PreloaderGate>
-        </ThemeProvider>
+        <PostHogProvider />
+        <CursorGlow />
+        <PreloaderGate>
+          <NavbarRouteTracker />
+          <NextAuthProvider>
+            <AuthProvider>
+              <LanguageProvider>
+                {children}
+                <StickyBottomCta />
+                <CookieConsentBanner />
+              </LanguageProvider>
+            </AuthProvider>
+          </NextAuthProvider>
+        </PreloaderGate>
       </body>
     </html>
   );

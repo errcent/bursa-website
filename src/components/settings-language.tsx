@@ -1,6 +1,5 @@
 "use client";
 
-import { SettingsAppearance } from "@/components/settings-appearance";
 import { useLanguage } from "@/components/language-provider";
 import type { Locale } from "@/lib/i18n/locale";
 import { cn } from "@/lib/utils";
@@ -44,18 +43,12 @@ function LanguageLocaleSelector() {
 export function SettingsLanguage() {
   const { messages } = useLanguage();
   const t = messages.settings.language;
-  const appearance = messages.settings.appearance;
 
   return (
     <section className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-sm font-medium">{t.title}</h2>
         <LanguageLocaleSelector />
-      </div>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-sm font-medium">{appearance.title}</h2>
-        <SettingsAppearance compact />
       </div>
     </section>
   );

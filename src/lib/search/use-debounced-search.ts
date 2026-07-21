@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
-import { searchAll, type SearchResult } from "@/lib/search/engine";
+import { searchAll, type SearchCatalogIndex, type SearchResult } from "@/lib/search/engine";
 
 const DEFAULT_DELAY_MS = 300;
+const EMPTY_INDEX: SearchCatalogIndex = { courses: [], mentors: [] };
 
 /**
  * Debounces search input and discards stale computation when the query changes
@@ -10,12 +11,14 @@ const DEFAULT_DELAY_MS = 300;
  */
 export function useDebouncedSearch(
   query: string,
+  index: SearchCatalogIndex | null,
   limit = 8,
   delay = DEFAULT_DELAY_MS
 ): { debouncedQuery: string; results: SearchResult[] } {
+  const catalogIndex = index ?? EMPTY_INDEX;
   const [debouncedQuery, setDebouncedQuery] = useState(query);
   const [results, setResults] = useState<SearchResult[]>(() =>
-    query.trim() ? searchAll(query, limit) : []
+    query.trim() && index ? searchAll(query, catalogIndex, limit) : []
   );
   const generationRef = useRef(0);
 
@@ -28,7 +31,7 @@ export function useDebouncedSearch(
       setDebouncedQuery(query);
 
       const trimmed = query.trim();
-      const nextResults = trimmed ? searchAll(query, limit) : [];
+      const nextResults = trimmed && index ? searchAll(query, catalogIndex, limit) : [];
       if (generation !== generationRef.current) return;
 
       setResults(nextResults);
@@ -37,7 +40,7 @@ export function useDebouncedSearch(
     return () => {
       window.clearTimeout(timer);
     };
-  }, [query, limit, delay]);
+  }, [query, limit, delay, index, catalogIndex]);
 
   return { debouncedQuery, results };
 }

@@ -8,7 +8,7 @@ export const aboutHero = {
 export const aboutIntro = {
   title: "Apa itu Bursa?",
   paragraphs: [
-    "Bursa Trading Academy adalah platform edukasi trading di Indonesia yang menghadirkan banyak mentor dan instruktur terverifikasi dalam satu ekosistem belajar. Kami mengumpulkan kelas berkualitas tinggi untuk saham, crypto, dan forex — dengan modul berurutan, progress tracking, dan ruang komunitas per mentor.",
+    "Bursa Trading Academy adalah platform edukasi trading di Indonesia yang menghadirkan banyak mentor dan instruktur terverifikasi dalam satu ekosistem belajar. Kami mengumpulkan kelas berkualitas tinggi untuk saham, crypto, dan forex — dengan video berurutan, progress tracking, dan ruang komunitas per mentor.",
     "Berbeda dari konten gratis yang tersebar atau kelas dari satu figur tanpa verifikasi independen, Bursa dibangun sebagai infrastruktur kepercayaan: setiap mentor dan kurikulum ditinjau tim sebelum tayang. Kamu bayar per kelas tanpa langganan bulanan, dan platform tidak mengelola dana tradingmu.",
   ],
 };
@@ -37,7 +37,7 @@ export const aboutWhyUse = [
     icon: "layers" as const,
     title: "Kurikulum terstruktur",
     description:
-      "Bukan tumpukan video acak. Modul berurutan dari pemula hingga menengah, dengan jalur belajar yang jelas per instrumen.",
+      "Bukan tumpukan video acak. Video berurutan dari pemula hingga menengah, dengan jalur belajar yang jelas per instrumen.",
   },
   {
     icon: "wallet" as const,

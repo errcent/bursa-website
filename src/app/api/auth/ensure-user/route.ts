@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveAuthenticatedUser, resolveTrustedEmail } from "@/lib/auth/request-identity";
+import { isPrototypeMode } from "@/lib/auth/prototype";
 import { ensureUserSchema } from "@/lib/auth/validation";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
 
@@ -11,13 +13,20 @@ import { resolveRequestUser } from "@/lib/lesson-qa/server";
 export async function POST(request: NextRequest) {
   try {
     const body = ensureUserSchema.parse(await request.json());
-    const email = body.email.trim().toLowerCase();
-    const headerEmail = request.headers.get("x-user-email")?.trim().toLowerCase();
+    const bodyEmail = body.email.trim().toLowerCase();
+    const trustedEmail = await resolveTrustedEmail(request);
 
-    // Prefer body email; allow header as fallback when body omits it.
-    const resolvedEmail = email || headerEmail;
-    if (!resolvedEmail) {
-      return jsonError("Email diperlukan.", 400);
+    if (trustedEmail) {
+      if (trustedEmail !== bodyEmail) {
+        return jsonError("Email tidak cocok dengan sesi.", 403);
+      }
+    } else if (!isPrototypeMode()) {
+      return jsonError("Autentikasi diperlukan.", 401);
+    } else {
+      const headerEmail = request.headers.get("x-user-email")?.trim().toLowerCase();
+      if (!headerEmail || headerEmail !== bodyEmail) {
+        return jsonError("Autentikasi diperlukan.", 401);
+      }
     }
 
     const user = await resolveRequestUser(
@@ -25,8 +34,8 @@ export async function POST(request: NextRequest) {
         userId:
           body.userId?.trim() ||
           request.headers.get("x-user-id")?.trim() ||
-          resolvedEmail,
-        email: resolvedEmail,
+          bodyEmail,
+        email: bodyEmail,
         name:
           body.name?.trim() ||
           request.headers.get("x-user-name")?.trim() ||

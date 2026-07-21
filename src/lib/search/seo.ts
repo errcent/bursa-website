@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 
 import { articles } from "@/lib/articles/content";
-import { courses, mentors } from "@/lib/mock-data";
+import { getCatalogData } from "@/lib/catalog/server";
 import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { searchAll } from "@/lib/search/engine";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursa.id";
 
-export function buildSearchMetadata(query?: string): Metadata {
+export async function buildSearchMetadata(query?: string): Promise<Metadata> {
   const trimmed = query?.trim();
 
   if (!trimmed) {
@@ -38,7 +38,8 @@ export function buildSearchMetadata(query?: string): Metadata {
     };
   }
 
-  const results = searchAll(trimmed, 20);
+  const { courses, mentors } = await getCatalogData();
+  const results = searchAll(trimmed, { courses, mentors }, 20);
   const courseCount = results.filter((r) => r.type === "course").length;
   const mentorCount = results.filter((r) => r.type === "mentor").length;
 
@@ -92,8 +93,9 @@ export function buildWebsiteSearchJsonLd() {
   };
 }
 
-export function buildSearchResultsJsonLd(query: string) {
-  const results = searchAll(query, 10);
+export async function buildSearchResultsJsonLd(query: string) {
+  const { courses, mentors } = await getCatalogData();
+  const results = searchAll(query, { courses, mentors }, 10);
 
   return {
     "@context": "https://schema.org",
@@ -121,7 +123,9 @@ export function buildOrganizationJsonLd() {
   };
 }
 
-export function getSitemapEntries() {
+export async function getSitemapEntries() {
+  const { courses, mentors } = await getCatalogData();
+
   const staticPages = [
     { url: "", priority: 1, changeFrequency: "weekly" as const },
     { url: "/katalog", priority: 0.9, changeFrequency: "daily" as const },
@@ -129,6 +133,7 @@ export function getSitemapEntries() {
       ? [{ url: "/komunitas", priority: 0.8, changeFrequency: "daily" as const }]
       : []),
     { url: "/jadi-mentor", priority: 0.7, changeFrequency: "monthly" as const },
+    { url: "/waitlist", priority: 0.85, changeFrequency: "weekly" as const },
     { url: "/artikel", priority: 0.6, changeFrequency: "weekly" as const },
     { url: "/bantuan", priority: 0.5, changeFrequency: "monthly" as const },
     { url: "/syarat-dan-ketentuan", priority: 0.3, changeFrequency: "monthly" as const },

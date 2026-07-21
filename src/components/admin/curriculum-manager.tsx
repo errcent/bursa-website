@@ -155,15 +155,15 @@ export function CurriculumManager({ courseId }: Props) {
 
       if (editingLesson?.id) {
         await updateLesson(courseId, lessonModuleId, editingLesson.id, payload);
-        toast("Lesson diperbarui.");
+        toast("Video diperbarui.");
       } else {
         await createLesson(courseId, lessonModuleId, payload);
-        toast("Lesson ditambahkan.");
+        toast("Video ditambahkan.");
       }
       setLessonModalOpen(false);
       await load();
     } catch {
-      toast("Gagal menyimpan lesson.", "error");
+      toast("Gagal menyimpan video.", "error");
     } finally {
       setSaving(false);
     }
@@ -178,7 +178,7 @@ export function CurriculumManager({ courseId }: Props) {
         toast("Modul dihapus.");
       } else {
         await deleteLesson(courseId, deleteTarget.moduleId, deleteTarget.lessonId);
-        toast("Lesson dihapus.");
+        toast("Video dihapus.");
       }
       setDeleteTarget(null);
       await load();
@@ -247,9 +247,9 @@ export function CurriculumManager({ courseId }: Props) {
         })),
       });
       setCourse(res.data);
-      toast("Urutan lesson diperbarui.");
+      toast("Urutan video diperbarui.");
     } catch {
-      toast("Gagal mengubah urutan lesson.", "error");
+      toast("Gagal mengubah urutan video.", "error");
     } finally {
       setSaving(false);
     }
@@ -287,11 +287,11 @@ export function CurriculumManager({ courseId }: Props) {
           </Link>
           <h1 className="font-heading text-2xl font-semibold">{course.title}</h1>
           <p className="text-sm text-muted-foreground">
-            Kelola modul, lesson, video URL, durasi, preview, dan urutan konten.
+            Kelola modul, video, URL, durasi, preview, dan urutan konten.
           </p>
           <div className="flex flex-wrap gap-2 pt-1">
             <Badge variant="outline">{course.modules.length} modul</Badge>
-            <Badge variant="outline">{totalLessons} lesson</Badge>
+            <Badge variant="outline">{totalLessons} video</Badge>
             <Badge variant={course.isPublished ? "accent" : "outline"}>
               {course.isPublished ? "Publik" : "Draft"}
             </Badge>
@@ -309,7 +309,7 @@ export function CurriculumManager({ courseId }: Props) {
           <div>
             <p className="font-heading font-medium">Belum ada modul</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Buat modul pertama, lalu tambahkan lesson dan video URL.
+              Buat modul pertama, lalu tambahkan video dan URL.
             </p>
           </div>
           <Button size="sm" onClick={openCreateModule}>
@@ -326,7 +326,7 @@ export function CurriculumManager({ courseId }: Props) {
                 <div className="min-w-0 flex-1">
                   <h2 className="font-heading text-sm font-semibold">{mod.title}</h2>
                   <p className="text-xs text-muted-foreground">
-                    {mod.lessons.length} lesson · urutan {mi + 1}
+                    {mod.lessons.length} video · urutan {mi + 1}
                   </p>
                 </div>
                 <div className="flex items-center gap-1">
@@ -366,7 +366,7 @@ export function CurriculumManager({ courseId }: Props) {
                   </Button>
                   <Button size="xs" variant="outline" onClick={() => openCreateLesson(mod.id!)}>
                     <Plus className="size-3" />
-                    Lesson
+                    Video
                   </Button>
                 </div>
               </div>
@@ -374,7 +374,7 @@ export function CurriculumManager({ courseId }: Props) {
               <div className="divide-y divide-white/6">
                 {mod.lessons.length === 0 ? (
                   <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                    Belum ada lesson di modul ini.
+                    Belum ada video di modul ini.
                   </div>
                 ) : (
                   mod.lessons.map((lesson, li) => (
@@ -408,7 +408,7 @@ export function CurriculumManager({ courseId }: Props) {
                           variant="ghost"
                           disabled={saving || li === 0}
                           onClick={() => moveLesson(mod.id!, li, -1)}
-                          aria-label="Naikkan lesson"
+                          aria-label="Naikkan video"
                         >
                           <ArrowUp className="size-3.5" />
                         </Button>
@@ -417,7 +417,7 @@ export function CurriculumManager({ courseId }: Props) {
                           variant="ghost"
                           disabled={saving || li === mod.lessons.length - 1}
                           onClick={() => moveLesson(mod.id!, li, 1)}
-                          aria-label="Turunkan lesson"
+                          aria-label="Turunkan video"
                         >
                           <ArrowDown className="size-3.5" />
                         </Button>
@@ -483,9 +483,9 @@ export function CurriculumManager({ courseId }: Props) {
       <FormModal
         open={lessonModalOpen}
         onClose={() => setLessonModalOpen(false)}
-        title={editingLesson ? "Edit Lesson" : "Tambah Lesson"}
+        title={editingLesson ? "Edit Video" : "Tambah Video"}
         size="lg"
-        description="Isi metadata lesson dan URL video. Upload file lokal opsional lewat endpoint upload."
+        description="Isi metadata video dan URL. Upload file lokal opsional lewat endpoint upload."
         footer={
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setLessonModalOpen(false)}>
@@ -514,7 +514,7 @@ export function CurriculumManager({ courseId }: Props) {
               value={lessonForm.description ?? ""}
               onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
               className="w-full rounded-lg border border-border bg-background px-3 py-2"
-              placeholder="Ringkasan materi lesson (opsional)"
+              placeholder="Ringkasan materi video (opsional)"
             />
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -610,11 +610,11 @@ export function CurriculumManager({ courseId }: Props) {
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
-        title={deleteTarget?.type === "module" ? "Hapus modul?" : "Hapus lesson?"}
+        title={deleteTarget?.type === "module" ? "Hapus modul?" : "Hapus video?"}
         description={
           deleteTarget?.type === "module"
-            ? `Modul "${deleteTarget.title}" dan semua lesson di dalamnya akan dihapus.`
-            : `Lesson "${deleteTarget?.title}" akan dihapus permanen.`
+            ? `Modul "${deleteTarget.title}" dan semua video di dalamnya akan dihapus.`
+            : `Video "${deleteTarget?.title}" akan dihapus permanen.`
         }
         loading={saving}
       />

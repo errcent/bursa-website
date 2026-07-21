@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { PlaylistDetailView } from "@/components/playlist/playlist-detail";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNavbar } from "@/components/site-navbar";
+import { findCuratedPlaylistBySlug } from "@/lib/playlist/server";
 
 type PlaylistDetailPageProps = {
   params: Promise<{ slug: string }>;
@@ -10,14 +11,18 @@ type PlaylistDetailPageProps = {
 
 export async function generateMetadata({ params }: PlaylistDetailPageProps) {
   const { slug } = await params;
-  const title = slug
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  const playlist = await findCuratedPlaylistBySlug(slug);
+
+  if (!playlist) {
+    return {
+      title: "Playlist tidak ditemukan",
+      description: "Playlist kurasi Bursa.",
+    };
+  }
 
   return {
-    title: `${title} · Playlist`,
-    description: "Playlist kurasi Bursa.",
+    title: `${playlist.title} · Playlist`,
+    description: playlist.description ?? "Playlist kurasi Bursa.",
   };
 }
 

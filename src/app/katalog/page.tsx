@@ -6,7 +6,6 @@ import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { CatalogBrowserSkeleton } from "@/components/catalog-browser-skeleton";
 import { CatalogDataLoader } from "@/components/catalog-data-loader";
-import { KatalogHero } from "@/components/katalog-hero";
 import { buildSearchMetadata, buildSearchResultsJsonLd } from "@/lib/search/seo";
 
 export const revalidate = 60;
@@ -30,7 +29,7 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
     ? (params.view as CatalogView)
     : "kelas";
 
-  const searchJsonLd = initialQuery ? buildSearchResultsJsonLd(initialQuery) : null;
+  const searchJsonLd = initialQuery ? await buildSearchResultsJsonLd(initialQuery) : null;
 
   return (
     <>
@@ -43,14 +42,10 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
         />
       )}
       <SiteNavbar />
-      <main className="has-mobile-sticky-cta flex-1 overflow-x-clip pb-6">
-        <KatalogHero />
-        <div className="container-page py-4 sm:py-10">
+      <main className="catalog-page flex-1 overflow-x-clip pb-6">
+        <div className="container-page pt-4 sm:pt-6">
           <Suspense fallback={<CatalogBrowserSkeleton />}>
-            <CatalogDataLoader
-              initialQuery={initialQuery}
-              initialView={initialView}
-            />
+            <CatalogDataLoader initialView={initialView} />
           </Suspense>
         </div>
       </main>

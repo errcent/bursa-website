@@ -17,6 +17,8 @@ export function mapAvailabilitySlot(slot: SlotWithBookedBy): AvailabilitySlot {
     bookedByName: slot.bookedBy?.nama ?? null,
     notes: slot.notes,
     createdAt: slot.createdAt.toISOString(),
+    commitmentFee: slot.commitmentFee,
+    attendanceStatus: slot.attendanceStatus,
   };
 }
 

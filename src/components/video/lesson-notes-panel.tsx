@@ -1,35 +1,33 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  AlertCircle,
+  Check,
   ChevronDown,
-  Clock,
   FileDown,
   FileText,
   Loader2,
   StickyNote,
-  Trash2,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
 import { useAuth } from "@/components/auth-provider";
 import { NotesRichEditor } from "@/components/video/notes-rich-editor";
 import { Button } from "@/components/ui/button";
+import { buildLoginHref, resolvePostAuthRedirect, POST_AUTH_HOME } from "@/lib/auth/redirect";
 import {
   downloadNotesExport,
   noteHasVisibleContent,
   type NoteExportFormat,
 } from "@/lib/lesson-notes/export";
+import { mergeNotesContent, pickPrimaryNote } from "@/lib/lesson-notes/merge";
 import type { LessonNote } from "@/lib/lesson-notes/types";
 import { cn } from "@/lib/utils";
 
 const AUTOSAVE_DELAY_MS = 1200;
-
-function formatDuration(totalSeconds: number) {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = Math.floor(totalSeconds % 60);
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 
@@ -38,8 +36,6 @@ interface LessonNotesPanelProps {
   courseTitle: string;
   lessonId: string;
   lessonTitle: string;
-  playheadSeconds: number;
-  onSeek?: (seconds: number) => void;
   /** Tighter layout for the right sidebar panel */
   variant?: "default" | "sidebar";
 }
@@ -59,18 +55,64 @@ const EXPORT_OPTIONS: { format: NoteExportFormat; label: string; hint: string }[
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
 function SaveIndicator({ status }: { status: SaveStatus }) {
-  if (status === "idle") return null;
+  const label =
+    status === "saving"
+      ? "Menyimpan"
+      : status === "saved"
+        ? "Tersimpan"
+        : status === "error"
+          ? "Gagal menyimpan"
+          : "";
+
   return (
     <span
-      className={cn(
-        "text-[10px] tabular-nums",
-        status === "error" ? "text-destructive" : "text-muted-foreground"
-      )}
+      className="inline-flex size-7 items-center justify-center"
       aria-live="polite"
+      aria-atomic="true"
+      role="status"
     >
-      {status === "saving" && "Menyimpan…"}
-      {status === "saved" && "Tersimpan"}
-      {status === "error" && "Gagal menyimpan"}
+      {label ? <span className="sr-only">{label}</span> : null}
+      <AnimatePresence mode="wait" initial={false}>
+        {status === "saving" && (
+          <motion.span
+            key="saving"
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.85 }}
+            transition={{ duration: 0.15, ease: easeOut }}
+            className="inline-flex"
+          >
+            <Loader2
+              className="size-3.5 animate-spin text-muted-foreground"
+              aria-hidden
+            />
+          </motion.span>
+        )}
+        {status === "saved" && (
+          <motion.span
+            key="saved"
+            initial={{ opacity: 0, scale: 0.75 }}
+            animate={{ opacity: 1, scale: [0.75, 1.12, 1] }}
+            exit={{ opacity: 0, scale: 0.85 }}
+            transition={{ duration: 0.35, ease: easeOut }}
+            className="inline-flex text-emerald"
+          >
+            <Check className="size-3.5" aria-hidden strokeWidth={2.5} />
+          </motion.span>
+        )}
+        {status === "error" && (
+          <motion.span
+            key="error"
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.85 }}
+            transition={{ duration: 0.15, ease: easeOut }}
+            className="inline-flex text-destructive"
+          >
+            <AlertCircle className="size-3.5" aria-hidden />
+          </motion.span>
+        )}
+      </AnimatePresence>
     </span>
   );
 }
@@ -82,297 +124,14 @@ interface AuthPayload {
   role?: string;
 }
 
-interface InlineNoteBlockProps {
-  note: LessonNote;
-  apiBase: string;
-  authPayload: AuthPayload;
-  playheadSeconds: number;
-  onSeek?: (seconds: number) => void;
-  onUpdated: (note: LessonNote) => void;
-  onDeleted: (noteId: string) => void;
-  onError: (message: string | null) => void;
-  compact?: boolean;
-}
-
-function InlineNoteBlock({
-  note,
-  apiBase,
-  authPayload,
-  playheadSeconds,
-  onSeek,
-  onUpdated,
-  onDeleted,
-  onError,
-  compact,
-}: InlineNoteBlockProps) {
-  const [html, setHtml] = useState(note.content);
-  const [status, setStatus] = useState<SaveStatus>("idle");
-  const [deleting, setDeleting] = useState(false);
-  const lastSavedRef = useRef(note.content);
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const savedFadeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    if (html === lastSavedRef.current) return;
-    if (!noteHasVisibleContent(html)) return;
-
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(() => {
-      void (async () => {
-        setStatus("saving");
-        onError(null);
-        try {
-          const res = await fetch(`${apiBase}/${note.id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              ...authPayload,
-              content: html,
-              timestampSeconds: note.timestampSeconds,
-            }),
-          });
-          if (!res.ok) {
-            setStatus("error");
-            onError("Gagal memperbarui catatan.");
-            return;
-          }
-          const data = await res.json();
-          const updated = data.note as LessonNote;
-          lastSavedRef.current = html;
-          onUpdated(updated);
-          setStatus("saved");
-          if (savedFadeRef.current) clearTimeout(savedFadeRef.current);
-          savedFadeRef.current = setTimeout(() => setStatus("idle"), 2000);
-        } catch {
-          setStatus("error");
-          onError("Gagal memperbarui catatan.");
-        }
-      })();
-    }, AUTOSAVE_DELAY_MS);
-
-    return () => {
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    };
-  }, [html, note.id, note.timestampSeconds, apiBase, authPayload, onUpdated, onError]);
-
-  useEffect(
-    () => () => {
-      if (savedFadeRef.current) clearTimeout(savedFadeRef.current);
-    },
-    []
-  );
-
-  async function handleDelete() {
-    if (!window.confirm("Hapus catatan ini?")) return;
-    setDeleting(true);
-    onError(null);
-    try {
-      const res = await fetch(`${apiBase}/${note.id}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(authPayload),
-      });
-      if (!res.ok) {
-        onError("Gagal menghapus catatan.");
-        return;
-      }
-      onDeleted(note.id);
-    } catch {
-      onError("Gagal menghapus catatan.");
-    } finally {
-      setDeleting(false);
-    }
-  }
-
-  async function updateTimestampToPlayhead() {
-    if (note.timestampSeconds === Math.floor(playheadSeconds)) return;
-    setStatus("saving");
-    onError(null);
-    try {
-      const res = await fetch(`${apiBase}/${note.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...authPayload,
-          content: html,
-          timestampSeconds: Math.floor(playheadSeconds),
-        }),
-      });
-      if (!res.ok) {
-        setStatus("error");
-        onError("Gagal memperbarui timestamp.");
-        return;
-      }
-      const data = await res.json();
-      onUpdated(data.note as LessonNote);
-      setStatus("saved");
-      if (savedFadeRef.current) clearTimeout(savedFadeRef.current);
-      savedFadeRef.current = setTimeout(() => setStatus("idle"), 2000);
-    } catch {
-      setStatus("error");
-      onError("Gagal memperbarui timestamp.");
-    }
-  }
-
-  return (
-    <li className="rounded-lg border border-border bg-card text-sm">
-      <div className="flex items-center justify-between gap-2 border-b border-border/60 px-2.5 py-1.5">
-        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => onSeek?.(note.timestampSeconds)}
-            className="inline-flex h-fit shrink-0 items-center gap-1 rounded-md bg-foreground/10 px-2 py-0.5 font-mono text-[11px] hover:bg-foreground/20"
-            title="Lompat ke timestamp ini"
-          >
-            <Clock className="size-3 opacity-70" />
-            {formatDuration(note.timestampSeconds)}
-          </button>
-          <button
-            type="button"
-            onClick={() => void updateTimestampToPlayhead()}
-            className="truncate text-[10px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-            title="Perbarui timestamp ke posisi playhead"
-          >
-            → {formatDuration(playheadSeconds)}
-          </button>
-        </div>
-        <div className="flex shrink-0 items-center gap-1">
-          <SaveIndicator status={status} />
-          <Button
-            size="sm"
-            variant="ghost"
-            className="size-7 p-0 text-destructive hover:text-destructive"
-            disabled={deleting}
-            aria-label="Hapus catatan"
-            onClick={() => void handleDelete()}
-          >
-            {deleting ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              <Trash2 className="size-3.5" />
-            )}
-          </Button>
-        </div>
-      </div>
-      <NotesRichEditor
-        key={`note-${note.id}`}
-        content={html}
-        onChange={setHtml}
-        ariaLabel={`Catatan di menit ${formatDuration(note.timestampSeconds)}`}
-        minHeightClass={compact ? "min-h-[72px]" : "min-h-[100px]"}
-        className="rounded-none border-0 bg-transparent"
-      />
-    </li>
-  );
-}
-
-interface DraftNoteEditorProps {
-  apiBase: string;
-  authPayload: AuthPayload;
-  playheadSeconds: number;
-  onCreated: (note: LessonNote) => void;
-  onError: (message: string | null) => void;
-  autofocus?: boolean;
-  compact?: boolean;
-  placeholder?: string;
-}
-
-function DraftNoteEditor({
-  apiBase,
-  authPayload,
-  playheadSeconds,
-  onCreated,
-  onError,
-  autofocus = false,
-  compact,
-  placeholder,
-}: DraftNoteEditorProps) {
-  const [html, setHtml] = useState("<p></p>");
-  const [editorKey, setEditorKey] = useState(0);
-  const [status, setStatus] = useState<SaveStatus>("idle");
-  const creatingRef = useRef(false);
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const savedFadeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    if (!noteHasVisibleContent(html)) return;
-    if (creatingRef.current) return;
-
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(() => {
-      void (async () => {
-        if (creatingRef.current || !noteHasVisibleContent(html)) return;
-        creatingRef.current = true;
-        setStatus("saving");
-        onError(null);
-        try {
-          const res = await fetch(apiBase, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              ...authPayload,
-              content: html,
-              timestampSeconds: Math.floor(playheadSeconds),
-            }),
-          });
-          if (!res.ok) {
-            setStatus("error");
-            onError("Gagal menyimpan catatan.");
-            creatingRef.current = false;
-            return;
-          }
-          const data = await res.json();
-          onCreated(data.note as LessonNote);
-          setHtml("<p></p>");
-          setEditorKey((k) => k + 1);
-          setStatus("saved");
-          if (savedFadeRef.current) clearTimeout(savedFadeRef.current);
-          savedFadeRef.current = setTimeout(() => setStatus("idle"), 2000);
-        } catch {
-          setStatus("error");
-          onError("Gagal menyimpan catatan.");
-        } finally {
-          creatingRef.current = false;
-        }
-      })();
-    }, AUTOSAVE_DELAY_MS);
-
-    return () => {
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    };
-  }, [html, apiBase, authPayload, playheadSeconds, onCreated, onError]);
-
-  useEffect(
-    () => () => {
-      if (savedFadeRef.current) clearTimeout(savedFadeRef.current);
-    },
-    []
-  );
-
-  return (
-    <div className="rounded-lg border border-dashed border-border/80 bg-card/50">
-      <div className="flex items-center justify-between gap-2 border-b border-border/40 px-2.5 py-1.5">
-        <span className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
-          <Clock className="size-3 opacity-70" />
-          {formatDuration(playheadSeconds)}
-        </span>
-        <SaveIndicator status={status} />
-      </div>
-      <NotesRichEditor
-        key={`draft-${editorKey}`}
-        content={html}
-        onChange={setHtml}
-        autofocus={autofocus}
-        placeholder={
-          placeholder ??
-          `Mulai mengetik — otomatis tersimpan di menit ${formatDuration(playheadSeconds)}…`
-        }
-        ariaLabel="Catatan baru"
-        minHeightClass={compact ? "min-h-[96px]" : "min-h-[140px]"}
-        className="rounded-none border-0 bg-transparent"
-      />
-    </div>
-  );
+function notesAuthHeaders(
+  authPayload: AuthPayload,
+  withJson = false
+): HeadersInit {
+  return {
+    ...(withJson ? { "Content-Type": "application/json" } : {}),
+    ...(authPayload.email ? { "x-user-email": authPayload.email } : {}),
+  };
 }
 
 export function LessonNotesPanel({
@@ -380,17 +139,28 @@ export function LessonNotesPanel({
   courseTitle,
   lessonId,
   lessonTitle,
-  playheadSeconds,
-  onSeek,
   variant = "default",
 }: LessonNotesPanelProps) {
   const { session } = useAuth();
-  const [notes, setNotes] = useState<LessonNote[]>([]);
+  const pathname = usePathname();
+  const loginHref = buildLoginHref(pathname);
+  const registerHref = useMemo(() => {
+    const next = resolvePostAuthRedirect(pathname);
+    return next === POST_AUTH_HOME ? "/daftar" : `/daftar?next=${encodeURIComponent(next)}`;
+  }, [pathname]);
+
+  const [note, setNote] = useState<LessonNote | null>(null);
+  const [html, setHtml] = useState("<p></p>");
   const [isLoading, setIsLoading] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [exporting, setExporting] = useState(false);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const exportMenuRef = useRef<HTMLDivElement>(null);
+  const lastSavedRef = useRef("<p></p>");
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const savedFadeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const savingRef = useRef(false);
 
   const apiBase = `/api/courses/${courseSlug}/lessons/${lessonId}/notes`;
 
@@ -404,45 +174,193 @@ export function LessonNotesPanel({
     };
   }, [session]);
 
+  const consolidateLegacyNotes = useCallback(
+    async (primary: LessonNote, mergedContent: string, extraNotes: LessonNote[]) => {
+      if (!authPayload || extraNotes.length === 0) return;
+
+      await fetch(`${apiBase}/${primary.id}`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: notesAuthHeaders(authPayload, true),
+        body: JSON.stringify({
+          ...authPayload,
+          content: mergedContent,
+        }),
+      });
+
+      await Promise.all(
+        extraNotes.map((extra) =>
+          fetch(`${apiBase}/${extra.id}`, {
+            method: "DELETE",
+            credentials: "include",
+            headers: notesAuthHeaders(authPayload, true),
+            body: JSON.stringify(authPayload),
+          })
+        )
+      );
+    },
+    [apiBase, authPayload]
+  );
+
   useEffect(() => {
     let cancelled = false;
+
     void (async () => {
       if (!session?.userId) {
         if (!cancelled) {
-          setNotes([]);
+          setNote(null);
+          setHtml("<p></p>");
+          lastSavedRef.current = "<p></p>";
           setIsLoading(false);
         }
         return;
       }
+
       setIsLoading(true);
       try {
         const params = new URLSearchParams({
           userId: session.userId,
           ...(session.email ? { email: session.email } : {}),
         });
-        const res = await fetch(`${apiBase}?${params}`, { cache: "no-store" });
+        const res = await fetch(`${apiBase}?${params}`, {
+          cache: "no-store",
+          credentials: "include",
+          headers: notesAuthHeaders({
+            userId: session.userId,
+            email: session.email,
+            name: session.name,
+            role: session.role,
+          }),
+        });
         if (cancelled) return;
+        if (res.status === 401) {
+          setNote(null);
+          setHtml("<p></p>");
+          lastSavedRef.current = "<p></p>";
+          setError(null);
+          return;
+        }
         if (!res.ok) {
-          setNotes([]);
+          setNote(null);
+          setHtml("<p></p>");
+          lastSavedRef.current = "<p></p>";
           setError("Gagal memuat catatan.");
           return;
         }
+
         const data = await res.json();
-        setNotes(data.notes ?? []);
+        const notes = (data.notes ?? []) as LessonNote[];
+        const primary = pickPrimaryNote(notes);
+        const mergedContent = mergeNotesContent(notes);
+
+        setNote(primary);
+        setHtml(mergedContent);
+        lastSavedRef.current = mergedContent;
         setError(null);
+
+        if (primary && notes.length > 1) {
+          const extras = notes.filter((entry) => entry.id !== primary.id);
+          void consolidateLegacyNotes(primary, mergedContent, extras);
+        }
       } catch {
         if (!cancelled) {
-          setNotes([]);
+          setNote(null);
+          setHtml("<p></p>");
+          lastSavedRef.current = "<p></p>";
           setError("Gagal memuat catatan.");
         }
       } finally {
         if (!cancelled) setIsLoading(false);
       }
     })();
+
     return () => {
       cancelled = true;
     };
-  }, [apiBase, session?.email, session?.userId]);
+  }, [
+    apiBase,
+    consolidateLegacyNotes,
+    session?.email,
+    session?.name,
+    session?.role,
+    session?.userId,
+  ]);
+
+  useEffect(() => {
+    if (!authPayload) return;
+    if (html === lastSavedRef.current) return;
+    if (!noteHasVisibleContent(html)) return;
+    if (savingRef.current) return;
+
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      void (async () => {
+        if (savingRef.current || !noteHasVisibleContent(html)) return;
+        savingRef.current = true;
+        setSaveStatus("saving");
+        setError(null);
+
+        try {
+          if (note?.id) {
+            const res = await fetch(`${apiBase}/${note.id}`, {
+              method: "PATCH",
+              credentials: "include",
+              headers: notesAuthHeaders(authPayload, true),
+              body: JSON.stringify({
+                ...authPayload,
+                content: html,
+              }),
+            });
+            if (!res.ok) {
+              setSaveStatus("error");
+              setError("Gagal memperbarui catatan.");
+              return;
+            }
+            const data = await res.json();
+            setNote(data.note as LessonNote);
+          } else {
+            const res = await fetch(apiBase, {
+              method: "POST",
+              credentials: "include",
+              headers: notesAuthHeaders(authPayload, true),
+              body: JSON.stringify({
+                ...authPayload,
+                content: html,
+              }),
+            });
+            if (!res.ok) {
+              setSaveStatus("error");
+              setError("Gagal menyimpan catatan.");
+              return;
+            }
+            const data = await res.json();
+            setNote(data.note as LessonNote);
+          }
+
+          lastSavedRef.current = html;
+          setSaveStatus("saved");
+          if (savedFadeRef.current) clearTimeout(savedFadeRef.current);
+          savedFadeRef.current = setTimeout(() => setSaveStatus("idle"), 2000);
+        } catch {
+          setSaveStatus("error");
+          setError("Gagal menyimpan catatan.");
+        } finally {
+          savingRef.current = false;
+        }
+      })();
+    }, AUTOSAVE_DELAY_MS);
+
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, [html, note?.id, apiBase, authPayload]);
+
+  useEffect(
+    () => () => {
+      if (savedFadeRef.current) clearTimeout(savedFadeRef.current);
+    },
+    []
+  );
 
   useEffect(() => {
     if (!exportMenuOpen) return;
@@ -467,39 +385,13 @@ export function LessonNotesPanel({
     };
   }, [exportMenuOpen]);
 
-  const handleNoteUpdated = useCallback((updated: LessonNote) => {
-    setNotes((prev) =>
-      prev
-        .map((n) => (n.id === updated.id ? updated : n))
-        .sort(
-          (a, b) =>
-            a.timestampSeconds - b.timestampSeconds ||
-            a.createdAt.localeCompare(b.createdAt)
-        )
-    );
-  }, []);
-
-  const handleNoteCreated = useCallback((note: LessonNote) => {
-    setNotes((prev) =>
-      [...prev, note].sort(
-        (a, b) =>
-          a.timestampSeconds - b.timestampSeconds ||
-          a.createdAt.localeCompare(b.createdAt)
-      )
-    );
-  }, []);
-
-  const handleNoteDeleted = useCallback((noteId: string) => {
-    setNotes((prev) => prev.filter((n) => n.id !== noteId));
-  }, []);
-
   async function handleExport(format: NoteExportFormat) {
-    if (notes.length === 0 || exporting) return;
+    if (!noteHasVisibleContent(html) || exporting) return;
     setExportMenuOpen(false);
     setExporting(true);
     setError(null);
     try {
-      await downloadNotesExport(notes, { courseTitle, lessonTitle }, format);
+      await downloadNotesExport(html, { courseTitle, lessonTitle }, format);
     } catch {
       setError("Gagal mengunduh catatan.");
     } finally {
@@ -508,162 +400,144 @@ export function LessonNotesPanel({
   }
 
   const isSidebar = variant === "sidebar";
-  const draftAutofocus = !isLoading && notes.length === 0;
+  const canExport = noteHasVisibleContent(html);
 
   if (!session?.userId || !authPayload) {
     return (
-      <div
-        className={cn(
-          "rounded-lg border border-border bg-card px-4 py-6 text-center",
-          isSidebar && "py-4"
-        )}
-      >
+      <div className={cn("py-4 text-center", isSidebar && "py-2")}>
         <StickyNote className="mx-auto mb-2 size-5 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">
-          Masuk untuk menulis catatan dokumen dengan timestamp video, lalu unduh sebagai DOCX,
-          PDF, Notion, Markdown, atau TXT.
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Masuk untuk menulis catatan lesson, lalu unduh sebagai DOCX, PDF, Notion,
+          Markdown, atau TXT.
         </p>
+        <div
+          className={cn(
+            "mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center",
+            isSidebar && "sm:flex-col"
+          )}
+        >
+          <Button
+            size="sm"
+            className="btn-primary w-full sm:min-w-[7.5rem]"
+            render={<Link href={loginHref} />}
+          >
+            Masuk
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full sm:min-w-[7.5rem]"
+            render={<Link href={registerHref} />}
+          >
+            Daftar
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div
-        className={cn(
-          "flex flex-wrap items-center justify-between gap-2",
-          isSidebar && "flex-col items-stretch"
-        )}
-      >
-        {!isSidebar && (
-          <p className="text-xs text-muted-foreground">
-            Ketik langsung · otomatis tersimpan · pilih teks untuk format
-          </p>
-        )}
-        <div ref={exportMenuRef} className={cn("relative", isSidebar && "w-full")}>
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            disabled={notes.length === 0 || exporting}
-            aria-expanded={exportMenuOpen}
-            aria-haspopup="listbox"
-            className={cn("gap-1.5", isSidebar && "w-full")}
-            onClick={() => setExportMenuOpen((open) => !open)}
-          >
-            {exporting ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              <FileDown className="size-3.5" />
-            )}
-            Unduh catatan
-            <ChevronDown
-              className={cn(
-                "size-3.5 opacity-60 transition-transform",
-                exportMenuOpen && "rotate-180"
-              )}
-            />
-          </Button>
-
-          <AnimatePresence>
-            {exportMenuOpen && (
-              <motion.div
-                key="notes-export-menu"
-                initial={{ y: -6, scale: 0.98, opacity: 0 }}
-                animate={{ y: 0, scale: 1, opacity: 1 }}
-                exit={{ y: -6, scale: 0.98, opacity: 0 }}
-                transition={{ duration: 0.16, ease: easeOut }}
-                role="listbox"
-                aria-label="Format unduhan catatan"
-                className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border-2 border-border bg-popover text-popover-foreground shadow-[0_20px_48px_-12px_rgba(0,0,0,0.55)] dark:border-white/10"
-              >
-                <div className="border-b border-border px-3 py-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Format ekspor
-                  </p>
-                </div>
-                <div className="p-1.5">
-                  {EXPORT_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.format}
-                      type="button"
-                      role="option"
-                      aria-selected={false}
-                      disabled={exporting}
-                      onClick={() => void handleExport(opt.format)}
-                      className="flex w-full items-start gap-2.5 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-muted disabled:opacity-50"
-                    >
-                      <FileText className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-medium">{opt.label}</span>
-                        <span className="block text-[11px] text-muted-foreground">
-                          {opt.hint}
-                        </span>
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {error && (
-        <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
-          {error}
-        </p>
+        <p className="mb-1 shrink-0 text-xs text-destructive">{error}</p>
       )}
 
       {isLoading ? (
-        <div className="flex items-center gap-2 py-6 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
           <Loader2 className="size-4 animate-spin" />
           Memuat catatan…
         </div>
       ) : (
-        <div className="flex flex-col gap-2">
-          {notes.length > 0 && (
-            <ul className="flex flex-col gap-2">
-              {notes.map((note) => (
-                <InlineNoteBlock
-                  key={note.id}
-                  note={note}
-                  apiBase={apiBase}
-                  authPayload={authPayload}
-                  playheadSeconds={playheadSeconds}
-                  onSeek={onSeek}
-                  onUpdated={handleNoteUpdated}
-                  onDeleted={handleNoteDeleted}
-                  onError={setError}
-                  compact={isSidebar}
-                />
-              ))}
-            </ul>
-          )}
-
-          <DraftNoteEditor
-            key={`draft-lesson-${lessonId}`}
-            apiBase={apiBase}
-            authPayload={authPayload}
-            playheadSeconds={playheadSeconds}
-            onCreated={handleNoteCreated}
-            onError={setError}
-            autofocus={draftAutofocus}
-            compact={isSidebar}
-            placeholder={
-              notes.length === 0
-                ? "Mulai mengetik catatan lesson ini…"
-                : `Catatan baru di menit ${formatDuration(playheadSeconds)}…`
-            }
+        <>
+          <NotesRichEditor
+            key={`lesson-note-${lessonId}`}
+            content={html}
+            onChange={setHtml}
+            autofocus={!isSidebar}
+            bare
+            fillHeight
+            placeholder="Tulis catatan…"
+            ariaLabel={`Catatan untuk ${lessonTitle}`}
+            minHeightClass={isSidebar ? "min-h-0" : "min-h-[14rem]"}
+            className="min-h-0 flex-1"
           />
 
-          {isSidebar && notes.length === 0 && (
-            <p className="text-[11px] leading-relaxed text-muted-foreground">
-              Pilih teks untuk menu format · Ctrl+B tebal · Ctrl+I miring · timestamp mengikuti
-              playhead video
-            </p>
-          )}
-        </div>
+          <div
+            className={cn(
+              "mt-2 flex shrink-0 items-center justify-between gap-2 border-t border-border/40 pt-2",
+              isSidebar && "pt-1.5"
+            )}
+          >
+            <SaveIndicator status={saveStatus} />
+            <div ref={exportMenuRef} className="relative shrink-0">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={!canExport || exporting}
+                aria-expanded={exportMenuOpen}
+                aria-haspopup="listbox"
+                className="gap-1.5"
+                onClick={() => setExportMenuOpen((open) => !open)}
+              >
+                {exporting ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <FileDown className="size-3.5" />
+                )}
+                Unduh catatan
+                <ChevronDown
+                  className={cn(
+                    "size-3.5 opacity-60 transition-transform",
+                    exportMenuOpen && "rotate-180"
+                  )}
+                />
+              </Button>
+
+              <AnimatePresence>
+                {exportMenuOpen && (
+                  <motion.div
+                    key="notes-export-menu"
+                    initial={{ y: 6, scale: 0.98, opacity: 0 }}
+                    animate={{ y: 0, scale: 1, opacity: 1 }}
+                    exit={{ y: 6, scale: 0.98, opacity: 0 }}
+                    transition={{ duration: 0.16, ease: easeOut }}
+                    role="listbox"
+                    aria-label="Format unduhan catatan"
+                    className="absolute bottom-full right-0 z-50 mb-2 w-64 overflow-hidden rounded-2xl border-2 border-border bg-popover text-popover-foreground shadow-[0_20px_48px_-12px_rgba(0,0,0,0.55)] dark:border-white/10"
+                  >
+                    <div className="border-b border-border px-3 py-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        Format ekspor
+                      </p>
+                    </div>
+                    <div className="p-1.5">
+                      {EXPORT_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.format}
+                          type="button"
+                          role="option"
+                          aria-selected={false}
+                          disabled={exporting}
+                          onClick={() => void handleExport(opt.format)}
+                          className="flex w-full items-start gap-2.5 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-muted disabled:opacity-50"
+                        >
+                          <FileText className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-sm font-medium">{opt.label}</span>
+                            <span className="block text-[11px] text-muted-foreground">
+                              {opt.hint}
+                            </span>
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

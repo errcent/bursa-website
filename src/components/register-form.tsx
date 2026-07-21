@@ -75,7 +75,7 @@ export function RegisterForm() {
     }, 400);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setFieldErrors({});
@@ -105,7 +105,7 @@ export function RegisterForm() {
     }
 
     setIsSubmitting(true);
-    const result = register({
+    const result = await register({
       name,
       email,
       username: normalizedUsername,
@@ -156,7 +156,7 @@ export function RegisterForm() {
             setName(e.target.value);
             if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: undefined }));
           }}
-          placeholder="Contoh: Dinda Ramadhani"
+          placeholder="Contoh: Andi Rahayu"
           className={authInputClassName}
           disabled={isSubmitting}
           aria-invalid={Boolean(fieldErrors.name)}
@@ -188,7 +188,7 @@ export function RegisterForm() {
               }
               scheduleUsernameCheck(nextValue);
             }}
-            placeholder="dinda_ramadhani"
+            placeholder="andi_rahayu"
             className={cn(authInputClassName, "pl-7 pr-9")}
             disabled={isSubmitting}
             aria-invalid={Boolean(fieldErrors.username)}

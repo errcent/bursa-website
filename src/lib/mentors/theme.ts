@@ -36,6 +36,22 @@ const MENTOR_THEMES: Record<string, MentorTheme> = {
     gradient: "linear-gradient(165deg, #2b230f 0%, #5c4a1a 55%, #c99a34 100%)",
     glow: "#fbbf24",
   },
+  "dian-pratiwi": {
+    gradient: "linear-gradient(165deg, #1a0f2e 0%, #3d2463 55%, #8b5cf6 100%)",
+    glow: "#a78bfa",
+  },
+  "hendra-wijaya": {
+    gradient: "linear-gradient(165deg, #0a1a2e 0%, #1a365d 55%, #2563eb 100%)",
+    glow: "#3b82f6",
+  },
+  "salsa-maharani": {
+    gradient: "linear-gradient(165deg, #2e1065 0%, #5b21b6 55%, #d946ef 100%)",
+    glow: "#e879f9",
+  },
+  "arif-kurniawan": {
+    gradient: "linear-gradient(165deg, #14291a 0%, #1e4d2b 55%, #4ade80 100%)",
+    glow: "#86efac",
+  },
 };
 
 const FALLBACK_PALETTE = Object.values(MENTOR_THEMES);

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { getEnrollmentAccess, isFreeCourse } from "@/lib/enrollment/access";
 import type {
   CourseReview,
   CourseReviewAuthor,
@@ -92,23 +93,33 @@ export async function getReviewEligibility(
   const course = await findCourseBySlug(courseSlug);
   if (!course) return null;
 
-  const modules = await getModuleCompletionSummaries(userId, course);
+  const [modules, existing, access, free] = await Promise.all([
+    getModuleCompletionSummaries(userId, course),
+    db.review.findUnique({
+      where: { userId_courseId: { userId, courseId: course.id } },
+      select: { id: true },
+    }),
+    getEnrollmentAccess(userId, course.id),
+    isFreeCourse(course.id),
+  ]);
   const completedModules = modules.filter((m) => m.isComplete).length;
-  const existing = await db.review.findUnique({
-    where: {
-      userId_courseId: { userId, courseId: course.id },
-    },
-    select: { id: true },
-  });
+
+  // Verified-purchase gate (QC-20260719-15): only enrolled learners with a COMPLETED
+  // paid transaction (or a genuine enrollment in a free course) may review. This is the
+  // costly signal that makes verified-purchase rating meaningful and Sybil-resistant.
+  const hasVerifiedAccess = access.enrolled && (access.isPaid || free);
 
   let canReview = false;
   let reason: string | null = null;
 
   if (existing) {
     reason = "Kamu sudah mengirim ulasan untuk kelas ini.";
+  } else if (!hasVerifiedAccess) {
+    reason =
+      "Hanya pembeli terverifikasi kelas ini yang dapat memberi rating & ulasan.";
   } else if (completedModules === 0) {
     reason =
-      "Selesaikan minimal satu modul penuh terlebih dahulu sebelum memberi rating & ulasan.";
+      "Selesaikan lebih banyak video terlebih dahulu sebelum memberi rating & ulasan.";
   } else {
     canReview = true;
   }

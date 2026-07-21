@@ -1,29 +1,35 @@
 import { NextResponse } from "next/server";
 
-type Bucket = {
-  count: number;
-  resetAt: number;
-};
-
-const buckets = new Map<string, Bucket>();
-
 export interface RateLimitResult {
   allowed: boolean;
   retryAfterSec?: number;
 }
 
-/**
- * Simple in-memory sliding-window rate limiter for prototype API routes.
- * Production should use Redis (@upstash/ratelimit) per security docs.
- */
+type Bucket = { count: number; resetAt: number };
+
+const buckets = new Map<string, Bucket>();
+
+const DEFAULT_API_LIMIT = 120;
+const BOT_UA_LIMIT = 30;
+const DEFAULT_API_WINDOW_MS = 60_000;
+
+function pruneExpiredBuckets(now: number): void {
+  if (buckets.size < 10_000) return;
+  for (const [key, bucket] of buckets) {
+    if (now >= bucket.resetAt) buckets.delete(key);
+  }
+}
+
+/** In-memory fixed-window rate limit (per key). */
 export function checkRateLimit(
   key: string,
   limit: number,
   windowMs: number
 ): RateLimitResult {
   const now = Date.now();
-  const bucket = buckets.get(key);
+  pruneExpiredBuckets(now);
 
+  const bucket = buckets.get(key);
   if (!bucket || now >= bucket.resetAt) {
     buckets.set(key, { count: 1, resetAt: now + windowMs });
     return { allowed: true };
@@ -32,7 +38,7 @@ export function checkRateLimit(
   if (bucket.count >= limit) {
     return {
       allowed: false,
-      retryAfterSec: Math.ceil((bucket.resetAt - now) / 1000),
+      retryAfterSec: Math.max(1, Math.ceil((bucket.resetAt - now) / 1000)),
     };
   }
 
@@ -48,27 +54,21 @@ export function clientIp(request: Request): string {
 
 export function checkApiRateLimit(request: Request): RateLimitResult {
   const ip = clientIp(request);
-  const pathname = new URL(request.url).pathname;
-
-  if (pathname.startsWith("/api/auth/")) {
-    return checkRateLimit(`api-auth:${ip}`, 30, 60 * 1000);
+  const auth = request.headers.get("authorization")?.trim();
+  const key = auth ? `user:${auth.slice(0, 32)}` : `ip:${ip}`;
+  const ua = request.headers.get("user-agent") || "";
+  let limit = DEFAULT_API_LIMIT;
+  if (/bot|crawler|spider/i.test(ua)) {
+    limit = BOT_UA_LIMIT;
   }
-
-  return checkRateLimit(`api:${ip}`, 120, 60 * 1000);
+  return checkRateLimit(key, limit, DEFAULT_API_WINDOW_MS);
 }
 
 export function rateLimitResponse(retryAfterSec?: number) {
+  const headers: Record<string, string> = {};
+  if (retryAfterSec) headers["Retry-After"] = String(retryAfterSec);
   return NextResponse.json(
-    {
-      error: retryAfterSec
-        ? `Terlalu banyak permintaan. Coba lagi dalam ${retryAfterSec} detik.`
-        : "Terlalu banyak permintaan.",
-    },
-    {
-      status: 429,
-      headers: retryAfterSec
-        ? { "Retry-After": String(retryAfterSec) }
-        : undefined,
-    }
+    { error: "Terlalu banyak permintaan." },
+    { status: 429, headers }
   );
 }
