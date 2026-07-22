@@ -1211,7 +1211,7 @@ model WaitlistEntry {
   utmContent            String?
   /// SHA-256 prefix of client IP for abuse detection — not raw PII.
   ipHash                String?
-  /// Set after user clicks verification link in confirmation email (double opt-in).
+  /// Legacy double opt-in timestamp — new sign-ups are confirmed immediately via consent.
   emailVerifiedAt       DateTime?
   verificationTokenHash String?   @unique
   verificationExpiresAt DateTime?

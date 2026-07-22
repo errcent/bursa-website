@@ -5,12 +5,6 @@ import { NextRequest } from "next/server";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/auth/rate-limit";
 import { db } from "@/lib/db";
-import { sendWaitlistVerificationEmail } from "@/lib/waitlist/email";
-import {
-  generateWaitlistVerificationToken,
-  hashWaitlistVerificationToken,
-  WAITLIST_VERIFY_TTL_MS,
-} from "@/lib/waitlist/verification";
 import { waitlistSubmitSchema } from "@/lib/waitlist/validation";
 import { isTurnstileConfigured, verifyTurnstileToken } from "@/lib/turnstile/verify";
 
@@ -41,12 +35,9 @@ export async function POST(request: NextRequest) {
 
     const email = body.email.toLowerCase();
     const ipHash = hashIp(ip);
-    const verificationToken = generateWaitlistVerificationToken();
-    const verificationTokenHash = hashWaitlistVerificationToken(verificationToken);
-    const verificationExpiresAt = new Date(Date.now() + WAITLIST_VERIFY_TTL_MS);
+    const now = new Date();
 
     let duplicate = false;
-    let needsVerificationEmail = false;
 
     try {
       await db.waitlistEntry.create({
@@ -59,41 +50,31 @@ export async function POST(request: NextRequest) {
           utmCampaign: body.utmCampaign ?? null,
           utmContent: body.utmContent ?? null,
           ipHash,
-          verificationTokenHash,
-          verificationExpiresAt,
+          emailVerifiedAt: now,
+          verificationTokenHash: null,
+          verificationExpiresAt: null,
         },
       });
-      needsVerificationEmail = true;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2002"
       ) {
         duplicate = true;
-        const existing = await db.waitlistEntry.findUnique({ where: { email } });
-        if (existing && !existing.emailVerifiedAt) {
-          await db.waitlistEntry.update({
-            where: { email },
-            data: {
-              verificationTokenHash,
-              verificationExpiresAt,
-            },
-          });
-          needsVerificationEmail = true;
-        }
+        await db.waitlistEntry.update({
+          where: { email },
+          data: {
+            emailVerifiedAt: now,
+            verificationTokenHash: null,
+            verificationExpiresAt: null,
+          },
+        });
       } else {
         throw error;
       }
     }
 
-    if (needsVerificationEmail) {
-      void sendWaitlistVerificationEmail(email, verificationToken);
-    }
-
-    return jsonOk(
-      { ok: true, duplicate, verificationEmailSent: needsVerificationEmail },
-      duplicate ? 200 : 201
-    );
+    return jsonOk({ ok: true, duplicate }, duplicate ? 200 : 201);
   } catch (error) {
     return handleApiError(error);
   }

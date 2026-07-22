@@ -88,7 +88,7 @@ function WaitlistVerifyContent() {
       <CheckCircle2 className="size-10 text-emerald" />
       <div className="space-y-2">
         <p className="font-medium text-foreground">
-          {state === "already" ? "Email sudah terverifikasi" : "Email waitlist terverifikasi!"}
+          {state === "already" ? "Kamu sudah terdaftar di waitlist" : "Pendaftaran waitlist aktif"}
         </p>
         {email ? (
           <p className="text-sm text-muted-foreground">
@@ -107,8 +107,8 @@ function WaitlistVerifyContent() {
 export default function WaitlistVerifikasiPage() {
   return (
     <AuthPageShell
-      title="Verifikasi waitlist"
-      description="Konfirmasi email untuk menyelesaikan pendaftaran waitlist Bursa."
+      title="Waitlist Bursa"
+      description="Pendaftaran waitlist tidak memerlukan verifikasi email. Tautan lama tetap diproses jika masih valid."
     >
       <Suspense
         fallback={

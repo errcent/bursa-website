@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
     if (!result.valid) {
       return jsonError(
         result.reason === "expired"
-          ? "Tautan verifikasi sudah kedaluwarsa. Daftar ulang waitlist untuk menerima email baru."
-          : "Tautan verifikasi tidak valid.",
+          ? "Tautan ini sudah tidak berlaku. Waitlist tidak memerlukan verifikasi email — daftar langsung di halaman waitlist."
+          : "Tautan tidak valid. Waitlist tidak memerlukan verifikasi email — daftar langsung di halaman waitlist.",
         400
       );
     }

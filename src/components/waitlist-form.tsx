@@ -25,6 +25,7 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [honeypot, setHoneypot] = useState("");
@@ -75,7 +76,7 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
         }),
       });
 
-      const payload = (await response.json()) as { error?: string };
+      const payload = (await response.json()) as { error?: string; duplicate?: boolean };
 
       if (!response.ok) {
         setError(payload.error ?? "Gagal mendaftar. Coba lagi sebentar.");
@@ -87,8 +88,10 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
         utm_source: utm.utmSource ?? null,
         utm_medium: utm.utmMedium ?? null,
         utm_campaign: utm.utmCampaign ?? null,
+        duplicate: payload.duplicate ?? false,
       });
 
+      setAlreadyRegistered(Boolean(payload.duplicate));
       setSubmitted(true);
     } catch {
       setError("Koneksi bermasalah. Periksa internet kamu lalu coba lagi.");
@@ -101,12 +104,23 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
     return (
       <div className="surface-card flex flex-col items-center gap-3 rounded-2xl p-6 text-center sm:p-8">
         <CheckCircle2 className="size-10 text-emerald" strokeWidth={1.5} />
-        <h2 className="font-heading text-lg font-semibold">Cek email kamu</h2>
+        <h2 className="font-heading text-lg font-semibold">
+          {alreadyRegistered ? "Kamu sudah di waitlist" : "Berhasil gabung waitlist"}
+        </h2>
         <p className="section-copy max-w-sm">
-          Kami mengirim tautan verifikasi ke{" "}
-          <span className="font-medium text-foreground">{email.trim()}</span>.
-          Klik tautan tersebut untuk mengonfirmasi pendaftaran waitlist. Periksa folder spam
-          jika email belum masuk dalam beberapa menit.
+          {alreadyRegistered ? (
+            <>
+              <span className="font-medium text-foreground">{email.trim()}</span> sudah terdaftar.
+              Kami akan mengabari kamu begitu Bursa dibuka.
+            </>
+          ) : (
+            <>
+              Terima kasih —{" "}
+              <span className="font-medium text-foreground">{email.trim()}</span> sudah masuk
+              waitlist. Kami akan mengabari kamu begitu platform edukasi trading Bursa siap
+              dibuka.
+            </>
+          )}
         </p>
       </div>
     );
