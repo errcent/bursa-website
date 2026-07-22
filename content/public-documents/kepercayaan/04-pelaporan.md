@@ -15,7 +15,7 @@ Kami menghargai kontribusi komunitas keamanan dalam menjaga platform Bursa aman.
 
 ### Apa yang Dilaporkan
 
-- Celah keamanan di aplikasi web Bursa (bursanalar.com / bursa-website.vercel.app)
+- Celah keamanan di aplikasi web Bursa (bursanalar.com / bursanalar.vercel.app)
 - Kelemahan autentikasi, otorisasi, atau injeksi
 - Kebocoran data yang tidak seharusnya
 - Misconfiguration yang expose data sensitif
@@ -49,7 +49,7 @@ Kirim email ke **[security@bursanalar.com](mailto:security@bursanalar.com)** den
 ## Scope & Batasan
 
 ### In Scope
-- `*.bursanalar.com`, `bursa-website.vercel.app`
+- `*.bursanalar.com`, `bursanalar.vercel.app`
 - API endpoints publik
 - Autentikasi & otorisasi
 
