@@ -4,7 +4,7 @@
  */
 import { chromium, type Response } from "playwright";
 
-const BASE = process.argv[2]?.replace(/\/$/, "") ?? "https://bursa-website.vercel.app";
+const BASE = process.argv[2]?.replace(/\/$/, "") ?? "https://bursanalar.vercel.app";
 
 const STATIC_ROUTES = [
   "/",

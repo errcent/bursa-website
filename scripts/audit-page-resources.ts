@@ -1,7 +1,7 @@
 /** Deep resource breakdown for a single URL. */
 import { chromium } from "playwright";
 
-const url = process.argv[2] ?? "https://bursa-website.vercel.app/";
+const url = process.argv[2] ?? "https://bursanalar.vercel.app/";
 
 async function main() {
   const browser = await chromium.launch({ headless: true });
