@@ -6,11 +6,21 @@ const OAUTH_PASSWORD_MARKER = "oauth-google";
 
 /** True when Google OAuth can run (env present). Safe to call at build time. */
 export function isGoogleOAuthConfigured(): boolean {
-  return Boolean(
-    process.env.GOOGLE_CLIENT_ID?.trim() &&
-      process.env.GOOGLE_CLIENT_SECRET?.trim() &&
-      getAuthSecret()
+  const hasGoogle =
+    Boolean(process.env.GOOGLE_CLIENT_ID?.trim()) &&
+    Boolean(process.env.GOOGLE_CLIENT_SECRET?.trim());
+  if (!hasGoogle) return false;
+
+  const hasSecret = Boolean(
+    process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim()
   );
+  if (process.env.NODE_ENV === "production" && !hasSecret) return false;
+
+  try {
+    return Boolean(getAuthSecret());
+  } catch {
+    return false;
+  }
 }
 
 /** NextAuth v5 accepts AUTH_SECRET; we also support NEXTAUTH_SECRET for ops docs. */

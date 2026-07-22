@@ -36,10 +36,9 @@ export function clearOAuthNext(): void {
   }
 }
 
-export function buildOAuthCallbackUrl(path: "/masuk" | "/daftar", next: string): string {
+export function buildOAuthCallbackUrl(next: string): string {
   const resolved = resolvePostAuthRedirect(next);
-  const url = new URL(path, typeof window !== "undefined" ? window.location.origin : "http://localhost");
-  url.searchParams.set("oauth", "sync");
+  const url = new URL("/auth/google-done", typeof window !== "undefined" ? window.location.origin : "http://localhost");
   url.searchParams.set("next", resolved);
   return url.toString();
 }

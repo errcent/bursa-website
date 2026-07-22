@@ -593,6 +593,15 @@ export function isLogoutPending(): boolean {
   }
 }
 
+export function clearLogoutFlag(): void {
+  if (!isBrowser()) return;
+  try {
+    sessionStorage.removeItem(LOGOUT_FLAG_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 export async function logout(): Promise<void> {
   if (isBrowser()) {
     try {

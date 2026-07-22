@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 
 import { storeOAuthNext, buildOAuthCallbackUrl } from "@/lib/auth/oauth-redirect";
+import { clearLogoutFlag } from "@/lib/auth/client";
 import { resolvePostAuthRedirect } from "@/lib/auth/redirect";
 import { Button } from "@/components/ui/button";
 import { useOAuthSync } from "@/hooks/use-oauth-sync";
@@ -59,9 +60,9 @@ export function GoogleSignInButton({ mode }: { mode: "login" | "register" }) {
   async function handleGoogleSignIn() {
     setError(null);
     setIsLoading(true);
+    clearLogoutFlag();
     storeOAuthNext(next);
-    const callbackPath = mode === "register" ? "/daftar" : "/masuk";
-    const callbackUrl = buildOAuthCallbackUrl(callbackPath, next);
+    const callbackUrl = buildOAuthCallbackUrl(next);
     try {
       await signIn("google", { callbackUrl });
     } catch {

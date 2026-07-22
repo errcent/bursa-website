@@ -21,6 +21,19 @@ import {
 } from "@/lib/auth/client";
 import type { AuthSession, LoginInput, RegisterInput } from "@/lib/auth/types";
 
+async function clearStaleNextAuthSession() {
+  try {
+    const res = await fetch("/api/auth/session", { credentials: "include" });
+    if (!res.ok) return;
+    const data = (await res.json()) as { user?: unknown };
+    if (data?.user) {
+      await signOut({ redirect: false });
+    }
+  } catch {
+    // NextAuth may be unavailable when Google OAuth is not configured.
+  }
+}
+
 interface AuthContextValue {
   session: AuthSession | null;
   isLoading: boolean;
@@ -75,22 +88,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (input: LoginInput) => {
     const result = await loginWithServer(input);
     if (!result.ok) return result;
-    try {
-      await signOut({ redirect: false });
-    } catch {
-      // NextAuth may be unavailable when Google OAuth is not configured.
-    }
+    await clearStaleNextAuthSession();
     return { ok: true as const };
   }, []);
 
   const register = useCallback(async (input: RegisterInput) => {
     const result = await registerWithServer(input);
     if (!result.ok) return result;
-    try {
-      await signOut({ redirect: false });
-    } catch {
-      // NextAuth may be unavailable when Google OAuth is not configured.
-    }
+    await clearStaleNextAuthSession();
     return { ok: true as const };
   }, []);
 

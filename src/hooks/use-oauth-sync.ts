@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 
 import { useAuth } from "@/components/auth-provider";
 import {
+  clearLogoutFlag,
   getSession,
   isLogoutPending,
   loginWithOAuth,
@@ -16,12 +17,12 @@ import {
 } from "@/lib/auth/oauth-redirect";
 import { redirectAfterAuth, resolvePostAuthRedirect } from "@/lib/auth/redirect";
 
-const AUTH_PATHS = new Set(["/masuk", "/daftar"]);
+const AUTH_PATHS = new Set(["/masuk", "/daftar", "/auth/google-done"]);
 
 async function fetchOAuthBridge(attempt = 0): Promise<Response> {
   const res = await fetch("/api/auth/oauth-bridge", { credentials: "include" });
-  if (res.status === 401 && attempt < 5) {
-    await new Promise((resolve) => setTimeout(resolve, 200 * (attempt + 1)));
+  if (res.status === 401 && attempt < 8) {
+    await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)));
     return fetchOAuthBridge(attempt + 1);
   }
   return res;
@@ -66,8 +67,8 @@ function stripOAuthParams() {
 }
 
 /**
- * Bridges NextAuth (Google) into localStorage session after OAuth redirect.
- * Also recovers when NextAuth cookie exists but local session is missing on auth pages.
+ * Legacy fallback for /masuk?oauth=sync URLs and web-session recovery.
+ * Primary Google OAuth completion lives on /auth/google-done.
  */
 export function useOAuthSync() {
   const pathname = usePathname();
@@ -78,37 +79,47 @@ export function useOAuthSync() {
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  if (pathname === "/auth/google-done") {
+    return { syncing: false, error: null, isOAuthReturn: false };
+  }
+
   const oauthParam = searchParams.get("oauth") === "sync";
   const onAuthPage = AUTH_PATHS.has(pathname);
+  const nextAuthReady = nextAuthStatus !== "loading";
+
   const needsOAuthBridge =
-    !isLogoutPending() &&
     !authLoading &&
     !localSession &&
     !getSession() &&
     onAuthPage &&
-    (oauthParam || nextAuthStatus === "authenticated");
+    (oauthParam || (nextAuthReady && nextAuthStatus === "authenticated")) &&
+    (!isLogoutPending() || oauthParam);
 
   const needsWebBridge =
-    !isLogoutPending() &&
     !authLoading &&
     !localSession &&
     !getSession() &&
     onAuthPage &&
     !needsOAuthBridge &&
+    nextAuthReady &&
     nextAuthStatus === "unauthenticated" &&
-    Boolean(searchParams.get("next"));
+    Boolean(searchParams.get("next")) &&
+    !isLogoutPending();
 
   const pendingSync = needsOAuthBridge || needsWebBridge;
 
   useEffect(() => {
     if (!pendingSync || syncingRef.current) return;
 
+    if (oauthParam || nextAuthStatus === "authenticated") {
+      clearLogoutFlag();
+    }
+
     syncingRef.current = true;
     setSyncing(true);
     setError(null);
 
     const next = readOAuthNext(searchParams.get("next"));
-
     const bridgeRequest = needsOAuthBridge ? fetchOAuthBridge() : fetchWebSessionBridge();
 
     void bridgeRequest
@@ -136,7 +147,7 @@ export function useOAuthSync() {
         syncingRef.current = false;
         setSyncing(false);
       });
-  }, [pendingSync, needsOAuthBridge, needsWebBridge, searchParams]);
+  }, [pendingSync, needsOAuthBridge, needsWebBridge, nextAuthStatus, oauthParam, searchParams]);
 
   return {
     syncing: syncing || (pendingSync && !error),
