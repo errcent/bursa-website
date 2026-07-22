@@ -7,14 +7,16 @@ import { Loader2 } from "lucide-react";
 
 import { AuthField, authInputClassName } from "@/components/auth-field";
 import { useAuth } from "@/components/auth-provider";
-import { GoogleSignInButton, OAuthSessionSync } from "@/components/google-sign-in-button";
+import { GoogleSignInButton } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { POST_AUTH_HOME, redirectAfterAuth, resolvePostAuthRedirect } from "@/lib/auth/redirect";
 import { isLogoutPending } from "@/lib/auth/client";
+import { useOAuthSync } from "@/hooks/use-oauth-sync";
 
 export function LoginForm() {
   const { login, session, isLoading } = useAuth();
   const searchParams = useSearchParams();
+  const { syncing: oauthSyncing, error: oauthError } = useOAuthSync();
   const next = resolvePostAuthRedirect(searchParams.get("next"));
   const registerHref =
     next === POST_AUTH_HOME ? "/daftar" : `/daftar?next=${encodeURIComponent(next)}`;
@@ -31,6 +33,15 @@ export function LoginForm() {
     }
   }, [isLoading, session, next]);
 
+  if (oauthSyncing) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-10">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />
+        <p className="text-sm text-muted-foreground">Menyelesaikan login…</p>
+      </div>
+    );
+  }
+
   if (!isLoading && session && !isLogoutPending()) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-10">
@@ -46,7 +57,7 @@ export function LoginForm() {
     setFieldErrors({});
 
     const errors: { identifier?: string; password?: string } = {};
-    if (!identifier.trim()) errors.identifier = "Username, email, atau nomor telepon wajib diisi.";
+    if (!identifier.trim()) errors.identifier = "Email atau username wajib diisi.";
     if (!password) errors.password = "Kata sandi wajib diisi.";
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -67,7 +78,11 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <OAuthSessionSync />
+      {oauthError && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {oauthError}
+        </div>
+      )}
 
       {error && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -76,10 +91,10 @@ export function LoginForm() {
       )}
 
       <AuthField
-        label="Email, username, atau nomor telepon"
+        label="Email atau username"
         id="identifier"
         error={fieldErrors.identifier}
-        helperText="Masuk dengan email, username (@handle), atau nomor telepon (+62)."
+        helperText="Masuk dengan email atau username (@handle)."
       >
         <input
           id="identifier"
@@ -93,7 +108,7 @@ export function LoginForm() {
               setFieldErrors((prev) => ({ ...prev, identifier: undefined }));
             }
           }}
-          placeholder="nama@email.com, @username, atau +62812..."
+          placeholder="nama@email.com atau @username"
           className={authInputClassName}
           disabled={isSubmitting}
           aria-invalid={Boolean(fieldErrors.identifier)}

@@ -48,8 +48,7 @@ export function AuthPageShell({
             <Link href="/" className="font-heading text-2xl font-semibold tracking-tight">
               Bursa
             </Link>
-            <p className="eyebrow mt-6">Akun pelajar</p>
-            <h1 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-gradient sm:text-3xl">
+            <h1 className="mt-6 font-heading text-2xl font-semibold tracking-tight text-gradient sm:text-3xl">
               {title}
             </h1>
             <p className="section-copy mt-2">{description}</p>
@@ -68,8 +67,7 @@ export function AuthPageShell({
           <Link href="/" className="font-heading text-2xl font-semibold tracking-tight">
             Bursa
           </Link>
-          <p className="eyebrow mt-6">Akun pelajar</p>
-          <h1 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-gradient sm:text-3xl">
+          <h1 className="mt-6 font-heading text-2xl font-semibold tracking-tight text-gradient sm:text-3xl">
             {title}
           </h1>
           <p className="section-copy mt-2">{description}</p>

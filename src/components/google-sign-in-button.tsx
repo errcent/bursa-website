@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 
-import { loginWithOAuth, isLogoutPending } from "@/lib/auth/client";
-import { redirectAfterAuth, resolvePostAuthRedirect } from "@/lib/auth/redirect";
+import { storeOAuthNext, buildOAuthCallbackUrl } from "@/lib/auth/oauth-redirect";
+import { resolvePostAuthRedirect } from "@/lib/auth/redirect";
 import { Button } from "@/components/ui/button";
+import { useOAuthSync } from "@/hooks/use-oauth-sync";
 
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -58,8 +59,9 @@ export function GoogleSignInButton({ mode }: { mode: "login" | "register" }) {
   async function handleGoogleSignIn() {
     setError(null);
     setIsLoading(true);
+    storeOAuthNext(next);
     const callbackPath = mode === "register" ? "/daftar" : "/masuk";
-    const callbackUrl = `${callbackPath}?oauth=sync&next=${encodeURIComponent(next)}`;
+    const callbackUrl = buildOAuthCallbackUrl(callbackPath, next);
     try {
       await signIn("google", { callbackUrl });
     } catch {
@@ -122,66 +124,11 @@ export function GoogleSignInButton({ mode }: { mode: "login" | "register" }) {
   );
 }
 
-/** After Google OAuth redirect, sync NextAuth session into localStorage auth. */
+/** Sync banner — use {@link useOAuthSync} + auth form spinner for full UX. */
 export function OAuthSessionSync() {
-  const searchParams = useSearchParams();
-  const syncing = useRef(false);
-  const [error, setError] = useState<string | null>(null);
+  const { syncing, error } = useOAuthSync();
 
-  useEffect(() => {
-    if (searchParams.get("oauth") !== "sync" || syncing.current) return;
-    if (isLogoutPending()) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete("oauth");
-      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
-      return;
-    }
-    syncing.current = true;
-
-    const next = resolvePostAuthRedirect(searchParams.get("next"));
-
-    fetch("/api/auth/oauth-bridge", { credentials: "include" })
-      .then(async (res) => {
-        if (!res.ok) {
-          const body = (await res.json().catch(() => null)) as { error?: string } | null;
-          throw new Error(body?.error ?? "Sesi Google tidak valid.");
-        }
-        return res.json() as Promise<{
-          user: {
-            id: string;
-            email: string;
-            name: string;
-            username?: string | null;
-            phone?: string | null;
-            bio?: string | null;
-            avatarUrl?: string | null;
-            role?: string;
-          };
-        }>;
-      })
-      .then((data) => {
-        const result = loginWithOAuth({
-          userId: data.user.id,
-          email: data.user.email,
-          name: data.user.name,
-          username: data.user.username,
-          phone: data.user.phone,
-          bio: data.user.bio,
-          avatarUrl: data.user.avatarUrl,
-          role: data.user.role,
-        });
-        if (!result.ok) {
-          throw new Error(result.error);
-        }
-        redirectAfterAuth(next);
-      })
-      .catch((err: Error) => {
-        setError(err.message || "Gagal menyinkronkan sesi Google.");
-        syncing.current = false;
-      });
-  }, [searchParams]);
-
-  if (!searchParams.get("oauth")) return null;
+  if (!syncing && !error) return null;
 
   if (error) {
     return (

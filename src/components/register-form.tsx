@@ -7,25 +7,25 @@ import { Check, Loader2, X } from "lucide-react";
 
 import { AuthField, authInputClassName } from "@/components/auth-field";
 import { useAuth } from "@/components/auth-provider";
-import { GoogleSignInButton, OAuthSessionSync } from "@/components/google-sign-in-button";
+import { GoogleSignInButton } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { buildLoginHref, redirectAfterAuth, resolvePostAuthRedirect } from "@/lib/auth/redirect";
 import { isLogoutPending } from "@/lib/auth/client";
-import { isValidIndonesianPhone, normalizeIndonesianPhone } from "@/lib/auth/validation";
 import { cn } from "@/lib/utils";
+import { useOAuthSync } from "@/hooks/use-oauth-sync";
 
 const USERNAME_PATTERN = /^[a-z0-9_]{3,30}$/;
 
 export function RegisterForm() {
   const { register, session, isLoading } = useAuth();
   const searchParams = useSearchParams();
+  const { syncing: oauthSyncing, error: oauthError } = useOAuthSync();
   const loginHref = buildLoginHref(searchParams.get("next"));
   const next = resolvePostAuthRedirect(searchParams.get("next"));
 
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +33,6 @@ export function RegisterForm() {
     name?: string;
     username?: string;
     email?: string;
-    phone?: string;
     password?: string;
     consent?: string;
   }>({});
@@ -54,6 +53,15 @@ export function RegisterForm() {
       if (usernameTimer.current) clearTimeout(usernameTimer.current);
     };
   }, []);
+
+  if (oauthSyncing) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-10">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />
+        <p className="text-sm text-muted-foreground">Menyelesaikan login…</p>
+      </div>
+    );
+  }
 
   if (!isLoading && session && !isLogoutPending()) {
     return (
@@ -103,12 +111,6 @@ export function RegisterForm() {
       errors.username = "Username sudah dipakai. Pilih username lain.";
     }
     if (!email.trim()) errors.email = "Email wajib diisi.";
-    if (phone.trim()) {
-      const normalizedPhone = normalizeIndonesianPhone(phone.trim());
-      if (!isValidIndonesianPhone(normalizedPhone)) {
-        errors.phone = "Format nomor telepon tidak valid (gunakan +62 atau 08...).";
-      }
-    }
     if (!password) errors.password = "Kata sandi wajib diisi.";
     if (!consentAccepted) {
       errors.consent = "Anda perlu menyetujui Syarat & Ketentuan dan Kebijakan Privasi.";
@@ -123,7 +125,6 @@ export function RegisterForm() {
       name,
       email,
       username: normalizedUsername,
-      phone: phone.trim() || undefined,
       password,
     });
 
@@ -147,7 +148,11 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <OAuthSessionSync />
+      {oauthError && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {oauthError}
+        </div>
+      )}
 
       {error && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -238,29 +243,6 @@ export function RegisterForm() {
           className={authInputClassName}
           disabled={isSubmitting}
           aria-invalid={Boolean(fieldErrors.email)}
-        />
-      </AuthField>
-
-      <AuthField
-        label="Nomor telepon (opsional)"
-        id="phone"
-        error={fieldErrors.phone}
-        helperText="Format Indonesia: +62 atau 08... — bisa dipakai untuk masuk."
-      >
-        <input
-          id="phone"
-          type="tel"
-          autoComplete="tel"
-          inputMode="tel"
-          value={phone}
-          onChange={(e) => {
-            setPhone(e.target.value);
-            if (fieldErrors.phone) setFieldErrors((prev) => ({ ...prev, phone: undefined }));
-          }}
-          placeholder="+62812xxxxxxx"
-          className={authInputClassName}
-          disabled={isSubmitting}
-          aria-invalid={Boolean(fieldErrors.phone)}
         />
       </AuthField>
 

@@ -45,6 +45,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: "/masuk",
   },
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (url.startsWith(baseUrl)) return url;
+      return baseUrl;
+    },
     async signIn({ user, account }) {
       if (account?.provider !== "google" || !user.email) {
         return account?.provider === "google" ? false : true;

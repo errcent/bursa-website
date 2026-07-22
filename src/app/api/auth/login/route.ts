@@ -11,7 +11,7 @@ import {
 import { loginSchema } from "@/lib/auth/validation";
 
 /** Generic login failure — do not reveal whether identifier exists (OWASP A07). */
-const GENERIC_LOGIN_ERROR = "Username, email, telepon, atau kata sandi salah.";
+const GENERIC_LOGIN_ERROR = "Email, username, atau kata sandi salah.";
 
 export async function POST(request: NextRequest) {
   try {

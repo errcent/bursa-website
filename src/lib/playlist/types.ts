@@ -11,6 +11,8 @@ export type PlaylistSummary = {
   updatedAt: string;
 };
 
+export type PlaylistItemAccessStatus = "owned" | "free" | "locked";
+
 export type PlaylistItemView = {
   id: string;
   sortOrder: number;
@@ -23,6 +25,8 @@ export type PlaylistItemView = {
   mentorName: string | null;
   mentorSlug: string | null;
   durationMinutes: number | null;
+  /** Resolved per viewer: enrolled, free preview, or locked. */
+  accessStatus?: PlaylistItemAccessStatus;
 };
 
 export type PlaylistDetail = PlaylistSummary & {

@@ -6,9 +6,11 @@ import { ArrowLeft, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { GuidanceOptionCard } from "@/components/learning-guidance/guidance-option-card";
 import { GuidanceResults } from "@/components/learning-guidance/guidance-results";
+import { GuidanceSaveChoice } from "@/components/learning-guidance/guidance-save-choice";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { areGuidanceResultsEquivalent } from "@/lib/learning/guidance/compare-results";
 import { GUIDANCE_QUESTIONS } from "@/lib/learning/guidance/questions";
 import {
   clearPendingGuidance,
@@ -27,6 +29,12 @@ function isAnswered(
   return value !== undefined;
 }
 
+type GuidanceSaveConflict = {
+  pendingAnswers: LearningGuidanceAnswers;
+  pendingResult: LearningGuidanceResult;
+  savedResult: LearningGuidanceResult;
+};
+
 export function LearningGuidanceQuiz() {
   const { session } = useAuth();
   const [step, setStep] = useState(0);
@@ -35,6 +43,8 @@ export function LearningGuidanceQuiz() {
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(false);
+  const [saveConflict, setSaveConflict] = useState<GuidanceSaveConflict | null>(null);
+  const [resolvingConflict, setResolvingConflict] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hydratingRef = useRef(false);
 
@@ -47,10 +57,9 @@ export function LearningGuidanceQuiz() {
     [answers, question]
   );
 
-  const loadSavedProfile = useCallback(async (): Promise<LearningGuidanceResult | null> => {
+  const fetchSavedGuidance = useCallback(async (): Promise<LearningGuidanceResult | null> => {
     if (!session?.userId && !session?.email) return null;
 
-    setLoadingProfile(true);
     const params = new URLSearchParams({
       ...(session.userId ? { userId: session.userId } : {}),
       ...(session.email ? { email: session.email } : {}),
@@ -66,18 +75,29 @@ export function LearningGuidanceQuiz() {
         profile: unknown;
         result: LearningGuidanceResult | null;
       };
-      if (data.result) {
-        setResult(data.result);
-        setSaved(true);
-        return data.result;
-      }
-      return null;
+      return data.result ?? null;
     } catch {
+      return null;
+    }
+  }, [session]);
+
+  const loadSavedProfile = useCallback(async (): Promise<LearningGuidanceResult | null> => {
+    if (!session?.userId && !session?.email) return null;
+
+    setLoadingProfile(true);
+
+    try {
+      const savedResult = await fetchSavedGuidance();
+      if (savedResult) {
+        setResult(savedResult);
+        setSaved(true);
+        return savedResult;
+      }
       return null;
     } finally {
       setLoadingProfile(false);
     }
-  }, [session]);
+  }, [fetchSavedGuidance, session]);
 
   const saveAnswersForSession = useCallback(
     async (finalAnswers: LearningGuidanceAnswers): Promise<LearningGuidanceResult | null> => {
@@ -111,27 +131,79 @@ export function LearningGuidanceQuiz() {
 
   useEffect(() => {
     if (!session?.userId && !session?.email) return;
-    if (result || hydratingRef.current) return;
+    if (result || saveConflict || hydratingRef.current) return;
 
     hydratingRef.current = true;
+    setLoadingProfile(true);
 
     void (async () => {
-      const pending = readPendingGuidance();
-      if (pending) {
+      try {
+        const pending = readPendingGuidance();
+        if (!pending) {
+          const savedResult = await fetchSavedGuidance();
+          if (savedResult) {
+            setResult(savedResult);
+            setSaved(true);
+          }
+          return;
+        }
+
         setAnswers(pending.answers);
-        const savedResult = await saveAnswersForSession(pending.answers);
-        if (savedResult) return;
+        const savedResult = await fetchSavedGuidance();
 
-        setResult(pending.result);
-        setSaved(false);
-        return;
+        if (!savedResult) {
+          await saveAnswersForSession(pending.answers);
+          return;
+        }
+
+        if (areGuidanceResultsEquivalent(pending.result, savedResult)) {
+          await saveAnswersForSession(pending.answers);
+          return;
+        }
+
+        setSaveConflict({
+          pendingAnswers: pending.answers,
+          pendingResult: pending.result,
+          savedResult,
+        });
+      } finally {
+        setLoadingProfile(false);
       }
-
-      await loadSavedProfile();
     })().finally(() => {
       hydratingRef.current = false;
     });
-  }, [session, result, loadSavedProfile, saveAnswersForSession]);
+  }, [session, result, saveConflict, fetchSavedGuidance, saveAnswersForSession]);
+
+  async function handleKeepSavedRecommendation() {
+    if (!saveConflict) return;
+
+    setResolvingConflict(true);
+    setSaveConflict(null);
+    setResult(saveConflict.savedResult);
+    setSaved(true);
+    clearPendingGuidance();
+    setResolvingConflict(false);
+  }
+
+  async function handleUsePendingRecommendation() {
+    if (!saveConflict) return;
+
+    const conflict = saveConflict;
+    setResolvingConflict(true);
+    setError(null);
+
+    try {
+      const savedResult = await saveAnswersForSession(conflict.pendingAnswers);
+      if (!savedResult) {
+        setSaveConflict(conflict);
+        setError("Gagal menyimpan rekomendasi baru. Coba lagi.");
+        return;
+      }
+      setSaveConflict(null);
+    } finally {
+      setResolvingConflict(false);
+    }
+  }
 
   function setAnswer<T extends keyof LearningGuidanceAnswers>(
     key: T,
@@ -234,8 +306,28 @@ export function LearningGuidanceQuiz() {
     setStep(0);
     setAnswers({});
     setSaved(false);
+    setSaveConflict(null);
     setError(null);
     clearPendingGuidance();
+  }
+
+  if (saveConflict) {
+    return (
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+        {error ? (
+          <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-red-400">
+            {error}
+          </p>
+        ) : null}
+        <GuidanceSaveChoice
+          savedResult={saveConflict.savedResult}
+          pendingResult={saveConflict.pendingResult}
+          choosing={resolvingConflict}
+          onKeepSaved={() => void handleKeepSavedRecommendation()}
+          onUsePending={() => void handleUsePendingRecommendation()}
+        />
+      </div>
+    );
   }
 
   if (loadingProfile && !result) {

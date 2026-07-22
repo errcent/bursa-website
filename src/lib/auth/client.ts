@@ -394,10 +394,10 @@ function loginLocal(
   const user = findStoredUserByIdentifier(input.identifier);
 
   if (!user) {
-    return { ok: false, error: "Username, email, telepon, atau kata sandi salah." };
+    return { ok: false, error: "Email, username, atau kata sandi salah." };
   }
   if (!verifyStoredPassword(user.password, input.password)) {
-    return { ok: false, error: "Username, email, telepon, atau kata sandi salah." };
+    return { ok: false, error: "Email, username, atau kata sandi salah." };
   }
 
   const session = toSession(user);

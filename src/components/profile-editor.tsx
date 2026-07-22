@@ -11,7 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getConsumerRoleLabel } from "@/lib/auth/roles";
-import { isValidIndonesianPhone, normalizeIndonesianPhone } from "@/lib/auth/validation";
 import type { UserRole } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 
@@ -65,7 +64,6 @@ export function ProfileEditor() {
 
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
-  const [phone, setPhone] = useState("");
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -103,7 +101,6 @@ export function ProfileEditor() {
     };
     setName(fromSession.name);
     setUsername(fromSession.username);
-    setPhone(fromSession.phone);
     setBio(fromSession.bio);
     setAvatarUrl(fromSession.avatarUrl);
     setSaved(fromSession);
@@ -135,7 +132,6 @@ export function ProfileEditor() {
         };
         setName(next.name);
         setUsername(next.username);
-        setPhone(next.phone);
         setBio(next.bio);
         setAvatarUrl(next.avatarUrl);
         setSaved(next);
@@ -200,11 +196,10 @@ export function ProfileEditor() {
     if (pendingFile) return true;
     if (name.trim() !== saved.name.trim()) return true;
     if (username.trim().toLowerCase() !== saved.username.trim().toLowerCase()) return true;
-    if (phone.trim() !== saved.phone.trim()) return true;
     if (normalizeBio(bio) !== normalizeBio(saved.bio)) return true;
     if ((avatarUrl ?? null) !== (saved.avatarUrl ?? null)) return true;
     return false;
-  }, [name, username, phone, bio, avatarUrl, pendingFile, saved]);
+  }, [name, username, bio, avatarUrl, pendingFile, saved]);
 
   if (isLoading) {
     return <div className="h-40 animate-pulse rounded-2xl bg-muted" />;
@@ -318,7 +313,6 @@ export function ProfileEditor() {
 
     const trimmedName = name.trim();
     const normalizedUsername = username.trim().toLowerCase();
-    const trimmedPhone = phone.trim();
 
     if (trimmedName.length < 2) {
       setMessage({ type: "err", text: "Nama tampilan minimal 2 karakter." });
@@ -334,13 +328,6 @@ export function ProfileEditor() {
     if (usernameCheck === "taken") {
       setMessage({ type: "err", text: "Username sudah dipakai." });
       return;
-    }
-    if (trimmedPhone) {
-      const normalizedPhone = normalizeIndonesianPhone(trimmedPhone);
-      if (!isValidIndonesianPhone(normalizedPhone)) {
-        setMessage({ type: "err", text: "Format nomor telepon tidak valid (+62)." });
-        return;
-      }
     }
 
     setSaving(true);
@@ -375,8 +362,6 @@ export function ProfileEditor() {
         nextAvatar = uploadJson.avatarUrl ?? nextAvatar;
       }
 
-      const normalizedPhone = trimmedPhone ? normalizeIndonesianPhone(trimmedPhone) : null;
-
       const patchRes = await fetch("/api/me/profile", {
         method: "PATCH",
         headers: {
@@ -391,7 +376,6 @@ export function ProfileEditor() {
           email: session.email,
           name: trimmedName,
           username: normalizedUsername || null,
-          phone: normalizedPhone,
           bio: bio.trim(),
           avatarUrl: nextAvatar,
           role: session.role,
@@ -416,7 +400,6 @@ export function ProfileEditor() {
       };
       setName(next.name);
       setUsername(next.username);
-      setPhone(next.phone);
       setBio(next.bio);
       setAvatarUrl(next.avatarUrl);
       setSaved(next);
@@ -574,23 +557,6 @@ export function ProfileEditor() {
           </div>
           <span className="block text-[11px] text-muted-foreground">
             Dipakai untuk masuk dan mention di chat. Huruf kecil, angka, underscore.
-          </span>
-        </label>
-
-        <label className="block space-y-1.5">
-          <span className="text-xs font-medium text-muted-foreground">Nomor telepon</span>
-          <input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            disabled={saving || loadingProfile}
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm disabled:opacity-60"
-            placeholder="+62812xxxxxxx (opsional)"
-          />
-          <span className="block text-[11px] text-muted-foreground">
-            Format Indonesia (+62). Bisa dipakai untuk masuk.
           </span>
         </label>
 
