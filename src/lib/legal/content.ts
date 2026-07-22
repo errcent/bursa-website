@@ -26,7 +26,7 @@ export const termsOfService: LegalDocument = {
       id: "pengantar",
       title: "Pengantar & Penerimaan Ketentuan",
       paragraphs: [
-        "Selamat datang di Bursa Trading Academy (\"Bursa\", \"Platform\", \"kami\"), platform edukasi trading dan investasi berbasis katalog multi-instruktur yang diakses melalui bursa.id. Syarat & Ketentuan ini (\"S&K\") merupakan perjanjian yang mengikat secara hukum antara kamu (\"Pengguna\", \"kamu\") dan Bursa.",
+        "Selamat datang di Bursa Trading Academy (\"Bursa\", \"Platform\", \"kami\"), platform edukasi trading dan investasi berbasis katalog multi-instruktur yang diakses melalui bursanalar.com. Syarat & Ketentuan ini (\"S&K\") merupakan perjanjian yang mengikat secara hukum antara kamu (\"Pengguna\", \"kamu\") dan Bursa.",
         "Dengan membuat akun, mengakses, atau menggunakan layanan Bursa dalam bentuk apa pun, kamu menyatakan telah membaca, memahami, dan menyetujui untuk terikat pada S&K ini serta Kebijakan Privasi kami. Jika kamu tidak menyetujui salah satu ketentuan, mohon untuk tidak menggunakan Platform.",
         "S&K ini tunduk pada dan ditafsirkan berdasarkan hukum Negara Republik Indonesia, termasuk UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP), UU No. 11 Tahun 2008 jo. UU No. 19 Tahun 2016 jo. UU No. 1 Tahun 2024 tentang Informasi dan Transaksi Elektronik (UU ITE), dan UU No. 8 Tahun 1999 tentang Perlindungan Konsumen.",
       ],
@@ -108,7 +108,7 @@ export const termsOfService: LegalDocument = {
         "Merek, logo, dan elemen visual Bursa adalah kekayaan intelektual Bursa dan tidak boleh digunakan tanpa izin tertulis.",
       ],
       bullets: [
-        "Laporan pelanggaran hak cipta: kirim ke legal@bursa.id disertai identifikasi karya, lokasi konten, dan bukti kepemilikan.",
+        "Laporan pelanggaran hak cipta: kirim ke legal@bursanalar.com disertai identifikasi karya, lokasi konten, dan bukti kepemilikan.",
         "Kami akan meninjau laporan yang sah dan menurunkan konten yang terbukti melanggar (notice-and-takedown).",
       ],
     },
@@ -143,7 +143,7 @@ export const termsOfService: LegalDocument = {
       paragraphs: [
         "Secara umum, pembelian akses kelas bersifat final mengingat sifat produk digital yang dapat diakses segera setelah pembayaran. Namun, ketentuan ini tidak menghapus hak-hakmu yang dilindungi secara memaksa oleh peraturan perundang-undangan, termasuk UU Perlindungan Konsumen.",
         "Pengembalian dana dapat diberikan dalam hal berikut, dievaluasi berdasarkan itikad baik: (a) kegagalan teknis Platform yang menyebabkan kelas tidak dapat diakses dan tidak dapat kami perbaiki dalam waktu wajar; (b) kelas secara material tidak sesuai dengan deskripsi yang dipublikasikan; atau (c) kesalahan penagihan atau transaksi ganda.",
-        "Permintaan pengembalian dana diajukan melalui support@bursa.id dengan menyertakan bukti transaksi dan alasan. Kami akan menanggapi dalam waktu wajar sesuai prosedur operasional yang berlaku.",
+        "Permintaan pengembalian dana diajukan melalui support@bursanalar.com dengan menyertakan bukti transaksi dan alasan. Kami akan menanggapi dalam waktu wajar sesuai prosedur operasional yang berlaku.",
       ],
     },
     {
@@ -248,7 +248,7 @@ export const termsOfService: LegalDocument = {
       id: "perlindungan-konsumen",
       title: "22. Perlindungan Konsumen & Pengaduan",
       paragraphs: [
-        "Sebagai konsumen, kamu memiliki hak sesuai UU No. 8 Tahun 1999 tentang Perlindungan Konsumen. Untuk pengaduan, hubungi kami terlebih dahulu di support@bursa.id agar dapat kami selesaikan secara langsung.",
+        "Sebagai konsumen, kamu memiliki hak sesuai UU No. 8 Tahun 1999 tentang Perlindungan Konsumen. Untuk pengaduan, hubungi kami terlebih dahulu di support@bursanalar.com agar dapat kami selesaikan secara langsung.",
         "Apabila pengaduan tidak terselesaikan, kamu berhak menempuh jalur penyelesaian sengketa konsumen melalui lembaga yang berwenang (mis. BPKN atau LAPS sektor terkait) sesuai peraturan yang berlaku.",
       ],
     },
@@ -259,9 +259,9 @@ export const termsOfService: LegalDocument = {
         "Untuk pertanyaan mengenai S&K ini, hubungi kami:",
       ],
       bullets: [
-        "Dukungan umum: support@bursa.id",
-        "Privasi & data pribadi: privacy@bursa.id",
-        "Hak kekayaan intelektual & hukum: legal@bursa.id",
+        "Dukungan umum: support@bursanalar.com",
+        "Privasi & data pribadi: privacy@bursanalar.com",
+        "Hak kekayaan intelektual & hukum: legal@bursanalar.com",
       ],
     },
   ],
@@ -342,7 +342,7 @@ export const privacyPolicy: LegalDocument = {
       id: "kontak",
       title: "7. Kontak Privasi",
       paragraphs: [
-        "Untuk pertanyaan terkait privasi atau permintaan data, hubungi tim kami di privacy@bursa.id. Kami akan merespons dalam waktu maksimal 14 hari kerja.",
+        "Untuk pertanyaan terkait privasi atau permintaan data, hubungi tim kami di privacy@bursanalar.com. Kami akan merespons dalam waktu maksimal 14 hari kerja.",
       ],
     },
   ],

@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     const baseUrl =
       process.env.NEXTAUTH_URL?.replace(/\/$/, "") ||
       process.env.EXPO_PUBLIC_WEB_URL?.replace(/\/$/, "") ||
-      "https://bursa-website.vercel.app";
+      "https://bursanalar.com";
 
     return jsonOk({
       alreadyEnrolled: false,

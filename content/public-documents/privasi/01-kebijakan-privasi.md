@@ -9,7 +9,7 @@ sortOrder: 1
 
 _Berlaku efektif: 22 Juli 2026 · Versi 2.0_
 
-**Bursa Trading Academy** ("Bursa", "Platform", "kami") — dioperasikan melalui bursa.id — berkomitmen melindungi privasi data pribadimu ("Pengguna", "kamu") sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (**UU PDP**) beserta peraturan pelaksanaannya. Kebijakan ini menjelaskan data apa yang kami kumpulkan, mengapa, bagaimana kami melindunginya, dan hak-hakmu sebagai subjek data.
+**Bursa Trading Academy** ("Bursa", "Platform", "kami") — dioperasikan melalui bursanalar.com — berkomitmen melindungi privasi data pribadimu ("Pengguna", "kamu") sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (**UU PDP**) beserta peraturan pelaksanaannya. Kebijakan ini menjelaskan data apa yang kami kumpulkan, mengapa, bagaimana kami melindunginya, dan hak-hakmu sebagai subjek data.
 
 Dalam konteks UU PDP, Bursa bertindak sebagai **Pengendali Data Pribadi** dan menggunakan **Prosesor Data Pribadi** pihak ketiga (hosting, payment gateway, email) sebagaimana dijelaskan pada Pasal 4. Kebijakan ini merupakan bagian tidak terpisahkan dari [Syarat & Ketentuan](/syarat-dan-ketentuan).
 
@@ -80,7 +80,7 @@ Sesuai UU PDP, kamu berhak:
 7. **Keberatan** — atas pemrosesan tertentu, termasuk keputusan yang dibuat secara otomatis (mis. personalisasi algoritmik) yang berdampak signifikan bagimu.
 8. **Pengaduan** — ke Platform maupun ke lembaga yang menyelenggarakan pelindungan data pribadi sesuai UU PDP.
 
-Ajukan permintaan via [Form Permintaan Data](/privasi/permintaan-data) atau email [privacy@bursa.id](mailto:privacy@bursa.id). Respons maksimal **14 hari kerja**.
+Ajukan permintaan via [Form Permintaan Data](/privasi/permintaan-data) atau email [privacy@bursanalar.com](mailto:privacy@bursanalar.com). Respons maksimal **14 hari kerja**.
 
 ## Pasal 6 — Retensi Data
 
@@ -128,9 +128,9 @@ Perubahan material diberitahukan via email/notifikasi sebelum berlaku. Penggunaa
 
 ## Pasal 12 — Kontak & Penanggung Jawab Perlindungan Data
 
-- **Pengendali Data Pribadi:** Bursa Trading Academy (bursa.id)
-- **Email privasi / Penanggung jawab pelindungan data:** [privacy@bursa.id](mailto:privacy@bursa.id)
-- **Dukungan umum:** [support@bursa.id](mailto:support@bursa.id)
+- **Pengendali Data Pribadi:** Bursa Trading Academy (bursanalar.com)
+- **Email privasi / Penanggung jawab pelindungan data:** [privacy@bursanalar.com](mailto:privacy@bursanalar.com)
+- **Dukungan umum:** [support@bursanalar.com](mailto:support@bursanalar.com)
 
 Kami akan merespons pertanyaan atau permintaan hak subjek data dalam waktu maksimal **14 hari kerja**.
 

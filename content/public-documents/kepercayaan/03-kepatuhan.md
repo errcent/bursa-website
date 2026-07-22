@@ -19,7 +19,7 @@ Bursa adalah **platform edukasi trading** — bukan Penyedia Jasa Keuangan (PUJK
 |-------|-------------------|
 | Pengendali Data Pribadi | Bursa sebagai controller |
 | Dasar hukum pemrosesan | Consent, kontrak, kewajiban hukum, legitimate interest |
-| Hak subjek data | Form permintaan + email privacy@bursa.id |
+| Hak subjek data | Form permintaan + email privacy@bursanalar.com |
 | Keamanan data | TLS, bcrypt, RBAC, audit log |
 | Notifikasi kebocoran | SOP 3×24 jam ke otoritas + pengguna |
 | DPO | Penanggung jawab internal (dirangkap compliance reviewer) |

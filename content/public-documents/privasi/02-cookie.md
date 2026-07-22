@@ -70,4 +70,4 @@ Kami dapat memperbarui kebijakan cookie ini. Perubahan material akan diberitahuk
 
 ## Kontak
 
-Pertanyaan cookie: [privacy@bursa.id](mailto:privacy@bursa.id)
+Pertanyaan cookie: [privacy@bursanalar.com](mailto:privacy@bursanalar.com)

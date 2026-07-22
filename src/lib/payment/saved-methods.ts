@@ -58,7 +58,7 @@ function demoSeedForEmail(email: string): SavedPaymentMethod[] {
   const normalized = email.trim().toLowerCase();
   const now = new Date().toISOString();
 
-  if (normalized === "demo@bursa.id") {
+  if (normalized === "demo@bursanalar.com") {
     return [
       {
         id: "pm-demo-gopay",

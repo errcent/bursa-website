@@ -31,7 +31,7 @@ Sebagai platform **edukasi** (bukan broker/PUJK), Bursa tidak memerlukan izin Pe
 
 ## Bagaimana cara melaporkan celah keamanan?
 
-Email [security@bursa.id](mailto:security@bursa.id) dengan deskripsi, langkah reproduksi, dan dampak potensial. Kami commit respond dalam 3 hari kerja. Detail: [Pelaporan Kerentanan](/kepercayaan/pelaporan).
+Email [security@bursanalar.com](mailto:security@bursanalar.com) dengan deskripsi, langkah reproduksi, dan dampak potensial. Kami commit respond dalam 3 hari kerja. Detail: [Pelaporan Kerentanan](/kepercayaan/pelaporan).
 
 ## Apakah ada bug bounty program?
 

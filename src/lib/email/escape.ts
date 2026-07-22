@@ -8,5 +8,5 @@ export function escapeHtml(value: string): string {
 }
 
 export function getSiteUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://bursa-website.vercel.app";
+  return process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://bursanalar.com";
 }

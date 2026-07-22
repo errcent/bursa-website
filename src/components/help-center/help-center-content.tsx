@@ -148,9 +148,9 @@ export function HelpCenterContent() {
             </p>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:items-end">
-            <Button className="btn-primary" render={<a href="mailto:support@bursa.id" />}>
+            <Button className="btn-primary" render={<a href="mailto:support@bursanalar.com" />}>
               <Mail className="size-4" />
-              support@bursa.id
+              support@bursanalar.com
             </Button>
             {KOMUNITAS_ENABLED && (
               <Button

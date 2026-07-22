@@ -98,7 +98,7 @@ async function main() {
 
   await prisma.user.create({
     data: {
-      email: "demo@bursa.id",
+      email: "demo@bursanalar.com",
       username: "andi_r",
       phone: "+6281110000002",
       passwordHash,
@@ -228,7 +228,7 @@ async function main() {
 
   const firstCourse = await prisma.course.findFirst({ orderBy: { createdAt: "asc" } });
   const allCourses = await prisma.course.findMany({ orderBy: { createdAt: "asc" }, take: 3 });
-  const demoLearner = await prisma.user.findUnique({ where: { email: "demo@bursa.id" } });
+  const demoLearner = await prisma.user.findUnique({ where: { email: "demo@bursanalar.com" } });
 
   if (firstCourse) {
     await prisma.enrollment.create({
@@ -886,7 +886,7 @@ async function main() {
   console.log("Seed completed.");
   console.log("Test accounts (password: password123):");
   console.log("  learner@test.dev  | username: test_learner  | phone: +6281110000001");
-  console.log("  demo@bursa.id     | username: andi_r       | phone: +6281110000002 (password: demo1234)");
+  console.log("  demo@bursanalar.com     | username: andi_r       | phone: +6281110000002 (password: demo1234)");
   console.log("  mentor@test.dev   | username: test_mentor   | phone: +6281110000004");
   console.log("  admin@test.dev    | username: test_admin    | phone: +6281110000003");
 }

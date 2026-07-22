@@ -36,9 +36,9 @@ _Berlaku efektif: 22 Juli 2026_
 
 | Topik | Email |
 |-------|-------|
-| Privasi & data | privacy@bursa.id |
-| Keamanan & kerentanan | security@bursa.id |
-| Dukungan umum | support@bursa.id |
+| Privasi & data | privacy@bursanalar.com |
+| Keamanan & kerentanan | security@bursanalar.com |
+| Dukungan umum | support@bursanalar.com |
 
 ## Regulasi Referensi
 
@@ -50,6 +50,6 @@ _Berlaku efektif: 22 Juli 2026_
 ## Catatan untuk Vendor & Partner
 
 Untuk due diligence keamanan (vendor assessment, SOC 2 request, DPA):
-Email [security@bursa.id](mailto:security@bursa.id) dengan subjek "Vendor Security Inquiry".
+Email [security@bursanalar.com](mailto:security@bursanalar.com) dengan subjek "Vendor Security Inquiry".
 
 Saat ini kami **belum** memiliki sertifikasi SOC 2 atau ISO 27001. Dokumen kontrol keamanan tersedia upon request.

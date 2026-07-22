@@ -15,20 +15,20 @@ Kami menghargai kontribusi komunitas keamanan dalam menjaga platform Bursa aman.
 
 ### Apa yang Dilaporkan
 
-- Celah keamanan di aplikasi web Bursa (bursa.id / bursa-website.vercel.app)
+- Celah keamanan di aplikasi web Bursa (bursanalar.com / bursa-website.vercel.app)
 - Kelemahan autentikasi, otorisasi, atau injeksi
 - Kebocoran data yang tidak seharusnya
 - Misconfiguration yang expose data sensitif
 
 ### Apa yang TIDAK Dilaporkan di Sini
 
-- Spam/phishing (laporkan ke support@bursa.id)
-- Bug UI/UX non-keamanan (laporkan ke support@bursa.id)
+- Spam/phishing (laporkan ke support@bursanalar.com)
+- Bug UI/UX non-keamanan (laporkan ke support@bursanalar.com)
 - Keluhan privasi data (gunakan [Permintaan Data](/privasi/permintaan-data))
 
 ## Cara Melaporkan
 
-Kirim email ke **[security@bursa.id](mailto:security@bursa.id)** dengan:
+Kirim email ke **[security@bursanalar.com](mailto:security@bursanalar.com)** dengan:
 
 1. **Deskripsi kerentanan** — jelaskan secara detail
 2. **Langkah reproduksi** — step-by-step agar kami bisa verifikasi
@@ -49,7 +49,7 @@ Kirim email ke **[security@bursa.id](mailto:security@bursa.id)** dengan:
 ## Scope & Batasan
 
 ### In Scope
-- `*.bursa.id`, `bursa-website.vercel.app`
+- `*.bursanalar.com`, `bursa-website.vercel.app`
 - API endpoints publik
 - Autentikasi & otorisasi
 
@@ -69,7 +69,7 @@ Kirim email ke **[security@bursa.id](mailto:security@bursa.id)** dengan:
 ## Insiden Data (Kebocoran)
 
 Jika kamu menemukan bukti kebocoran data aktif:
-1. Laporkan segera ke security@bursa.id
+1. Laporkan segera ke security@bursanalar.com
 2. Jangan download/arsipkan data user
 3. Kami akan activate incident response plan
 
@@ -79,5 +79,5 @@ Program bug bounty **belum tersedia** saat ini. Kami pertimbangkan setelah launc
 
 ## Kontak
 
-- **Keamanan:** [security@bursa.id](mailto:security@bursa.id)
+- **Keamanan:** [security@bursanalar.com](mailto:security@bursanalar.com)
 - **PGP Key:** Tersedia on request

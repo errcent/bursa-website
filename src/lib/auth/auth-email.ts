@@ -35,7 +35,7 @@ export async function sendWelcomeEmail(input: {
         Kami akan mengabari kamu tentang fitur baru dan peluncuran penuh platform.
       </p>
       <p style="margin:24px 0 0;font-size:12px;color:#666">
-        Bukan kamu yang mendaftar? Hubungi support@bursa.id atau kunjungi
+        Bukan kamu yang mendaftar? Hubungi support@bursanalar.com atau kunjungi
         <a href="${escapeHtml(siteUrl)}/privasi">Pusat Privasi</a>.
       </p>
     </div>
@@ -91,7 +91,7 @@ export async function sendAccountVerificationEmail(input: {
         <span style="word-break:break-all">${escapeHtml(verifyUrl)}</span>
       </p>
       <p style="margin:24px 0 0;font-size:12px;color:#666">
-        Bukan kamu? Abaikan email ini atau hubungi support@bursa.id.
+        Bukan kamu? Abaikan email ini atau hubungi support@bursanalar.com.
       </p>
     </div>
   `;

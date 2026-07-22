@@ -29,4 +29,4 @@ Selamat datang di Pusat Kepercayaan Bursa. Kami percaya transparansi adalah fond
 
 ## Kontak Keamanan
 
-Laporkan kerentanan: [security@bursa.id](mailto:security@bursa.id)
+Laporkan kerentanan: [security@bursanalar.com](mailto:security@bursanalar.com)

@@ -64,7 +64,7 @@ export function DsarRequestForm() {
       setEmail("");
       setDetails("");
     } catch {
-      setError("Gagal mengirim permintaan. Coba lagi atau email privacy@bursa.id");
+      setError("Gagal mengirim permintaan. Coba lagi atau email privacy@bursanalar.com");
     } finally {
       setLoading(false);
     }
@@ -157,8 +157,8 @@ export function DsarRequestForm() {
 
       <p className="text-xs text-muted-foreground">
         Alternatif: email{" "}
-        <a href="mailto:privacy@bursa.id" className="link-muted">
-          privacy@bursa.id
+        <a href="mailto:privacy@bursanalar.com" className="link-muted">
+          privacy@bursanalar.com
         </a>
       </p>
     </form>

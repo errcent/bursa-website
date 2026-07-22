@@ -5,7 +5,7 @@ import { getCatalogData } from "@/lib/catalog/server";
 import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { searchAll } from "@/lib/search/engine";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursa.id";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursanalar.com";
 
 export async function buildSearchMetadata(query?: string): Promise<Metadata> {
   const trimmed = query?.trim();

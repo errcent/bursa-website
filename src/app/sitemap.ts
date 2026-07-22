@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { getSitemapEntries } from "@/lib/search/seo";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursa.id";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursanalar.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries = await getSitemapEntries();

@@ -1,6 +1,6 @@
 import type { PortalSlug } from "@/lib/public-documents/types";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursa-website.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursanalar.com";
 
 export function PortalJsonLd({
   portalSlug,
@@ -39,13 +39,13 @@ export function PortalJsonLd({
           {
             "@type": "ContactPoint",
             contactType: "privacy",
-            email: "privacy@bursa.id",
+            email: "privacy@bursanalar.com",
             availableLanguage: "Indonesian",
           },
           {
             "@type": "ContactPoint",
             contactType: "security",
-            email: "security@bursa.id",
+            email: "security@bursanalar.com",
             availableLanguage: "Indonesian",
           },
         ],

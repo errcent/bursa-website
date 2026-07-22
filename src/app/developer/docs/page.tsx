@@ -1239,7 +1239,7 @@ export default function DeveloperDocsPage() {
                 <td className="px-3 py-2 font-mono">password123</td>
               </tr>
               <tr className="border-t border-border">
-                <td className="px-3 py-2 font-mono text-foreground">demo@bursa.id</td>
+                <td className="px-3 py-2 font-mono text-foreground">demo@bursanalar.com</td>
                 <td className="px-3 py-2">learner (demo)</td>
                 <td className="px-3 py-2 font-mono">demo1234</td>
               </tr>

@@ -90,4 +90,4 @@ Detail vendor: [Sub-prosesor](/privasi/sub-prosesor).
 
 ## Kontak
 
-Keamanan: [security@bursa.id](mailto:security@bursa.id)
+Keamanan: [security@bursanalar.com](mailto:security@bursanalar.com)

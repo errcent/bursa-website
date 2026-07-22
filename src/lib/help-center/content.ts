@@ -28,7 +28,7 @@ export const helpFaqs: HelpFaq[] = [
     category: "Akun",
     question: "Saya lupa kata sandi. Apa yang harus dilakukan?",
     answer:
-      "Di halaman Masuk, klik Lupa kata sandi dan masukkan email terdaftar. Kami kirim tautan reset yang berlaku 24 jam. Jika email tidak masuk, cek folder spam atau hubungi support@bursa.id.",
+      "Di halaman Masuk, klik Lupa kata sandi dan masukkan email terdaftar. Kami kirim tautan reset yang berlaku 24 jam. Jika email tidak masuk, cek folder spam atau hubungi support@bursanalar.com.",
   },
   {
     id: "akun-hapus",

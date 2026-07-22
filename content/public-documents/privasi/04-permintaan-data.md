@@ -24,7 +24,7 @@ Sesuai UU PDP, kamu memiliki hak atas data pribadimu. Gunakan halaman ini untuk 
 
 ## Cara Mengajukan
 
-Isi form di bawah ini atau kirim email ke [privacy@bursa.id](mailto:privacy@bursa.id) dengan:
+Isi form di bawah ini atau kirim email ke [privacy@bursanalar.com](mailto:privacy@bursanalar.com) dengan:
 
 1. **Nama lengkap** sesuai akun
 2. **Email** terdaftar di Bursa
@@ -46,6 +46,6 @@ Jika kamu tidak puas dengan respons kami, kamu berhak mengajukan pengaduan ke ot
 
 ## Kontak Alternatif
 
-Email: [privacy@bursa.id](mailto:privacy@bursa.id)
+Email: [privacy@bursanalar.com](mailto:privacy@bursanalar.com)
 
 <!-- Form DSAR dirender oleh komponen DsarRequestForm di website -->

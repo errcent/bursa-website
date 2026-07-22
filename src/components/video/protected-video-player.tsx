@@ -116,7 +116,7 @@ export function ProtectedVideoPlayer({
   const isPlaybackReady = usesDemoPlayback || tokenReady;
 
   const isProtected = !isPreview && !mockupMode;
-  const wmConfig = watermarkConfig(userId ?? "guest", userEmail ?? "tamu@bursa.id");
+  const wmConfig = watermarkConfig(userId ?? "guest", userEmail ?? "tamu@bursanalar.com");
 
   const chapterMarkers = useMemoChapterMarkers(duration);
 

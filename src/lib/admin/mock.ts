@@ -101,7 +101,7 @@ let mockModeration: AdminModerationItem[] = [
     reason: "Klaim return tidak realistis",
     status: "pending",
     reporterName: "Andi Rahayu",
-    reporterEmail: "demo@bursa.id",
+    reporterEmail: "demo@bursanalar.com",
     createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
     history: [],
   },
@@ -185,7 +185,7 @@ export function getMockRevenueReport(): AdminRevenueReport {
   const commissionRatePercent = PLATFORM_COMMISSION_RATE * 100;
   const sampleBuyers = [
     { name: "Test Learner", email: "learner@test.dev" },
-    { name: "Andi Rahayu", email: "demo@bursa.id" },
+    { name: "Andi Rahayu", email: "demo@bursanalar.com" },
     { name: "Putri A.", email: "putri@test.dev" },
     { name: "Rian H.", email: "rian@test.dev" },
   ];

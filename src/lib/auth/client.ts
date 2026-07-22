@@ -26,7 +26,7 @@ let cachedSession: AuthSession | null = null;
 const DEMO_USER: StoredUser = {
   id: "user-demo-andi",
   name: "Andi Rahayu",
-  email: "demo@bursa.id",
+  email: "demo@bursanalar.com",
   username: "andi_r",
   phone: "+6281110000002",
   password: hashPasswordForStorage("demo1234"),

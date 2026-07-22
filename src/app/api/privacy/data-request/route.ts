@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     }
     console.error(error);
     return NextResponse.json(
-      { error: "Gagal menyimpan permintaan. Email privacy@bursa.id sebagai alternatif." },
+      { error: "Gagal menyimpan permintaan. Email privacy@bursanalar.com sebagai alternatif." },
       { status: 500 }
     );
   }

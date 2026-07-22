@@ -47,4 +47,4 @@ Bervariasi per kategori — identitas selama akun aktif, log teknis 90–180 har
 
 ## Siapa yang bisa dihubungi untuk pertanyaan privasi?
 
-Email [privacy@bursa.id](mailto:privacy@bursa.id) — respons maksimal 14 hari kerja.
+Email [privacy@bursanalar.com](mailto:privacy@bursanalar.com) — respons maksimal 14 hari kerja.

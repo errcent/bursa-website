@@ -159,7 +159,7 @@ const id: Messages = {
         "Perubahan kata sandi dari halaman ini akan segera tersedia. Gunakan Lupa kata sandi jika perlu reset.",
       dangerZoneTitle: "Zona berbahaya",
       dangerZoneDescription:
-        "Menonaktifkan atau menghapus akun akan menghapus akses ke progres belajar, chat, dan riwayat transaksi. Hubungi privacy@bursa.id untuk permintaan penghapusan akun.",
+        "Menonaktifkan atau menghapus akun akan menghapus akses ke progres belajar, chat, dan riwayat transaksi. Hubungi privacy@bursanalar.com untuk permintaan penghapusan akun.",
       deactivateAccount: "Nonaktifkan akun",
       deleteAccount: "Hapus akun",
       openProfileTitle: "Butuh mengubah profil publik?",
@@ -271,7 +271,7 @@ const en: Messages = {
         "Password changes from this page will be available soon. Use Forgot password if you need a reset.",
       dangerZoneTitle: "Danger zone",
       dangerZoneDescription:
-        "Deactivating or deleting your account removes access to learning progress, chat, and transaction history. Contact privacy@bursa.id to request account deletion.",
+        "Deactivating or deleting your account removes access to learning progress, chat, and transaction history. Contact privacy@bursanalar.com to request account deletion.",
       deactivateAccount: "Deactivate account",
       deleteAccount: "Delete account",
       openProfileTitle: "Need to edit your public profile?",

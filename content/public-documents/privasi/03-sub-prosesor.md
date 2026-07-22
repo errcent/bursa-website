@@ -44,7 +44,7 @@ Data analitik dipseudonimkan/agregatkan untuk meningkatkan produk — bukan untu
 
 Kami akan memperbarui daftar ini saat menambah atau mengganti sub-prosesor. Perubahan material akan diberitahukan via email atau notifikasi platform.
 
-Untuk keberatan atas sub-prosesor baru, hubungi [privacy@bursa.id](mailto:privacy@bursa.id) dengan subjek "Keberatan Sub-prosesor".
+Untuk keberatan atas sub-prosesor baru, hubungi [privacy@bursanalar.com](mailto:privacy@bursanalar.com) dengan subjek "Keberatan Sub-prosesor".
 
 ## Hubungan dengan Trust Center
 

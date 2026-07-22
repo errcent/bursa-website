@@ -48,8 +48,8 @@ export function LegalDocumentContent({ document }: { document: LegalDocument }) 
         <p className="text-sm font-medium text-foreground">Butuh bantuan?</p>
         <p className="mt-1.5 text-sm text-muted-foreground">
           Ada pertanyaan terkait dokumen ini? Hubungi{" "}
-          <a href="mailto:support@bursa.id" className="link-muted font-medium text-foreground">
-            support@bursa.id
+          <a href="mailto:support@bursanalar.com" className="link-muted font-medium text-foreground">
+            support@bursanalar.com
           </a>
           .
         </p>

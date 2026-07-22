@@ -203,12 +203,12 @@ export function PortalDocShell({
             <p className="text-sm font-medium text-foreground">Butuh bantuan?</p>
             <p className="mt-1.5 text-sm text-muted-foreground">
               Hubungi{" "}
-              <a href="mailto:privacy@bursa.id" className="link-muted font-medium text-foreground">
-                privacy@bursa.id
+              <a href="mailto:privacy@bursanalar.com" className="link-muted font-medium text-foreground">
+                privacy@bursanalar.com
               </a>{" "}
               atau{" "}
-              <a href="mailto:security@bursa.id" className="link-muted font-medium text-foreground">
-                security@bursa.id
+              <a href="mailto:security@bursanalar.com" className="link-muted font-medium text-foreground">
+                security@bursanalar.com
               </a>
               .
             </p>

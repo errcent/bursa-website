@@ -22,4 +22,4 @@ Bursa bertindak sebagai **Pengendali Data Pribadi** sesuai UU No. 27 Tahun 2022 
 
 ## Kontak
 
-Pertanyaan privasi: [privacy@bursa.id](mailto:privacy@bursa.id)
+Pertanyaan privasi: [privacy@bursanalar.com](mailto:privacy@bursanalar.com)

@@ -79,8 +79,8 @@ export default async function MentorApplicationSuccessPage({
 
             <p className="mt-6 text-xs text-muted-foreground">
               Pertanyaan? Hubungi{" "}
-              <a href="mailto:mentor@bursa.id" className="link-muted">
-                mentor@bursa.id
+              <a href="mailto:mentor@bursanalar.com" className="link-muted">
+                mentor@bursanalar.com
               </a>
             </p>
           </div>

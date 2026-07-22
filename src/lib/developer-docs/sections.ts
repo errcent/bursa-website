@@ -320,7 +320,7 @@ export const DOC_NAV_SECTIONS: DocNavSection[] = [
     keywords: [
       "seed.ts",
       "password123",
-      "demo@bursa.id",
+      "demo@bursanalar.com",
       "learner@test.dev",
       "mentor@test.dev",
       "admin@test.dev",
