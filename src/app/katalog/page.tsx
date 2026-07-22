@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import Script from "next/script";
 
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { CatalogBrowserSkeleton } from "@/components/catalog-browser-skeleton";
 import { CatalogDataLoader } from "@/components/catalog-data-loader";
+import { JsonLdScript } from "@/components/json-ld-script";
 import { buildSearchMetadata, buildSearchResultsJsonLd } from "@/lib/search/seo";
 
 export const revalidate = 60;
@@ -33,14 +33,7 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
 
   return (
     <>
-      {searchJsonLd && (
-        <Script
-          id="jsonld-search-results"
-          type="application/ld+json"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(searchJsonLd) }}
-        />
-      )}
+      {searchJsonLd && <JsonLdScript id="jsonld-search-results" data={searchJsonLd} />}
       <SiteNavbar />
       <main className="catalog-page flex-1 overflow-x-clip pb-6">
         <div className="container-page pt-4 sm:pt-6">

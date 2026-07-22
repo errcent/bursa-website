@@ -1,5 +1,4 @@
-import Script from "next/script";
-
+import { JsonLdScript } from "@/components/json-ld-script";
 import {
   buildOrganizationJsonLd,
   buildWebsiteSearchJsonLd,
@@ -11,18 +10,8 @@ export function SearchSeoJsonLd() {
 
   return (
     <>
-      <Script
-        id="jsonld-website-search"
-        type="application/ld+json"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(website) }}
-      />
-      <Script
-        id="jsonld-organization"
-        type="application/ld+json"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }}
-      />
+      <JsonLdScript id="jsonld-website-search" data={website} />
+      <JsonLdScript id="jsonld-organization" data={organization} />
     </>
   );
 }

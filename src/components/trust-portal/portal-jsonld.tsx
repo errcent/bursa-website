@@ -1,5 +1,7 @@
 import type { PortalSlug } from "@/lib/public-documents/types";
 
+import { JsonLdScript } from "@/components/json-ld-script";
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursanalar.com";
 
 export function PortalJsonLd({
@@ -53,10 +55,5 @@ export function PortalJsonLd({
     ],
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }}
-    />
-  );
+  return <JsonLdScript id={`jsonld-${portalSlug}`} data={json} />;
 }
