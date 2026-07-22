@@ -17,7 +17,6 @@ import { Progress } from "@/components/ui/progress";
 import { useCatalogIndex } from "@/hooks/use-catalog-index";
 import { useMyLearning } from "@/hooks/use-my-learning";
 import { subscribeLearningChange } from "@/lib/learning/events";
-import { formatRupiah } from "@/lib/mock-data";
 import type { Course, Instrument } from "@/lib/types";
 
 type LearningCourse = {
@@ -194,13 +193,12 @@ function DashboardBody() {
                     <div>
                       <p className="font-heading text-sm font-medium">Belum ada progress</p>
                       <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                        Belum tahu mulai dari mana? Ikuti panduan belajar untuk rekomendasi kelas
-                        dan mentor yang sesuai profilmu.
+                        Quiz singkat untuk rekomendasi kelas dan mentor yang cocok dengan profilmu.
                       </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-2">
                       <Button render={<Link href="/panduan-belajar" />} className="btn-primary">
-                        Temukan Jalur Belajar
+                        Buka Panduan Belajar
                       </Button>
                       <Button render={<Link href="/katalog" />} variant="outline">
                         Jelajahi Katalog
@@ -323,8 +321,8 @@ function DashboardBody() {
                           <p className="line-clamp-2 font-heading text-sm font-medium">
                             {course.title}
                           </p>
-                          <p className="font-mono text-xs font-medium tabular-nums">
-                            {formatRupiah(course.price)}
+                          <p className="text-xs text-muted-foreground">
+                            {course.durationHours} jam · {course.instrument}
                           </p>
                         </div>
                       </Link>

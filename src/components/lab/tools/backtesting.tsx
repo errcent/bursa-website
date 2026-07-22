@@ -7,6 +7,7 @@ import {
   LabNumberInput,
   LabResultGrid,
   LabResultTile,
+  LabTabsScroll,
   LabToolPanel,
   labInputClassName,
 } from "@/components/lab/lab-field";
@@ -56,10 +57,12 @@ export function BacktesterTool() {
       </LabField>
 
       <Tabs defaultValue="ma" className="mt-6">
-        <TabsList className="mb-4">
-          <TabsTrigger value="ma">MA Crossover</TabsTrigger>
-          <TabsTrigger value="rsi">RSI</TabsTrigger>
-        </TabsList>
+        <LabTabsScroll>
+          <TabsList className="mb-4 w-max min-w-full sm:min-w-0 sm:w-auto">
+            <TabsTrigger value="ma">MA Crossover</TabsTrigger>
+            <TabsTrigger value="rsi">RSI</TabsTrigger>
+          </TabsList>
+        </LabTabsScroll>
         <TabsContent value="ma">
           <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Fast MA" id="bt-fast"><LabNumberInput id="bt-fast" value={fast} onChange={setFast} min={1} /></LabField>

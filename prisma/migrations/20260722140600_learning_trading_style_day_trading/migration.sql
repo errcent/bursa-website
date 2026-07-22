@@ -1,0 +1,1 @@
+ALTER TYPE "LearningTradingStyle" ADD VALUE IF NOT EXISTS 'DAY_TRADING';

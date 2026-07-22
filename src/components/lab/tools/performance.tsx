@@ -7,6 +7,7 @@ import {
   LabNumberInput,
   LabResultGrid,
   LabResultTile,
+  LabTabsScroll,
   LabToolPanel,
 } from "@/components/lab/lab-field";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -69,10 +70,12 @@ export function TradeExpectancyCalculator() {
 
   return (
     <Tabs defaultValue="calculator">
-      <TabsList className="mb-4">
-        <TabsTrigger value="calculator">Kalkulator</TabsTrigger>
-        <TabsTrigger value="matrix">Matriks Win Rate × R:R</TabsTrigger>
-      </TabsList>
+      <LabTabsScroll>
+        <TabsList className="mb-4 w-max min-w-full sm:min-w-0 sm:w-auto">
+          <TabsTrigger value="calculator">Kalkulator</TabsTrigger>
+          <TabsTrigger value="matrix">Matriks Win Rate × R:R</TabsTrigger>
+        </TabsList>
+      </LabTabsScroll>
 
       <TabsContent value="calculator">
         <LabToolPanel title="Parameter strategi">

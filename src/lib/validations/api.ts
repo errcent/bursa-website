@@ -453,12 +453,15 @@ export const adminPlaylistItemsSchema = z
 export const learningGuidanceAnswersSchema = z.object({
   instrument: z.enum(["Saham", "Crypto", "Forex"]),
   experience: z.enum(["never", "demo", "regular", "profitable"]),
-  tradingStyle: z.enum(["scalping", "swing", "long_term"]),
+  tradingStyle: z.enum(["scalping", "day_trading", "swing", "long_term"]),
   goal: z.enum(["side_income", "wealth", "basics", "retirement"]),
   riskTolerance: z.enum(["conservative", "moderate", "aggressive"]),
   timeAvailability: z.enum(["minimal", "part_time", "dedicated"]),
   capitalRange: z
     .enum(["under_5m", "5_20m", "20_50m", "above_50m", "prefer_not_say"])
     .optional(),
-  learningFormat: z.enum(["video", "live", "community", "mixed"]),
+  learningFormat: z
+    .enum(["video", "live", "community", "mixed"])
+    .optional()
+    .default("mixed"),
 });

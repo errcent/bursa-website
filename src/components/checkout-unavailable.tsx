@@ -29,18 +29,17 @@ export function CheckoutUnavailable({ course }: { course: Course }) {
             <div className="mx-auto flex size-14 items-center justify-center rounded-full border border-border/60 bg-muted/30">
               <Clock className="size-6 text-muted-foreground" aria-hidden />
             </div>
-            <h2 className="mt-5 font-heading text-lg font-medium">Pembayaran segera hadir</h2>
+            <h2 className="mt-5 font-heading text-lg font-medium">Pembayaran belum dibuka</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Kami sedang menyiapkan integrasi pembayaran aman untuk kelas{" "}
-              <span className="font-medium text-foreground">{course.title}</span>. Daftar waitlist
-              agar kamu mendapat info saat checkout dibuka.
+              Bursa masih dalam tahap preview. Katalog kelas saat ini bersifat demonstrasi —
+              checkout akan diumumkan saat peluncuran resmi.
             </p>
             <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
               <Button className="btn-primary" render={<Link href="/waitlist" />}>
-                Gabung waitlist
+                Gabung waitlist platform
               </Button>
-              <Button variant="outline" render={<Link href={`/kelas/${course.slug}`} />}>
-                Kembali ke kelas
+              <Button variant="outline" render={<Link href="/katalog" />}>
+                Kembali ke katalog
               </Button>
             </div>
           </div>

@@ -3,10 +3,12 @@
 import { useState } from "react";
 
 import {
+  LabCheckbox,
   LabDirectionToggle,
   LabField,
   LabNumberInput,
   LabResultTile,
+  LabTabsScroll,
   LabToolPanel,
 } from "@/components/lab/lab-field";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,15 +38,13 @@ function PipAndLeverageFields({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      <label className="flex items-center gap-2 text-sm text-muted-foreground">
-        <input
-          type="checkbox"
-          checked={showPips}
-          onChange={(e) => setShowPips(e.target.checked)}
-          className="size-4 rounded border-border accent-foreground"
-        />
-        Tampilkan estimasi pip (forex)
-      </label>
+      <LabCheckbox
+        id={`${idPrefix}-pips`}
+        checked={showPips}
+        onChange={setShowPips}
+        label="Tampilkan estimasi pip (forex)"
+        description="Berguna untuk pasangan mayor dan cross — sesuaikan ukuran pip jika perlu."
+      />
       <div className="grid gap-4 sm:grid-cols-2">
         {showPips && (
           <LabField label="Ukuran 1 pip" id={`${idPrefix}-pipsize`} helperText="Umumnya 0.0001 (mayor) / 0.01 (JPY)">
@@ -212,11 +212,13 @@ export function FloatingCalculator() {
   return (
     <LabToolPanel title="Tiga mode perhitungan floating" description="Long/short, leverage opsional, dan estimasi pip untuk forex.">
       <Tabs defaultValue="a">
-        <TabsList className="mb-5 w-full sm:w-auto">
-          <TabsTrigger value="a">Floating saat ini</TabsTrigger>
-          <TabsTrigger value="b">Cari harga target</TabsTrigger>
-          <TabsTrigger value="c">Floating skenario</TabsTrigger>
-        </TabsList>
+        <LabTabsScroll>
+          <TabsList className="mb-5 w-max min-w-full sm:min-w-0 sm:w-auto">
+            <TabsTrigger value="a">Floating saat ini</TabsTrigger>
+            <TabsTrigger value="b">Cari harga target</TabsTrigger>
+            <TabsTrigger value="c">Floating skenario</TabsTrigger>
+          </TabsList>
+        </LabTabsScroll>
         <TabsContent value="a">
           <ModeA />
         </TabsContent>

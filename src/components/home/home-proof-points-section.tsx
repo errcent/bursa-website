@@ -2,7 +2,6 @@
 
 import { motion } from "motion/react";
 
-import { PricingModelComparison } from "@/components/home/pricing-model-comparison";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { WordReveal } from "@/components/motion/word-reveal";
 
@@ -19,8 +18,8 @@ const proofPoints = [
   },
   {
     step: "03",
-    title: "Bayar per kelas",
-    description: "Bayar hanya kelas yang kamu pilih. Tanpa langganan bulanan.",
+    title: "Mulai dari preview gratis",
+    description: "Jelajahi cuplikan kelas di katalog — tanpa komitmen.",
   },
 ];
 
@@ -41,7 +40,7 @@ export function HomeProofPointsSection() {
           />
           <Reveal delay={0.1} className="mt-4">
             <p className="section-copy mx-auto max-w-lg text-base">
-              Pilih, pelajari, bayar sekali. Tanpa komitmen langganan.
+              Pilih kelas, pelajari alurnya, dan coba preview gratis di katalog.
             </p>
           </Reveal>
         </div>
@@ -67,8 +66,6 @@ export function HomeProofPointsSection() {
             </StaggerItem>
           ))}
         </Stagger>
-
-        <PricingModelComparison />
       </div>
     </section>
   );

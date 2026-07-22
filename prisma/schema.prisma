@@ -895,6 +895,7 @@ enum LearningExperience {
 
 enum LearningTradingStyle {
   SCALPING
+  DAY_TRADING
   SWING
   LONG_TERM
 }

@@ -260,34 +260,19 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
                     )}
                   </Suspense>
 
-                  {(showPrimaryCta || !session) && (
-                    <div className="mb-3 grid gap-2">
-                      {showPrimaryCta && (
-                        <SheetClose
-                          nativeButton={false}
-                          render={
-                            <Link
-                              href={primaryCtaHref}
-                              className="btn-primary flex min-h-12 items-center justify-center rounded-xl text-[15px] font-medium"
-                            />
-                          }
-                        >
-                          {session ? "Lanjut Belajar" : "Mulai Belajar"}
-                        </SheetClose>
-                      )}
-                      {!session && (
-                        <SheetClose
-                          nativeButton={false}
-                          render={
-                            <Link
-                              href="/daftar"
-                              className="flex min-h-12 items-center justify-center rounded-xl border border-border/70 bg-card/50 text-[15px] font-medium"
-                            />
-                          }
-                        >
-                          Daftar Gratis
-                        </SheetClose>
-                      )}
+                  {showPrimaryCta && (
+                    <div className="mb-3">
+                      <SheetClose
+                        nativeButton={false}
+                        render={
+                          <Link
+                            href={primaryCtaHref}
+                            className="btn-primary flex min-h-12 items-center justify-center rounded-xl text-[15px] font-medium"
+                          />
+                        }
+                      >
+                        {session ? "Lanjut Belajar" : "Mulai Belajar"}
+                      </SheetClose>
                     </div>
                   )}
 

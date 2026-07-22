@@ -79,6 +79,11 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
         description: "Entry cepat — menit hingga beberapa jam.",
       },
       {
+        value: "day_trading",
+        label: "Day trading",
+        description: "Posisi dibuka-tutup dalam hari yang sama — beberapa jam hingga satu hari.",
+      },
+      {
         value: "swing",
         label: "Swing trading",
         description: "Posisi beberapa hari hingga minggu.",
@@ -193,33 +198,6 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
         value: "prefer_not_say",
         label: "Lebih baik tidak menyebutkan",
         description: "Lewati pertanyaan ini.",
-      },
-    ],
-  },
-  {
-    id: "learningFormat",
-    title: "Format belajar apa yang kamu suka?",
-    subtitle: "Setiap format punya kelebihan — pilih yang paling cocok dengan gaya belajarmu.",
-    options: [
-      {
-        value: "video",
-        label: "Video mandiri",
-        description: "Belajar kapan saja, atur ritme sendiri.",
-      },
-      {
-        value: "live",
-        label: "Sesi live dengan mentor",
-        description: "Tanya jawab langsung & feedback real-time.",
-      },
-      {
-        value: "community",
-        label: "Komunitas & diskusi",
-        description: "Belajar dari pengalaman sesama trader.",
-      },
-      {
-        value: "mixed",
-        label: "Campuran semua",
-        description: "Fleksibel — video + live + komunitas.",
       },
     ],
   },

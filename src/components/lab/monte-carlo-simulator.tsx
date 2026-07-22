@@ -174,7 +174,13 @@ function EquityCurveChart({
   const startY = padding.top + chartH - ((startingCapital - minEq) / range) * chartH;
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full" preserveAspectRatio="none">
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="w-full rounded-xl border border-border/40 bg-muted/10 p-2"
+      preserveAspectRatio="none"
+      role="img"
+      aria-label="Grafik equity curve contoh simulasi"
+    >
       <line
         x1={padding.left}
         y1={startY}
@@ -331,7 +337,7 @@ export function MonteCarloSimulator() {
             title="Distribusi saldo akhir"
             description={`${result.endings.length.toLocaleString("id-ID")} simulasi`}
           >
-            <div className="flex h-48 items-end gap-1">
+            <div className="flex h-48 items-end gap-1 rounded-xl border border-border/40 bg-muted/10 p-3">
               {result.bins.map((bin, i) => {
                 const heightPct = Math.max(2, (bin.count / maxBinCount) * 100);
                 const crossesStart = bin.from <= result.startingCapital && result.startingCapital < bin.to;
@@ -339,9 +345,9 @@ export function MonteCarloSimulator() {
                   <div key={i} className="group relative flex-1" style={{ height: "100%" }}>
                     <div
                       className={cn(
-                        "absolute bottom-0 w-full rounded-t-sm transition-all",
-                        bin.from >= result.startingCapital ? "bg-profit/70" : "bg-loss/60",
-                        crossesStart && "ring-2 ring-accent/60"
+                        "absolute bottom-0 w-full rounded-t-md transition-all",
+                        bin.from >= result.startingCapital ? "bg-profit/65" : "bg-loss/55",
+                        crossesStart && "ring-1 ring-accent/50"
                       )}
                       style={{ height: `${heightPct}%` }}
                     />

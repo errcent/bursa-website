@@ -16,12 +16,13 @@ import type { Course, Instrument as UiInstrument, Level, Mentor } from "@/lib/ty
 export interface LearningGuidanceAnswers {
   instrument: UiInstrument;
   experience: "never" | "demo" | "regular" | "profitable";
-  tradingStyle: "scalping" | "swing" | "long_term";
+  tradingStyle: "scalping" | "day_trading" | "swing" | "long_term";
   goal: "side_income" | "wealth" | "basics" | "retirement";
   riskTolerance: "conservative" | "moderate" | "aggressive";
   timeAvailability: "minimal" | "part_time" | "dedicated";
   capitalRange?: "under_5m" | "5_20m" | "20_50m" | "above_50m" | "prefer_not_say";
-  learningFormat: "video" | "live" | "community" | "mixed";
+  /** Default `mixed` when omitted (no longer asked in quiz). */
+  learningFormat?: "video" | "live" | "community" | "mixed";
 }
 
 export interface LearningGuidanceProfileRecord {

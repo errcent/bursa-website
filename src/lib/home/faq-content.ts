@@ -33,12 +33,12 @@ export const homeFaqs: HomeFaq[] = [
     id: "community",
     question: "Apakah ada komunitas atau chat langsung dengan mentor?",
     answer:
-      "Ya. Setiap mentor bisa membuka ruang komunitas — gratis atau berlangganan — untuk diskusi, Q&A, dan update materi. Akses chat tersedia setelah kamu membeli kelas atau bergabung ke ruang yang ditentukan mentor.",
+      "Ya. Setiap mentor bisa membuka ruang komunitas untuk diskusi, Q&A, dan update materi. Akses chat akan tersedia setelah peluncuran penuh platform.",
   },
   {
     id: "pricing-model",
     question: "Apakah harus berlangganan bulanan untuk belajar di Bursa?",
     answer:
-      "Tidak. Model Bursa adalah bayar per kelas — kamu hanya membayar kelas yang dipilih, tanpa biaya langganan platform. Beberapa ruang komunitas mentor mungkin berlangganan terpisah, dan detailnya selalu ditampilkan sebelum kamu bergabung.",
+      "Tidak. Bursa dirancang dengan model bayar per kelas — tanpa langganan platform. Saat ini kami masih dalam tahap preview; detail harga dan checkout akan diumumkan saat peluncuran resmi.",
   },
 ];

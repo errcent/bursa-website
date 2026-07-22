@@ -21,6 +21,7 @@ export default function LoginPage() {
     <AuthPageShell
       title="Selamat datang kembali"
       description="Masuk untuk melanjutkan belajar dan mengakses dashboard."
+      showMobileBack
     >
       <Suspense fallback={<LoginFormFallback />}>
         <LoginForm />

@@ -34,6 +34,8 @@ export type LabCategory = {
   title: string;
   description: string;
   accent: string;
+  pillLabel: string;
+  markerClass: string;
 };
 
 export const labCategories: LabCategory[] = [
@@ -42,36 +44,48 @@ export const labCategories: LabCategory[] = [
     title: "Manajemen Risiko & Modal",
     description: "Ukuran posisi, breakeven, dan Kelly — fondasi sebelum kamu menekan tombol entry.",
     accent: "from-emerald/20 to-transparent",
+    pillLabel: "Risiko",
+    markerClass: "bg-emerald",
   },
   {
     id: "performance",
     title: "Performa & Probabilitas",
     description: "Monte Carlo, expectancy, dan distribusi hasil — uji edge strategi secara matematis.",
     accent: "from-accent/20 to-transparent",
+    pillLabel: "Probabilitas",
+    markerClass: "bg-accent",
   },
   {
     id: "trading-mechanics",
     title: "Mekanika Trading",
     description: "Pip, lot, margin, swap, komisi — pahami biaya nyata di forex, saham, dan crypto.",
     accent: "from-amber/15 to-transparent",
+    pillLabel: "Mekanika",
+    markerClass: "bg-amber",
   },
   {
     id: "technical",
     title: "Teknikal & Pasar",
     description: "Volatilitas, trailing stop ATR, Fibonacci, dan pelacakan R-multiple.",
     accent: "from-chart-2/15 to-transparent",
+    pillLabel: "Teknikal",
+    markerClass: "bg-chart-2",
   },
   {
     id: "portfolio",
     title: "Portofolio & Lanjutan",
     description: "Analisis risiko agregat untuk portofolio multi-aset dan multi-strategi.",
     accent: "from-primary/15 to-transparent",
+    pillLabel: "Portofolio",
+    markerClass: "bg-primary",
   },
   {
     id: "backtesting",
     title: "Uji Strategi & Backtest",
     description: "Eksperimen aturan entry/exit sederhana pada data harga historis.",
     accent: "from-chart-1/20 to-transparent",
+    pillLabel: "Backtest",
+    markerClass: "bg-chart-1",
   },
 ];
 

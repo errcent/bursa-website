@@ -564,8 +564,8 @@ export function LearningWorkspace({
               Sudah berlangganan
             </span>
           ) : progressReady && !hasCourseAccess && !isFreePreview ? (
-            <Button size="sm" className="btn-primary" render={<Link href={`/checkout/${course.slug}`} />}>
-              Checkout untuk akses penuh
+            <Button size="sm" variant="outline" render={<Link href={`/kelas/${course.slug}`} />}>
+              Lihat detail kelas
             </Button>
           ) : null}
         </div>

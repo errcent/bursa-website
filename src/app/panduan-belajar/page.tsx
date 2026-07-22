@@ -7,9 +7,9 @@ import { HeroLivingBackground } from "@/components/hero-living-bg";
 import { Reveal } from "@/components/motion/reveal";
 
 export const metadata: Metadata = {
-  title: "Panduan Belajar — Temukan Jalur yang Tepat",
+  title: "Panduan Belajar — Belajar dengan Arah yang Jelas",
   description:
-    "Quiz singkat untuk rekomendasi kelas dan mentor trading yang disesuaikan dengan profil, tujuan, dan toleransi risikomu.",
+    "Quiz singkat (~2 menit) untuk rekomendasi kelas dan mentor trading yang selaras dengan tujuan dan levelmu.",
 };
 
 export default function PanduanBelajarPage() {
@@ -21,20 +21,22 @@ export default function PanduanBelajarPage() {
           <HeroLivingBackground />
           <div className="container-page relative z-10">
             <Reveal>
-              <p className="eyebrow mb-2">Jembatannya</p>
+              <p className="eyebrow mb-2">Panduan Belajar</p>
               <h1 className="page-hero-title text-gradient max-w-3xl">
-                Temukan Jalur Belajar yang Tepat
+                Belajar dengan arah yang jelas
               </h1>
+              <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                Quiz singkat · ~2 menit · rekomendasi personal
+              </p>
               <p className="section-copy mt-4 max-w-2xl text-base sm:text-[1.05rem]">
-                Banyak trader kehilangan waktu karena belajar dari mentor atau kelas yang tidak
-                sesuai profilnya. Jawab beberapa pertanyaan singkat — sekitar 2 menit — dan dapatkan
-                rekomendasi kelas & mentor yang disesuaikan dengan tujuan, level, dan ritme belajarmu.
+                Jawab beberapa pertanyaan — kami arahkan ke kelas dan mentor yang selaras dengan
+                tujuan dan levelmu.
               </p>
             </Reveal>
           </div>
         </div>
 
-        <div className="container-page section-tight">
+        <div className="container-page section-tight pt-8 sm:pt-10">
           <LearningGuidanceQuiz />
         </div>
       </main>

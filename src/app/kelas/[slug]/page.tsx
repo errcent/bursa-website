@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Check, ShieldCheck } from "lucide-react";
 
 import { CourseDetailHero } from "@/components/course-detail-hero";
-import { CourseDetailCheckoutPanel } from "@/components/course-detail-checkout-sidebar";
 import { CourseInstructorSection } from "@/components/course-instructor-section";
 import { CourseCurriculumCards } from "@/components/course-curriculum-cards";
 import { CourseReviewsSection } from "@/components/course-reviews-section";
@@ -21,7 +20,6 @@ import {
   getCourseReviews,
   getMentorBySlug,
 } from "@/lib/catalog/server";
-import { formatRupiah } from "@/lib/mock-data";
 
 export async function generateStaticParams() {
   const slugs = await getCatalogCourseSlugs();
@@ -41,9 +39,9 @@ export async function generateMetadata({
 
 const faqs = [
   {
-    question: "Berapa lama akses ke kelas ini?",
+    question: "Apakah kelas ini bisa diakses sekarang?",
     answer:
-      "Akses berlaku selamanya (lifetime access) sejak tanggal pembelian, termasuk pembaruan materi di masa depan.",
+      "Katalog saat ini menampilkan preview edukatif. Kamu bisa menonton materi preview gratis; pembelian dan akses penuh akan dibuka setelah peluncuran resmi Bursa.",
   },
   {
     question: "Apakah cocok untuk pemula total?",
@@ -65,9 +63,6 @@ export default async function CourseDetailPage({
     getMentorBySlug(course.mentorSlug),
     getCourseReviews(slug, 4),
   ]);
-  const totalLessons = course.modules.reduce((sum, m) => sum + m.lessons.length, 0);
-  const primaryCheckoutHref = `/checkout/${course.slug}`;
-  const priceLabel = formatRupiah(course.price);
 
   return (
     <>
@@ -151,14 +146,6 @@ export default async function CourseDetailPage({
             </section>
           </div>
         </div>
-
-        <CourseDetailCheckoutPanel
-          course={course}
-          priceLabel={priceLabel}
-          checkoutHref={primaryCheckoutHref}
-          previewHref={`/belajar/${course.slug}/l1`}
-          totalLessons={totalLessons}
-        />
       </main>
       <SiteFooter />
     </>
