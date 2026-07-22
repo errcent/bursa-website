@@ -1,3 +1,4 @@
+import "@/lib/sharp-security";
 import sharp from "sharp";
 
 /** Max raw upload size accepted before processing (5 MB). */

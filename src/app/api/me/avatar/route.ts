@@ -9,7 +9,7 @@ import {
 import { deleteLocalAvatarFile, persistAvatar } from "@/lib/avatar-storage";
 import { db } from "@/lib/db";
 
-const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 function serializeProfile(user: {
   id: string;
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!ALLOWED_TYPES.has(file.type)) {
-      return jsonError("Format tidak didukung. Gunakan JPG, PNG, WebP, atau GIF.", 400);
+      return jsonError("Format tidak didukung. Gunakan JPG, PNG, atau WebP.", 400);
     }
 
     if (file.size > AVATAR_MAX_INPUT_BYTES) {
