@@ -45,8 +45,39 @@ function GoogleOAuthCompleteInner() {
 
     const next = readOAuthNext(searchParams.get("next"));
 
+    // #region agent log
+    fetch("http://127.0.0.1:7530/ingest/c33c766e-e1bb-4e60-96df-20dc44d9761c", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "41a2dd" },
+      body: JSON.stringify({
+        sessionId: "41a2dd",
+        runId: "pre-fix",
+        hypothesisId: "H5",
+        location: "google-oauth-complete.tsx:effect-start",
+        message: "google-done bridge started",
+        data: { next: readOAuthNext(searchParams.get("next")) },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+
     void fetchOAuthBridge()
       .then(async (res) => {
+        // #region agent log
+        fetch("http://127.0.0.1:7530/ingest/c33c766e-e1bb-4e60-96df-20dc44d9761c", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "41a2dd" },
+          body: JSON.stringify({
+            sessionId: "41a2dd",
+            runId: "pre-fix",
+            hypothesisId: "H5",
+            location: "google-oauth-complete.tsx:bridge-response",
+            message: "google-done bridge response",
+            data: { status: res.status, ok: res.ok },
+            timestamp: Date.now(),
+          }),
+        }).catch(() => {});
+        // #endregion
         if (!res.ok) {
           const body = (await res.json().catch(() => null)) as { error?: string } | null;
           throw new Error(body?.error ?? "Sesi Google tidak valid.");

@@ -76,8 +76,10 @@ export function useOAuthSync() {
   const { status: nextAuthStatus } = useSession();
   const { session: localSession, isLoading: authLoading } = useAuth();
   const syncingRef = useRef(false);
+  const webBridgeAttemptedRef = useRef(false);
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [webBridgeExhausted, setWebBridgeExhausted] = useState(false);
 
   if (pathname === "/auth/google-done") {
     return { syncing: false, error: null, isOAuthReturn: false };
@@ -96,6 +98,8 @@ export function useOAuthSync() {
     (!isLogoutPending() || oauthParam);
 
   const needsWebBridge =
+    !webBridgeExhausted &&
+    !webBridgeAttemptedRef.current &&
     !authLoading &&
     !localSession &&
     !getSession() &&
@@ -107,12 +111,82 @@ export function useOAuthSync() {
     !isLogoutPending();
 
   const pendingSync = needsOAuthBridge || needsWebBridge;
+  const computedSyncing = syncing || (pendingSync && !error);
+
+  // #region agent log
+  useEffect(() => {
+    fetch("http://127.0.0.1:7530/ingest/c33c766e-e1bb-4e60-96df-20dc44d9761c", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "41a2dd" },
+      body: JSON.stringify({
+        sessionId: "41a2dd",
+        runId: "pre-fix",
+        hypothesisId: "H1-H4",
+        location: "use-oauth-sync.ts:state",
+        message: "oauth sync state snapshot",
+        data: {
+          pathname,
+          nextAuthStatus,
+          authLoading,
+          hasLocalSession: Boolean(localSession || getSession()),
+          oauthParam,
+          logoutPending: isLogoutPending(),
+          needsOAuthBridge,
+          needsWebBridge,
+          pendingSync,
+          syncingState: syncing,
+          computedSyncing,
+          webBridgeExhausted,
+          webBridgeAttempted: webBridgeAttemptedRef.current,
+          hasError: Boolean(error),
+          syncingRef: syncingRef.current,
+          nextParam: searchParams.get("next"),
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+  }, [
+    pathname,
+    nextAuthStatus,
+    authLoading,
+    localSession,
+    oauthParam,
+    needsOAuthBridge,
+    needsWebBridge,
+    pendingSync,
+    syncing,
+    computedSyncing,
+    error,
+    webBridgeExhausted,
+    searchParams,
+  ]);
+  // #endregion
 
   useEffect(() => {
     if (!pendingSync || syncingRef.current) return;
 
+    // #region agent log
+    fetch("http://127.0.0.1:7530/ingest/c33c766e-e1bb-4e60-96df-20dc44d9761c", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "41a2dd" },
+      body: JSON.stringify({
+        sessionId: "41a2dd",
+        runId: "post-fix",
+        hypothesisId: needsOAuthBridge ? "H2" : "H1",
+        location: "use-oauth-sync.ts:effect-start",
+        message: "bridge effect started",
+        data: { needsOAuthBridge, needsWebBridge, nextAuthStatus },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+
     if (oauthParam || nextAuthStatus === "authenticated") {
       clearLogoutFlag();
+    }
+
+    if (needsWebBridge) {
+      webBridgeAttemptedRef.current = true;
     }
 
     syncingRef.current = true;
@@ -124,10 +198,45 @@ export function useOAuthSync() {
 
     void bridgeRequest
       .then(async (res) => {
+        // #region agent log
+        fetch("http://127.0.0.1:7530/ingest/c33c766e-e1bb-4e60-96df-20dc44d9761c", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "41a2dd" },
+          body: JSON.stringify({
+            sessionId: "41a2dd",
+            runId: "pre-fix",
+            hypothesisId: needsOAuthBridge ? "H2" : "H1",
+            location: "use-oauth-sync.ts:bridge-response",
+            message: "bridge response received",
+            data: {
+              bridge: needsOAuthBridge ? "oauth" : "web",
+              status: res.status,
+              ok: res.ok,
+            },
+            timestamp: Date.now(),
+          }),
+        }).catch(() => {});
+        // #endregion
         if (!res.ok) {
           if (needsWebBridge) {
+            // #region agent log
+            fetch("http://127.0.0.1:7530/ingest/c33c766e-e1bb-4e60-96df-20dc44d9761c", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "41a2dd" },
+              body: JSON.stringify({
+                sessionId: "41a2dd",
+                runId: "pre-fix",
+                hypothesisId: "H1",
+                location: "use-oauth-sync.ts:web-bridge-401",
+                message: "web bridge failed but pendingSync may remain true",
+                data: { status: res.status },
+                timestamp: Date.now(),
+              }),
+            }).catch(() => {});
+            // #endregion
             syncingRef.current = false;
             setSyncing(false);
+            setWebBridgeExhausted(true);
             return null;
           }
           const body = (await res.json().catch(() => null)) as { error?: string } | null;
@@ -150,7 +259,7 @@ export function useOAuthSync() {
   }, [pendingSync, needsOAuthBridge, needsWebBridge, nextAuthStatus, oauthParam, searchParams]);
 
   return {
-    syncing: syncing || (pendingSync && !error),
+    syncing,
     error,
     isOAuthReturn: oauthParam,
   };
