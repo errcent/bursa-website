@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Award, BookOpen, Flame } from "lucide-react";
+import { BookOpen, Compass, Flame } from "lucide-react";
 import { motion } from "motion/react";
 
 import { CourseThumbnail } from "@/components/course-thumbnail";
@@ -14,7 +14,6 @@ import { InstrumentBadge } from "@/components/instrument-badge";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useCatalogIndex } from "@/hooks/use-catalog-index";
 import { useMyLearning } from "@/hooks/use-my-learning";
 import { subscribeLearningChange } from "@/lib/learning/events";
 import type { Course, Instrument } from "@/lib/types";
@@ -39,9 +38,10 @@ type LearningPayload = {
 function DashboardBody() {
   const { session } = useAuth();
   const { bySlug: enrollmentBySlug } = useMyLearning();
-  const { index: catalogIndex, loading: catalogLoading } = useCatalogIndex();
   const [learning, setLearning] = useState<LearningPayload | null>(null);
-  const [guidanceCourses, setGuidanceCourses] = useState<Course[] | null>(null);
+  const [guidanceLoading, setGuidanceLoading] = useState(true);
+  const [hasGuidanceProfile, setHasGuidanceProfile] = useState(false);
+  const [guidanceCourses, setGuidanceCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -95,11 +95,15 @@ function DashboardBody() {
 
   useEffect(() => {
     if (!session?.userId && !session?.email) {
-      setGuidanceCourses(null);
+      setHasGuidanceProfile(false);
+      setGuidanceCourses([]);
+      setGuidanceLoading(false);
       return;
     }
 
     let cancelled = false;
+    setGuidanceLoading(true);
+
     const params = new URLSearchParams({
       ...(session.userId ? { userId: session.userId } : {}),
       ...(session.email ? { email: session.email } : {}),
@@ -112,23 +116,32 @@ function DashboardBody() {
       .then(async (res) => {
         if (!res.ok) return null;
         return (await res.json()) as {
+          profile?: unknown | null;
           result?: { courses?: Array<{ course: Course }> } | null;
         };
       })
       .then((data) => {
         if (cancelled) return;
+        const hasProfile = Boolean(data?.profile);
         const courses =
           data?.result?.courses?.map((entry) => entry.course).filter(Boolean) ?? [];
-        setGuidanceCourses(courses.length > 0 ? courses : null);
+        setHasGuidanceProfile(hasProfile);
+        setGuidanceCourses(courses);
       })
       .catch(() => {
-        if (!cancelled) setGuidanceCourses(null);
+        if (!cancelled) {
+          setHasGuidanceProfile(false);
+          setGuidanceCourses([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setGuidanceLoading(false);
       });
 
     return () => {
       cancelled = true;
     };
-  }, [session?.userId, session?.email]);
+  }, [session?.userId, session?.email, refreshKey]);
 
   const enrolledSlugs = useMemo(
     () => new Set(enrollmentBySlug.keys()),
@@ -136,17 +149,12 @@ function DashboardBody() {
   );
 
   const recommendations = useMemo(() => {
-    const fromGuidance = guidanceCourses?.filter((course) => !enrolledSlugs.has(course.slug));
-    if (fromGuidance && fromGuidance.length > 0) {
-      return fromGuidance.slice(0, 3);
-    }
+    if (!hasGuidanceProfile) return [];
 
-    const courses = catalogIndex?.courses ?? [];
-    return [...courses]
+    return guidanceCourses
       .filter((course) => !enrolledSlugs.has(course.slug))
-      .sort((a, b) => b.studentsCount - a.studentsCount)
-      .slice(0, 3);
-  }, [guidanceCourses, catalogIndex, enrolledSlugs]);
+      .slice(0, 4);
+  }, [guidanceCourses, enrolledSlugs, hasGuidanceProfile]);
 
   const inProgress = learning?.courses ?? [];
   const hasProgress = inProgress.length > 0;
@@ -254,82 +262,96 @@ function DashboardBody() {
               </section>
 
               <section>
-                <Reveal>
-                  <h2 className="section-title mb-4 flex items-center gap-2">
-                    <Award className="size-4 text-accent" />
-                    Sertifikat Saya
-                  </h2>
-                </Reveal>
-                <div className="surface-card flex flex-col items-center gap-3 p-8 text-center">
-                  <Award className="size-5 text-muted-foreground" />
+                <Reveal className="mb-4 flex flex-wrap items-end justify-between gap-2">
                   <div>
-                    <p className="font-heading text-sm font-medium">Belum ada sertifikat</p>
+                    <h2 className="section-title flex items-center gap-2">
+                      <Compass className="size-4 text-accent" />
+                      Rekomendasi untukmu
+                    </h2>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Selesaikan kelas untuk mendapatkan sertifikat.
+                      {hasGuidanceProfile
+                        ? "Berdasarkan profil dari Panduan Belajar."
+                        : "Personal setelah kamu menyelesaikan quiz Panduan Belajar."}
                     </p>
                   </div>
-                </div>
-              </section>
-
-              <section>
-                <Reveal>
-                  <h2 className="section-title mb-4">Rekomendasi Lanjutan</h2>
+                  {hasGuidanceProfile ? (
+                    <Link href="/panduan-belajar" className="link-accent shrink-0 text-sm">
+                      Perbarui profil
+                    </Link>
+                  ) : null}
                 </Reveal>
-                {catalogLoading && recommendations.length === 0 ? (
+
+                {guidanceLoading ? (
                   <div className="surface-card p-8 text-center text-sm text-muted-foreground">
                     Memuat rekomendasi…
                   </div>
+                ) : !hasGuidanceProfile ? (
+                  <div className="surface-card flex flex-col items-center gap-4 p-8 text-center">
+                    <div className="flex size-12 items-center justify-center rounded-xl border border-accent/25 bg-accent-soft/40">
+                      <Compass className="size-5 text-accent" />
+                    </div>
+                    <div className="max-w-sm">
+                      <p className="font-heading text-sm font-medium">Belum ada profil belajar</p>
+                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                        Ikuti quiz singkat (~2 menit) di Panduan Belajar — kami rekomendasikan kelas
+                        yang selaras dengan tujuan dan levelmu.
+                      </p>
+                    </div>
+                    <Button render={<Link href="/panduan-belajar" />} className="btn-primary">
+                      Ikuti Panduan Belajar
+                    </Button>
+                  </div>
                 ) : recommendations.length === 0 ? (
                   <div className="surface-card p-8 text-center text-sm text-muted-foreground">
-                    Belum ada rekomendasi — jelajahi{" "}
+                    Semua kelas rekomendasi sudah kamu ambil, atau belum ada yang cocok.{" "}
                     <Link href="/katalog" className="link-accent">
-                      katalog
+                      Jelajahi katalog
                     </Link>{" "}
-                    atau ikuti{" "}
+                    atau{" "}
                     <Link href="/panduan-belajar" className="link-accent">
-                      panduan belajar
+                      perbarui profil belajar
                     </Link>
                     .
                   </div>
                 ) : (
-                <Stagger className="flex gap-3 overflow-x-auto pb-2 sm:gap-4">
-                  {recommendations.map((course) => {
-                    const enrolled = enrollmentBySlug.get(course.slug);
-                    return (
-                    <StaggerItem key={course.slug} className="w-56 shrink-0 sm:w-64">
-                      <Link
-                        href={
-                          enrolled?.lastLessonId
-                            ? `/belajar/${course.slug}/${enrolled.lastLessonId}`
-                            : `/kelas/${course.slug}`
-                        }
-                        className="surface-card-hover flex h-full flex-col overflow-hidden rounded-xl"
-                      >
-                        <div className="relative aspect-[16/10] w-full overflow-hidden">
-                          <CourseThumbnail
-                            course={course}
-                            fillSlot
-                            className="absolute inset-0"
-                            alt={course.title}
-                            progressPercent={
-                              enrolled ? enrolled.progressPercent : undefined
+                  <Stagger className="flex gap-3 overflow-x-auto pb-2 sm:gap-4">
+                    {recommendations.map((course) => {
+                      const enrolled = enrollmentBySlug.get(course.slug);
+                      return (
+                        <StaggerItem key={course.slug} className="w-56 shrink-0 sm:w-64">
+                          <Link
+                            href={
+                              enrolled?.lastLessonId
+                                ? `/belajar/${course.slug}/${enrolled.lastLessonId}`
+                                : `/kelas/${course.slug}`
                             }
-                          />
-                        </div>
-                        <div className="flex flex-col gap-2 p-4">
-                          <InstrumentBadge instrument={course.instrument} className="w-fit" />
-                          <p className="line-clamp-2 font-heading text-sm font-medium">
-                            {course.title}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {course.durationHours} jam · {course.instrument}
-                          </p>
-                        </div>
-                      </Link>
-                    </StaggerItem>
-                    );
-                  })}
-                </Stagger>
+                            className="surface-card-hover flex h-full flex-col overflow-hidden rounded-xl"
+                          >
+                            <div className="relative aspect-[16/10] w-full overflow-hidden">
+                              <CourseThumbnail
+                                course={course}
+                                fillSlot
+                                className="absolute inset-0"
+                                alt={course.title}
+                                progressPercent={
+                                  enrolled ? enrolled.progressPercent : undefined
+                                }
+                              />
+                            </div>
+                            <div className="flex flex-col gap-2 p-4">
+                              <InstrumentBadge instrument={course.instrument} className="w-fit" />
+                              <p className="line-clamp-2 font-heading text-sm font-medium">
+                                {course.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {course.durationHours} jam · {course.instrument}
+                              </p>
+                            </div>
+                          </Link>
+                        </StaggerItem>
+                      );
+                    })}
+                  </Stagger>
                 )}
               </section>
           </div>
