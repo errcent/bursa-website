@@ -5,6 +5,10 @@ import { ArrowRight, Compass, RefreshCw, UserRound } from "lucide-react";
 
 import { CourseCard } from "@/components/course-card";
 import { MentorCard } from "@/components/mentor-card";
+import {
+  GuidanceMentorCarousel,
+  GuidanceReasonTags,
+} from "@/components/learning-guidance/guidance-mentor-carousel";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import type { LearningGuidanceResult } from "@/lib/learning/guidance/types";
@@ -17,20 +21,7 @@ const INSTRUMENT_UI: Record<string, Instrument> = {
 };
 
 function ReasonTags({ reasons }: { reasons: string[] }) {
-  if (reasons.length === 0) return null;
-
-  return (
-    <ul className="flex flex-wrap gap-1.5 px-0.5">
-      {reasons.map((reason) => (
-        <li
-          key={reason}
-          className="rounded-md border border-border/60 bg-surface/50 px-2 py-0.5 text-[11px] leading-snug text-muted-foreground"
-        >
-          {reason}
-        </li>
-      ))}
-    </ul>
-  );
+  return <GuidanceReasonTags reasons={reasons} />;
 }
 
 export function GuidanceResults({
@@ -146,14 +137,19 @@ export function GuidanceResults({
             Belum ada mentor terverifikasi untuk instrumen ini.
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {result.mentors.map(({ mentor, reasons }) => (
-              <div key={mentor.slug} className="flex flex-col gap-2.5">
-                <MentorCard mentor={mentor} />
-                <ReasonTags reasons={reasons} />
-              </div>
-            ))}
-          </div>
+          <>
+            <div className="md:hidden">
+              <GuidanceMentorCarousel mentors={result.mentors} />
+            </div>
+            <div className="hidden gap-5 md:grid md:grid-cols-2 lg:grid-cols-3">
+              {result.mentors.map(({ mentor, reasons }) => (
+                <div key={mentor.slug} className="flex flex-col gap-2.5">
+                  <MentorCard mentor={mentor} />
+                  <ReasonTags reasons={reasons} />
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </section>
 

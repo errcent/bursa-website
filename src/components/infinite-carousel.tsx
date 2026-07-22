@@ -71,6 +71,8 @@ export interface UseInfiniteCarouselOptions<T> {
   /** Pause auto-scroll (e.g. inactive discover tab). */
   externalPaused?: boolean;
   onActiveIndexChange?: (index: number) => void;
+  /** Allow horizontal drag starting on slide content (e.g. guidance mentor tiles). */
+  allowDragFromSlides?: boolean;
 }
 
 export function useInfiniteCarousel<T>({
@@ -83,6 +85,7 @@ export function useInfiniteCarousel<T>({
   autoScrollPxPerSec = DEFAULT_AUTO_SCROLL_PX_PER_SEC,
   externalPaused = false,
   onActiveIndexChange,
+  allowDragFromSlides = false,
 }: UseInfiniteCarouselOptions<T>) {
   const prefersReducedMotion = useReducedMotion() ?? false;
   const dragControls = useDragControls();
@@ -330,6 +333,7 @@ export function useInfiniteCarousel<T>({
     handleDragStart,
     handleDragEnd,
     wrapX,
+    allowDragFromSlides,
   };
 }
 
@@ -383,6 +387,7 @@ export function InfiniteCarouselViewport<T>({
     handleDragStart,
     handleDragEnd,
     wrapX,
+    allowDragFromSlides,
   } = carousel;
 
   if (items.length === 0) return null;
@@ -451,7 +456,7 @@ export function InfiniteCarouselViewport<T>({
               dragging ? "cursor-grabbing" : "cursor-grab",
               !prefersReducedMotion && !paused && "motion-safe:transition-none"
             )}
-            style={{ x, gap, touchAction: "pan-y" }}
+            style={{ x, gap, touchAction: allowDragFromSlides ? "pan-x pinch-zoom" : "pan-y" }}
             drag={prefersReducedMotion ? false : "x"}
             dragControls={dragControls}
             dragListener={false}
@@ -459,7 +464,12 @@ export function InfiniteCarouselViewport<T>({
             dragMomentum={false}
             onPointerDown={(e) => {
               if (prefersReducedMotion) return;
-              if ((e.target as HTMLElement).closest("[data-carousel-card]")) return;
+              if (
+                !allowDragFromSlides &&
+                (e.target as HTMLElement).closest("[data-carousel-card]")
+              ) {
+                return;
+              }
               dragControls.start(e);
             }}
             onDragStart={handleDragStart}
@@ -543,6 +553,7 @@ export interface DiscoverInfiniteCarouselProps<T> {
   getItemKey: (item: T) => string;
   renderItem: (item: T, index: number) => ReactNode;
   className?: string;
+  allowDragFromSlides?: boolean;
 }
 
 export const DiscoverInfiniteCarousel = forwardRef(function DiscoverInfiniteCarousel<T>(
@@ -557,6 +568,7 @@ export const DiscoverInfiniteCarousel = forwardRef(function DiscoverInfiniteCaro
     getItemKey,
     renderItem,
     className,
+    allowDragFromSlides = false,
   }: DiscoverInfiniteCarouselProps<T>,
   ref: ForwardedRef<InfiniteCarouselHandle>
 ) {
@@ -568,6 +580,7 @@ export const DiscoverInfiniteCarousel = forwardRef(function DiscoverInfiniteCaro
     mobilePeekRatio,
     externalPaused: autoPlayPaused,
     onActiveIndexChange,
+    allowDragFromSlides,
   });
 
   useImperativeHandle(

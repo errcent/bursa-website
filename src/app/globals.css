@@ -361,6 +361,27 @@
     @apply inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-border/50 bg-muted/30 text-foreground/80 transition-[transform,border-color,background-color] duration-300 group-hover:border-accent/25 group-hover:bg-accent-soft/50 group-hover:text-accent;
   }
 
+  .guidance-mentor-carousel-bleed {
+    position: relative;
+    isolation: isolate;
+    min-width: 0;
+    width: calc(100% + 2 * var(--landing-container-px, 1.25rem));
+    max-width: calc(100% + 2 * var(--landing-container-px, 1.25rem));
+    margin-inline: calc(-1 * var(--landing-container-px, 1.25rem));
+  }
+
+  @media (max-width: 767px) {
+    .guidance-mentor-carousel-bleed {
+      width: 100dvw;
+      max-width: 100dvw;
+      margin-inline: calc(50% - 50dvw);
+    }
+
+    .guidance-mentor-carousel-bleed .discover-infinite-carousel {
+      --carousel-fade-color: var(--background);
+    }
+  }
+
   .surface-card {
     border-radius: var(--atom-card-radius);
     border: 1px solid transparent;
