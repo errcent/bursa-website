@@ -50,7 +50,15 @@ export function buildLoginHref(returnPath?: string | null): string {
 }
 
 export function buildRegisterHref(returnPath?: string | null): string {
-  // New accounts always start at beranda — never carry another page's next.
-  void returnPath;
-  return "/daftar";
+  if (!returnPath) return "/daftar";
+  const next = resolvePostAuthRedirect(returnPath);
+  if (next === POST_AUTH_HOME) return "/daftar";
+  return `/daftar?next=${encodeURIComponent(next)}`;
+}
+
+/** Hard navigation after auth — avoids stale client state on /masuk and /daftar. */
+export function redirectAfterAuth(next: string): void {
+  if (typeof window === "undefined") return;
+  const target = resolvePostAuthRedirect(next);
+  window.location.assign(target);
 }

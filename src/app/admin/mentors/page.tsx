@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Loader2, Calendar, Pencil, Plus, Trash2 } from "lucide-react";
 
 import { useAdminToast } from "@/components/admin/admin-toast";
+import { useAdminPanel } from "@/components/admin/admin-panel-context";
 import { DataTable, type DataTableColumn } from "@/components/admin/data-table";
 import { ConfirmDialog, FormModal } from "@/components/admin/form-modal";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +36,7 @@ const emptyForm: MentorFormInput = {
 
 export default function AdminMentorsPage() {
   const { toast } = useAdminToast();
+  const { readOnly } = useAdminPanel();
   const [mentors, setMentors] = useState<AdminMentor[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -177,29 +179,33 @@ export default function AdminMentorsPage() {
             <Calendar className="size-3" />
             Jadwal
           </Button>
-          <Button
-            size="xs"
-            variant="outline"
-            disabled={verifyingId === row.id}
-            onClick={() => toggleVerified(row)}
-          >
-            {verifyingId === row.id ? (
-              <>
-                <Loader2 className="size-3 animate-spin" />
-                Memproses...
-              </>
-            ) : row.verified ? (
-              "Cabut"
-            ) : (
-              "Verifikasi"
-            )}
-          </Button>
-          <Button size="icon-sm" variant="ghost" onClick={() => openEdit(row)}>
-            <Pencil className="size-3.5" />
-          </Button>
-          <Button size="icon-sm" variant="ghost" onClick={() => setDeleteId(row.id)}>
-            <Trash2 className="size-3.5 text-destructive" />
-          </Button>
+          {!readOnly && (
+            <>
+              <Button
+                size="xs"
+                variant="outline"
+                disabled={verifyingId === row.id}
+                onClick={() => toggleVerified(row)}
+              >
+                {verifyingId === row.id ? (
+                  <>
+                    <Loader2 className="size-3 animate-spin" />
+                    Memproses...
+                  </>
+                ) : row.verified ? (
+                  "Cabut"
+                ) : (
+                  "Verifikasi"
+                )}
+              </Button>
+              <Button size="icon-sm" variant="ghost" onClick={() => openEdit(row)}>
+                <Pencil className="size-3.5" />
+              </Button>
+              <Button size="icon-sm" variant="ghost" onClick={() => setDeleteId(row.id)}>
+                <Trash2 className="size-3.5 text-destructive" />
+              </Button>
+            </>
+          )}
         </div>
       ),
     },
@@ -221,10 +227,12 @@ export default function AdminMentorsPage() {
         searchKeys={["name", "email", "title"]}
         searchPlaceholder="Cari mentor..."
         toolbar={
-          <Button size="sm" onClick={openCreate}>
-            <Plus className="size-4" />
-            Tambah Mentor
-          </Button>
+          readOnly ? undefined : (
+            <Button size="sm" onClick={openCreate}>
+              <Plus className="size-4" />
+              Tambah Mentor
+            </Button>
+          )
         }
       />
 

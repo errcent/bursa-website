@@ -286,6 +286,9 @@ export function loginWithOAuth(input: {
   email: string;
   name: string;
   avatarUrl?: string | null;
+  bio?: string | null;
+  username?: string | null;
+  phone?: string | null;
   role?: string;
 }): { ok: true; session: AuthSession } | { ok: false; error: string } {
   const email = input.email.trim().toLowerCase();
@@ -295,20 +298,28 @@ export function loginWithOAuth(input: {
 
   let user: StoredUser;
   if (existingIdx >= 0) {
+    const existing = users[existingIdx];
     user = {
-      ...users[existingIdx],
+      ...existing,
+      id: input.userId,
       name,
+      username: input.username ?? existing.username ?? null,
+      phone: input.phone ?? existing.phone ?? null,
+      bio: input.bio ?? existing.bio ?? null,
       ...(input.avatarUrl !== undefined ? { avatarUrl: input.avatarUrl } : {}),
-      role: input.role ? prismaRoleToClient(input.role) : users[existingIdx].role,
+      role: input.role ? prismaRoleToClient(input.role) : existing.role,
     };
     const nextUsers = [...users];
     nextUsers[existingIdx] = user;
     writeUsers(nextUsers);
   } else {
     user = {
-      id: input.userId.startsWith("user-") ? input.userId : `user-${input.userId}`,
+      id: input.userId,
       name,
       email,
+      username: input.username ?? null,
+      phone: input.phone ?? null,
+      bio: input.bio ?? null,
       password: "",
       role: input.role ? prismaRoleToClient(input.role) : roleForEmail(email),
       createdAt: new Date().toISOString(),
@@ -352,6 +363,8 @@ export async function loginWithServer(
         username?: string | null;
         phone?: string | null;
         role?: string;
+        avatarUrl?: string | null;
+        bio?: string | null;
       };
       error?: string;
     };
@@ -405,6 +418,8 @@ function applyServerUserSession(apiUser: {
   username?: string | null;
   phone?: string | null;
   role?: string;
+  avatarUrl?: string | null;
+  bio?: string | null;
 }): { ok: true; session: AuthSession } | { ok: false; error: string } {
   const email = apiUser.email.trim().toLowerCase();
   const users = readUsers();
@@ -415,10 +430,11 @@ function applyServerUserSession(apiUser: {
     email,
     username: apiUser.username ?? null,
     phone: apiUser.phone ?? null,
+    bio: apiUser.bio ?? null,
     password: existingIdx >= 0 ? users[existingIdx].password : "",
     role: apiUser.role ? prismaRoleToClient(apiUser.role) : roleForEmail(email),
     createdAt: existingIdx >= 0 ? users[existingIdx].createdAt : new Date().toISOString(),
-    avatarUrl: existingIdx >= 0 ? users[existingIdx].avatarUrl : null,
+    avatarUrl: apiUser.avatarUrl ?? null,
   };
 
   if (existingIdx >= 0) {
@@ -456,6 +472,8 @@ export async function registerWithServer(
         username?: string | null;
         phone?: string | null;
         role?: string;
+        avatarUrl?: string | null;
+        bio?: string | null;
       };
       error?: string;
     };

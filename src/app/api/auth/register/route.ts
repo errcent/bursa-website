@@ -59,6 +59,8 @@ export async function POST(request: NextRequest) {
           username: user.username,
           phone: user.phone,
           role: user.role,
+          avatarUrl: user.avatarUrl,
+          bio: user.bio,
           emailVerified: false,
         },
         verificationEmailSent: true,

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BookOpen,
   ClipboardList,
   LayoutDashboard,
   MessageSquare,
@@ -10,18 +11,36 @@ import {
   UserRound,
 } from "lucide-react";
 
+import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { cn } from "@/lib/utils";
 
-const links = [
+type MentorNavLink = {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+};
+
+const baseLinks: MentorNavLink[] = [
   { href: "/mentor", label: "Ringkasan", icon: LayoutDashboard, exact: true },
+  { href: "/instruktur-dashboard", label: "Dashboard Instruktur", icon: BookOpen },
   { href: "/mentor/usulan", label: "Usulan Konten", icon: ClipboardList },
-  { href: "/mentor/chat", label: "Group Chat", icon: MessageSquare },
-  { href: "/mentor/profil", label: "Identitas Mentor", icon: UserRound },
-  { href: "/mentor/pengaturan", label: "Pengaturan", icon: Settings },
-];
+  { href: "/instruktur-dashboard/profil", label: "Profil Publik", icon: UserRound },
+  { href: "/pengaturan", label: "Pengaturan Akun", icon: Settings },
+] as const;
+
+const chatLink = {
+  href: "/mentor/chat",
+  label: "Group Chat",
+  icon: MessageSquare,
+  exact: false as const,
+};
 
 export function MentorSidebar() {
   const pathname = usePathname();
+  const links = KOMUNITAS_ENABLED
+    ? [...baseLinks.slice(0, 3), chatLink, ...baseLinks.slice(3)]
+    : baseLinks;
 
   return (
     <aside className="hidden w-60 shrink-0 border-r border-border bg-surface/40 lg:flex lg:flex-col">

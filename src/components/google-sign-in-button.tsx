@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 
 import { loginWithOAuth, isLogoutPending } from "@/lib/auth/client";
-import { resolvePostAuthRedirect } from "@/lib/auth/redirect";
+import { redirectAfterAuth, resolvePostAuthRedirect } from "@/lib/auth/redirect";
 import { Button } from "@/components/ui/button";
 
 function GoogleIcon({ className }: { className?: string }) {
@@ -125,7 +125,6 @@ export function GoogleSignInButton({ mode }: { mode: "login" | "register" }) {
 /** After Google OAuth redirect, sync NextAuth session into localStorage auth. */
 export function OAuthSessionSync() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const syncing = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -141,7 +140,7 @@ export function OAuthSessionSync() {
 
     const next = resolvePostAuthRedirect(searchParams.get("next"));
 
-    fetch("/api/auth/oauth-bridge")
+    fetch("/api/auth/oauth-bridge", { credentials: "include" })
       .then(async (res) => {
         if (!res.ok) {
           const body = (await res.json().catch(() => null)) as { error?: string } | null;
@@ -152,6 +151,9 @@ export function OAuthSessionSync() {
             id: string;
             email: string;
             name: string;
+            username?: string | null;
+            phone?: string | null;
+            bio?: string | null;
             avatarUrl?: string | null;
             role?: string;
           };
@@ -162,19 +164,22 @@ export function OAuthSessionSync() {
           userId: data.user.id,
           email: data.user.email,
           name: data.user.name,
+          username: data.user.username,
+          phone: data.user.phone,
+          bio: data.user.bio,
           avatarUrl: data.user.avatarUrl,
           role: data.user.role,
         });
         if (!result.ok) {
           throw new Error(result.error);
         }
-        router.replace(next);
+        redirectAfterAuth(next);
       })
       .catch((err: Error) => {
         setError(err.message || "Gagal menyinkronkan sesi Google.");
         syncing.current = false;
       });
-  }, [searchParams, router]);
+  }, [searchParams]);
 
   if (!searchParams.get("oauth")) return null;
 

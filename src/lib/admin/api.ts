@@ -64,6 +64,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<ApiResult<T
   try {
     const res = await fetch(`/api/admin${path}`, {
       ...init,
+      credentials: "include",
       headers: {
         ...authHeaders(),
         ...(init?.headers ?? {}),

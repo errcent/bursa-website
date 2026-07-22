@@ -7,6 +7,7 @@ import {
   levelFromUi,
   mapCourse,
   requireAdmin,
+  requireAdminPanel,
   unauthorized,
 } from "@/lib/admin/server";
 import { revalidateCatalog } from "@/lib/catalog/server";
@@ -15,7 +16,7 @@ import type { CourseFormInput } from "@/lib/admin/types";
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(request: Request, context: RouteContext) {
-  const admin = await requireAdmin(request);
+  const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
   const { id } = await context.params;

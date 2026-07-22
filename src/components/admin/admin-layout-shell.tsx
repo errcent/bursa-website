@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 
 import { AdminGuard } from "@/components/admin/admin-guard";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminPanelProvider } from "@/components/admin/admin-panel-context";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminToastProvider } from "@/components/admin/admin-toast";
 import { QcBanner } from "@/components/qc-banner";
@@ -14,7 +15,8 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
 
   return (
     <AdminGuard>
-      <AdminToastProvider>
+      <AdminPanelProvider>
+        <AdminToastProvider>
         <div className="flex min-h-screen flex-col bg-background text-foreground">
           <QcBanner panelLabel="Admin Panel" />
           <div className="flex min-h-0 flex-1">
@@ -25,7 +27,8 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-      </AdminToastProvider>
+        </AdminToastProvider>
+      </AdminPanelProvider>
     </AdminGuard>
   );
 }

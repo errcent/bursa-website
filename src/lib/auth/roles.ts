@@ -29,7 +29,10 @@ export function getRoleNavLinks(role: UserRole | undefined | null): RoleNavLink[
     case "admin":
       return [{ href: "/admin", label: "Admin Panel", description: "CRUD platform" }];
     case "mentor":
-      return [{ href: "/mentor", label: "Mentor Panel", description: "Kelola ruang & profil" }];
+      return [
+        { href: "/instruktur-dashboard", label: "Dashboard Instruktur", description: "Course, transaksi, profil" },
+        { href: "/mentor", label: "Mentor Panel", description: "Usulan konten & kolaborasi" },
+      ];
     case "developer":
       return [
         { href: "/developer", label: "Developer QC", description: "Quality control" },

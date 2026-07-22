@@ -1,6 +1,11 @@
 import { auth } from "@/auth";
 import { jsonError, jsonOk } from "@/lib/api-utils";
 import { db } from "@/lib/db";
+import {
+  signWebSessionToken,
+  WEB_SESSION_COOKIE,
+  webSessionCookieOptions,
+} from "@/lib/auth/web-session";
 
 /**
  * Returns the active NextAuth (Google) session for client-side bridge into
@@ -27,14 +32,27 @@ export async function GET() {
           ? "developer"
           : "learner";
 
-  return jsonOk({
+  const userId = dbUser?.id ?? email;
+
+  const response = jsonOk({
     user: {
-      id: dbUser?.id ?? email,
+      id: userId,
       email,
-      name: session.user.name ?? dbUser?.nama ?? email.split("@")[0],
-      avatarUrl: session.user.image ?? dbUser?.avatarUrl ?? null,
+      // DB is source of truth for existing accounts; Google fills gaps for new users.
+      name: dbUser?.nama ?? session.user.name ?? email.split("@")[0],
+      username: dbUser?.username ?? null,
+      phone: dbUser?.phone ?? null,
+      bio: dbUser?.bio ?? null,
+      avatarUrl: dbUser?.avatarUrl ?? session.user.image ?? null,
       role: clientRole,
     },
     provider: "google" as const,
   });
+
+  if (dbUser) {
+    const token = await signWebSessionToken({ id: dbUser.id, email: dbUser.email });
+    response.cookies.set(WEB_SESSION_COOKIE, token, webSessionCookieOptions());
+  }
+
+  return response;
 }

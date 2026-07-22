@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { buildStats, requireAdmin, unauthorized } from "@/lib/admin/server";
+import { buildStats, requireAdminPanel, unauthorized } from "@/lib/admin/server";
 
 export async function GET(request: Request) {
-  const admin = await requireAdmin(request);
+  const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
   try {

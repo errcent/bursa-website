@@ -57,14 +57,18 @@ export async function upsertGoogleOAuthUser(input: {
 
   const existing = await db.user.findUnique({ where: { email } });
   if (existing) {
+    const isOAuthOnly = existing.passwordHash === OAUTH_PASSWORD_MARKER;
     const updates: {
       nama?: string;
       avatarUrl?: string | null;
       emailVerifiedAt?: Date;
     } = {};
-    if (nama && existing.nama !== nama) updates.nama = nama;
-    if (input.avatarUrl && existing.avatarUrl !== input.avatarUrl) {
-      updates.avatarUrl = input.avatarUrl;
+    // Never overwrite mentor/staff profile fields from Google on password-backed accounts.
+    if (isOAuthOnly) {
+      if (nama && existing.nama !== nama) updates.nama = nama;
+      if (input.avatarUrl && existing.avatarUrl !== input.avatarUrl) {
+        updates.avatarUrl = input.avatarUrl;
+      }
     }
     if (!existing.emailVerifiedAt) {
       updates.emailVerifiedAt = new Date();

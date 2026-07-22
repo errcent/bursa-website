@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
-import { requireAdmin, unauthorized } from "@/lib/admin/server";
+import { requireAdmin, requireAdminPanel, unauthorized } from "@/lib/admin/server";
 import { db } from "@/lib/db";
 import { mapAvailabilitySlot, parseSlotDateTime } from "@/lib/sessions/server";
 import type { SlotFormInput } from "@/lib/sessions/types";
@@ -9,7 +9,7 @@ import type { SlotFormInput } from "@/lib/sessions/types";
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(request: Request, context: RouteContext) {
-  const admin = await requireAdmin(request);
+  const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
   const { id } = await context.params;

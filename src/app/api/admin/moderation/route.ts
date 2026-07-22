@@ -1,11 +1,10 @@
-import { ModerationStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-import { mapModerationItem, requireAdmin, unauthorized } from "@/lib/admin/server";
+import { mapModerationItem, requireAdminPanel, unauthorized } from "@/lib/admin/server";
 
 export async function GET(request: Request) {
-  const admin = await requireAdmin(request);
+  const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
   try {

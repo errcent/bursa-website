@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin, unauthorized } from "@/lib/admin/server";
+import { requireAdmin, requireAdminPanel, unauthorized } from "@/lib/admin/server";
 import { db } from "@/lib/db";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(request: Request, context: RouteContext) {
-  const admin = await requireAdmin(request);
+  const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
   const { id } = await context.params;

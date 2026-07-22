@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import type { DocumentPortal, DocumentStatus } from "@prisma/client";
 
-import { requireAdmin, unauthorized } from "@/lib/admin/server";
+import { requireAdmin, requireAdminPanel, unauthorized } from "@/lib/admin/server";
 import { db } from "@/lib/db";
 
 export async function GET(request: Request) {
-  const admin = await requireAdmin(request);
+  const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
   const { searchParams } = new URL(request.url);

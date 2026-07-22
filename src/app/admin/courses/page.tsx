@@ -5,6 +5,7 @@ import { Film, ImageIcon, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 import { useAdminToast } from "@/components/admin/admin-toast";
+import { useAdminPanel } from "@/components/admin/admin-panel-context";
 import { CourseThumbnail } from "@/components/course-thumbnail";
 import { DataTable, type DataTableColumn } from "@/components/admin/data-table";
 import { ConfirmDialog, FormModal } from "@/components/admin/form-modal";
@@ -42,6 +43,7 @@ const emptyForm: CourseFormInput = {
 
 export default function AdminCoursesPage() {
   const { toast } = useAdminToast();
+  const { readOnly } = useAdminPanel();
   const [courses, setCourses] = useState<AdminCourse[]>([]);
   const [mentors, setMentors] = useState<AdminMentor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -213,9 +215,11 @@ export default function AdminCoursesPage() {
       header: "Aksi",
       render: (row) => (
         <div className="flex items-center gap-1">
-          <Button size="xs" variant="outline" onClick={() => togglePublish(row)}>
-            {row.isPublished ? "Unpublish" : "Publish"}
-          </Button>
+          {!readOnly && (
+            <Button size="xs" variant="outline" onClick={() => togglePublish(row)}>
+              {row.isPublished ? "Unpublish" : "Publish"}
+            </Button>
+          )}
           <Button
             size="icon-sm"
             variant="ghost"
@@ -224,12 +228,16 @@ export default function AdminCoursesPage() {
           >
             <Film className="size-3.5" />
           </Button>
-          <Button size="icon-sm" variant="ghost" onClick={() => openEdit(row)}>
-            <Pencil className="size-3.5" />
-          </Button>
-          <Button size="icon-sm" variant="ghost" onClick={() => setDeleteId(row.id)}>
-            <Trash2 className="size-3.5 text-destructive" />
-          </Button>
+          {!readOnly && (
+            <>
+              <Button size="icon-sm" variant="ghost" onClick={() => openEdit(row)}>
+                <Pencil className="size-3.5" />
+              </Button>
+              <Button size="icon-sm" variant="ghost" onClick={() => setDeleteId(row.id)}>
+                <Trash2 className="size-3.5 text-destructive" />
+              </Button>
+            </>
+          )}
         </div>
       ),
     },
@@ -251,10 +259,12 @@ export default function AdminCoursesPage() {
         searchKeys={["title", "mentorName"]}
         searchPlaceholder="Cari kelas..."
         toolbar={
-          <Button size="sm" onClick={openCreate}>
-            <Plus className="size-4" />
-            Tambah Kelas
-          </Button>
+          readOnly ? undefined : (
+            <Button size="sm" onClick={openCreate}>
+              <Plus className="size-4" />
+              Tambah Kelas
+            </Button>
+          )
         }
       />
 

@@ -2,19 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 import { AuthField, authInputClassName } from "@/components/auth-field";
 import { useAuth } from "@/components/auth-provider";
 import { GoogleSignInButton, OAuthSessionSync } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
-import { resolvePostAuthRedirect, POST_AUTH_HOME } from "@/lib/auth/redirect";
+import { POST_AUTH_HOME, redirectAfterAuth, resolvePostAuthRedirect } from "@/lib/auth/redirect";
 import { isLogoutPending } from "@/lib/auth/client";
 
 export function LoginForm() {
   const { login, session, isLoading } = useAuth();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const next = resolvePostAuthRedirect(searchParams.get("next"));
   const registerHref =
@@ -28,9 +27,18 @@ export function LoginForm() {
 
   useEffect(() => {
     if (!isLoading && session && !isLogoutPending()) {
-      router.replace(next);
+      redirectAfterAuth(next);
     }
-  }, [isLoading, session, router, next]);
+  }, [isLoading, session, next]);
+
+  if (!isLoading && session && !isLogoutPending()) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-10">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />
+        <p className="text-sm text-muted-foreground">Mengalihkan…</p>
+      </div>
+    );
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,7 +62,7 @@ export function LoginForm() {
       return;
     }
 
-    router.replace(next);
+    redirectAfterAuth(next);
   }
 
   return (

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { StatCard } from "@/components/admin/stat-card";
+import { useAdminPanel } from "@/components/admin/admin-panel-context";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchStats } from "@/lib/admin/api";
@@ -30,6 +31,7 @@ function formatRelativeTime(iso: string) {
 }
 
 export default function AdminDashboardPage() {
+  const { readOnly } = useAdminPanel();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [source, setSource] = useState<"api" | "mock">("api");
   const [loading, setLoading] = useState(true);
@@ -70,22 +72,24 @@ export default function AdminDashboardPage() {
             )}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button size="sm" render={<Link href="/admin/courses" />}>
-            <BookOpen className="size-4" />
-            Tambah Kelas
-          </Button>
-          <Button size="sm" variant="outline" render={<Link href="/admin/mentors" />}>
-            <UserSquare2 className="size-4" />
-            Tambah Mentor
-          </Button>
-          {KOMUNITAS_ENABLED && (
-            <Button size="sm" variant="outline" render={<Link href="/admin/chat-rooms" />}>
-              <MessageSquare className="size-4" />
-              Buat Chat Room
+        {!readOnly && (
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" render={<Link href="/admin/courses" />}>
+              <BookOpen className="size-4" />
+              Tambah Kelas
             </Button>
-          )}
-        </div>
+            <Button size="sm" variant="outline" render={<Link href="/admin/mentors" />}>
+              <UserSquare2 className="size-4" />
+              Tambah Mentor
+            </Button>
+            {KOMUNITAS_ENABLED && (
+              <Button size="sm" variant="outline" render={<Link href="/admin/chat-rooms" />}>
+                <MessageSquare className="size-4" />
+                Buat Chat Room
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

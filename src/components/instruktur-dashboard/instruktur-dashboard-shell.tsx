@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   BookOpen,
+  ClipboardList,
   Home,
   Receipt,
   UserRound,
@@ -19,11 +20,13 @@ const tabs: Array<{
   label: string;
   icon: typeof Home;
   exact?: boolean;
+  external?: boolean;
 }> = [
   { href: "/instruktur-dashboard", label: "Beranda", icon: Home, exact: true },
   { href: "/instruktur-dashboard/course", label: "Course", icon: BookOpen },
   { href: "/instruktur-dashboard/transaksi", label: "Transaksi", icon: Receipt },
   { href: "/instruktur-dashboard/profil", label: "Profil", icon: UserRound },
+  { href: "/mentor/usulan", label: "Usulan Konten", icon: ClipboardList, external: true },
 ];
 
 function isTabActive(pathname: string, href: string, exact?: boolean) {
@@ -89,7 +92,7 @@ export function InstrukturDashboardShell({ children }: { children: React.ReactNo
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur md:hidden">
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-5">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const active = isTabActive(pathname, tab.href, tab.exact);

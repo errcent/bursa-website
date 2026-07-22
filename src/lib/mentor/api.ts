@@ -35,6 +35,7 @@ function authHeaders(): HeadersInit {
 async function mentorRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`/api/mentor${path}`, {
     ...init,
+    credentials: "include",
     headers: {
       ...authHeaders(),
       ...(init?.headers ?? {}),

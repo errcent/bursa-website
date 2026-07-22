@@ -7,12 +7,12 @@ import {
   serializePlaylistDetail,
   serializePlaylistSummary,
 } from "@/lib/playlist/server";
-import { requireAdmin, unauthorized } from "@/lib/admin/server";
+import { requireAdmin, requireAdminPanel, unauthorized } from "@/lib/admin/server";
 import { revalidateCatalog } from "@/lib/catalog/server";
 import { adminCreatePlaylistSchema } from "@/lib/validations/api";
 
 export async function GET(request: Request) {
-  const admin = await requireAdmin(request);
+  const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
   try {

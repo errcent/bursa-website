@@ -11,22 +11,22 @@ import { resolveRequestUser } from "@/lib/lesson-qa/server";
 
 /**
  * Resolve a trusted caller email for privileged API routes.
- * Production: NextAuth session cookie or mobile Bearer JWT.
- * Prototype: falls back to x-user-email (localStorage bridge).
+ * Production: web session cookie (credential login) > mobile JWT > NextAuth (Google).
+ * Prototype dev: falls back to x-user-email (localStorage bridge).
  */
 export async function resolveTrustedEmail(request: Request): Promise<string | null> {
-  const session = await auth();
-  const sessionEmail = session?.user?.email?.trim().toLowerCase();
-  if (sessionEmail) return sessionEmail;
-
-  const mobileEmail = await resolveMobileJwtEmail(request);
-  if (mobileEmail) return mobileEmail;
-
   const webToken = readWebSessionToken(request);
   if (webToken) {
     const webSession = await verifyWebSessionToken(webToken);
     if (webSession) return webSession.email;
   }
+
+  const mobileEmail = await resolveMobileJwtEmail(request);
+  if (mobileEmail) return mobileEmail;
+
+  const session = await auth();
+  const sessionEmail = session?.user?.email?.trim().toLowerCase();
+  if (sessionEmail) return sessionEmail;
 
   if (process.env.NODE_ENV !== "development") return null;
 

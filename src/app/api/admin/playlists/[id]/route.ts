@@ -5,14 +5,14 @@ import {
   findAdminPlaylistById,
   serializePlaylistDetail,
 } from "@/lib/playlist/server";
-import { requireAdmin, unauthorized } from "@/lib/admin/server";
+import { requireAdmin, requireAdminPanel, unauthorized } from "@/lib/admin/server";
 import { revalidateCatalog } from "@/lib/catalog/server";
 import { adminUpdatePlaylistSchema } from "@/lib/validations/api";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(request: Request, context: RouteContext) {
-  const admin = await requireAdmin(request);
+  const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
   try {

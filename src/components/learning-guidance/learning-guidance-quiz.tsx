@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Loader2, Sparkles } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
@@ -10,6 +10,11 @@ import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { GUIDANCE_QUESTIONS } from "@/lib/learning/guidance/questions";
+import {
+  clearPendingGuidance,
+  readPendingGuidance,
+  savePendingGuidance,
+} from "@/lib/learning/guidance/pending-save";
 import type { LearningGuidanceAnswers, LearningGuidanceResult } from "@/lib/learning/guidance/types";
 
 function isAnswered(
@@ -31,6 +36,7 @@ export function LearningGuidanceQuiz() {
   const [loading, setLoading] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hydratingRef = useRef(false);
 
   const question = GUIDANCE_QUESTIONS[step];
   const totalSteps = GUIDANCE_QUESTIONS.length;
@@ -41,8 +47,8 @@ export function LearningGuidanceQuiz() {
     [answers, question]
   );
 
-  const loadSavedProfile = useCallback(async () => {
-    if (!session?.userId && !session?.email) return;
+  const loadSavedProfile = useCallback(async (): Promise<LearningGuidanceResult | null> => {
+    if (!session?.userId && !session?.email) return null;
 
     setLoadingProfile(true);
     const params = new URLSearchParams({
@@ -55,7 +61,7 @@ export function LearningGuidanceQuiz() {
         cache: "no-store",
         headers: session.email ? { "x-user-email": session.email } : {},
       });
-      if (!res.ok) return;
+      if (!res.ok) return null;
       const data = (await res.json()) as {
         profile: unknown;
         result: LearningGuidanceResult | null;
@@ -63,13 +69,69 @@ export function LearningGuidanceQuiz() {
       if (data.result) {
         setResult(data.result);
         setSaved(true);
+        return data.result;
       }
+      return null;
     } catch {
-      // non-blocking
+      return null;
     } finally {
       setLoadingProfile(false);
     }
   }, [session]);
+
+  const saveAnswersForSession = useCallback(
+    async (finalAnswers: LearningGuidanceAnswers): Promise<LearningGuidanceResult | null> => {
+      if (!session?.userId && !session?.email) return null;
+
+      const params = new URLSearchParams({
+        ...(session.userId ? { userId: session.userId } : {}),
+        ...(session.email ? { email: session.email } : {}),
+      });
+      const saveRes = await fetch(`/api/me/learning-guidance?${params}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(session.email ? { "x-user-email": session.email } : {}),
+        },
+        body: JSON.stringify(finalAnswers),
+      });
+
+      if (!saveRes.ok) return null;
+
+      const data = (await saveRes.json()) as { result?: LearningGuidanceResult };
+      if (!data.result) return null;
+
+      setResult(data.result);
+      setSaved(true);
+      clearPendingGuidance();
+      return data.result;
+    },
+    [session]
+  );
+
+  useEffect(() => {
+    if (!session?.userId && !session?.email) return;
+    if (result || hydratingRef.current) return;
+
+    hydratingRef.current = true;
+
+    void (async () => {
+      const pending = readPendingGuidance();
+      if (pending) {
+        setAnswers(pending.answers);
+        const savedResult = await saveAnswersForSession(pending.answers);
+        if (savedResult) return;
+
+        setResult(pending.result);
+        setSaved(false);
+        return;
+      }
+
+      await loadSavedProfile();
+    })().finally(() => {
+      hydratingRef.current = false;
+    });
+  }, [session, result, loadSavedProfile, saveAnswersForSession]);
 
   function setAnswer<T extends keyof LearningGuidanceAnswers>(
     key: T,
@@ -127,6 +189,10 @@ export function LearningGuidanceQuiz() {
 
       if (!data.result) throw new Error("Respons rekomendasi kosong.");
       setResult(data.result);
+
+      if (!session?.userId && !session?.email) {
+        savePendingGuidance(finalAnswers, data.result);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan. Coba lagi.");
     } finally {
@@ -169,6 +235,16 @@ export function LearningGuidanceQuiz() {
     setAnswers({});
     setSaved(false);
     setError(null);
+    clearPendingGuidance();
+  }
+
+  if (loadingProfile && !result) {
+    return (
+      <div className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-3 py-16">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />
+        <p className="text-sm text-muted-foreground">Memuat rekomendasi belajarmu…</p>
+      </div>
+    );
   }
 
   if (result) {

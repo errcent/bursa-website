@@ -6,6 +6,7 @@ import {
   levelFromUi,
   mapCourse,
   requireAdmin,
+  requireAdminPanel,
   slugify,
   unauthorized,
 } from "@/lib/admin/server";
@@ -13,7 +14,7 @@ import { revalidateCatalog } from "@/lib/catalog/server";
 import type { CourseFormInput } from "@/lib/admin/types";
 
 export async function GET(request: Request) {
-  const admin = await requireAdmin(request);
+  const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
   try {

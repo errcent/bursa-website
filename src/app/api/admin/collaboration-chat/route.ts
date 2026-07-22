@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin, unauthorized } from "@/lib/admin/server";
+import { requireAdminPanel, unauthorized } from "@/lib/admin/server";
 import { listMentorAdminChatRoomSummaries } from "@/lib/mentor/collaboration-chat";
 
 export async function GET(request: Request) {
-  const admin = await requireAdmin(request);
+  const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
   try {

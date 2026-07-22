@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Check, Loader2, X } from "lucide-react";
 
 import { AuthField, authInputClassName } from "@/components/auth-field";
 import { useAuth } from "@/components/auth-provider";
 import { GoogleSignInButton, OAuthSessionSync } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
-import { buildLoginHref, POST_AUTH_HOME } from "@/lib/auth/redirect";
+import { buildLoginHref, redirectAfterAuth, resolvePostAuthRedirect } from "@/lib/auth/redirect";
 import { isLogoutPending } from "@/lib/auth/client";
 import { isValidIndonesianPhone, normalizeIndonesianPhone } from "@/lib/auth/validation";
 import { cn } from "@/lib/utils";
@@ -18,10 +18,9 @@ const USERNAME_PATTERN = /^[a-z0-9_]{3,30}$/;
 
 export function RegisterForm() {
   const { register, session, isLoading } = useAuth();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const loginHref = buildLoginHref(searchParams.get("next"));
-  const next = POST_AUTH_HOME;
+  const next = resolvePostAuthRedirect(searchParams.get("next"));
 
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
@@ -46,15 +45,24 @@ export function RegisterForm() {
 
   useEffect(() => {
     if (!isLoading && session && !isLogoutPending()) {
-      router.replace(next);
+      redirectAfterAuth(next);
     }
-  }, [isLoading, session, router, next]);
+  }, [isLoading, session, next]);
 
   useEffect(() => {
     return () => {
       if (usernameTimer.current) clearTimeout(usernameTimer.current);
     };
   }, []);
+
+  if (!isLoading && session && !isLogoutPending()) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-10">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />
+        <p className="text-sm text-muted-foreground">Mengalihkan…</p>
+      </div>
+    );
+  }
 
   function scheduleUsernameCheck(value: string) {
     if (usernameTimer.current) clearTimeout(usernameTimer.current);
@@ -125,7 +133,7 @@ export function RegisterForm() {
       return;
     }
 
-    router.replace(next);
+    redirectAfterAuth(next);
   }
 
   const usernameHint =
