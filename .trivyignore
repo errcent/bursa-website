@@ -1,3 +1,5 @@
 # Add CVE IDs here to suppress known accepted risks (with justification in PR).
-# Example:
-# CVE-2024-12345
+
+# Next.js 16.2.11 still bundles sharp@0.34.5 for image optimization.
+# Direct app dependency uses sharp@0.35.3. Remove when Next.js updates bundled sharp.
+GHSA-f88m-g3jw-g9cj
