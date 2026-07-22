@@ -24,6 +24,9 @@ export function PricingModelComparison() {
         <p className="mb-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
           Model Harga
         </p>
+        <p className="mb-6 text-center text-sm text-muted-foreground">
+          Checkout per kelas segera dibuka — gabung waitlist untuk kabar peluncuran.
+        </p>
         <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
           <div className="comparison-panel comparison-panel--highlight">
             <p className="font-heading text-base font-semibold text-foreground sm:text-lg">

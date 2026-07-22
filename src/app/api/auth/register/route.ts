@@ -11,6 +11,8 @@ import {
 } from "@/lib/auth/web-session";
 import { db } from "@/lib/db";
 import { registerSchema } from "@/lib/auth/validation";
+import { createEmailVerificationToken } from "@/lib/auth/email-verification";
+import { sendAccountVerificationEmail } from "@/lib/auth/auth-email";
 
 /** bcrypt cost ≥ 12 per security docs (folder 18). */
 const BCRYPT_COST = 12;
@@ -40,6 +42,13 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    const verifyToken = await createEmailVerificationToken(user.id);
+    void sendAccountVerificationEmail({
+      email: user.email,
+      name: user.nama,
+      token: verifyToken,
+    });
+
     const token = await signWebSessionToken({ id: user.id, email: user.email });
     const response = jsonOk(
       {
@@ -50,7 +59,9 @@ export async function POST(request: NextRequest) {
           username: user.username,
           phone: user.phone,
           role: user.role,
+          emailVerified: false,
         },
+        verificationEmailSent: true,
       },
       201
     );

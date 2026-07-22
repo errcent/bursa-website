@@ -37,7 +37,7 @@ export default function JadiMentorPage() {
           <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <div>
               <p className="text-sm text-muted-foreground">
-                Sudah punya akun pelajar?{" "}
+                Sudah punya akun Bursa?{" "}
                 <Link href="/masuk?next=/jadi-mentor" className="link-muted font-medium text-foreground">
                   Masuk dulu
                 </Link>{" "}

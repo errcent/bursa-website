@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { getStoredUserCreatedAt } from "@/lib/auth/client";
 import { buildLoginHref } from "@/lib/auth/redirect";
-import { ROLE_LABELS } from "@/lib/auth/roles";
+import { getConsumerRoleLabel } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
 
 const FIELD_INPUT_CLASS =
@@ -85,9 +85,14 @@ export function SettingsAccount() {
     );
   }
 
+  const roleLabel = session ? getConsumerRoleLabel(session.role) : null;
+
   return (
     <section className="space-y-4">
-      <h2 className="text-sm font-medium">{t.title}</h2>
+      <div>
+        <h2 className="text-sm font-medium">{t.title}</h2>
+        <p className="mt-1 text-xs text-muted-foreground">{t.signedInDescription}</p>
+      </div>
 
       <div className="surface-card flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
@@ -102,10 +107,12 @@ export function SettingsAccount() {
             {session.username && (
               <p className="truncate font-mono text-xs text-muted-foreground">@{session.username}</p>
             )}
-            <div className="mt-1 flex flex-wrap gap-1.5">
-              <Badge variant="secondary" className="rounded-full px-2 py-0 text-[10px]">
-                {ROLE_LABELS[session.role]}
-              </Badge>
+            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+              {roleLabel ? (
+                <Badge variant="secondary" className="rounded-full px-2 py-0 text-[10px]">
+                  {roleLabel}
+                </Badge>
+              ) : null}
               {memberSince && (
                 <span className="text-[10px] text-muted-foreground">
                   {t.memberSince} {formatMemberSince(memberSince, locale)}
@@ -122,7 +129,11 @@ export function SettingsAccount() {
         </Link>
       </div>
 
-      <div className="surface-card divide-y divide-border/60 px-4">
+      <div>
+        <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {t.accountInfoTitle}
+        </h3>
+        <div className="surface-card divide-y divide-border/60 px-4">
         <InfoRow
           label={common.email}
           value={session.email}
@@ -137,9 +148,14 @@ export function SettingsAccount() {
           value={session.username ? `@${session.username}` : "—"}
         />
         <InfoRow label="Telepon" value={session.phone ?? "—"} />
+        </div>
       </div>
 
-      <div className="surface-card p-4">
+      <div>
+        <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {t.passwordTitle}
+        </h3>
+        <div className="surface-card p-4">
         {!showPasswordForm ? (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
@@ -168,15 +184,22 @@ export function SettingsAccount() {
             </div>
           </form>
         )}
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div>
+        <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {t.dangerZoneTitle}
+        </h3>
+        <p className="mb-3 text-xs text-muted-foreground">{t.dangerZoneDescription}</p>
+        <div className="flex flex-wrap gap-2">
         <Button size="sm" variant="outline" disabled className="border-destructive/30 text-destructive opacity-60">
           {t.deactivateAccount}
         </Button>
         <Button size="sm" variant="destructive" disabled className="opacity-60">
           {t.deleteAccount}
         </Button>
+        </div>
       </div>
     </section>
   );

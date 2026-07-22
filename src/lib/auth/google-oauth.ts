@@ -51,30 +51,43 @@ export async function upsertGoogleOAuthUser(input: {
   email: string;
   name?: string | null;
   avatarUrl?: string | null;
-}) {
+}): Promise<{ user: Awaited<ReturnType<typeof db.user.create>>; isNew: boolean }> {
   const email = input.email.trim().toLowerCase();
   const nama = input.name?.trim() || email.split("@")[0] || "Pengguna";
 
   const existing = await db.user.findUnique({ where: { email } });
   if (existing) {
-    const updates: { nama?: string; avatarUrl?: string | null } = {};
+    const updates: {
+      nama?: string;
+      avatarUrl?: string | null;
+      emailVerifiedAt?: Date;
+    } = {};
     if (nama && existing.nama !== nama) updates.nama = nama;
     if (input.avatarUrl && existing.avatarUrl !== input.avatarUrl) {
       updates.avatarUrl = input.avatarUrl;
     }
-    if (Object.keys(updates).length === 0) return existing;
-    return db.user.update({ where: { id: existing.id }, data: updates });
+    if (!existing.emailVerifiedAt) {
+      updates.emailVerifiedAt = new Date();
+    }
+    if (Object.keys(updates).length === 0) {
+      return { user: existing, isNew: false };
+    }
+    const user = await db.user.update({ where: { id: existing.id }, data: updates });
+    return { user, isNew: false };
   }
 
-  return db.user.create({
+  const user = await db.user.create({
     data: {
       email,
       nama,
       avatarUrl: input.avatarUrl ?? null,
       passwordHash: OAUTH_PASSWORD_MARKER,
       role: mapClientRole(email),
+      emailVerifiedAt: new Date(),
     },
   });
+
+  return { user, isNew: true };
 }
 
 export { OAUTH_PASSWORD_MARKER };

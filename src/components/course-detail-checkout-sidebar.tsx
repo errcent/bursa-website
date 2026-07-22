@@ -84,11 +84,34 @@ export function CourseDetailCheckoutPanel({
               <div className="flex flex-col gap-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs text-muted-foreground">Harga kelas</p>
-                    <p className="mt-1 font-heading text-3xl font-semibold tracking-tight tabular-nums">
-                      {priceLabel}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">Sekali bayar · akses selamanya</p>
+                    {purchaseAvailable ? (
+                      <>
+                        <p className="text-xs text-muted-foreground">Harga kelas</p>
+                        <p className="mt-1 font-heading text-3xl font-semibold tracking-tight tabular-nums">
+                          {priceLabel}
+                        </p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          Sekali bayar · akses selamanya
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-xs font-medium uppercase tracking-wide text-accent">
+                          Segera hadir
+                        </p>
+                        <p className="mt-2 font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                          Gabung waitlist dulu
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                          Checkout belum dibuka. Daftar waitlist untuk kabar peluncuran kelas ini —
+                          harga referensi{" "}
+                          <span className="font-medium tabular-nums text-foreground">
+                            {priceLabel}
+                          </span>
+                          .
+                        </p>
+                      </>
+                    )}
                   </div>
                   <BookmarkToggleButton
                     bookmarkRef={{ type: "course", slug: course.slug }}
@@ -115,26 +138,31 @@ export function CourseDetailCheckoutPanel({
                   </li>
                 </ul>
 
-                <div className="flex flex-col gap-2 sm:flex-row">
+                <div className="flex flex-col gap-2.5 sm:flex-row">
                   {purchaseAvailable ? (
                     <Button
-                      className="h-12 flex-1 btn-primary text-sm font-semibold"
+                      className="h-12 min-h-12 flex-1 btn-primary text-sm font-semibold"
                       render={<Link href={checkoutHref} />}
                     >
                       Checkout Sekarang
                     </Button>
                   ) : (
                     <Button
-                      className="h-12 flex-1 btn-primary text-sm font-semibold"
+                      className="h-12 min-h-12 flex-1 btn-primary text-sm font-semibold"
                       render={<Link href="/waitlist" />}
                     >
-                      Segera Hadir — Gabung Waitlist
+                      Gabung Waitlist
                     </Button>
                   )}
                   <Button
                     variant="outline"
-                    className="h-12 flex-1"
-                    render={<Link href={previewHref} />}
+                    className="h-12 min-h-12 flex-1 text-sm text-foreground no-underline hover:text-foreground visited:text-foreground"
+                    render={
+                      <Link
+                        href={previewHref}
+                        className="text-foreground no-underline hover:text-foreground visited:text-foreground"
+                      />
+                    }
                   >
                     <Play className="size-4 fill-current" />
                     Mulai Preview Gratis
@@ -144,12 +172,14 @@ export function CourseDetailCheckoutPanel({
                 <ul className="flex flex-col gap-1.5 border-t border-border/60 pt-4 text-xs text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Check className="mt-0.5 size-3 shrink-0 text-emerald" />
-                    Pembayaran langsung ke mentor
+                    {purchaseAvailable
+                      ? "Pembayaran langsung ke mentor"
+                      : "Preview gratis tersedia — tanpa daftar waitlist"}
                   </li>
                   {!purchaseAvailable && (
                     <li className="flex items-start gap-2">
                       <Check className="mt-0.5 size-3 shrink-0 text-emerald" />
-                      Checkout online segera dibuka — daftar waitlist untuk info pertama
+                      Tanpa biaya waitlist — kami kabari saat checkout dibuka
                     </li>
                   )}
                 </ul>

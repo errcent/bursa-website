@@ -87,7 +87,7 @@ export function SettingsDevices() {
     if (session) {
       revokeDeviceSession(session.userId, getCurrentDeviceId());
     }
-    logout();
+    void logout();
   }
 
   return (

@@ -101,11 +101,12 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
     return (
       <div className="surface-card flex flex-col items-center gap-3 rounded-2xl p-6 text-center sm:p-8">
         <CheckCircle2 className="size-10 text-emerald" strokeWidth={1.5} />
-        <h2 className="font-heading text-lg font-semibold">Kamu masuk waitlist!</h2>
+        <h2 className="font-heading text-lg font-semibold">Cek email kamu</h2>
         <p className="section-copy max-w-sm">
-          Terima kasih sudah bergabung. Kami akan mengabari kamu di{" "}
-          <span className="font-medium text-foreground">{email.trim()}</span> begitu
-          Bursa siap dibuka.
+          Kami mengirim tautan verifikasi ke{" "}
+          <span className="font-medium text-foreground">{email.trim()}</span>.
+          Klik tautan tersebut untuk mengonfirmasi pendaftaran waitlist. Periksa folder spam
+          jika email belum masuk dalam beberapa menit.
         </p>
       </div>
     );

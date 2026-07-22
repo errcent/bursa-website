@@ -161,7 +161,7 @@ function DashboardBody() {
             <Reveal>
               <p className="eyebrow mb-2">Dashboard</p>
               <p className="text-sm text-muted-foreground">Selamat datang kembali,</p>
-              <h1 className="page-hero-title text-gradient mt-1">{session?.name ?? "Pelajar"}</h1>
+              <h1 className="page-hero-title text-gradient mt-1">{session?.name ?? "Pengguna"}</h1>
               <Link href="/profil" className="link-muted mt-3 inline-flex text-sm">
                 Edit profil
               </Link>

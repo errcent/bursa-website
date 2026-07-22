@@ -47,10 +47,10 @@ export function AccountMenuMobileLinks({
   const items = getAccountMenuItems(roleLinks);
 
   function handleLogout() {
-    logout();
     onNavigate?.();
-    router.push("/masuk");
-    router.refresh();
+    void logout().then(() => {
+      router.replace("/masuk");
+    });
   }
 
   return (

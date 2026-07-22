@@ -63,4 +63,10 @@ _check_out.txt
 _tsc_exit.txt
 _tsc_filtered.txt
 
+# UI audit artifacts (local QA only)
+/.qa/
+/.screenshots/
+audit-*.png
+playwright-audit-*.png
+
 .vercel

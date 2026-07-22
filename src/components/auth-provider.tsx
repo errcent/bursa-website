@@ -8,6 +8,8 @@ import {
   useSyncExternalStore,
 } from "react";
 
+import { signOut } from "next-auth/react";
+
 import {
   getSession,
   loginWithServer,
@@ -28,7 +30,7 @@ interface AuthContextValue {
   register: (
     input: RegisterInput
   ) => Promise<{ ok: true } | { ok: false; error: string }>;
-  logout: () => void;
+  logout: () => Promise<void>;
   refresh: () => void;
   updateLocalProfile: (input: {
     name?: string;
@@ -82,8 +84,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { ok: true as const };
   }, []);
 
-  const logout = useCallback(() => {
-    logoutRequest();
+  const logout = useCallback(async () => {
+    await logoutRequest();
+    try {
+      await signOut({ redirect: false });
+    } catch {
+      // NextAuth may be unavailable when Google OAuth is not configured.
+    }
   }, []);
 
   const updateLocalProfile = useCallback(

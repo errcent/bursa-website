@@ -566,23 +566,38 @@ export async function ensurePrismaUser(
   }
 }
 
-export function logout() {
+export function isLogoutPending(): boolean {
+  if (!isBrowser()) return false;
+  try {
+    return sessionStorage.getItem(LOGOUT_FLAG_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export async function logout(): Promise<void> {
   if (isBrowser()) {
-    void fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(
-      () => undefined
-    );
     try {
       sessionStorage.setItem(LOGOUT_FLAG_KEY, "1");
       const url = new URL(window.location.href);
       if (url.searchParams.has("next")) {
         url.searchParams.delete("next");
-        window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
       }
+      if (url.searchParams.has("oauth")) {
+        url.searchParams.delete("oauth");
+      }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
     } catch {
       // ignore
     }
   }
   setSession(null);
+  if (!isBrowser()) return;
+  try {
+    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+  } catch {
+    // ignore — local session already cleared
+  }
 }
 
 export function consumeLogoutFlag(): boolean {

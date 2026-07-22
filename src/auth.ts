@@ -6,6 +6,7 @@ import {
   isGoogleOAuthConfigured,
   upsertGoogleOAuthUser,
 } from "@/lib/auth/google-oauth";
+import { sendWelcomeEmail } from "@/lib/auth/auth-email";
 
 const providers = [];
 
@@ -50,11 +51,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
 
       try {
-        await upsertGoogleOAuthUser({
+        const { user: dbUser, isNew } = await upsertGoogleOAuthUser({
           email: user.email,
           name: user.name,
           avatarUrl: user.image,
         });
+        if (isNew) {
+          void sendWelcomeEmail({ email: dbUser.email, name: dbUser.nama });
+        }
         return true;
       } catch {
         return false;

@@ -10,6 +10,7 @@ import { useAuth } from "@/components/auth-provider";
 import { GoogleSignInButton, OAuthSessionSync } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { resolvePostAuthRedirect, POST_AUTH_HOME } from "@/lib/auth/redirect";
+import { isLogoutPending } from "@/lib/auth/client";
 
 export function LoginForm() {
   const { login, session, isLoading } = useAuth();
@@ -26,7 +27,7 @@ export function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && session) {
+    if (!isLoading && session && !isLogoutPending()) {
       router.replace(next);
     }
   }, [isLoading, session, router, next]);

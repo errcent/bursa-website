@@ -10,6 +10,7 @@ import { useAuth } from "@/components/auth-provider";
 import { GoogleSignInButton, OAuthSessionSync } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { buildLoginHref, POST_AUTH_HOME } from "@/lib/auth/redirect";
+import { isLogoutPending } from "@/lib/auth/client";
 import { isValidIndonesianPhone, normalizeIndonesianPhone } from "@/lib/auth/validation";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +45,7 @@ export function RegisterForm() {
   const usernameTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!isLoading && session) {
+    if (!isLoading && session && !isLogoutPending()) {
       router.replace(next);
     }
   }, [isLoading, session, router, next]);

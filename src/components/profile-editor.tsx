@@ -10,7 +10,7 @@ import { ProfileAvatarCropModal } from "@/components/profile-avatar-crop-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ROLE_LABELS } from "@/lib/auth/roles";
+import { getConsumerRoleLabel } from "@/lib/auth/roles";
 import { isValidIndonesianPhone, normalizeIndonesianPhone } from "@/lib/auth/validation";
 import type { UserRole } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
@@ -450,13 +450,17 @@ export function ProfileEditor() {
   const hasAvatar = Boolean(displayAvatar);
   const canSave = isDirty && !saving && !loadingProfile && usernameCheck !== "taken";
 
+  const roleLabel = getConsumerRoleLabel(session.role);
+
   return (
     <div className="space-y-6">
       <div className="surface-card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-3">
-          <Badge variant={roleBadgeVariant(session.role)} className="rounded-full px-3 py-1 text-xs">
-            {ROLE_LABELS[session.role]}
-          </Badge>
+          {roleLabel ? (
+            <Badge variant={roleBadgeVariant(session.role)} className="rounded-full px-3 py-1 text-xs">
+              {roleLabel}
+            </Badge>
+          ) : null}
           {session.username && (
             <p className="text-xs font-mono text-muted-foreground">@{session.username}</p>
           )}

@@ -54,11 +54,22 @@ export function CourseDetailMobileCheckout({
     >
       <div className="flex items-center gap-3 px-3 pt-3">
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] text-muted-foreground">Sekali bayar · akses selamanya</p>
-          <p className="font-heading text-lg font-semibold tabular-nums">{priceLabel}</p>
+          {purchaseAvailable ? (
+            <>
+              <p className="text-[11px] text-muted-foreground">Sekali bayar · akses selamanya</p>
+              <p className="font-heading text-lg font-semibold tabular-nums">{priceLabel}</p>
+            </>
+          ) : (
+            <>
+              <p className="text-[11px] font-medium text-accent">Segera hadir</p>
+              <p className="font-heading text-base font-semibold leading-snug">
+                Gabung waitlist · preview gratis
+              </p>
+            </>
+          )}
         </div>
         <Button
-          className="h-11 shrink-0 px-6 btn-primary text-sm font-semibold"
+          className="h-12 min-h-12 shrink-0 px-6 btn-primary text-sm font-semibold"
           render={
             <Link href={purchaseAvailable ? checkoutHref : "/waitlist"} />
           }

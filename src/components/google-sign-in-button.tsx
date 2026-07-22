@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 
-import { loginWithOAuth } from "@/lib/auth/client";
+import { loginWithOAuth, isLogoutPending } from "@/lib/auth/client";
 import { resolvePostAuthRedirect } from "@/lib/auth/redirect";
 import { Button } from "@/components/ui/button";
 
@@ -131,6 +131,12 @@ export function OAuthSessionSync() {
 
   useEffect(() => {
     if (searchParams.get("oauth") !== "sync" || syncing.current) return;
+    if (isLogoutPending()) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("oauth");
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+      return;
+    }
     syncing.current = true;
 
     const next = resolvePostAuthRedirect(searchParams.get("next"));

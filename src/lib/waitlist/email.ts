@@ -1,14 +1,7 @@
 import { isEmailConfigured } from "@/lib/email/config";
+import { escapeHtml, getSiteUrl } from "@/lib/email/escape";
 import { sendTransactionalEmail } from "@/lib/email/send";
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
+import { WAITLIST_VERIFY_TTL_MS } from "@/lib/waitlist/verification";
 
 export function isWaitlistEmailEnabled(): boolean {
   const flag = process.env.WAITLIST_EMAIL_ENABLED?.trim().toLowerCase();
@@ -16,47 +9,70 @@ export function isWaitlistEmailEnabled(): boolean {
   return isEmailConfigured();
 }
 
-export async function sendWaitlistConfirmationEmail(email: string): Promise<void> {
+export async function sendWaitlistVerificationEmail(
+  email: string,
+  token: string
+): Promise<void> {
   if (!isWaitlistEmailEnabled()) return;
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://bursa-website.vercel.app";
+  const siteUrl = getSiteUrl();
+  const verifyUrl = `${siteUrl}/waitlist/verifikasi?token=${encodeURIComponent(token)}`;
   const safeEmail = escapeHtml(email);
+  const hours = Math.round(WAITLIST_VERIFY_TTL_MS / (60 * 60 * 1000));
 
   const html = `
     <div style="font-family:Inter,Arial,sans-serif;line-height:1.6;color:#111;max-width:560px">
-      <p style="font-size:18px;font-weight:600;margin:0 0 12px">Kamu masuk waitlist Bursa!</p>
+      <p style="font-size:18px;font-weight:600;margin:0 0 12px">Verifikasi email waitlist Bursa</p>
       <p style="margin:0 0 16px">
-        Terima kasih sudah bergabung. Kami akan mengabari <strong>${safeEmail}</strong>
-        begitu platform edukasi trading kami siap dibuka.
+        Terima kasih sudah mendaftar waitlist. Klik tombol di bawah untuk mengonfirmasi bahwa
+        <strong>${safeEmail}</strong> adalah email kamu.
+      </p>
+      <p style="margin:0 0 20px">
+        <a href="${escapeHtml(verifyUrl)}"
+           style="display:inline-block;background:#111;color:#fff;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:600">
+          Verifikasi email
+        </a>
+      </p>
+      <p style="margin:0 0 16px;color:#444;font-size:14px">
+        Tautan berlaku ${hours} jam. Jika tombol tidak berfungsi, salin URL ini ke browser:<br/>
+        <span style="word-break:break-all">${escapeHtml(verifyUrl)}</span>
       </p>
       <p style="margin:0 0 16px;color:#444">
-        Sementara itu, kamu bisa melihat preview katalog kelas di
+        Setelah terverifikasi, kami akan mengabari kamu begitu platform edukasi trading Bursa siap dibuka.
+        Sementara itu, lihat preview katalog di
         <a href="${escapeHtml(siteUrl)}/katalog">${escapeHtml(siteUrl)}/katalog</a>.
       </p>
       <p style="margin:24px 0 0;font-size:12px;color:#666">
-        Email ini dikirim karena kamu mendaftar waitlist Bursa. Untuk pertanyaan privasi,
-        kunjungi <a href="${escapeHtml(siteUrl)}/privasi">Pusat Privasi</a>.
+        Email ini dikirim karena kamu mendaftar waitlist Bursa. Pertanyaan privasi:
+        <a href="${escapeHtml(siteUrl)}/privasi">Pusat Privasi</a>.
       </p>
     </div>
   `;
 
   const text = [
-    "Kamu masuk waitlist Bursa!",
+    "Verifikasi email waitlist Bursa",
     "",
-    `Terima kasih sudah bergabung. Kami akan mengabari ${email} begitu platform siap dibuka.`,
+    `Terima kasih sudah mendaftar. Buka tautan berikut untuk mengonfirmasi ${email}:`,
+    verifyUrl,
     "",
+    `Tautan berlaku ${hours} jam.`,
     `Preview katalog: ${siteUrl}/katalog`,
   ].join("\n");
 
   const result = await sendTransactionalEmail({
     to: email,
-    subject: "Konfirmasi waitlist Bursa",
+    subject: "Verifikasi email waitlist Bursa",
     html,
     text,
   });
 
   if (!result.ok) {
-    console.warn("[waitlist] confirmation email failed:", result.error);
+    console.warn("[waitlist] verification email failed:", result.error);
   }
+}
+
+/** @deprecated Pass verification token explicitly via sendWaitlistVerificationEmail. */
+export async function sendWaitlistConfirmationEmail(email: string): Promise<void> {
+  console.warn("[waitlist] sendWaitlistConfirmationEmail called without token — email skipped.");
+  void email;
 }

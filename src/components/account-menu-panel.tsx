@@ -49,9 +49,9 @@ export function AccountMenuPanel({
   const items = getAccountMenuItems(roleLinks);
 
   function handleLogout() {
-    logout();
-    router.push("/masuk");
-    router.refresh();
+    void logout().then(() => {
+      router.replace("/masuk");
+    });
   }
 
   return (

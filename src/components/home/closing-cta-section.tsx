@@ -54,7 +54,7 @@ export function ClosingCtaSection() {
               <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button
                   size="lg"
-                  className="btn-primary h-12 w-full rounded-full px-8 sm:w-auto"
+                  className="btn-primary h-12 min-h-12 w-full rounded-full px-8 sm:w-auto"
                   render={<Link href={showMemberExperience ? "/dashboard" : "/waitlist"} />}
                 >
                   {showMemberExperience ? "Lanjut Belajar" : "Gabung Waitlist"}
@@ -65,8 +65,8 @@ export function ClosingCtaSection() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-11 rounded-full border-border/70 bg-card/40 px-7 text-sm"
-                  render={<Link href="/katalog" />}
+                  className="h-12 min-h-12 rounded-full border-border/70 bg-card/40 px-7 text-sm text-foreground no-underline hover:text-foreground visited:text-foreground"
+                  render={<Link href="/katalog" className="text-foreground no-underline hover:text-foreground visited:text-foreground" />}
                 >
                   Lihat preview kelas
                 </Button>

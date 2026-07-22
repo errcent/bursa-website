@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { upsertGoogleOAuthUser } from "@/lib/auth/google-oauth";
+import { sendWelcomeEmail } from "@/lib/auth/auth-email";
 import { mobileGoogleSchema, resolveDeviceId } from "@/lib/auth/mobile-auth";
 import { issueMobileTokenPair, parseClientPlatform, verifyGoogleIdToken } from "@/lib/auth/mobile-jwt";
 import { clientIpFromRequest } from "@/lib/auth/mobile-request";
@@ -26,10 +27,14 @@ export async function POST(request: NextRequest) {
       return jsonError("Token Google tidak valid.", 401);
     }
 
-    const user = await upsertGoogleOAuthUser({
+    const { user, isNew } = await upsertGoogleOAuthUser({
       email: googleUser.email,
       name: googleUser.name,
     });
+
+    if (isNew) {
+      void sendWelcomeEmail({ email: user.email, name: user.nama });
+    }
 
     const ipHash = createHash("sha256")
       .update(clientIpFromRequest(request))

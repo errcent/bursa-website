@@ -90,7 +90,7 @@ export function HomeHeroSection() {
                 <Button
                   size="lg"
                   variant="inverse"
-                  className="h-12 w-full rounded-full px-8 sm:w-auto"
+                  className="h-12 min-h-12 w-full rounded-full px-8 sm:w-auto"
                   render={<Link href="/waitlist" />}
                 >
                   <ArrowUpRight className="size-4" />
@@ -100,7 +100,7 @@ export function HomeHeroSection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="h-12 w-full rounded-full border-border/70 bg-card/40 px-7 text-sm sm:h-11 sm:w-auto"
+                className="h-12 min-h-12 w-full rounded-full border-border/70 bg-card/40 px-7 text-sm text-foreground no-underline hover:text-foreground visited:text-foreground sm:h-11 sm:w-auto"
                 onClick={scrollToPopularClasses}
               >
                 Pelajari Lebih Lanjut
