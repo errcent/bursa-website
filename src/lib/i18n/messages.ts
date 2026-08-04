@@ -121,7 +121,7 @@ const id: Messages = {
   settings: {
     pageTitle: "Pengaturan",
     eyebrow: "Preferensi",
-    description: "Kelola akun, pembayaran, keamanan, dan preferensi tampilan platform.",
+    description: "Kelola akun, keamanan, pembayaran, dan preferensi bahasa.",
     publicProfile: {
       title: "Profil publik",
       description: "Foto, nama tampilan, dan bio dikelola di halaman profil terpisah.",
@@ -233,7 +233,7 @@ const en: Messages = {
   settings: {
     pageTitle: "Settings",
     eyebrow: "Preferences",
-    description: "Manage your account, payments, security, and platform display preferences.",
+    description: "Manage your account, security, payments, and language preferences.",
     publicProfile: {
       title: "Public profile",
       description: "Photo, display name, and bio are managed on a separate profile page.",

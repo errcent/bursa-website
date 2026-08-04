@@ -4,21 +4,21 @@ import { useLanguage } from "@/components/language-provider";
 import type { Locale } from "@/lib/i18n/locale";
 import { cn } from "@/lib/utils";
 
-const options: { value: Locale; flag: string; labelKey: "idLabel" | "enLabel" }[] = [
-  { value: "id", flag: "🇮🇩", labelKey: "idLabel" },
-  { value: "en", flag: "🇬🇧", labelKey: "enLabel" },
+const options: { value: Locale; flag: string; labelKey: "idLabel" | "enLabel"; descKey: "idDescription" | "enDescription" }[] = [
+  { value: "id", flag: "🇮🇩", labelKey: "idLabel", descKey: "idDescription" },
+  { value: "en", flag: "🇬🇧", labelKey: "enLabel", descKey: "enDescription" },
 ];
 
-function LanguageLocaleSelector() {
+export function SettingsLanguage() {
   const { locale, setLocale, messages, mounted } = useLanguage();
   const t = messages.settings.language;
 
   if (!mounted) {
-    return <div className="h-10 w-48 animate-pulse rounded-lg bg-muted" />;
+    return <div className="h-24 animate-pulse rounded-2xl bg-muted" />;
   }
 
   return (
-    <div className="inline-flex rounded-lg border border-border p-1">
+    <div className="surface-card divide-y divide-border/60">
       {options.map((opt) => {
         const selected = locale === opt.value;
         return (
@@ -27,29 +27,36 @@ function LanguageLocaleSelector() {
             type="button"
             onClick={() => setLocale(opt.value)}
             className={cn(
-              "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
-              selected ? "bg-accent-soft font-medium" : "text-muted-foreground hover:text-foreground"
+              "flex w-full flex-col gap-1 px-4 py-4 text-left transition-colors sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5 sm:py-4",
+              selected ? "bg-foreground/[0.03]" : "hover:bg-muted/30"
             )}
+            aria-pressed={selected}
           >
-            <span aria-hidden>{opt.flag}</span>
-            {t[opt.labelKey]}
+            <div className="flex items-start gap-3">
+              <span className="text-lg leading-none" aria-hidden>
+                {opt.flag}
+              </span>
+              <div>
+                <p className="text-sm font-medium">{t[opt.labelKey]}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{t[opt.descKey]}</p>
+              </div>
+            </div>
+            <span
+              className={cn(
+                "inline-flex size-5 shrink-0 items-center justify-center rounded-full border sm:ml-auto",
+                selected
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-border/80 bg-transparent"
+              )}
+              aria-hidden
+            >
+              {selected ? (
+                <span className="block size-1.5 rounded-full bg-background" />
+              ) : null}
+            </span>
           </button>
         );
       })}
     </div>
-  );
-}
-
-export function SettingsLanguage() {
-  const { messages } = useLanguage();
-  const t = messages.settings.language;
-
-  return (
-    <section className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-sm font-medium">{t.title}</h2>
-        <LanguageLocaleSelector />
-      </div>
-    </section>
   );
 }

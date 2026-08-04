@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
-import { useLanguage } from "@/components/language-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +23,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { buildLoginHref } from "@/lib/auth/redirect";
 import { formatRupiah } from "@/lib/mock-data";
 import {
   PAYMENT_METHOD_OPTIONS,
@@ -119,9 +117,9 @@ function SavedMethodRow({
   const kind = option?.kind ?? "ewallet";
 
   return (
-    <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
       <div className="flex min-w-0 items-center gap-3">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-card">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-card">
           <MethodIcon kind={kind} className="size-4 text-muted-foreground" />
         </div>
         <div className="min-w-0">
@@ -236,11 +234,8 @@ function AddPaymentSheet({
   );
 }
 
-export function SettingsPayment() {
+export function SettingsPayment({ embedded: _embedded = false }: { embedded?: boolean }) {
   const { session, isLoading } = useAuth();
-  const { messages } = useLanguage();
-  const t = messages.settings.payment;
-  const common = messages.common;
   const [billing, setBilling] = useState<BillingTransaction[]>([]);
   const [billingLoading, setBillingLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
@@ -312,26 +307,16 @@ export function SettingsPayment() {
   }
 
   if (!session) {
-    return (
-      <section className="surface-card p-5">
-        <h2 className="text-sm font-medium">{t.title}</h2>
-        <p className="mt-2 text-sm text-muted-foreground">{t.signedOutDescription}</p>
-        <Button
-          size="sm"
-          variant="outline"
-          className="mt-4"
-          render={<Link href={buildLoginHref("/pengaturan")} />}
-        >
-          {common.signIn}
-        </Button>
-      </section>
-    );
+    if (_embedded) return null;
+    return null;
   }
 
   return (
-    <section className="space-y-4">
+    <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-medium">{t.title}</h2>
+        <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground/80">
+          Metode tersimpan
+        </p>
         <Button size="sm" variant="outline" onClick={() => setAddOpen(true)}>
           <Plus className="size-3.5" />
           Tambah
@@ -340,7 +325,7 @@ export function SettingsPayment() {
 
       <div className="surface-card divide-y divide-border/60">
         {methods.length === 0 ? (
-          <p className="p-4 text-sm text-muted-foreground">Belum ada metode tersimpan.</p>
+          <p className="p-5 text-sm text-muted-foreground">Belum ada metode tersimpan.</p>
         ) : (
           methods.map((method) => (
             <SavedMethodRow
@@ -353,22 +338,22 @@ export function SettingsPayment() {
         )}
       </div>
 
-      <div className="surface-card">
-        <p className="border-b border-border/60 px-4 py-3 text-xs text-muted-foreground">
-          Riwayat
+      <div className="surface-card overflow-hidden">
+        <p className="border-b border-border/60 px-4 py-3 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground/80 sm:px-5">
+          Riwayat transaksi
         </p>
         {billingLoading ? (
-          <div className="flex h-16 items-center justify-center">
+          <div className="flex h-20 items-center justify-center">
             <Loader2 className="size-5 animate-spin text-muted-foreground" />
           </div>
         ) : billing.length === 0 ? (
-          <p className="p-4 text-sm text-muted-foreground">Belum ada transaksi.</p>
+          <p className="p-5 text-sm text-muted-foreground">Belum ada transaksi.</p>
         ) : (
           <ul className="divide-y divide-border/60">
             {billing.map((tx) => (
               <li
                 key={tx.id}
-                className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-2 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-5"
               >
                 <div className="min-w-0">
                   <Link
@@ -400,6 +385,6 @@ export function SettingsPayment() {
       </div>
 
       <AddPaymentSheet open={addOpen} onOpenChange={setAddOpen} onAdd={handleAdd} />
-    </section>
+    </div>
   );
 }
