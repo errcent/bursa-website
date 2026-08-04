@@ -61,10 +61,13 @@ export async function GET(request: Request) {
   }
 
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const [statusCounts, syncFailed, deliveryCounts, uniqueClicks, sourceCounts, contacts] =
+  const [statusCounts, syncFailed, pendingEnrollment, deliveryCounts, uniqueClicks, sourceCounts, contacts] =
     await Promise.all([
     db.waitlistEntry.groupBy({ by: ["status"], _count: { _all: true } }),
     db.waitlistEntry.count({ where: { resendSyncStatus: "FAILED" } }),
+    db.waitlistEntry.count({
+      where: { status: "ACTIVE", automationEnrolledAt: null },
+    }),
     db.waitlistEmailEvent.groupBy({
       by: ["eventType"],
       where: { occurredAt: { gte: since } },
@@ -124,6 +127,7 @@ export async function GET(request: Request) {
       suppressed: status.SUPPRESSED ?? 0,
       converted: status.CONVERTED ?? 0,
       syncFailed,
+      pendingEnrollment,
     },
     delivery: {
       sent,
@@ -162,7 +166,7 @@ export async function POST(request: Request) {
   const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
-  const synced = await retryFailedWaitlistSync();
-  return NextResponse.json({ ok: true, synced });
+  const result = await retryFailedWaitlistSync();
+  return NextResponse.json({ ok: true, ...result });
 }
 

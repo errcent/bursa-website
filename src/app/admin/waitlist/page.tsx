@@ -43,7 +43,14 @@ export default function AdminWaitlistPage() {
     setRetrying(true);
     try {
       const result = await retryWaitlistSync();
-      toast(`${result.data.synced} kontak berhasil disinkronkan.`);
+      const { synced, attempted, skippedIneligible } = result.data;
+      const detail =
+        skippedIneligible > 0
+          ? ` ${skippedIneligible} di luar cohort internal/rollout.`
+          : attempted > synced
+            ? " Cek Resend API key atau log Vercel jika masih gagal."
+            : "";
+      toast(`${synced} dari ${attempted} kontak berhasil disinkronkan.${detail}`);
       await load();
     } catch {
       toast("Retry sinkronisasi gagal.", "error");
@@ -198,6 +205,10 @@ export default function AdminWaitlistPage() {
           <div>
             <p className="text-xs text-muted-foreground">Suppressed</p>
             <p className="mt-1 text-xl font-semibold">{health.totals.suppressed}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Belum enroll</p>
+            <p className="mt-1 text-xl font-semibold">{health.totals.pendingEnrollment}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Sync failed</p>

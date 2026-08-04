@@ -242,6 +242,7 @@ export interface AdminWaitlistHealth {
     suppressed: number;
     converted: number;
     syncFailed: number;
+    pendingEnrollment: number;
   };
   delivery: {
     sent: number;

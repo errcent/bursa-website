@@ -608,8 +608,13 @@ export async function fetchWaitlistHealth(): Promise<ApiResult<AdminWaitlistHeal
   return request<AdminWaitlistHealth>("/waitlist");
 }
 
-export async function retryWaitlistSync(): Promise<ApiResult<{ ok: boolean; synced: number }>> {
-  return request<{ ok: boolean; synced: number }>("/waitlist", { method: "POST" });
+export async function retryWaitlistSync(): Promise<
+  ApiResult<{ ok: boolean; synced: number; attempted: number; skippedIneligible: number }>
+> {
+  return request<{ ok: boolean; synced: number; attempted: number; skippedIneligible: number }>(
+    "/waitlist",
+    { method: "POST" }
+  );
 }
 
 export async function downloadWaitlistCsv(): Promise<void> {

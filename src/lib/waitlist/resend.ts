@@ -194,19 +194,53 @@ export async function canSendWaitlistMarketing(entryId: string): Promise<boolean
   return isWithinWaitlistFrequencyCap(lastDay, lastSevenDays);
 }
 
-export async function retryFailedWaitlistSync(limit = 50): Promise<number> {
+export async function retryFailedWaitlistSync(limit = 50): Promise<{
+  synced: number;
+  attempted: number;
+  skippedIneligible: number;
+}> {
+  const take = Math.min(Math.max(limit, 1), 100);
   const entries = await db.waitlistEntry.findMany({
     where: {
       status: "ACTIVE",
-      resendSyncStatus: { in: [WaitlistSyncStatus.PENDING, WaitlistSyncStatus.FAILED] },
+      OR: [
+        { resendSyncStatus: { in: [WaitlistSyncStatus.PENDING, WaitlistSyncStatus.FAILED] } },
+        { automationEnrolledAt: null },
+      ],
     },
     orderBy: { updatedAt: "asc" },
-    take: Math.min(Math.max(limit, 1), 100),
-    select: { id: true },
+    take,
+    select: { id: true, email: true },
   });
 
-  const results = await Promise.all(entries.map((entry) => syncWaitlistLifecycle(entry.id)));
-  return results.filter(Boolean).length;
+  let synced = 0;
+  let skippedIneligible = 0;
+
+  for (const entry of entries) {
+    if (!isWaitlistLifecycleEligible(entry.id, entry.email)) {
+      skippedIneligible += 1;
+      continue;
+    }
+
+    await db.waitlistEntry.updateMany({
+      where: {
+        id: entry.id,
+        resendSyncStatus: WaitlistSyncStatus.FAILED,
+        automationEnrolledAt: { not: null },
+      },
+      data: {
+        automationEnrolledAt: null,
+        resendSyncStatus: WaitlistSyncStatus.PENDING,
+        resendSyncError: null,
+      },
+    });
+
+    if (await syncWaitlistLifecycle(entry.id)) {
+      synced += 1;
+    }
+  }
+
+  return { synced, attempted: entries.length, skippedIneligible };
 }
 
 export async function markWaitlistConverted(email: string): Promise<boolean> {
