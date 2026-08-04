@@ -10,6 +10,7 @@
     "lint": "eslint",
     "test:waitlist": "tsx --test tests/waitlist-lifecycle.test.ts",
     "setup:waitlist-email": "tsx scripts/setup-waitlist-email.ts",
+    "enable:waitlist-onboarding": "tsx scripts/enable-waitlist-onboarding.ts",
     "postinstall": "prisma generate && node scripts/ensure-patched-sharp.mjs",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
