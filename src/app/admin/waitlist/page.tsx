@@ -43,14 +43,18 @@ export default function AdminWaitlistPage() {
     setRetrying(true);
     try {
       const result = await retryWaitlistSync();
-      const { synced, attempted, skippedIneligible } = result.data;
+      const { synced, attempted, skippedIneligible, failedEligible, lastError } = result.data;
       const detail =
         skippedIneligible > 0
           ? ` ${skippedIneligible} di luar cohort internal/rollout.`
-          : attempted > synced
+          : "";
+      const failure =
+        failedEligible > 0
+          ? ` ${failedEligible} gagal${lastError ? `: ${lastError}` : "."}`
+          : attempted > synced && failedEligible === 0
             ? " Cek Resend API key atau log Vercel jika masih gagal."
             : "";
-      toast(`${synced} dari ${attempted} kontak berhasil disinkronkan.${detail}`);
+      toast(`${synced} dari ${attempted} kontak berhasil disinkronkan.${detail}${failure}`);
       await load();
     } catch {
       toast("Retry sinkronisasi gagal.", "error");
@@ -95,9 +99,14 @@ export default function AdminWaitlistPage() {
       header: "Resend",
       sortable: true,
       render: (row) => (
-        <span className={row.syncStatus === "FAILED" ? "text-destructive" : ""}>
-          {row.syncStatus.toLowerCase()}
-        </span>
+        <div>
+          <span className={row.syncStatus === "FAILED" ? "text-destructive" : ""}>
+            {row.syncStatus.toLowerCase()}
+          </span>
+          {row.syncError ? (
+            <p className="mt-1 max-w-xs text-xs text-destructive">{row.syncError}</p>
+          ) : null}
+        </div>
       ),
     },
     {

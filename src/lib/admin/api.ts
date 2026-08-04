@@ -609,12 +609,23 @@ export async function fetchWaitlistHealth(): Promise<ApiResult<AdminWaitlistHeal
 }
 
 export async function retryWaitlistSync(): Promise<
-  ApiResult<{ ok: boolean; synced: number; attempted: number; skippedIneligible: number }>
+  ApiResult<{
+    ok: boolean;
+    synced: number;
+    attempted: number;
+    skippedIneligible: number;
+    failedEligible: number;
+    lastError: string | null;
+  }>
 > {
-  return request<{ ok: boolean; synced: number; attempted: number; skippedIneligible: number }>(
-    "/waitlist",
-    { method: "POST" }
-  );
+  return request<{
+    ok: boolean;
+    synced: number;
+    attempted: number;
+    skippedIneligible: number;
+    failedEligible: number;
+    lastError: string | null;
+  }>("/waitlist", { method: "POST" });
 }
 
 export async function downloadWaitlistCsv(): Promise<void> {

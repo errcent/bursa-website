@@ -129,7 +129,8 @@ Semua email transaksional lewat Resend dan **env-gated**: tanpa `RESEND_API_KEY`
 
 | Variable | Keterangan |
 |---|---|
-| `RESEND_API_KEY` | API key dari [Resend](https://resend.com) |
+| `RESEND_API_KEY` | API key dari [Resend](https://resend.com) — cukup **Sending** untuk email transaksional |
+| `RESEND_MANAGEMENT_API_KEY` | Key dengan akses **Contacts/Events** (Full access atau setara) untuk sync waitlist lifecycle; fallback ke `RESEND_API_KEY` jika kosong |
 | `EMAIL_FROM` | From address terverifikasi (default: `Bursa <onboarding@resend.dev>`) |
 | `MENTOR_APPLICATION_ADMIN_EMAIL` | Penerima admin (default: `admin.kitty033@passinbox.com`) |
 | `MENTOR_APPLICATION_EMAIL_ENABLED` | Set `false` untuk nonaktifkan tanpa hapus key |

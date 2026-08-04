@@ -225,6 +225,7 @@ export interface AdminWaitlistContact {
   status: "ACTIVE" | "UNSUBSCRIBED" | "SUPPRESSED" | "CONVERTED";
   lifecycleStage: "CONFIRMED" | "NURTURE" | "ENGAGED" | "LAUNCH" | "CONVERTED";
   syncStatus: "PENDING" | "SYNCED" | "FAILED";
+  syncError: string | null;
   source: string | null;
   utmCampaign: string | null;
   experienceLevel: string | null;

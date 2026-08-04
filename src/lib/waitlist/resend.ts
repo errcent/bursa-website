@@ -1,7 +1,7 @@
 import { WaitlistEmailEventType, WaitlistSyncStatus } from "@prisma/client";
 
 import { db } from "@/lib/db";
-import { getResendClient } from "@/lib/email/client";
+import { getResendManagementClient } from "@/lib/email/client";
 import { getSiteUrl } from "@/lib/email/escape";
 import {
   isWithinWaitlistFrequencyCap,
@@ -21,7 +21,7 @@ function errorMessage(error: unknown): string {
 export async function syncWaitlistLifecycle(entryId: string): Promise<boolean> {
   if (!isWaitlistLifecycleEnabled()) return false;
 
-  const resend = getResendClient();
+  const resend = getResendManagementClient();
   if (!resend) return false;
 
   const entry = await db.waitlistEntry.findUnique({ where: { id: entryId } });
@@ -97,7 +97,7 @@ export async function syncWaitlistLifecycle(entryId: string): Promise<boolean> {
 }
 
 export async function syncWaitlistPreferences(entryId: string): Promise<boolean> {
-  const resend = getResendClient();
+  const resend = getResendManagementClient();
   if (!resend) return false;
 
   const entry = await db.waitlistEntry.findUnique({ where: { id: entryId } });
@@ -198,6 +198,8 @@ export async function retryFailedWaitlistSync(limit = 50): Promise<{
   synced: number;
   attempted: number;
   skippedIneligible: number;
+  failedEligible: number;
+  lastError: string | null;
 }> {
   const take = Math.min(Math.max(limit, 1), 100);
   const entries = await db.waitlistEntry.findMany({
@@ -215,6 +217,8 @@ export async function retryFailedWaitlistSync(limit = 50): Promise<{
 
   let synced = 0;
   let skippedIneligible = 0;
+  let failedEligible = 0;
+  let lastError: string | null = null;
 
   for (const entry of entries) {
     if (!isWaitlistLifecycleEligible(entry.id, entry.email)) {
@@ -237,10 +241,18 @@ export async function retryFailedWaitlistSync(limit = 50): Promise<{
 
     if (await syncWaitlistLifecycle(entry.id)) {
       synced += 1;
+      continue;
     }
+
+    failedEligible += 1;
+    const failed = await db.waitlistEntry.findUnique({
+      where: { id: entry.id },
+      select: { resendSyncError: true },
+    });
+    lastError = failed?.resendSyncError ?? lastError;
   }
 
-  return { synced, attempted: entries.length, skippedIneligible };
+  return { synced, attempted: entries.length, skippedIneligible, failedEligible, lastError };
 }
 
 export async function markWaitlistConverted(email: string): Promise<boolean> {
