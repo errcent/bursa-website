@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { GuidanceOptionCard } from "@/components/learning-guidance/guidance-option-card";
@@ -399,10 +399,6 @@ export function LearningGuidanceQuiz() {
       <Reveal>
         <div className="surface-card flex flex-col gap-6 p-5 sm:gap-7 sm:p-8">
           <div className="space-y-2">
-            <p className="eyebrow-tight flex items-center gap-1.5">
-              <Sparkles className="size-3.5" aria-hidden />
-              Panduan Belajar
-            </p>
             <h2 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
               {question.title}
             </h2>
@@ -471,7 +467,7 @@ export function LearningGuidanceQuiz() {
                 ) : step === totalSteps - 1 ? (
                   <>
                     Lihat rekomendasi
-                    <Sparkles className="size-4" />
+                    <ArrowRight className="size-4" />
                   </>
                 ) : (
                   <>

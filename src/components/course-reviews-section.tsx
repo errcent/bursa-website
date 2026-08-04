@@ -1,6 +1,8 @@
 import { Star } from "lucide-react";
 
 import type { Review } from "@/lib/types";
+import { PREVIEW_CATALOG_COPY } from "@/lib/preview-catalog/copy";
+import { isPreviewCatalogActive } from "@/lib/preview-catalog/visibility";
 import { cn } from "@/lib/utils";
 
 interface CourseReviewsSectionProps {
@@ -16,11 +18,16 @@ export function CourseReviewsSection({
 }: CourseReviewsSectionProps) {
   if (reviews.length === 0) return null;
 
+  const showPreviewLabel = isPreviewCatalogActive();
+
   return (
     <section>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="section-title">Ulasan Siswa</h2>
+          {showPreviewLabel ? (
+            <p className="mt-1.5 text-xs text-muted-foreground">{PREVIEW_CATALOG_COPY.reviewsLabel}</p>
+          ) : null}
           {rating !== undefined && rating > 0 && (
             <p className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
               <Star className="size-3.5 fill-foreground text-foreground" />

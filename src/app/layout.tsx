@@ -11,6 +11,7 @@ import { NavbarRouteTracker } from "@/components/navbar-route-tracker";
 import { PreloaderGate } from "@/components/preloader-gate";
 import { StickyBottomCta } from "@/components/sticky-bottom-cta";
 import { CookieConsentBanner } from "@/components/trust-portal/cookie-consent-banner";
+import { PreviewCatalogBanner } from "@/components/preview-catalog/preview-catalog-banner";
 
 import { SearchSeoJsonLd } from "@/components/search/search-seo-jsonld";
 
@@ -75,6 +76,7 @@ export default function RootLayout({
           <NextAuthProvider>
             <AuthProvider>
               <LanguageProvider>
+                <PreviewCatalogBanner />
                 {children}
                 <StickyBottomCta />
                 <CookieConsentBanner />

@@ -6,6 +6,8 @@ import { CourseDetailHero } from "@/components/course-detail-hero";
 import { CourseInstructorSection } from "@/components/course-instructor-section";
 import { CourseCurriculumCards } from "@/components/course-curriculum-cards";
 import { CourseReviewsSection } from "@/components/course-reviews-section";
+import { PreviewCatalogNotice } from "@/components/preview-catalog/preview-catalog-notice";
+import { PREVIEW_CATALOG_COPY } from "@/lib/preview-catalog/copy";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import {
@@ -40,8 +42,7 @@ export async function generateMetadata({
 const faqs = [
   {
     question: "Apakah kelas ini bisa diakses sekarang?",
-    answer:
-      "Katalog saat ini menampilkan preview edukatif. Kamu bisa menonton materi preview gratis; pembelian dan akses penuh akan dibuka setelah peluncuran resmi Bursa.",
+    answer: PREVIEW_CATALOG_COPY.faqPreviewAnswer,
   },
   {
     question: "Apakah cocok untuk pemula total?",
@@ -75,6 +76,10 @@ export default async function CourseDetailPage({
           mentor={mentor ?? null}
           previewHref={`/belajar/${course.slug}/l1`}
         />
+
+        <div className="container-page min-w-0 py-6 sm:py-8">
+          <PreviewCatalogNotice />
+        </div>
 
         <section className="border-t border-border/40 bg-black">
           <div className="container-page min-w-0 py-10 sm:py-14">

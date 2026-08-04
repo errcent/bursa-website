@@ -11,6 +11,7 @@ const STATIC_ROUTES = [
   "/katalog",
   "/katalog?view=instruktur",
   "/panduan-belajar",
+  "/panduan-belajar/quiz",
   "/playlist",
   "/lab",
   "/lab/position-size",

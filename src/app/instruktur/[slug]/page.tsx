@@ -16,6 +16,7 @@ import {
   getMentorBySlug,
 } from "@/lib/catalog/server";
 import { resolveMentorAvatarUrl } from "@/lib/mentors/avatar";
+import { PreviewCatalogNotice } from "@/components/preview-catalog/preview-catalog-notice";
 import { formatRating } from "@/lib/utils";
 
 export async function generateStaticParams() {
@@ -104,6 +105,10 @@ export default async function MentorProfilePage({
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="container-page py-6 sm:py-8">
+          <PreviewCatalogNotice />
         </div>
 
         <div className="container-page grid gap-10 py-14 lg:grid-cols-[2fr_1fr]">

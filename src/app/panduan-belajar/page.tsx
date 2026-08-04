@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 
-import { LearningGuidanceQuiz } from "@/components/learning-guidance/learning-guidance-quiz";
+import { LearningGuidanceOverviewActions } from "@/components/learning-guidance/learning-guidance-overview-actions";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNavbar } from "@/components/site-navbar";
 import { HeroLivingBackground } from "@/components/hero-living-bg";
 import { Reveal } from "@/components/motion/reveal";
 
 export const metadata: Metadata = {
-  title: "Panduan Belajar — Belajar dengan Arah yang Jelas",
+  title: "Panduan Belajar",
   description:
-    "Quiz singkat (~2 menit) untuk rekomendasi kelas dan mentor trading yang selaras dengan tujuan dan levelmu.",
+    "Temukan jalur belajar trading yang selaras dengan tujuan dan levelmu melalui quiz singkat Bursa.",
 };
 
 export default function PanduanBelajarPage() {
@@ -25,19 +25,16 @@ export default function PanduanBelajarPage() {
               <h1 className="page-hero-title text-gradient max-w-3xl">
                 Belajar dengan arah yang jelas
               </h1>
-              <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-                Quiz singkat · ~2 menit · rekomendasi personal
-              </p>
               <p className="section-copy mt-4 max-w-2xl text-base sm:text-[1.05rem]">
-                Jawab beberapa pertanyaan — kami arahkan ke kelas dan mentor yang selaras dengan
-                tujuan dan levelmu.
+                Quiz singkat untuk memetakan profil belajarmu, lalu rekomendasi kelas dan mentor
+                yang selaras — tanpa komitmen.
               </p>
             </Reveal>
           </div>
         </div>
 
         <div className="container-page section-tight pt-8 sm:pt-10">
-          <LearningGuidanceQuiz />
+          <LearningGuidanceOverviewActions />
         </div>
       </main>
       <SiteFooter />

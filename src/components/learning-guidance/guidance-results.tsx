@@ -12,6 +12,7 @@ import {
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import type { LearningGuidanceResult } from "@/lib/learning/guidance/types";
+import { PREVIEW_CATALOG_COPY } from "@/lib/preview-catalog/copy";
 import type { Instrument } from "@/lib/types";
 
 const INSTRUMENT_UI: Record<string, Instrument> = {
@@ -41,6 +42,7 @@ export function GuidanceResults({
   const katalogHref = instrumentUi
     ? `/katalog?q=${encodeURIComponent(instrumentUi)}`
     : "/katalog";
+  const showPreviewNote = process.env.NEXT_PUBLIC_CHECKOUT_ENABLED !== "true";
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 pb-[env(safe-area-inset-bottom,0px)] sm:gap-12">
@@ -60,7 +62,7 @@ export function GuidanceResults({
                 <p className="text-xs font-medium text-accent">Profil belajar tersimpan di akunmu.</p>
               ) : (
                 <p className="text-xs text-muted-foreground">
-                  <Link href="/masuk?next=/panduan-belajar" className="link-accent">
+                  <Link href="/masuk?next=/panduan-belajar/quiz" className="link-accent">
                     Masuk
                   </Link>{" "}
                   untuk menyimpan jawaban dan rekomendasi ini.
@@ -89,6 +91,9 @@ export function GuidanceResults({
         <Reveal className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h3 className="section-title">Kelas yang direkomendasikan</h3>
+            {showPreviewNote ? (
+              <p className="mt-1 text-xs text-muted-foreground">{PREVIEW_CATALOG_COPY.resultsNote}</p>
+            ) : null}
             <p className="mt-1 text-sm text-muted-foreground">
               Diurutkan berdasarkan kecocokan profil, bukan harga.
             </p>
