@@ -41,6 +41,35 @@ Resend automation onboarding **Disabled** di dashboard. Signup waitlist hanya ki
 
 Setelah founder approve di `/admin/waitlist` **dan** enable automation manual di Resend, naikkan env lifecycle bertahap.
 
+## Preview catalog (post-purge / pre-launch demo)
+
+Katalog publik (mentor, kelas, playlist kurasi) dan demo iPad di beranda membutuhkan data di Neon. **Jangan** jalankan `npm run db:seed` di production — script itu destructive (menghapus semua user termasuk admin founder).
+
+Gunakan seed additive:
+
+```powershell
+cd Website
+$env:CONFIRM_PREVIEW_CATALOG_SEED="true"
+npm run seed:preview-catalog
+```
+
+- Upsert 10 mentor + 17 kelas + 7 playlist dari `src/lib/mock-data.ts`
+- Akun mentor: `preview-mentor-{slug}@preview.bursanalar.com` dengan password random (tidak didistribusi)
+- Admin founder dan entri waitlist **tidak** disentuh
+- Video preview lesson memakai fallback demo MP4 (playback-token) — tidak perlu CDN khusus
+- Idempotent: aman di-run ulang setelah deploy
+
+Asset beranda: `public/mockups/ipad-pro-scene.png` (generate: `node scripts/process-ipad-scene.mjs`).
+
+Verifikasi setelah seed + deploy (cache beranda revalidate ≤60s):
+
+1. `/` — section `#belajar-dimana-saja` (scroll demo iPad) tampil
+2. `/katalog` — kelas & mentor cards
+3. `/kelas/[slug]` — curriculum + preview gratis playable
+4. Halaman playlist kurasi — 7 koleksi
+
+**Jangan** restore akun dev (`@test.dev`, `password123`). Purge script sengaja tidak menyentuh `@preview.bursanalar.com`.
+
 ## Rollout
 
 1. Set `WAITLIST_LIFECYCLE_ENABLED=true`, rollout `0`, dan isi `WAITLIST_INTERNAL_COHORT`.

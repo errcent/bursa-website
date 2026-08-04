@@ -1,5 +1,4 @@
 import {
-  CourseLevel,
   ChatBranchMode,
   ChatBranchSenderPolicy,
   ChatBranchVisibility,
@@ -14,34 +13,22 @@ import {
   SignalStatus,
   TransactionStatus,
   UserRole,
-  VerificationStatus,
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { courses, mentors, reviews } from "../src/lib/mock-data";
-import { defaultCourseThumbnailPath } from "../src/lib/courses/thumbnails";
-import type { Instrument as MockInstrument, Level } from "../src/lib/types";
+import { mentors, reviews } from "../src/lib/mock-data";
+import {
+  devPreviewLessonVideoUrl,
+  mapInstrument,
+  mapLevel,
+  upsertCoursesFromMockData,
+  upsertCuratedPlaylists,
+  upsertMentorProfiles,
+} from "../src/lib/seed/preview-catalog";
+import type { Level } from "../src/lib/types";
 
 const prisma = new PrismaClient();
 
 const PASSWORD = "password123";
-
-function mapInstrument(value: MockInstrument): Instrument {
-  const map: Record<MockInstrument, Instrument> = {
-    Saham: Instrument.SAHAM,
-    Crypto: Instrument.CRYPTO,
-    Forex: Instrument.FOREX,
-  };
-  return map[value];
-}
-
-function mapLevel(value: Level): CourseLevel {
-  const map: Record<Level, CourseLevel> = {
-    Pemula: CourseLevel.PEMULA,
-    Menengah: CourseLevel.MENENGAH,
-    Mahir: CourseLevel.MAHIR,
-  };
-  return map[value];
-}
 
 function mapTier(value: Level | "INTERNAL"): ChatRoomTier {
   if (value === "INTERNAL") return ChatRoomTier.INTERNAL;
@@ -143,99 +130,27 @@ async function main() {
     },
   });
 
-  const mentorProfileMap = new Map<string, string>();
-
-  for (const mentor of mentors) {
-    const isPrimaryMentor = mentor.slug === "andra-wicaksono";
-    const user = isPrimaryMentor
-      ? mentorUser
-      : await prisma.user.create({
-          data: {
-            email: `${mentor.slug}@mentor.bursa.dev`,
-            username: mentor.slug.replace(/-/g, "_"),
-            phone: `+62812${String(mentors.indexOf(mentor) + 1000000).slice(-7)}`,
-            passwordHash,
-            nama: mentor.name,
-            role: UserRole.MENTOR,
-            kycStatus: KycStatus.VERIFIED,
-          },
-        });
-
-    const profile = await prisma.mentorProfile.create({
-      data: {
-        userId: user.id,
-        slug: mentor.slug,
-        title: mentor.title,
-        initials: mentor.initials,
-        avatarUrl: mentor.avatarUrl,
-        bio: mentor.bio,
-        philosophy: mentor.philosophy,
-        spesialisasi: mentor.title,
-        instruments: mentor.instruments,
-        licenseLabel: mentor.licenseLabel,
-        verificationStatus: mentor.verified
-          ? VerificationStatus.VERIFIED
-          : VerificationStatus.PENDING,
-        yearsExperience: mentor.yearsExperience,
-        studentsCount: mentor.studentsCount,
-        coursesCount: mentor.coursesCount,
-        rating: mentor.rating,
-        trackRecord: mentor.trackRecord,
-        availableFor1on1: mentor.availableFor1on1,
-        sessionPrice: mentor.sessionPrice,
-      },
-    });
-
-    mentorProfileMap.set(mentor.slug, profile.id);
-  }
-
-  for (const course of courses) {
-    const mentorId = mentorProfileMap.get(course.mentorSlug);
-    if (!mentorId) continue;
-
-    const createdCourse = await prisma.course.create({
-      data: {
-        slug: course.slug,
-        title: course.title,
-        mentorId,
-        instrument: mapInstrument(course.instrument),
-        level: mapLevel(course.level),
-        price: course.price,
-        rating: course.rating,
-        studentsCount: course.studentsCount,
-        durationHours: course.durationHours,
-        shortDescription: course.shortDescription,
-        thumbnailUrl: course.thumbnailUrl ?? defaultCourseThumbnailPath(course.slug),
-        outcomes: course.outcomes,
-      },
-    });
-
-    for (const [moduleIndex, module] of course.modules.entries()) {
-      const createdModule = await prisma.module.create({
-        data: {
-          courseId: createdCourse.id,
-          title: module.title,
-          sortOrder: moduleIndex,
-        },
-      });
-
-      for (const [lessonIndex, lesson] of module.lessons.entries()) {
-        await prisma.lesson.create({
-          data: {
-            moduleId: createdModule.id,
-            legacyId: lesson.id,
-            title: lesson.title,
-            durationMinutes: lesson.durationMinutes,
-            isPreviewGratis: lesson.preview ?? false,
-            videoUrl: lesson.preview
-              ? `https://cdn.bursa.dev/preview/${course.slug}/${lesson.id}.mp4`
-              : null,
-            sortOrder: lessonIndex,
-          },
-        });
-      }
+  const mentorProfileMap = await upsertMentorProfiles(prisma, async (mentor, index) => {
+    if (mentor.slug === "andra-wicaksono") {
+      return mentorUser;
     }
-  }
+
+    return prisma.user.create({
+      data: {
+        email: `${mentor.slug}@mentor.bursa.dev`,
+        username: mentor.slug.replace(/-/g, "_"),
+        phone: `+62812${String(index + 1000000).slice(-7)}`,
+        passwordHash,
+        nama: mentor.name,
+        role: UserRole.MENTOR,
+        kycStatus: KycStatus.VERIFIED,
+      },
+    });
+  });
+
+  await upsertCoursesFromMockData(prisma, mentorProfileMap, {
+    previewLessonVideoUrl: devPreviewLessonVideoUrl,
+  });
 
   const firstCourse = await prisma.course.findFirst({ orderBy: { createdAt: "asc" } });
   const allCourses = await prisma.course.findMany({ orderBy: { createdAt: "asc" }, take: 3 });
@@ -714,150 +629,10 @@ async function main() {
     },
   });
 
-  async function findLessonByCourseAndLegacy(courseSlug: string, legacyId: string) {
-    return prisma.lesson.findFirst({
-      where: {
-        legacyId,
-        module: { course: { slug: courseSlug } },
-      },
-      select: { id: true },
-    });
+  const { skipped: skippedPlaylists } = await upsertCuratedPlaylists(prisma, admin.id);
+  if (skippedPlaylists.length > 0) {
+    console.warn("Skipped playlists:", skippedPlaylists.join(", "));
   }
-
-  async function createCuratedPlaylist(
-    title: string,
-    slug: string,
-    description: string,
-    lessonRefs: Array<{ courseSlug: string; legacyId: string }>
-  ) {
-    const resolved = await Promise.all(
-      lessonRefs.map(async (ref) => ({
-        ref,
-        lesson: await findLessonByCourseAndLegacy(ref.courseSlug, ref.legacyId),
-      }))
-    );
-    const missing = resolved.filter((entry) => !entry.lesson);
-    if (missing.length > 0) {
-      console.warn(
-        `Playlist "${slug}": ${missing.length} lesson(s) not found:`,
-        missing.map((entry) => `${entry.ref.courseSlug}/${entry.ref.legacyId}`).join(", ")
-      );
-    }
-    const lessonIds = resolved
-      .filter((entry): entry is { ref: (typeof lessonRefs)[number]; lesson: { id: string } } =>
-        Boolean(entry.lesson)
-      )
-      .map((entry) => entry.lesson.id);
-    if (lessonIds.length === 0) {
-      console.warn(`Playlist "${slug}" skipped — no valid lessons.`);
-      return;
-    }
-
-    await prisma.playlist.create({
-      data: {
-        userId: admin.id,
-        title,
-        description,
-        slug,
-        isCurated: true,
-        isPublished: true,
-        items: {
-          create: lessonIds.map((lessonId, index) => ({
-            lessonId,
-            sortOrder: index,
-          })),
-        },
-      },
-    });
-  }
-
-  await createCuratedPlaylist(
-    "Kesehatan Mental Trading",
-    "kesehatan-mental-trading",
-    "Kurasi modul psikologi, disiplin, dan mindset dari lima mentor berbeda.",
-    [
-      { courseSlug: "psikologi-trading-anti-fomo", legacyId: "l1" },
-      { courseSlug: "manajemen-risiko-crypto-pemula", legacyId: "l4" },
-      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l8" },
-      { courseSlug: "scalping-saham-intraday-jam-perdagangan", legacyId: "l2" },
-      { courseSlug: "price-action-forex-tanpa-indikator", legacyId: "l6" },
-    ]
-  );
-
-  await createCuratedPlaylist(
-    "Fundasi Analisis Saham",
-    "fundasi-analisis-saham",
-    "Tiga pelajaran pembuka untuk memahami fundamental dan valuasi.",
-    [
-      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l1" },
-      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l2" },
-      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l1" },
-    ]
-  );
-
-  await createCuratedPlaylist(
-    "Jalur Crypto Pemula",
-    "jalur-crypto-pemula",
-    "Mulai dari on-chain dasar hingga manajemen risiko untuk trader crypto baru.",
-    [
-      { courseSlug: "crypto-on-chain-dasar", legacyId: "l1" },
-      { courseSlug: "crypto-on-chain-dasar", legacyId: "l2" },
-      { courseSlug: "manajemen-risiko-crypto-pemula", legacyId: "l1" },
-      { courseSlug: "manajemen-risiko-crypto-pemula", legacyId: "l2" },
-      { courseSlug: "manajemen-risiko-crypto-pemula", legacyId: "l3" },
-    ]
-  );
-
-  await createCuratedPlaylist(
-    "Teknikal Swing Trading",
-    "teknikal-swing-trading",
-    "Rangkaian pelajaran candlestick, support/resistance, dan manajemen posisi untuk swing trader.",
-    [
-      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l1" },
-      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l2" },
-      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l3" },
-      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l4" },
-      { courseSlug: "swing-trading-teknikal-dasar", legacyId: "l5" },
-    ]
-  );
-
-  await createCuratedPlaylist(
-    "Forex dari Nol",
-    "forex-dari-nol",
-    "Memahami makro, suku bunga, dan reaksi pasar forex untuk pemula.",
-    [
-      { courseSlug: "forex-makro-dasar", legacyId: "l1" },
-      { courseSlug: "forex-makro-dasar", legacyId: "l2" },
-      { courseSlug: "forex-makro-dasar", legacyId: "l3" },
-      { courseSlug: "forex-makro-dasar", legacyId: "l4" },
-    ]
-  );
-
-  await createCuratedPlaylist(
-    "Valuasi Lanjutan",
-    "valuasi-lanjutan",
-    "DCF, proyeksi arus kas, dan perbandingan sektor untuk analis yang ingin naik level.",
-    [
-      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l1" },
-      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l3" },
-      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l4" },
-      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l5" },
-      { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l7" },
-    ]
-  );
-
-  await createCuratedPlaylist(
-    "Screening Saham Berkualitas",
-    "screening-saham-berkualitas",
-    "Dari membaca laporan keuangan hingga menyusun watchlist emiten berkualitas.",
-    [
-      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l2" },
-      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l5" },
-      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l6" },
-      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l7" },
-      { courseSlug: "fundamental-saham-untuk-pemula", legacyId: "l8" },
-    ]
-  );
 
   // Sample 1-on-1 availability slots for mentors with availableFor1on1
   const adminUser = await prisma.user.findUnique({ where: { email: "admin@test.dev" } });

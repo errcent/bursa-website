@@ -14,6 +14,7 @@
     "disable:waitlist-onboarding": "tsx scripts/disable-waitlist-onboarding.ts",
     "bootstrap:production-admin": "tsx scripts/bootstrap-production-admin.ts",
     "purge:dev-accounts": "tsx scripts/purge-dev-accounts.ts",
+    "seed:preview-catalog": "tsx scripts/seed-preview-catalog.ts",
     "test:email-policy": "tsx --test tests/email-policy.test.ts",
     "postinstall": "prisma generate && node scripts/ensure-patched-sharp.mjs",
     "db:generate": "prisma generate",
