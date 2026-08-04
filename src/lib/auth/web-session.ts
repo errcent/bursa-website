@@ -1,8 +1,9 @@
 import { SignJWT, jwtVerify } from "jose";
 
 import { getAuthSecret } from "@/lib/auth/google-oauth";
+import { WEB_SESSION_COOKIE } from "@/lib/auth/web-session.constants";
 
-export const WEB_SESSION_COOKIE = "bursa_web_session";
+export { WEB_SESSION_COOKIE };
 const WEB_SESSION_TTL_SEC = 7 * 24 * 60 * 60;
 
 function secretKey(): Uint8Array {

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 import { checkApiRateLimit, rateLimitResponse } from "@/lib/auth/rate-limit";
-import { verifyWebSessionToken, WEB_SESSION_COOKIE } from "@/lib/auth/web-session";
+import { WEB_SESSION_COOKIE } from "@/lib/auth/web-session.constants";
 import {
   isKomunitasApiPath,
   isKomunitasPagePath,
@@ -29,14 +29,11 @@ function applyMobileCors(response: NextResponse, origin: string | null): NextRes
   return response;
 }
 
-async function hasWebSession(request: NextRequest): Promise<boolean> {
-  const token = request.cookies.get(WEB_SESSION_COOKIE)?.value;
-  if (!token) return false;
-  const session = await verifyWebSessionToken(token);
-  return Boolean(session);
+function hasSessionCookie(request: NextRequest): boolean {
+  return Boolean(request.cookies.get(WEB_SESSION_COOKIE)?.value);
 }
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const origin = request.headers.get("origin");
   const isApi = request.nextUrl.pathname.startsWith("/api/");
   const { pathname } = request.nextUrl;
@@ -52,27 +49,22 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (pathname.startsWith("/api/admin")) {
-    const authed = await hasWebSession(request);
-    if (!authed) {
-      return applyMobileCors(
-        NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
-        origin
-      );
-    }
+  if (pathname.startsWith("/api/admin") && !hasSessionCookie(request)) {
+    return applyMobileCors(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+      origin
+    );
   }
 
   if (
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/developer") ||
-    pathname.startsWith("/mentor")
+    (pathname.startsWith("/admin") ||
+      pathname.startsWith("/developer") ||
+      pathname.startsWith("/mentor")) &&
+    !hasSessionCookie(request)
   ) {
-    const authed = await hasWebSession(request);
-    if (!authed) {
-      const login = new URL("/masuk", request.url);
-      login.searchParams.set("next", pathname);
-      return NextResponse.redirect(login);
-    }
+    const login = new URL("/masuk", request.url);
+    login.searchParams.set("next", pathname);
+    return NextResponse.redirect(login);
   }
 
   if (KOMUNITAS_ENABLED) {
