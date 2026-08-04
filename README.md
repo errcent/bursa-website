@@ -171,11 +171,30 @@ Widget Turnstile muncul di `/waitlist` saat **kedua** env var di bawah diset. Ve
 2. **Add widget**
    - Widget name: `Bursa Waitlist`
    - Widget mode: **Managed** (recommended)
-   - Domains: `localhost`, `bursanalar.vercel.app`, dan domain custom kamu
+   - Hostnames (wajib lengkap): `bursanalar.com`, `www.bursanalar.com`, `bursanalar.vercel.app`, `bursa-website.vercel.app`, `localhost`
 3. Salin **Site Key** ? `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
 4. Salin **Secret Key** ? `TURNSTILE_SECRET_KEY`
 5. Set di `.env` lokal **dan** Vercel ? Environment Variables ? **Production + Preview**
 6. Redeploy Vercel (`NEXT_PUBLIC_*` butuh rebuild)
+
+> **Penting saat ganti/tambah domain:** hostname baru **harus** ditambahkan ke daftar
+> Hostnames widget di dashboard Turnstile. Kalau tidak, widget gagal dengan error
+> **110200 (domain not authorized)** dan visitor melihat kotak Cloudflare
+> "Unable to connect to website / Troubleshoot" — terlihat seperti masalah koneksi user,
+> padahal murni konfigurasi. Preview deployment Vercel (`*-git-*.vercel.app`) tidak
+> dicakup kecuali hostname-nya ikut didaftarkan.
+
+### Troubleshooting
+
+| Gejala di browser | Arti | Aksi |
+|---|---|---|
+| Console `[Cloudflare Turnstile] Error: 110200` | Hostname tidak ada di allowlist widget | Tambahkan hostname di dashboard Turnstile |
+| Console `Error: 110100` / `400020` | Site key salah/tidak dikenal | Cek `NEXT_PUBLIC_TURNSTILE_SITE_KEY` |
+| Console `Error: 400070` | Widget di-disable di dashboard | Aktifkan kembali widget |
+| Log server `[turnstile] siteverify rejected token: invalid-input-secret` | `TURNSTILE_SECRET_KEY` tidak cocok dengan site key | Pastikan pasangan key dari widget yang sama |
+
+Untuk kode 110100 / 110110 / 110200 / 400020 / 400070, `TurnstileWidget` menyembunyikan
+kotak error Cloudflare dan menampilkan pesan Indonesia yang tidak menyalahkan koneksi user.
 
 ### Test keys (development only)
 

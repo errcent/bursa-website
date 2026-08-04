@@ -34,8 +34,25 @@ export async function verifyTurnstileToken(
     }
   );
 
-  if (!response.ok) return false;
+  if (!response.ok) {
+    console.warn(`[turnstile] siteverify HTTP ${response.status}`);
+    return false;
+  }
 
-  const data = (await response.json()) as { success?: boolean };
-  return data.success === true;
+  const data = (await response.json()) as {
+    success?: boolean;
+    hostname?: string;
+    "error-codes"?: string[];
+  };
+
+  if (data.success !== true) {
+    // Surfaces causes like invalid-input-secret / timeout-or-duplicate in Vercel logs.
+    console.warn(
+      `[turnstile] siteverify rejected token: ${data["error-codes"]?.join(", ") || "unknown"}` +
+        (data.hostname ? ` (hostname: ${data.hostname})` : "")
+    );
+    return false;
+  }
+
+  return true;
 }
