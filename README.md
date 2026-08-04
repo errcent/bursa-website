@@ -119,7 +119,13 @@ Privasi & keamanan: lihat `Documentation/18 - Cybersecurity, Privasi Data & Kepa
 
 ## Email transaksional (Resend)
 
-Notifikasi **aplikasi mentor baru** ke admin (HTML + lampiran PDF). Env-gated ? tanpa `RESEND_API_KEY`, submit formulir tetap sukses; email tidak terkirim.
+Semua email transaksional lewat Resend dan **env-gated**: tanpa `RESEND_API_KEY` form tetap sukses, email hanya tidak terkirim.
+
+| Alur | Trigger | Pengirim |
+|---|---|---|
+| Verifikasi email akun | `POST /api/auth/register` (signup email/password) | `src/lib/auth/auth-email.ts` |
+| Verifikasi waitlist (double opt-in) | `POST /api/waitlist` | `src/lib/waitlist/email.ts` |
+| Aplikasi mentor baru ? admin (HTML + PDF) | `POST /api/mentor/applications` | `src/lib/mentor-program/application-notification.ts` |
 
 | Variable | Keterangan |
 |---|---|
@@ -127,8 +133,26 @@ Notifikasi **aplikasi mentor baru** ke admin (HTML + lampiran PDF). Env-gated ? 
 | `EMAIL_FROM` | From address terverifikasi (default: `Bursa <onboarding@resend.dev>`) |
 | `MENTOR_APPLICATION_ADMIN_EMAIL` | Penerima admin (default: `admin.kitty033@passinbox.com`) |
 | `MENTOR_APPLICATION_EMAIL_ENABLED` | Set `false` untuk nonaktifkan tanpa hapus key |
+| `AUTH_EMAIL_ENABLED` | Set `false` untuk nonaktifkan email verifikasi akun |
+| `WAITLIST_EMAIL_ENABLED` | Set `false` untuk nonaktifkan double opt-in waitlist |
 
-Kode: `src/lib/email/*`, `src/lib/mentor-program/application-notification.ts`
+Tautan verifikasi dibangun dari `NEXT_PUBLIC_SITE_URL` ? pastikan nilainya domain produksi (`https://bursanalar.com`).
+
+### Perilaku waitlist
+
+- **Resend aktif:** entri disimpan `emailVerifiedAt = null`, tautan verifikasi 48 jam dikirim ke pendaftar. Klik tautan ? `/waitlist/verifikasi` ? `POST /api/waitlist/verify`.
+- **Resend belum dikonfigurasi:** entri langsung dikonfirmasi via consent (perilaku lama) supaya pendaftar tidak tertahan tanpa jalur verifikasi.
+- Daftar ulang dengan email yang belum terverifikasi akan **mengirim ulang** tautan (token lama diganti).
+
+### Setup domain pengirim
+
+1. Resend ? **Domains** ? Add `bursanalar.com`.
+2. Tambahkan record DKIM/SPF (dan DMARC bila diminta) di Cloudflare DNS ? set **DNS only** (abu-abu), bukan proxied.
+3. Setelah verified, set `EMAIL_FROM` ke alamat di domain itu, mis. `Bursa <noreply@bursanalar.com>`.
+
+Tanpa domain terverifikasi, Resend hanya mengizinkan `onboarding@resend.dev` yang **cuma bisa kirim ke email pemilik akun** ? tidak cukup untuk pendaftar publik.
+
+Kode: `src/lib/email/*`, `src/lib/waitlist/*`, `src/lib/auth/auth-email.ts`
 
 ---
 
@@ -235,9 +259,10 @@ Vercel ? project **bursa-website** ? **Settings** ? **Environment Variables** ? 
 | `GOOGLE_CLIENT_ID` | Google OAuth Client ID |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret |
 | `NEXTAUTH_SECRET` | Random secret untuk session JWT |
-| `NEXTAUTH_URL` | `https://bursanalar.vercel.app` (Production) |
-| `RESEND_API_KEY` | Resend API key (email aplikasi mentor) |
-| `EMAIL_FROM` | From address Resend terverifikasi |
+| `NEXTAUTH_URL` | `https://bursanalar.com` (Production) |
+| `NEXT_PUBLIC_SITE_URL` | `https://bursanalar.com` ? basis tautan verifikasi email |
+| `RESEND_API_KEY` | Resend API key (verifikasi akun, waitlist, aplikasi mentor) |
+| `EMAIL_FROM` | From address Resend terverifikasi, mis. `Bursa <noreply@bursanalar.com>` |
 | `MENTOR_APPLICATION_ADMIN_EMAIL` | Opsional ? override penerima admin |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key (waitlist) |
 | `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key (server only) |

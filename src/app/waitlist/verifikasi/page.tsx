@@ -108,7 +108,7 @@ export default function WaitlistVerifikasiPage() {
   return (
     <AuthPageShell
       title="Waitlist Bursa"
-      description="Pendaftaran waitlist tidak memerlukan verifikasi email. Tautan lama tetap diproses jika masih valid."
+      description="Konfirmasi email kamu untuk menyelesaikan pendaftaran waitlist."
     >
       <Suspense
         fallback={

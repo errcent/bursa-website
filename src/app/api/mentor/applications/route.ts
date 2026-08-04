@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { notifyAdminOfMentorApplication } from "@/lib/mentor-program/application-notification";
@@ -22,8 +22,14 @@ export async function POST(request: Request) {
       certificateDocumentName: certificateDocumentName || undefined,
     });
 
-    void notifyAdminOfMentorApplication(application).catch((error) => {
-      console.error("[mentor-application] Unhandled email error:", error);
+    // after() keeps the send off the response path while still guaranteeing it runs —
+    // a bare floating promise can be dropped when the serverless instance freezes.
+    after(async () => {
+      try {
+        await notifyAdminOfMentorApplication(application);
+      } catch (error) {
+        console.error("[mentor-application] Unhandled email error:", error);
+      }
     });
 
     return jsonOk({ id: application.id, status: application.status }, 201);

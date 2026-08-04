@@ -12,8 +12,8 @@ export function isWaitlistEmailEnabled(): boolean {
 export async function sendWaitlistVerificationEmail(
   email: string,
   token: string
-): Promise<void> {
-  if (!isWaitlistEmailEnabled()) return;
+): Promise<boolean> {
+  if (!isWaitlistEmailEnabled()) return false;
 
   const siteUrl = getSiteUrl();
   const verifyUrl = `${siteUrl}/waitlist/verifikasi?token=${encodeURIComponent(token)}`;
@@ -68,11 +68,8 @@ export async function sendWaitlistVerificationEmail(
 
   if (!result.ok) {
     console.warn("[waitlist] verification email failed:", result.error);
+    return false;
   }
-}
 
-/** @deprecated Pass verification token explicitly via sendWaitlistVerificationEmail. */
-export async function sendWaitlistConfirmationEmail(email: string): Promise<void> {
-  console.warn("[waitlist] sendWaitlistConfirmationEmail called without token — email skipped.");
-  void email;
+  return true;
 }

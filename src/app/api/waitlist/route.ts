@@ -7,6 +7,8 @@ import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/auth/rate-lim
 import { db } from "@/lib/db";
 import { waitlistSubmitSchema } from "@/lib/waitlist/validation";
 import { isTurnstileConfigured, verifyTurnstileToken } from "@/lib/turnstile/verify";
+import { isWaitlistEmailEnabled, sendWaitlistVerificationEmail } from "@/lib/waitlist/email";
+import { issueWaitlistVerificationToken } from "@/lib/waitlist/verification";
 
 function hashIp(ip: string): string {
   return createHash("sha256").update(ip).digest("hex").slice(0, 32);
@@ -37,7 +39,12 @@ export async function POST(request: NextRequest) {
     const ipHash = hashIp(ip);
     const now = new Date();
 
+    // Double opt-in runs only when Resend is configured. Without it a sign-up would be
+    // stranded as unverified with no way to confirm, so consent alone confirms the entry.
+    const verificationRequired = isWaitlistEmailEnabled();
+
     let duplicate = false;
+    let needsVerificationEmail = verificationRequired;
 
     try {
       await db.waitlistEntry.create({
@@ -50,7 +57,7 @@ export async function POST(request: NextRequest) {
           utmCampaign: body.utmCampaign ?? null,
           utmContent: body.utmContent ?? null,
           ipHash,
-          emailVerifiedAt: now,
+          emailVerifiedAt: verificationRequired ? null : now,
           verificationTokenHash: null,
           verificationExpiresAt: null,
         },
@@ -61,20 +68,42 @@ export async function POST(request: NextRequest) {
         error.code === "P2002"
       ) {
         duplicate = true;
-        await db.waitlistEntry.update({
+        const existing = await db.waitlistEntry.findUnique({
           where: { email },
-          data: {
-            emailVerifiedAt: now,
-            verificationTokenHash: null,
-            verificationExpiresAt: null,
-          },
+          select: { emailVerifiedAt: true },
         });
+        const alreadyVerified = Boolean(existing?.emailVerifiedAt);
+        needsVerificationEmail = verificationRequired && !alreadyVerified;
+
+        if (!verificationRequired && !alreadyVerified) {
+          await db.waitlistEntry.update({
+            where: { email },
+            data: {
+              emailVerifiedAt: now,
+              verificationTokenHash: null,
+              verificationExpiresAt: null,
+            },
+          });
+        }
       } else {
         throw error;
       }
     }
 
-    return jsonOk({ ok: true, duplicate }, duplicate ? 200 : 201);
+    let verificationEmailSent = false;
+    if (needsVerificationEmail) {
+      try {
+        const token = await issueWaitlistVerificationToken(email);
+        verificationEmailSent = await sendWaitlistVerificationEmail(email, token);
+      } catch (error) {
+        console.error("[waitlist] verification email pipeline failed:", error);
+      }
+    }
+
+    return jsonOk(
+      { ok: true, duplicate, verificationRequired, verificationEmailSent },
+      duplicate ? 200 : 201
+    );
   } catch (error) {
     return handleApiError(error);
   }

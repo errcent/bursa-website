@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { after, NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
@@ -43,10 +43,14 @@ export async function POST(request: NextRequest) {
     });
 
     const verifyToken = await createEmailVerificationToken(user.id);
-    void sendAccountVerificationEmail({
-      email: user.email,
-      name: user.nama,
-      token: verifyToken,
+    // after() keeps the send off the response path while still guaranteeing it runs —
+    // a bare floating promise can be dropped when the serverless instance freezes.
+    after(async () => {
+      await sendAccountVerificationEmail({
+        email: user.email,
+        name: user.nama,
+        token: verifyToken,
+      });
     });
 
     const token = await signWebSessionToken({ id: user.id, email: user.email });
