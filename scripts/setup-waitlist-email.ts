@@ -19,17 +19,38 @@ import {
 const apiKey = process.env.RESEND_SETUP_API_KEY?.trim();
 const from = process.env.WAITLIST_EMAIL_FROM?.trim();
 const replyTo = process.env.WAITLIST_REPLY_TO?.trim();
+const rateLimitDelayMs = Number(process.env.RESEND_SETUP_DELAY_MS ?? 150);
 
 if (!apiKey) throw new Error("RESEND_SETUP_API_KEY full-access sementara wajib di shell lokal.");
-if (!from) throw new Error("WAITLIST_EMAIL_FROM wajib diisi dengan sender terverifikasi.");
+if (!from || from === "[SENSITIVE]") {
+  throw new Error(
+    "WAITLIST_EMAIL_FROM wajib diisi dengan sender terverifikasi, mis. `Bursa Nalar <belajar@bursanalar.com>`. Jangan load dari `vercel env pull` — nilai sensitif jadi `[SENSITIVE]`."
+  );
+}
 if (!replyTo) throw new Error("WAITLIST_REPLY_TO wajib diisi dengan mailbox yang dipantau.");
 
 const resend = new Resend(apiKey);
 
-function requireData<T>(result: { data: T | null; error: { message: string } | null }): T {
-  if (result.error) throw new Error(result.error.message);
-  if (!result.data) throw new Error("Resend tidak mengembalikan data.");
-  return result.data;
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function resendCall<T>(
+  label: string,
+  fn: () => Promise<{ data: T | null; error: { message: string } | null }>
+): Promise<T> {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    await sleep(rateLimitDelayMs);
+    const result = await fn();
+    if (!result.error) {
+      if (!result.data) throw new Error(`Resend tidak mengembalikan data untuk ${label}.`);
+      return result.data;
+    }
+    const retryable = /too many requests|rate limit/i.test(result.error.message);
+    if (!retryable || attempt === 5) throw new Error(`${label}: ${result.error.message}`);
+    await sleep(1000 * (attempt + 1));
+  }
+  throw new Error(`Resend gagal untuk ${label}.`);
 }
 
 async function ensureContactProperties() {
@@ -44,13 +65,13 @@ async function ensureContactProperties() {
     ["converted", "false"],
     ["engaged", "false"],
   ] as const;
-  const listed = requireData(await resend.contactProperties.list());
+  const listed = await resendCall("contactProperties.list", () => resend.contactProperties.list());
   const existing = new Set(listed.data.map((property) => property.key));
 
   for (const [key, fallbackValue] of definitions) {
     if (existing.has(key)) continue;
-    requireData(
-      await resend.contactProperties.create({
+    await resendCall(`contactProperties.create:${key}`, () =>
+      resend.contactProperties.create({
         key,
         type: "string",
         fallbackValue,
@@ -77,7 +98,7 @@ async function ensureTopics() {
       description: "Tanggal, demo, FAQ, dan informasi akses peluncuran.",
     },
   ] as const;
-  const listed = requireData(await resend.topics.list());
+  const listed = await resendCall("topics.list", () => resend.topics.list());
   const byName = new Map(listed.data.map((topic) => [topic.name, topic.id]));
   const ids: Record<string, string> = {};
 
@@ -87,8 +108,8 @@ async function ensureTopics() {
       ids[definition.env] = existingId;
       continue;
     }
-    const created = requireData(
-      await resend.topics.create({
+    const created = await resendCall(`topics.create:${definition.name}`, () =>
+      resend.topics.create({
         name: definition.name,
         description: definition.description,
         defaultSubscription: "opt_in",
@@ -137,12 +158,12 @@ async function ensureTemplate(key: Exclude<LifecycleEmailKey, "waitlist_confirma
     ],
   };
 
-  const listed = requireData(await resend.templates.list({ limit: 100 }));
+  const listed = await resendCall(`templates.list:${name}`, () => resend.templates.list({ limit: 100 }));
   const existing = listed.data.find((template) => template.name === name);
   const id = existing
-    ? requireData(await resend.templates.update(existing.id, input)).id
-    : requireData(await resend.templates.create(input)).id;
-  requireData(await resend.templates.publish(id));
+    ? (await resendCall(`templates.update:${name}`, () => resend.templates.update(existing.id, input))).id
+    : (await resendCall(`templates.create:${name}`, () => resend.templates.create(input))).id;
+  await resendCall(`templates.publish:${name}`, () => resend.templates.publish(id));
   return id;
 }
 
@@ -178,12 +199,12 @@ async function ensureLaunchTemplate(key: LaunchEmailKey) {
       { key: "LAUNCH_URL", type: "string" as const, fallbackValue: "https://bursanalar.com" },
     ],
   };
-  const listed = requireData(await resend.templates.list({ limit: 100 }));
+  const listed = await resendCall(`templates.list:${name}`, () => resend.templates.list({ limit: 100 }));
   const existing = listed.data.find((template) => template.name === name);
   const id = existing
-    ? requireData(await resend.templates.update(existing.id, input)).id
-    : requireData(await resend.templates.create(input)).id;
-  requireData(await resend.templates.publish(id));
+    ? (await resendCall(`templates.update:${name}`, () => resend.templates.update(existing.id, input))).id
+    : (await resendCall(`templates.create:${name}`, () => resend.templates.create(input))).id;
+  await resendCall(`templates.publish:${name}`, () => resend.templates.publish(id));
   return id;
 }
 
@@ -193,13 +214,13 @@ async function ensureOnboardingAutomation(templateIds: {
   founderStory: string;
 }) {
   const spec = buildWaitlistOnboardingAutomation(templateIds);
-  const listed = requireData(await resend.automations.list());
+  const listed = await resendCall("automations.list:onboarding", () => resend.automations.list());
   const existing = listed.data.find((automation) => automation.name === spec.name);
   if (existing) {
-    requireData(await resend.automations.update(existing.id, spec));
+    await resendCall("automations.update:onboarding", () => resend.automations.update(existing.id, spec));
     return existing.id;
   }
-  return requireData(await resend.automations.create(spec)).id;
+  return (await resendCall("automations.create:onboarding", () => resend.automations.create(spec))).id;
 }
 
 async function ensureDormantLaunchAutomation(templateIds: {
@@ -215,36 +236,31 @@ async function ensureDormantLaunchAutomation(templateIds: {
     founderStory: "",
     ...templateIds,
   });
-  const listed = requireData(await resend.automations.list());
+  const listed = await resendCall("automations.list:launch", () => resend.automations.list());
   const existing = listed.data.find((automation) => automation.name === spec.name);
   if (existing) {
-    requireData(await resend.automations.update(existing.id, spec));
+    await resendCall("automations.update:launch", () => resend.automations.update(existing.id, spec));
     return existing.id;
   }
-  return requireData(await resend.automations.create(spec)).id;
+  return (await resendCall("automations.create:launch", () => resend.automations.create(spec))).id;
 }
 
 async function main() {
   await ensureContactProperties();
   const topicIds = await ensureTopics();
-  const [riskChecklist, productPreview, founderStory] = await Promise.all([
-    ensureTemplate("waitlist_risk_checklist"),
-    ensureTemplate("waitlist_product_preview"),
-    ensureTemplate("waitlist_founder_story"),
-  ]);
+  const riskChecklist = await ensureTemplate("waitlist_risk_checklist");
+  const productPreview = await ensureTemplate("waitlist_product_preview");
+  const founderStory = await ensureTemplate("waitlist_founder_story");
   const automationId = await ensureOnboardingAutomation({
     riskChecklist,
     productPreview,
     founderStory,
   });
-  const [launchAnnouncement, launchDemo, launchFaq, launchOpen, launchFollowup] =
-    await Promise.all([
-      ensureLaunchTemplate("waitlist_launch_announcement"),
-      ensureLaunchTemplate("waitlist_launch_demo"),
-      ensureLaunchTemplate("waitlist_launch_faq"),
-      ensureLaunchTemplate("waitlist_launch_open"),
-      ensureLaunchTemplate("waitlist_launch_followup"),
-    ]);
+  const launchAnnouncement = await ensureLaunchTemplate("waitlist_launch_announcement");
+  const launchDemo = await ensureLaunchTemplate("waitlist_launch_demo");
+  const launchFaq = await ensureLaunchTemplate("waitlist_launch_faq");
+  const launchOpen = await ensureLaunchTemplate("waitlist_launch_open");
+  const launchFollowup = await ensureLaunchTemplate("waitlist_launch_followup");
   const launchAutomationId = await ensureDormantLaunchAutomation({
     launchAnnouncement,
     launchDemo,
