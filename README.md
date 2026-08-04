@@ -135,6 +135,16 @@ Semua email transaksional lewat Resend dan **env-gated**: tanpa `RESEND_API_KEY`
 | `MENTOR_APPLICATION_EMAIL_ENABLED` | Set `false` untuk nonaktifkan tanpa hapus key |
 | `AUTH_EMAIL_ENABLED` | Set `false` untuk nonaktifkan email verifikasi akun |
 | `WAITLIST_EMAIL_ENABLED` | Set `false` untuk nonaktifkan email konfirmasi waitlist |
+| `WAITLIST_LIFECYCLE_ENABLED` | Kill switch sync contact dan enrollment automation; default tertutup, set `true` setelah siap |
+| `WAITLIST_LIFECYCLE_ROLLOUT_PERCENT` | Persentase deterministik `0`, `10`, `50`, atau `100`; default `0` |
+| `WAITLIST_INTERNAL_COHORT` | Daftar email internal dipisah koma yang selalu masuk rollout |
+| `WAITLIST_EMAIL_FROM` | Sender marketing terpisah, mis. `Bursa Nalar <belajar@bursanalar.com>` |
+| `WAITLIST_REPLY_TO` | Mailbox balasan yang benar-benar dipantau |
+| `WAITLIST_PREFERENCES_SECRET` | Secret HMAC untuk tautan preference/unsubscribe; jangan expose ke client |
+| `RESEND_WEBHOOK_SECRET` | Signing secret endpoint `/api/webhooks/resend` |
+| `RESEND_TOPIC_PRODUCT_ID` | Topic Resend untuk update produk |
+| `RESEND_TOPIC_EDUCATION_ID` | Topic Resend untuk edukasi |
+| `RESEND_TOPIC_LAUNCH_ID` | Topic Resend untuk kabar launch |
 
 Tautan verifikasi akun dibangun dari `NEXT_PUBLIC_SITE_URL` ? pastikan nilainya domain produksi (`https://bursanalar.com`).
 
@@ -143,7 +153,18 @@ Tautan verifikasi akun dibangun dari `NEXT_PUBLIC_SITE_URL` ? pastikan nilainya 
 - Waitlist menggunakan **single opt-in**: consent eksplisit langsung mengonfirmasi entri (`emailVerifiedAt = now`).
 - Jika Resend aktif, pendaftar baru menerima email konfirmasi biasa tanpa tautan verifikasi.
 - Jika email sudah terdaftar, API tetap sukses tanpa mengirim email berulang. Entri lama dari flow double opt-in dikonfirmasi saat daftar ulang dan mendapat satu email konfirmasi.
+- Kontak baru disinkronkan retry-safe ke event automation `waitlist.joined` setelah transaksi database sukses. Kegagalan Resend tidak membatalkan pendaftaran.
+- Preference center publik memakai tautan opaque bertanda tangan. Unsubscribe berlaku langsung di database, disinkronkan ke Resend, dan tidak mematikan email keamanan/transaksi akun.
+- Bounce, complaint, dan suppression dari webhook otomatis menghentikan lifecycle berikutnya. Conversion akun email/password maupun Google OAuth juga menghentikan reminder waitlist.
 - Verifikasi kepemilikan email hanya berlaku untuk pendaftaran akun email/password; Google OAuth mengandalkan email terverifikasi dari Google.
+
+Setup Resend dilakukan sekali dari shell lokal dengan full-access key sementara:
+
+```bash
+RESEND_SETUP_API_KEY=re_setup_sementara npm run setup:waitlist-email
+```
+
+Script idempotent tersebut membuat contact properties, tiga Topics, template onboarding, automation onboarding, serta launch sequence berstatus **disabled**. Jangan menaruh `RESEND_SETUP_API_KEY` di Vercel; runtime tetap memakai sending key terbatas. Aktifkan onboarding hanya setelah cohort internal lolos, dan biarkan launch automation dormant sampai tanggal peluncuran nyata tersedia.
 
 ### Setup domain pengirim
 

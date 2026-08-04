@@ -12,9 +12,19 @@ export const waitlistSubmitSchema = z.object({
   utmMedium: z.string().trim().max(128).optional(),
   utmCampaign: z.string().trim().max(128).optional(),
   utmContent: z.string().trim().max(128).optional(),
+  referralCode: z.string().trim().max(64).optional(),
   turnstileToken: z.string().trim().optional(),
   /** Honeypot — must stay empty for real users. */
   website: z.string().max(0).optional(),
 });
 
 export type WaitlistSubmitInput = z.infer<typeof waitlistSubmitSchema>;
+
+export const waitlistPreferencesSchema = z.object({
+  wantsProductUpdates: z.boolean(),
+  wantsEducation: z.boolean(),
+  wantsLaunchNews: z.boolean(),
+  experienceLevel: z.enum(["pemula", "menengah", "mahir"]).nullable().optional(),
+  learningGoal: z.string().trim().max(120).nullable().optional(),
+  marketInterest: z.string().trim().max(120).nullable().optional(),
+});

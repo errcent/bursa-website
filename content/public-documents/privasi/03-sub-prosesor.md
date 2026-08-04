@@ -7,7 +7,7 @@ description: Daftar pihak ketiga yang memproses data atas nama Bursa.
 sortOrder: 3
 ---
 
-_Berlaku efektif: 22 Juli 2026_
+_Berlaku efektif: 4 Agustus 2026_
 
 Sub-prosesor adalah pihak ketiga yang memproses data pribadi **atas nama Bursa** untuk menjalankan layanan platform. Kami **tidak menjual** data pribadimu.
 
@@ -19,7 +19,7 @@ Sub-prosesor adalah pihak ketiga yang memproses data pribadi **atas nama Bursa**
 | **Neon / PostgreSQL cloud** | Database | Data akun, transaksi, progress | AS / EU (tergantung region) | Aktif |
 | **Google LLC** | OAuth login | Email, nama, foto profil publik | AS | Aktif |
 | **Midtrans / Xendit** | Payment gateway | Data transaksi, token pembayaran | Indonesia | Direncanakan |
-| **Resend** | Email transaksional | Email, nama | AS | Direncanakan |
+| **Resend** | Email transaksional dan lifecycle waitlist | Email, nama (bila tersedia), preferensi topik, event delivery | AS | Aktif |
 | **PostHog** | Analitik produk | Data perilaku pseudonim/agregat | EU/US | Direncanakan |
 | **Bunny.net / Mux** | Video streaming CDN | Metadata streaming, IP | EU/US | Direncanakan |
 
@@ -35,7 +35,7 @@ Google OAuth memproses login opsional. Kami hanya menerima email dan profil publ
 Payment gateway memproses transaksi. **Bursa tidak menyimpan nomor kartu** — semua data kartu ditangani oleh gateway bersertifikasi PCI-DSS.
 
 ### Komunikasi
-Penyedia email mengirim notifikasi transaksional (konfirmasi pembelian, reset password).
+Resend mengirim notifikasi transaksional (misalnya reset password) dan lifecycle waitlist sesuai persetujuan eksplisit. Status opt-out, bounce, dan complaint disinkronkan agar kiriman berikutnya dihentikan. Email marketing waitlist dikelola terpisah dari email keamanan dan transaksi akun.
 
 ### Analitik
 Data analitik dipseudonimkan/agregatkan untuk meningkatkan produk — bukan untuk profil individu yang dijual.

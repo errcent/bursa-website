@@ -1,6 +1,7 @@
 import type { UserRole } from "@prisma/client";
 
 import { db } from "@/lib/db";
+import { markWaitlistConverted } from "@/lib/waitlist/resend";
 
 const OAUTH_PASSWORD_MARKER = "oauth-google";
 
@@ -84,9 +85,11 @@ export async function upsertGoogleOAuthUser(input: {
       updates.emailVerifiedAt = new Date();
     }
     if (Object.keys(updates).length === 0) {
+      await markWaitlistConverted(email);
       return { user: existing, isNew: false };
     }
     const user = await db.user.update({ where: { id: existing.id }, data: updates });
+    await markWaitlistConverted(email);
     return { user, isNew: false };
   }
 
@@ -101,6 +104,7 @@ export async function upsertGoogleOAuthUser(input: {
     },
   });
 
+  await markWaitlistConverted(email);
   return { user, isNew: true };
 }
 

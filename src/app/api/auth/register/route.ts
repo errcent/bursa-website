@@ -13,6 +13,7 @@ import { db } from "@/lib/db";
 import { registerSchema } from "@/lib/auth/validation";
 import { createEmailVerificationToken } from "@/lib/auth/email-verification";
 import { sendAccountVerificationEmail } from "@/lib/auth/auth-email";
+import { markWaitlistConverted } from "@/lib/waitlist/resend";
 
 /** bcrypt cost ≥ 12 per security docs (folder 18). */
 const BCRYPT_COST = 12;
@@ -46,11 +47,14 @@ export async function POST(request: NextRequest) {
     // after() keeps the send off the response path while still guaranteeing it runs —
     // a bare floating promise can be dropped when the serverless instance freezes.
     after(async () => {
-      await sendAccountVerificationEmail({
-        email: user.email,
-        name: user.nama,
-        token: verifyToken,
-      });
+      await Promise.all([
+        sendAccountVerificationEmail({
+          email: user.email,
+          name: user.nama,
+          token: verifyToken,
+        }),
+        markWaitlistConverted(user.email),
+      ]);
     });
 
     const token = await signWebSessionToken({ id: user.id, email: user.email });

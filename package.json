@@ -8,6 +8,8 @@
     "build": "prisma generate && prisma migrate deploy && tsx scripts/sync-legal-drafts.ts --force && next build",
     "start": "next start",
     "lint": "eslint",
+    "test:waitlist": "tsx --test tests/waitlist-lifecycle.test.ts",
+    "setup:waitlist-email": "tsx scripts/setup-waitlist-email.ts",
     "postinstall": "prisma generate && node scripts/ensure-patched-sharp.mjs",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
@@ -25,6 +27,7 @@
   "dependencies": {
     "@base-ui/react": "^1.6.0",
     "@prisma/client": "^6.19.3",
+    "@react-email/render": "^2.1.0",
     "@tiptap/extension-link": "3.27.3",
     "@tiptap/extension-placeholder": "3.27.3",
     "@tiptap/extension-underline": "3.27.3",

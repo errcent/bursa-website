@@ -36,6 +36,7 @@ import type {
   AdminRevenueReport,
   AdminStats,
   AdminUser,
+  AdminWaitlistHealth,
   AvailabilitySlotInput,
   AdminAvailabilitySlot,
   MentorSessionConfig,
@@ -601,4 +602,28 @@ export async function removePlaylistItem(
   return request<PlaylistDetail>(`/playlists/${playlistId}/items/${itemId}`, {
     method: "DELETE",
   });
+}
+
+export async function fetchWaitlistHealth(): Promise<ApiResult<AdminWaitlistHealth>> {
+  return request<AdminWaitlistHealth>("/waitlist");
+}
+
+export async function retryWaitlistSync(): Promise<ApiResult<{ ok: boolean; synced: number }>> {
+  return request<{ ok: boolean; synced: number }>("/waitlist", { method: "POST" });
+}
+
+export async function downloadWaitlistCsv(): Promise<void> {
+  const response = await fetch("/api/admin/waitlist?format=csv", {
+    credentials: "include",
+    headers: authHeaders(),
+  });
+  if (!response.ok) throw new Error("Gagal mengekspor waitlist.");
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "bursa-waitlist.csv";
+  anchor.click();
+  URL.revokeObjectURL(url);
 }

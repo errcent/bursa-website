@@ -7,7 +7,7 @@ description: Cara Bursa mengumpulkan, menggunakan, dan melindungi data pribadimu
 sortOrder: 1
 ---
 
-_Berlaku efektif: 22 Juli 2026 · Versi 2.0_
+_Berlaku efektif: 4 Agustus 2026 · Versi 2.1_
 
 **Bursa Trading Academy** ("Bursa", "Platform", "kami") — dioperasikan melalui bursanalar.com — berkomitmen melindungi privasi data pribadimu ("Pengguna", "kamu") sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (**UU PDP**) beserta peraturan pelaksanaannya. Kebijakan ini menjelaskan data apa yang kami kumpulkan, mengapa, bagaimana kami melindunginya, dan hak-hakmu sebagai subjek data.
 
@@ -18,6 +18,7 @@ Dalam konteks UU PDP, Bursa bertindak sebagai **Pengendali Data Pribadi** dan me
 | Kategori | Contoh Data | Sumber |
 |----------|-------------|--------|
 | **Identitas dasar** | Nama, email, nomor telepon (opsional), username | Registrasi |
+| **Waitlist & preferensi email** | Email, waktu/versi persetujuan, sumber kampanye, topik pilihan, interaksi delivery/click | Form waitlist dan preference center |
 | **Kredensial profesional (mentor)** | KTP, NPWP, izin OJK/Bappebti, dokumen rekam jejak | Aplikasi mentor |
 | **Transaksi & finansial** | Riwayat pembelian, metode pembayaran (bukan nomor kartu), rekening bank mentor | Transaksi |
 | **Perilaku belajar** | Progress kelas, catatan pribadi (Notes), watchlist | Penggunaan platform |
@@ -33,6 +34,7 @@ Login Google (opsional): email, nama tampilan, URL foto profil publik — kami t
 | Kategori | Tujuan |
 |----------|--------|
 | Identitas dasar | Akun, autentikasi, komunikasi transaksional |
+| Waitlist & preferensi email | Konfirmasi pendaftaran, onboarding edukasi, update produk, dan informasi peluncuran sesuai pilihan |
 | KYC mentor | Verifikasi kelayakan mentor — **bukan untuk pemasaran** tanpa persetujuan terpisah |
 | Transaksi | Pembayaran, komisi/payout, pelaporan pajak |
 | Perilaku belajar | Personalisasi rekomendasi, peningkatan kurikulum |
@@ -47,7 +49,7 @@ Kami hanya memproses data untuk tujuan di atas dan tidak menggunakannya di luar 
 
 Sesuai UU PDP, kami memproses data berdasarkan salah satu dasar hukum berikut:
 
-1. **Persetujuan eksplisit** — registrasi akun dan penerimaan kebijakan (checkbox, tidak pre-checked).
+1. **Persetujuan eksplisit** — registrasi akun dan penerimaan email lifecycle waitlist (checkbox terpisah, tidak pre-checked, dapat ditarik kapan saja).
 2. **Pelaksanaan kontrak** — pemrosesan transaksi pembelian kelas.
 3. **Kewajiban hukum** — retensi data transaksi untuk pelaporan pajak.
 4. **Kepentingan sah** — deteksi penipuan dan keamanan sistem, seimbang dengan hakmu.
@@ -61,7 +63,7 @@ Kami **tidak menjual** data pribadimu. Data dibagikan terbatas kepada:
 | Payment gateway (Midtrans/Xendit) | Data transaksi | Pemrosesan pembayaran |
 | Hosting (Vercel) & database cloud | Data akun terenkripsi | Infrastruktur aplikasi |
 | Google OAuth | Email, profil publik | Login opsional |
-| Penyedia email (Resend) | Email, nama | Notifikasi transaksional |
+| Penyedia email (Resend) | Email, nama (bila tersedia), preferensi topik, dan event delivery | Notifikasi transaksional serta lifecycle waitlist berdasarkan persetujuan |
 | Analitik (PostHog — rencana) | Data agregat/pseudonim | Peningkatan produk |
 | Otoritas berwenang | Sesuai permintaan hukum sah | Kepatuhan regulasi |
 
@@ -82,11 +84,14 @@ Sesuai UU PDP, kamu berhak:
 
 Ajukan permintaan via [Form Permintaan Data](/privasi/permintaan-data) atau email [privacy@bursanalar.com](mailto:privacy@bursanalar.com). Respons maksimal **14 hari kerja**.
 
+Untuk email waitlist, setiap pesan menyediakan tautan preference center dan berhenti berlangganan. Penarikan persetujuan berlaku segera untuk email marketing waitlist dan tidak menghentikan email keamanan, autentikasi, atau transaksi akun yang diperlukan.
+
 ## Pasal 6 — Retensi Data
 
 | Kategori | Retensi | Setelah Hapus Akun |
 |----------|---------|-------------------|
 | Identitas dasar | Selama akun aktif | Dihapus/dianonimkan 30–90 hari |
+| Waitlist & preferensi email | Selama persetujuan aktif; ditinjau setelah 24 bulan tanpa interaksi | Dihapus/dianonimkan 30–90 hari setelah penarikan, kecuali email minimal pada suppression list untuk menghormati opt-out |
 | KYC mentor | Masa kemitraan + kewajiban hukum | Diarsipkan sesuai hukum |
 | Transaksi | Kewajiban pajak (~10 tahun) | Dianonimkan setelah periode |
 | Notes & progress | Selama akun aktif | Dihapus permanen |

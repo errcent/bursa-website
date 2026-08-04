@@ -9,6 +9,7 @@ import {
   GitBranch,
   LayoutDashboard,
   ListVideo,
+  Mail,
   MessageSquare,
   Settings,
   Shield,
@@ -31,6 +32,7 @@ const allLinks = [
   { href: "/admin/chat-rooms", label: "Chat Room", icon: MessageSquare },
   { href: "/admin/moderation", label: "Moderasi", icon: Shield },
   { href: "/admin/dokumen-publik", label: "Dokumen Publik", icon: FileText },
+  { href: "/admin/waitlist", label: "Waitlist", icon: Mail },
   { href: "/admin/users", label: "Pengguna", icon: Users },
   { href: "/admin/settings", label: "Pengaturan", icon: Settings },
 ];

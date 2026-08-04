@@ -219,6 +219,47 @@ export interface AdminUser {
   createdAt: string;
 }
 
+export interface AdminWaitlistContact {
+  id: string;
+  email: string;
+  status: "ACTIVE" | "UNSUBSCRIBED" | "SUPPRESSED" | "CONVERTED";
+  lifecycleStage: "CONFIRMED" | "NURTURE" | "ENGAGED" | "LAUNCH" | "CONVERTED";
+  syncStatus: "PENDING" | "SYNCED" | "FAILED";
+  source: string | null;
+  utmCampaign: string | null;
+  experienceLevel: string | null;
+  learningGoal: string | null;
+  marketInterest: string | null;
+  referred: boolean;
+  createdAt: string;
+}
+
+export interface AdminWaitlistHealth {
+  totals: {
+    all: number;
+    active: number;
+    unsubscribed: number;
+    suppressed: number;
+    converted: number;
+    syncFailed: number;
+  };
+  delivery: {
+    sent: number;
+    delivered: number;
+    clicked: number;
+    bounced: number;
+    complained: number;
+    bounceRate: number;
+    complaintRate: number;
+  };
+  resendFreeTier: {
+    limit: number;
+    warning: "ok" | "warning" | "critical" | "over";
+  };
+  sources: Array<{ source: string; count: number }>;
+  contacts: AdminWaitlistContact[];
+}
+
 export interface MentorFormInput {
   name: string;
   email: string;

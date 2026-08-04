@@ -72,18 +72,18 @@ model User {
 /// session cap, per-user watermark identity, and anomaly detection (QC-20260719-38).
 /// This is NOT a change to price/lifetime (LOCKED); it only limits credential sharing.
 model UserSession {
-  id         String          @id @default(cuid())
-  userId     String
+  id            String         @id @default(cuid())
+  userId        String
   /// Hashed device fingerprint (never raw). Stable per browser/app install.
-  deviceHash String
-  ipHash     String?
-  userAgent  String?
-  platform   ClientPlatform  @default(WEB)
-  pushToken  String?
-  createdAt  DateTime        @default(now())
-  lastSeenAt DateTime        @default(now())
-  revokedAt  DateTime?
-  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceHash    String
+  ipHash        String?
+  userAgent     String?
+  platform      ClientPlatform @default(WEB)
+  pushToken     String?
+  createdAt     DateTime       @default(now())
+  lastSeenAt    DateTime       @default(now())
+  revokedAt     DateTime?
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   refreshTokens RefreshToken[]
 
   @@unique([userId, deviceHash])
@@ -93,17 +93,17 @@ model UserSession {
 
 /// Opaque refresh tokens for native mobile clients (hashed at rest).
 model RefreshToken {
-  id            String          @id @default(cuid())
+  id            String         @id @default(cuid())
   userId        String
   userSessionId String?
-  tokenHash     String          @unique
+  tokenHash     String         @unique
   deviceHash    String
-  platform      ClientPlatform  @default(IOS)
+  platform      ClientPlatform @default(IOS)
   expiresAt     DateTime
   revokedAt     DateTime?
-  createdAt     DateTime        @default(now())
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userSession   UserSession?    @relation(fields: [userSessionId], references: [id], onDelete: SetNull)
+  createdAt     DateTime       @default(now())
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userSession   UserSession?   @relation(fields: [userSessionId], references: [id], onDelete: SetNull)
 
   @@index([userId, revokedAt])
   @@index([expiresAt])
@@ -160,41 +160,41 @@ model EmailVerificationToken {
 }
 
 model MentorProfile {
-  id                 String                   @id @default(cuid())
-  userId             String                   @unique
-  slug               String                   @unique
-  title              String
-  initials           String
-  avatarUrl          String?
-  bio                String
-  philosophy         String
-  spesialisasi       String
-  instruments        Json
-  licenseLabel       String?
-  verificationStatus VerificationStatus       @default(PENDING)
-  yearsExperience    Int
-  studentsCount      Int                      @default(0)
-  coursesCount       Int                      @default(0)
-  rating             Float                    @default(0)
-  trackRecord        Json
-  availableFor1on1   Boolean                  @default(false)
+  id                  String                   @id @default(cuid())
+  userId              String                   @unique
+  slug                String                   @unique
+  title               String
+  initials            String
+  avatarUrl           String?
+  bio                 String
+  philosophy          String
+  spesialisasi        String
+  instruments         Json
+  licenseLabel        String?
+  verificationStatus  VerificationStatus       @default(PENDING)
+  yearsExperience     Int
+  studentsCount       Int                      @default(0)
+  coursesCount        Int                      @default(0)
+  rating              Float                    @default(0)
+  trackRecord         Json
+  availableFor1on1    Boolean                  @default(false)
   /// Legacy free-form display string. Deprecated — use sessionPriceInt for logic (QC-20260719-22).
-  sessionPrice       String?
+  sessionPrice        String?
   /// Validated numeric 1-on-1 session price (Rupiah). Source of truth for commitment fee & ledger.
-  sessionPriceInt    Int?
+  sessionPriceInt     Int?
   /// Distinct COMPLETED paid buyers across this mentor's courses — the only student
   /// metric allowed to drive ranking/discovery (QC-20260719-26/27). Derived, never self-set.
-  paidStudentsCount  Int                      @default(0)
-  createdAt          DateTime                 @default(now())
-  updatedAt          DateTime                 @updatedAt
-  socialLinks        Json?
-  tagline            String?
-  chatRooms          ChatRoom[]
-  commissionRecords  CommissionRecord[]
-  courses            Course[]
-  availabilitySlots  MentorAvailabilitySlot[]
-  user               User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tradingSignals     TradingSignal[]
+  paidStudentsCount   Int                      @default(0)
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  socialLinks         Json?
+  tagline             String?
+  chatRooms           ChatRoom[]
+  commissionRecords   CommissionRecord[]
+  courses             Course[]
+  availabilitySlots   MentorAvailabilitySlot[]
+  user                User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tradingSignals      TradingSignal[]
   /// Session-payment ledger rows (kind=SESSION) attributed to this mentor (QC-20260719-22/47).
   sessionTransactions Transaction[]
 
@@ -355,28 +355,28 @@ model Enrollment {
 }
 
 model LessonProgress {
-  id             String   @id @default(cuid())
-  userId         String
-  lessonId       String
-  completed      Boolean  @default(false)
+  id                     String    @id @default(cuid())
+  userId                 String
+  lessonId               String
+  completed              Boolean   @default(false)
   /// Client-reported resume position — display only, NOT trusted for completion (QC-20260719-46).
-  watchedSeconds Int      @default(0)
+  watchedSeconds         Int       @default(0)
   /// Server-accumulated verified watch time via signed playback heartbeats. Sole gate for
   /// `completed=true` — client cannot inflate it (QC-20260719-16/46).
-  verifiedWatchedSeconds Int      @default(0)
+  verifiedWatchedSeconds Int       @default(0)
   /// Last heartbeat wall-clock timestamp — bounds per-ping credit against replay/seek cheating.
   lastHeartbeatAt        DateTime?
   /// Last verified playhead position (seconds) — advancement is credited, seeks/rewinds are not.
-  heartbeatPosition      Int      @default(0)
-  updatedAt      DateTime @updatedAt
-  lesson         Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  heartbeatPosition      Int       @default(0)
+  updatedAt              DateTime  @updatedAt
+  lesson                 Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
 }
 
 model Transaction {
-  id               String            @id @default(cuid())
+  id               String                  @id @default(cuid())
   userId           String
   /// Course purchase link. NULL for 1-on-1 session payments (QC-20260719-22/47).
   courseId         String?
@@ -387,11 +387,11 @@ model Transaction {
   amount           Int
   /// Discriminates course purchases from 1-on-1 session payments so a single ledger
   /// (Transaction + CommissionRecord 25%) can span both revenue lines (QC-20260719-22/47).
-  kind             TransactionKind   @default(COURSE)
-  status           TransactionStatus @default(PENDING)
+  kind             TransactionKind         @default(COURSE)
+  status           TransactionStatus       @default(PENDING)
   /// Idempotency guard against duplicate COMPLETED transactions per (user,course/session) or retry (QC-20260719-30).
-  idempotencyKey   String?           @unique
-  createdAt        DateTime          @default(now())
+  idempotencyKey   String?                 @unique
+  createdAt        DateTime                @default(now())
   commissionRecord CommissionRecord?
   course           Course?                 @relation(fields: [courseId], references: [id])
   mentorSession    MentorAvailabilitySlot? @relation(fields: [mentorSessionId], references: [id])
@@ -765,16 +765,16 @@ enum KnowledgeChunkSensitivity {
 
 /// RAG knowledge chunks indexed from vault docs (scripts/index-docs.ts).
 model KnowledgeChunk {
-  id          String                    @id @default(cuid())
-  sourceDoc   String
-  heading     String
-  content     String
-  sensitivity KnowledgeChunkSensitivity @default(PUBLIC)
-  allowedRoles  String[]                  @default([])
-  embedding   Unsupported("vector")?
-  tokenCount  Int                       @default(0)
-  updatedAt   DateTime                  @updatedAt
-  createdAt   DateTime                  @default(now())
+  id           String                    @id @default(cuid())
+  sourceDoc    String
+  heading      String
+  content      String
+  sensitivity  KnowledgeChunkSensitivity @default(PUBLIC)
+  allowedRoles String[]                  @default([])
+  embedding    Unsupported("vector")?
+  tokenCount   Int                       @default(0)
+  updatedAt    DateTime                  @updatedAt
+  createdAt    DateTime                  @default(now())
 
   @@index([sourceDoc])
   @@index([sensitivity])
@@ -1136,6 +1136,38 @@ enum MentorApplicationStatus {
   REJECTED
 }
 
+enum WaitlistStatus {
+  ACTIVE
+  UNSUBSCRIBED
+  SUPPRESSED
+  CONVERTED
+}
+
+enum WaitlistLifecycleStage {
+  CONFIRMED
+  NURTURE
+  ENGAGED
+  LAUNCH
+  CONVERTED
+}
+
+enum WaitlistSyncStatus {
+  PENDING
+  SYNCED
+  FAILED
+}
+
+enum WaitlistEmailEventType {
+  SENT
+  DELIVERED
+  OPENED
+  CLICKED
+  BOUNCED
+  COMPLAINED
+  UNSUBSCRIBED
+  SUPPRESSED
+}
+
 /// Public mentor onboarding form — persists across serverless cold starts.
 model MentorApplication {
   id                      String                  @id @default(cuid())
@@ -1201,9 +1233,14 @@ model DataSubjectRequest {
 
 /// Public waitlist sign-ups — pre-launch email capture (UU PDP consent required).
 model WaitlistEntry {
-  id                    String    @id @default(cuid())
-  email                 String    @unique
-  consentGiven          Boolean   @default(true)
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  consentGiven          Boolean                @default(true)
+  consentedAt           DateTime               @default(now())
+  consentVersion        String                 @default("waitlist-v1")
+  consentPurpose        String                 @default("waitlist_updates")
+  status                WaitlistStatus         @default(ACTIVE)
+  lifecycleStage        WaitlistLifecycleStage @default(CONFIRMED)
   source                String?
   utmSource             String?
   utmMedium             String?
@@ -1211,16 +1248,59 @@ model WaitlistEntry {
   utmContent            String?
   /// SHA-256 prefix of client IP for abuse detection — not raw PII.
   ipHash                String?
-  /// Double opt-in timestamp. Set when the Resend verification link is clicked; when email
-  /// delivery is unconfigured the entry is confirmed at sign-up via consent instead.
+  /// Legacy field retained for compatibility. Waitlist consent confirms the entry immediately.
   emailVerifiedAt       DateTime?
-  verificationTokenHash String?   @unique
+  verificationTokenHash String?                @unique
   verificationExpiresAt DateTime?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  resendContactId       String?                @unique
+  resendSyncStatus      WaitlistSyncStatus     @default(PENDING)
+  resendSyncError       String?                @db.Text
+  lastSyncedAt          DateTime?
+  automationEnrolledAt  DateTime?
+  lastMarketingEmailAt  DateTime?
+  experienceLevel       String?
+  learningGoal          String?
+  marketInterest        String?
+  language              String                 @default("id")
+  wantsProductUpdates   Boolean                @default(true)
+  wantsEducation        Boolean                @default(true)
+  wantsLaunchNews       Boolean                @default(true)
+  engagedAt             DateTime?
+  unsubscribedAt        DateTime?
+  suppressedAt          DateTime?
+  suppressionReason     String?
+  convertedAt           DateTime?
+  referralCode          String                 @unique @default(cuid())
+  referredByCode        String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  emailEvents           WaitlistEmailEvent[]
 
   @@index([createdAt])
   @@index([emailVerifiedAt])
+  @@index([status, createdAt])
+  @@index([lifecycleStage, status])
+  @@index([resendSyncStatus, updatedAt])
+  @@index([referredByCode])
+}
+
+/// Provider delivery events for lifecycle health, suppression, and idempotent webhooks.
+model WaitlistEmailEvent {
+  id                String                 @id @default(cuid())
+  waitlistEntryId   String
+  providerEventId   String                 @unique
+  providerMessageId String?
+  eventType         WaitlistEmailEventType
+  templateKey       String?
+  isMarketing       Boolean                @default(true)
+  metadata          Json?
+  occurredAt        DateTime
+  createdAt         DateTime               @default(now())
+  waitlistEntry     WaitlistEntry          @relation(fields: [waitlistEntryId], references: [id], onDelete: Cascade)
+
+  @@index([waitlistEntryId, occurredAt])
+  @@index([providerMessageId])
+  @@index([eventType, occurredAt])
 }
 
 /// NO-REFUND remediation flow for post-purchase dissatisfaction (founder override, QC-20260719-33).

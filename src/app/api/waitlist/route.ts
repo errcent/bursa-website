@@ -8,6 +8,12 @@ import { db } from "@/lib/db";
 import { waitlistSubmitSchema } from "@/lib/waitlist/validation";
 import { isTurnstileConfigured, verifyTurnstileToken } from "@/lib/turnstile/verify";
 import { isWaitlistEmailEnabled, sendWaitlistConfirmationEmail } from "@/lib/waitlist/email";
+import {
+  WAITLIST_CONSENT_PURPOSE,
+  WAITLIST_CONSENT_VERSION,
+} from "@/lib/waitlist/config";
+import { syncWaitlistLifecycle } from "@/lib/waitlist/resend";
+import { duplicateWaitlistTransition } from "@/lib/waitlist/state";
 
 function hashIp(ip: string): string {
   return createHash("sha256").update(ip).digest("hex").slice(0, 32);
@@ -37,20 +43,32 @@ export async function POST(request: NextRequest) {
     const email = body.email.toLowerCase();
     const ipHash = hashIp(ip);
     const now = new Date();
+    const referrer = body.referralCode
+      ? await db.waitlistEntry.findUnique({
+          where: { referralCode: body.referralCode },
+          select: { referralCode: true, email: true },
+        })
+      : null;
 
     let duplicate = false;
     let shouldSendConfirmation = true;
+    let shouldSyncLifecycle = true;
+    let entryId: string;
 
     try {
-      await db.waitlistEntry.create({
+      const created = await db.waitlistEntry.create({
         data: {
           email,
           consentGiven: true,
+          consentedAt: now,
+          consentVersion: WAITLIST_CONSENT_VERSION,
+          consentPurpose: WAITLIST_CONSENT_PURPOSE,
           source: body.source ?? "waitlist-page",
           utmSource: body.utmSource ?? null,
           utmMedium: body.utmMedium ?? null,
           utmCampaign: body.utmCampaign ?? null,
           utmContent: body.utmContent ?? null,
+          referredByCode: referrer?.email !== email ? (referrer?.referralCode ?? null) : null,
           ipHash,
           // Waitlist is single opt-in: explicit consent confirms the entry immediately.
           // Email verification remains reserved for email/password account registration.
@@ -58,7 +76,9 @@ export async function POST(request: NextRequest) {
           verificationTokenHash: null,
           verificationExpiresAt: null,
         },
+        select: { id: true },
       });
+      entryId = created.id;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -67,17 +87,32 @@ export async function POST(request: NextRequest) {
         duplicate = true;
         const existing = await db.waitlistEntry.findUnique({
           where: { email },
-          select: { emailVerifiedAt: true },
+          select: { id: true, emailVerifiedAt: true, status: true },
         });
+        if (!existing) throw error;
+        entryId = existing.id;
         const alreadyConfirmed = Boolean(existing?.emailVerifiedAt);
-        shouldSendConfirmation = !alreadyConfirmed;
+        const transition = duplicateWaitlistTransition(existing.status, alreadyConfirmed);
+        shouldSendConfirmation = transition.shouldSendConfirmation;
+        shouldSyncLifecycle = transition.shouldSyncLifecycle;
 
         // Recover entries created by the previous double-opt-in flow. A retry confirms
-        // them immediately and sends the normal waitlist confirmation once.
-        if (!alreadyConfirmed) {
+        // them immediately. A fresh explicit consent may also reactivate an unsubscribe,
+        // but never overrides bounce/complaint suppression.
+        if (transition.shouldConfirm) {
           await db.waitlistEntry.update({
             where: { email },
             data: {
+              consentGiven: true,
+              consentedAt: now,
+              consentVersion: WAITLIST_CONSENT_VERSION,
+              consentPurpose: WAITLIST_CONSENT_PURPOSE,
+              status: transition.nextStatus,
+              unsubscribedAt: null,
+              lifecycleStage: "CONFIRMED",
+              automationEnrolledAt: null,
+              resendSyncStatus: "PENDING",
+              resendSyncError: null,
               emailVerifiedAt: now,
               verificationTokenHash: null,
               verificationExpiresAt: null,
@@ -93,13 +128,18 @@ export async function POST(request: NextRequest) {
     if (confirmationEmailScheduled) {
       after(async () => {
         try {
-          const sent = await sendWaitlistConfirmationEmail(email);
+          const sent = await sendWaitlistConfirmationEmail(entryId);
           if (!sent) {
-            console.warn("[waitlist] confirmation email was not sent:", { email });
+            console.warn("[waitlist] confirmation email was not sent:", { entryId });
           }
         } catch (error) {
           console.error("[waitlist] confirmation email pipeline failed:", error);
         }
+      });
+    }
+    if (shouldSyncLifecycle) {
+      after(async () => {
+        await syncWaitlistLifecycle(entryId);
       });
     }
 

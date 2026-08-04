@@ -11,7 +11,10 @@ export interface SendEmailInput {
   subject: string;
   html: string;
   text?: string;
+  from?: string;
   replyTo?: string;
+  headers?: Record<string, string>;
+  tags?: Array<{ name: string; value: string }>;
   attachments?: EmailAttachment[];
 }
 
@@ -30,12 +33,14 @@ export async function sendTransactionalEmail(
   }
 
   const { data, error } = await resend.emails.send({
-    from: getEmailFrom(),
+    from: input.from || getEmailFrom(),
     to: input.to,
     subject: input.subject,
     html: input.html,
     text: input.text,
     replyTo: input.replyTo,
+    headers: input.headers,
+    tags: input.tags,
     attachments: input.attachments?.map((attachment) => ({
       filename: attachment.filename,
       content: attachment.content,

@@ -75,6 +75,7 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
           consentGiven: true,
           source,
           ...utm,
+          referralCode: searchParams.get("ref") ?? undefined,
           turnstileToken: turnstileToken ?? undefined,
           website: honeypot,
         }),
@@ -193,7 +194,9 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
           disabled={loading}
         />
         <span>
-          Saya setuju menerima email update dari Bursa dan telah membaca{" "}
+          Saya setuju menerima konfirmasi, seri onboarding edukasi singkat, serta update produk
+          dan peluncuran Bursa. Setelah onboarding, frekuensi maksimal satu email bernilai per
+          minggu. Saya dapat mengubah preferensi atau berhenti kapan saja, dan telah membaca{" "}
           <Link href="/privasi" className="link-muted font-medium text-foreground">
             Kebijakan Privasi
           </Link>
