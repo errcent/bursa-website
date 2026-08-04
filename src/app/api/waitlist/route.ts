@@ -1,14 +1,13 @@
 import { createHash } from "crypto";
 import { Prisma } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { after, NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/auth/rate-limit";
 import { db } from "@/lib/db";
 import { waitlistSubmitSchema } from "@/lib/waitlist/validation";
 import { isTurnstileConfigured, verifyTurnstileToken } from "@/lib/turnstile/verify";
-import { isWaitlistEmailEnabled, sendWaitlistVerificationEmail } from "@/lib/waitlist/email";
-import { issueWaitlistVerificationToken } from "@/lib/waitlist/verification";
+import { isWaitlistEmailEnabled, sendWaitlistConfirmationEmail } from "@/lib/waitlist/email";
 
 function hashIp(ip: string): string {
   return createHash("sha256").update(ip).digest("hex").slice(0, 32);
@@ -39,12 +38,8 @@ export async function POST(request: NextRequest) {
     const ipHash = hashIp(ip);
     const now = new Date();
 
-    // Double opt-in runs only when Resend is configured. Without it a sign-up would be
-    // stranded as unverified with no way to confirm, so consent alone confirms the entry.
-    const verificationRequired = isWaitlistEmailEnabled();
-
     let duplicate = false;
-    let needsVerificationEmail = verificationRequired;
+    let shouldSendConfirmation = true;
 
     try {
       await db.waitlistEntry.create({
@@ -57,7 +52,9 @@ export async function POST(request: NextRequest) {
           utmCampaign: body.utmCampaign ?? null,
           utmContent: body.utmContent ?? null,
           ipHash,
-          emailVerifiedAt: verificationRequired ? null : now,
+          // Waitlist is single opt-in: explicit consent confirms the entry immediately.
+          // Email verification remains reserved for email/password account registration.
+          emailVerifiedAt: now,
           verificationTokenHash: null,
           verificationExpiresAt: null,
         },
@@ -72,10 +69,12 @@ export async function POST(request: NextRequest) {
           where: { email },
           select: { emailVerifiedAt: true },
         });
-        const alreadyVerified = Boolean(existing?.emailVerifiedAt);
-        needsVerificationEmail = verificationRequired && !alreadyVerified;
+        const alreadyConfirmed = Boolean(existing?.emailVerifiedAt);
+        shouldSendConfirmation = !alreadyConfirmed;
 
-        if (!verificationRequired && !alreadyVerified) {
+        // Recover entries created by the previous double-opt-in flow. A retry confirms
+        // them immediately and sends the normal waitlist confirmation once.
+        if (!alreadyConfirmed) {
           await db.waitlistEntry.update({
             where: { email },
             data: {
@@ -90,18 +89,22 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    let verificationEmailSent = false;
-    if (needsVerificationEmail) {
-      try {
-        const token = await issueWaitlistVerificationToken(email);
-        verificationEmailSent = await sendWaitlistVerificationEmail(email, token);
-      } catch (error) {
-        console.error("[waitlist] verification email pipeline failed:", error);
-      }
+    const confirmationEmailScheduled = isWaitlistEmailEnabled() && shouldSendConfirmation;
+    if (confirmationEmailScheduled) {
+      after(async () => {
+        try {
+          const sent = await sendWaitlistConfirmationEmail(email);
+          if (!sent) {
+            console.warn("[waitlist] confirmation email was not sent:", { email });
+          }
+        } catch (error) {
+          console.error("[waitlist] confirmation email pipeline failed:", error);
+        }
+      });
     }
 
     return jsonOk(
-      { ok: true, duplicate, verificationRequired, verificationEmailSent },
+      { ok: true, duplicate, confirmationEmailScheduled },
       duplicate ? 200 : 201
     );
   } catch (error) {

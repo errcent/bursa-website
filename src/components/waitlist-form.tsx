@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowUpRight, CheckCircle2, Loader2, MailCheck, MailWarning } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Loader2 } from "lucide-react";
 
 import { captureAnalyticsEvent } from "@/lib/analytics/posthog";
 import { authInputClassName } from "@/components/auth-field";
@@ -21,8 +21,7 @@ interface WaitlistFormProps {
 
 interface WaitlistOutcome {
   duplicate: boolean;
-  verificationRequired: boolean;
-  verificationEmailSent: boolean;
+  confirmationEmailScheduled: boolean;
 }
 
 export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
@@ -84,8 +83,7 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
       const payload = (await response.json()) as {
         error?: string;
         duplicate?: boolean;
-        verificationRequired?: boolean;
-        verificationEmailSent?: boolean;
+        confirmationEmailScheduled?: boolean;
       };
 
       if (!response.ok) {
@@ -103,8 +101,7 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
 
       setOutcome({
         duplicate: Boolean(payload.duplicate),
-        verificationRequired: Boolean(payload.verificationRequired),
-        verificationEmailSent: Boolean(payload.verificationEmailSent),
+        confirmationEmailScheduled: Boolean(payload.confirmationEmailScheduled),
       });
     } catch {
       setError("Koneksi bermasalah. Periksa internet kamu lalu coba lagi.");
@@ -115,39 +112,6 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
 
   if (outcome) {
     const submittedEmail = email.trim();
-
-    if (outcome.verificationRequired && outcome.verificationEmailSent) {
-      return (
-        <div className="surface-card flex flex-col items-center gap-3 rounded-2xl p-6 text-center sm:p-8">
-          <MailCheck className="size-10 text-emerald" strokeWidth={1.5} />
-          <h2 className="font-heading text-lg font-semibold">
-            {outcome.duplicate ? "Email verifikasi dikirim ulang" : "Cek inbox kamu"}
-          </h2>
-          <p className="section-copy max-w-sm">
-            Kami mengirim tautan verifikasi ke{" "}
-            <span className="font-medium text-foreground">{submittedEmail}</span>. Klik tautan itu
-            untuk mengonfirmasi pendaftaran waitlist — berlaku 48 jam.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Tidak ada di inbox? Periksa folder spam atau promosi.
-          </p>
-        </div>
-      );
-    }
-
-    if (outcome.verificationRequired) {
-      return (
-        <div className="surface-card flex flex-col items-center gap-3 rounded-2xl p-6 text-center sm:p-8">
-          <MailWarning className="size-10 text-amber-500" strokeWidth={1.5} />
-          <h2 className="font-heading text-lg font-semibold">Pendaftaran tersimpan</h2>
-          <p className="section-copy max-w-sm">
-            <span className="font-medium text-foreground">{submittedEmail}</span> sudah kami catat,
-            tapi email verifikasi gagal terkirim. Coba daftar lagi beberapa saat lagi untuk
-            mengirim ulang tautannya.
-          </p>
-        </div>
-      );
-    }
 
     return (
       <div className="surface-card flex flex-col items-center gap-3 rounded-2xl p-6 text-center sm:p-8">
@@ -169,6 +133,11 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
             </>
           )}
         </p>
+        {outcome.confirmationEmailScheduled ? (
+          <p className="text-xs text-muted-foreground">
+            Email konfirmasi sedang dikirim. Jika belum terlihat, periksa folder spam atau promosi.
+          </p>
+        ) : null}
       </div>
     );
   }

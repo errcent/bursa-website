@@ -124,7 +124,7 @@ Semua email transaksional lewat Resend dan **env-gated**: tanpa `RESEND_API_KEY`
 | Alur | Trigger | Pengirim |
 |---|---|---|
 | Verifikasi email akun | `POST /api/auth/register` (signup email/password) | `src/lib/auth/auth-email.ts` |
-| Verifikasi waitlist (double opt-in) | `POST /api/waitlist` | `src/lib/waitlist/email.ts` |
+| Konfirmasi masuk waitlist (single opt-in) | `POST /api/waitlist` | `src/lib/waitlist/email.ts` |
 | Aplikasi mentor baru ? admin (HTML + PDF) | `POST /api/mentor/applications` | `src/lib/mentor-program/application-notification.ts` |
 
 | Variable | Keterangan |
@@ -134,15 +134,16 @@ Semua email transaksional lewat Resend dan **env-gated**: tanpa `RESEND_API_KEY`
 | `MENTOR_APPLICATION_ADMIN_EMAIL` | Penerima admin (default: `admin.kitty033@passinbox.com`) |
 | `MENTOR_APPLICATION_EMAIL_ENABLED` | Set `false` untuk nonaktifkan tanpa hapus key |
 | `AUTH_EMAIL_ENABLED` | Set `false` untuk nonaktifkan email verifikasi akun |
-| `WAITLIST_EMAIL_ENABLED` | Set `false` untuk nonaktifkan double opt-in waitlist |
+| `WAITLIST_EMAIL_ENABLED` | Set `false` untuk nonaktifkan email konfirmasi waitlist |
 
-Tautan verifikasi dibangun dari `NEXT_PUBLIC_SITE_URL` ? pastikan nilainya domain produksi (`https://bursanalar.com`).
+Tautan verifikasi akun dibangun dari `NEXT_PUBLIC_SITE_URL` ? pastikan nilainya domain produksi (`https://bursanalar.com`).
 
 ### Perilaku waitlist
 
-- **Resend aktif:** entri disimpan `emailVerifiedAt = null`, tautan verifikasi 48 jam dikirim ke pendaftar. Klik tautan ? `/waitlist/verifikasi` ? `POST /api/waitlist/verify`.
-- **Resend belum dikonfigurasi:** entri langsung dikonfirmasi via consent (perilaku lama) supaya pendaftar tidak tertahan tanpa jalur verifikasi.
-- Daftar ulang dengan email yang belum terverifikasi akan **mengirim ulang** tautan (token lama diganti).
+- Waitlist menggunakan **single opt-in**: consent eksplisit langsung mengonfirmasi entri (`emailVerifiedAt = now`).
+- Jika Resend aktif, pendaftar baru menerima email konfirmasi biasa tanpa tautan verifikasi.
+- Jika email sudah terdaftar, API tetap sukses tanpa mengirim email berulang. Entri lama dari flow double opt-in dikonfirmasi saat daftar ulang dan mendapat satu email konfirmasi.
+- Verifikasi kepemilikan email hanya berlaku untuk pendaftaran akun email/password; Google OAuth mengandalkan email terverifikasi dari Google.
 
 ### Setup domain pengirim
 
@@ -280,7 +281,7 @@ Vercel ? project **bursa-website** ? **Settings** ? **Environment Variables** ? 
 | `NEXTAUTH_SECRET` | Random secret untuk session JWT |
 | `NEXTAUTH_URL` | `https://bursanalar.com` (Production) |
 | `NEXT_PUBLIC_SITE_URL` | `https://bursanalar.com` ? basis tautan verifikasi email |
-| `RESEND_API_KEY` | Resend API key (verifikasi akun, waitlist, aplikasi mentor) |
+| `RESEND_API_KEY` | Resend API key (verifikasi akun email/password, konfirmasi waitlist, aplikasi mentor) |
 | `EMAIL_FROM` | From address Resend terverifikasi, mis. `Bursa <noreply@bursanalar.com>` |
 | `MENTOR_APPLICATION_ADMIN_EMAIL` | Opsional ? override penerima admin |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key (waitlist) |
