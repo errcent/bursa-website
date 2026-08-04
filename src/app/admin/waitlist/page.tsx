@@ -12,7 +12,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   downloadWaitlistCsv,
   fetchWaitlistHealth,
+  fetchWaitlistLifecycleApproval,
   retryWaitlistSync,
+  updateWaitlistLifecycleApproval,
 } from "@/lib/admin/api";
 import type { AdminWaitlistContact, AdminWaitlistHealth } from "@/lib/admin/types";
 
@@ -23,21 +25,45 @@ export default function AdminWaitlistPage() {
   const { toast } = useAdminToast();
   const [health, setHealth] = useState<AdminWaitlistHealth | null>(null);
   const [retrying, setRetrying] = useState(false);
+  const [lifecycleApprovedAt, setLifecycleApprovedAt] = useState<string | null>(null);
+  const [approvingLifecycle, setApprovingLifecycle] = useState(false);
 
   const load = useCallback(async () => {
-    const result = await fetchWaitlistHealth();
-    setHealth(result.data);
+    const [healthResult, approvalResult] = await Promise.all([
+      fetchWaitlistHealth(),
+      fetchWaitlistLifecycleApproval(),
+    ]);
+    setHealth(healthResult.data);
+    setLifecycleApprovedAt(approvalResult.data.approvedAt);
   }, []);
 
   useEffect(() => {
     let cancelled = false;
-    void fetchWaitlistHealth().then((result) => {
-      if (!cancelled) setHealth(result.data);
+    void load().then(() => {
+      if (cancelled) return;
     });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [load]);
+
+  async function toggleLifecycleApproval() {
+    setApprovingLifecycle(true);
+    try {
+      const action = lifecycleApprovedAt ? "revoke" : "approve";
+      const result = await updateWaitlistLifecycleApproval(action);
+      setLifecycleApprovedAt(result.data.approvedAt);
+      toast(
+        action === "approve"
+          ? "Lifecycle campaign disetujui. Enable automation di Resend secara manual."
+          : "Persetujuan lifecycle dicabut."
+      );
+    } catch {
+      toast("Gagal memperbarui persetujuan lifecycle.", "error");
+    } finally {
+      setApprovingLifecycle(false);
+    }
+  }
 
   async function retrySync() {
     setRetrying(true);
@@ -144,6 +170,26 @@ export default function AdminWaitlistPage() {
           <Button onClick={retrySync} disabled={retrying}>
             <RefreshCw className={retrying ? "animate-spin" : ""} />
             Retry sync
+          </Button>
+        </div>
+      </div>
+
+      <div className="rounded-xl border p-4 text-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-medium">
+              Mode email: {lifecycleApprovedAt ? "Lifecycle disetujui founder" : "Confirmation only (launch)"}
+            </p>
+            <p className="mt-1 text-muted-foreground">
+              D+2/D+6/D+12 tidak terkirim sampai kamu approve di sini dan enable automation di Resend.
+            </p>
+          </div>
+          <Button
+            variant={lifecycleApprovedAt ? "outline" : "default"}
+            onClick={() => void toggleLifecycleApproval()}
+            disabled={approvingLifecycle}
+          >
+            {lifecycleApprovedAt ? "Cabut persetujuan lifecycle" : "Approve lifecycle campaign"}
           </Button>
         </div>
       </div>

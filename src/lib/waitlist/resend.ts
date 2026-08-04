@@ -9,6 +9,7 @@ import {
   isWaitlistLifecycleEnabled,
   WAITLIST_AUTOMATION_EVENT,
 } from "@/lib/waitlist/config";
+import { isWaitlistLifecycleApproved } from "@/lib/waitlist/lifecycle-approval";
 import {
   getWaitlistPreferencesUrl,
   getWaitlistUnsubscribeUrl,
@@ -20,6 +21,7 @@ function errorMessage(error: unknown): string {
 
 export async function syncWaitlistLifecycle(entryId: string): Promise<boolean> {
   if (!isWaitlistLifecycleEnabled()) return false;
+  if (!(await isWaitlistLifecycleApproved())) return false;
 
   const resend = getResendManagementClient();
   if (!resend) return false;

@@ -1,11 +1,19 @@
 import {
   getTurnstileSecretKey,
+  isTurnstileRequiredInProduction,
   isTurnstileServerEnabled,
   warnIfTurnstileMisconfigured,
 } from "@/lib/turnstile/config";
 
 export function isTurnstileConfigured(): boolean {
+  if (isTurnstileRequiredInProduction()) {
+    return isTurnstileServerEnabled();
+  }
   return isTurnstileServerEnabled();
+}
+
+export function isTurnstileBlockingMisconfiguration(): boolean {
+  return isTurnstileRequiredInProduction() && !isTurnstileServerEnabled();
 }
 
 export async function verifyTurnstileToken(

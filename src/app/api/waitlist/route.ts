@@ -6,7 +6,7 @@ import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/auth/rate-limit";
 import { db } from "@/lib/db";
 import { waitlistSubmitSchema } from "@/lib/waitlist/validation";
-import { isTurnstileConfigured, verifyTurnstileToken } from "@/lib/turnstile/verify";
+import { isTurnstileBlockingMisconfiguration, isTurnstileConfigured, verifyTurnstileToken } from "@/lib/turnstile/verify";
 import { isWaitlistEmailEnabled, sendWaitlistConfirmationEmail } from "@/lib/waitlist/email";
 import {
   WAITLIST_CONSENT_PURPOSE,
@@ -31,6 +31,10 @@ export async function POST(request: NextRequest) {
 
     if (body.website) {
       return jsonOk({ ok: true, duplicate: false });
+    }
+
+    if (isTurnstileBlockingMisconfiguration()) {
+      return jsonError("Waitlist sementara tidak tersedia. Coba lagi nanti.", 503);
     }
 
     if (isTurnstileConfigured()) {

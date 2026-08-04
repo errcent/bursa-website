@@ -1,7 +1,8 @@
-import { NextRequest } from "next/server";
+import { NextRequest, after } from "next/server";
 import { z } from "zod";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { sendPasswordResetEmail } from "@/lib/auth/auth-email";
 import { maskEmail } from "@/lib/auth/password-policy";
 import { createPasswordResetToken } from "@/lib/auth/password-reset";
 import { checkRateLimit, clientIp } from "@/lib/auth/rate-limit";
@@ -34,7 +35,14 @@ export async function POST(request: NextRequest) {
     const user = await db.user.findUnique({ where: { email } });
 
     if (user) {
-      await createPasswordResetToken(user.id);
+      const token = await createPasswordResetToken(user.id);
+      after(async () => {
+        await sendPasswordResetEmail({
+          email: user.email,
+          name: user.nama,
+          token,
+        });
+      });
     }
 
     return jsonOk({

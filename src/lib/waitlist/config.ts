@@ -21,6 +21,11 @@ export function isWaitlistLifecycleEnabled(): boolean {
   return value === "true" || value === "1";
 }
 
+export function isWaitlistLifecycleApprovedByEnv(): boolean {
+  const value = process.env.WAITLIST_LIFECYCLE_APPROVED?.trim().toLowerCase();
+  return value === "true" || value === "1";
+}
+
 export function getWaitlistLifecycleRolloutPercent(): number {
   const parsed = Number(process.env.WAITLIST_LIFECYCLE_ROLLOUT_PERCENT ?? "0");
   return Number.isFinite(parsed) ? Math.min(100, Math.max(0, parsed)) : 0;

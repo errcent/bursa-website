@@ -78,15 +78,14 @@ const DEVELOPER_USER: StoredUser = {
   createdAt: "2026-01-01T00:00:00.000Z",
 };
 
-const SEED_USERS: StoredUser[] = [
-  DEMO_USER,
-  ADMIN_USER,
-  LEARNER_USER,
-  MENTOR_USER,
-  DEVELOPER_USER,
-];
+const IS_DEV_CLIENT = process.env.NODE_ENV !== "production";
+
+const SEED_USERS: StoredUser[] = IS_DEV_CLIENT
+  ? [DEMO_USER, ADMIN_USER, LEARNER_USER, MENTOR_USER, DEVELOPER_USER]
+  : [];
 
 function roleForEmail(email: string): UserRole {
+  if (!IS_DEV_CLIENT) return "learner";
   if (email === "admin@test.dev") return "admin";
   if (email === "developer@test.dev" || email.endsWith("@dev.bursa.dev")) return "developer";
   if (email === "mentor@test.dev" || email.endsWith("@mentor.bursa.dev")) return "mentor";
@@ -692,18 +691,22 @@ export function getStoredUserCreatedAt(email: string): string | null {
 }
 
 export function getDemoCredentials() {
+  if (!IS_DEV_CLIENT) return null;
   return { identifier: DEMO_USER.email, password: "demo1234" };
 }
 
 export function getAdminCredentials() {
+  if (!IS_DEV_CLIENT) return null;
   return { email: ADMIN_USER.email, password: "password123" };
 }
 
 export function getMentorCredentials() {
+  if (!IS_DEV_CLIENT) return null;
   return { email: MENTOR_USER.email, password: "password123" };
 }
 
 export function getDeveloperCredentials() {
+  if (!IS_DEV_CLIENT) return null;
   return { email: DEVELOPER_USER.email, password: "password123" };
 }
 

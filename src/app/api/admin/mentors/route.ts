@@ -1,3 +1,5 @@
+import { randomBytes } from "crypto";
+
 import { UserRole, VerificationStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
@@ -43,7 +45,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email sudah terdaftar." }, { status: 409 });
     }
 
-    const passwordHash = await bcrypt.hash("password123", 10);
+    const tempPassword = randomBytes(18).toString("base64url");
+    const passwordHash = await bcrypt.hash(tempPassword, 12);
     const initials = input.name
       .split(" ")
       .slice(0, 2)

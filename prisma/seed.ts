@@ -49,6 +49,17 @@ function mapTier(value: Level | "INTERNAL"): ChatRoomTier {
 }
 
 async function main() {
+  const dbUrl = process.env.DATABASE_URL ?? "";
+  const looksProduction =
+    process.env.VERCEL_ENV === "production" ||
+    dbUrl.includes("neon.tech") ||
+    dbUrl.includes("prod");
+  if (looksProduction && process.env.SEED_ALLOW_PRODUCTION !== "true") {
+    throw new Error(
+      "Refusing to seed a production-like database. Set SEED_ALLOW_PRODUCTION=true only for intentional ops."
+    );
+  }
+
   console.log("Seeding database...");
 
   await prisma.chatMessageReaction.deleteMany();

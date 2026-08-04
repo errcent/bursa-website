@@ -79,17 +79,7 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      const target = (error.meta?.target as string[] | undefined)?.join(", ") ?? "field";
-      if (target.includes("email")) {
-        return jsonError("Email sudah terdaftar. Silakan masuk.", 409);
-      }
-      if (target.includes("username")) {
-        return jsonError("Username sudah dipakai. Pilih username lain.", 409);
-      }
-      if (target.includes("phone")) {
-        return jsonError("Nomor telepon sudah terdaftar.", 409);
-      }
-      return jsonError("Data duplikat.", 409);
+      return jsonError("Akun dengan data tersebut sudah terdaftar.", 409);
     }
     return handleApiError(error);
   }

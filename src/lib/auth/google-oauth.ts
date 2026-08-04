@@ -42,14 +42,12 @@ export function getAuthSecret(): string {
   return "bursa-build-placeholder-secret-not-for-production";
 }
 
-function mapClientRole(email: string, roleHint?: string): UserRole {
+function mapClientRole(_email: string, roleHint?: string): UserRole {
   const normalized = roleHint?.toLowerCase();
-  if (normalized === "admin" || email === "admin@test.dev") return "ADMIN";
-  if (normalized === "developer" || email === "developer@test.dev" || email.endsWith("@dev.bursa.dev")) {
-    return "DEVELOPER";
-  }
-  if (normalized === "mentor" || email === "mentor@test.dev" || email.endsWith("@mentor.bursa.dev")) {
-    return "MENTOR";
+  if (process.env.NODE_ENV !== "production") {
+    if (normalized === "admin") return "ADMIN";
+    if (normalized === "developer") return "DEVELOPER";
+    if (normalized === "mentor") return "MENTOR";
   }
   return "LEARNER";
 }

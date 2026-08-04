@@ -259,6 +259,7 @@ export async function notifyAdminOfMentorApplication(
   const subject = `[Bursa] Aplikasi Mentor Baru — ${application.fullName}`;
 
   const result = await sendTransactionalEmail({
+    category: "mentor_admin",
     to: adminEmail,
     subject,
     html: buildHtmlEmail(application),

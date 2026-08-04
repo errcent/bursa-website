@@ -1,5 +1,6 @@
 import { getEmailFrom } from "@/lib/email/config";
 import { getResendClient } from "@/lib/email/client";
+import { type EmailCategory, isEmailCategoryAllowed } from "@/lib/email/policy";
 
 export interface EmailAttachment {
   filename: string;
@@ -7,6 +8,7 @@ export interface EmailAttachment {
 }
 
 export interface SendEmailInput {
+  category: EmailCategory;
   to: string | string[];
   subject: string;
   html: string;
@@ -27,6 +29,11 @@ export interface SendEmailResult {
 export async function sendTransactionalEmail(
   input: SendEmailInput
 ): Promise<SendEmailResult> {
+  if (!isEmailCategoryAllowed(input.category)) {
+    console.warn("[email] blocked by policy:", input.category);
+    return { ok: false, error: `Kategori email ${input.category} tidak diizinkan.` };
+  }
+
   const resend = getResendClient();
   if (!resend) {
     return { ok: false, error: "Email tidak dikonfigurasi (RESEND_API_KEY kosong)." };

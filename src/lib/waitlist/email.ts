@@ -41,6 +41,7 @@ export async function sendWaitlistConfirmationEmail(entryId: string): Promise<bo
   const text = template.plainText(props);
 
   const result = await sendTransactionalEmail({
+    category: "waitlist_confirmation",
     to: entry.email,
     from: getWaitlistMarketingFrom(),
     replyTo: getWaitlistReplyTo(),

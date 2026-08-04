@@ -89,6 +89,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<ApiResult<T
     const data = (await res.json()) as T;
     return { data, source: "api" };
   } catch (error) {
+    if (process.env.NODE_ENV === "production") {
+      throw error instanceof Error ? error : new Error("Permintaan admin gagal");
+    }
     // Collaboration chat has no mock — surface the real failure.
     if (path === "/collaboration-chat") {
       throw error instanceof Error ? error : new Error("Gagal memuat ruang kolaborasi.");
@@ -626,6 +629,37 @@ export async function retryWaitlistSync(): Promise<
     failedEligible: number;
     lastError: string | null;
   }>("/waitlist", { method: "POST" });
+}
+
+export async function fetchWaitlistLifecycleApproval(): Promise<
+  ApiResult<{
+    approvedAt: string | null;
+    approvedByUserId: string | null;
+    note: string | null;
+    envApproved: boolean;
+    lifecycleEnabled: boolean;
+  }>
+> {
+  return request("/waitlist/lifecycle-approval");
+}
+
+export async function updateWaitlistLifecycleApproval(
+  action: "approve" | "revoke",
+  note?: string
+): Promise<
+  ApiResult<{
+    ok: boolean;
+    approvedAt: string | null;
+    approvedByUserId: string | null;
+    note: string | null;
+    envApproved: boolean;
+    lifecycleEnabled: boolean;
+  }>
+> {
+  return request("/waitlist/lifecycle-approval", {
+    method: "POST",
+    body: JSON.stringify({ action, note }),
+  });
 }
 
 export async function downloadWaitlistCsv(): Promise<void> {

@@ -1231,6 +1231,15 @@ model DataSubjectRequest {
   @@index([email])
 }
 
+/// Runtime flags and audit for founder-controlled launch settings.
+model SystemConfig {
+  id                              String    @id @default("default")
+  waitlistLifecycleApprovedAt     DateTime?
+  waitlistLifecycleApprovedByUserId String?
+  waitlistLifecycleApprovalNote   String?   @db.Text
+  updatedAt                       DateTime  @updatedAt
+}
+
 /// Public waitlist sign-ups — pre-launch email capture (UU PDP consent required).
 model WaitlistEntry {
   id                    String                 @id @default(cuid())

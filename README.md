@@ -41,13 +41,9 @@ npm run dev
 
 Buka http://localhost:3000
 
-### Akun test (password: `password123`)
+### Akun test (development only)
 
-| Email | Role |
-|---|---|
-| `learner@test.dev` | Learner |
-| `mentor@test.dev` | Mentor |
-| `admin@test.dev` | Admin |
+Akun seed hanya untuk `npm run db:seed` di **database lokal**. Jangan jalankan seed di production. Production admin dibuat via `npm run bootstrap:production-admin` (lihat docs launch).
 
 ---
 
@@ -137,6 +133,9 @@ Semua email transaksional lewat Resend dan **env-gated**: tanpa `RESEND_API_KEY`
 | `AUTH_EMAIL_ENABLED` | Set `false` untuk nonaktifkan email verifikasi akun |
 | `WAITLIST_EMAIL_ENABLED` | Set `false` untuk nonaktifkan email konfirmasi waitlist |
 | `WAITLIST_LIFECYCLE_ENABLED` | Kill switch sync contact dan enrollment automation; default tertutup, set `true` setelah siap |
+| `WAITLIST_LIFECYCLE_APPROVED` | Gate tambahan; lifecycle sync butuh approve founder (DB atau env) |
+| `EMAIL_ALLOWED_CATEGORIES` | Allowlist kategori email transaksional untuk launch |
+| `AUTH_WELCOME_EMAIL_ENABLED` | Email selamat datang Google OAuth; default off untuk launch |
 | `WAITLIST_LIFECYCLE_ROLLOUT_PERCENT` | Persentase deterministik `0`, `10`, `50`, atau `100`; default `0` |
 | `WAITLIST_INTERNAL_COHORT` | Daftar email internal dipisah koma yang selalu masuk rollout |
 | `WAITLIST_EMAIL_FROM` | Sender marketing terpisah, mis. `Bursa Nalar <belajar@bursanalar.com>` |

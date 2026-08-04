@@ -25,6 +25,22 @@
 - Final reminder hanya boleh dikirim jika deadline atau capacity benar-benar ada dan dapat diverifikasi.
 - Kontak `CONVERTED`, `UNSUBSCRIBED`, atau `SUPPRESSED` tidak boleh menerima launch reminder.
 
+## Launch mode (confirmation only)
+
+Production launch default — **tanpa persetujuan founder**:
+
+| Env | Value |
+|---|---|
+| `EMAIL_ALLOWED_CATEGORIES` | `waitlist_confirmation,auth_verification,auth_password_reset` |
+| `WAITLIST_LIFECYCLE_ENABLED` | `false` |
+| `WAITLIST_LIFECYCLE_APPROVED` | `false` |
+| `AUTH_WELCOME_EMAIL_ENABLED` | `false` |
+| `MENTOR_APPLICATION_EMAIL_ENABLED` | `false` |
+
+Resend automation onboarding **Disabled** di dashboard. Signup waitlist hanya kirim email konfirmasi.
+
+Setelah founder approve di `/admin/waitlist` **dan** enable automation manual di Resend, naikkan env lifecycle bertahap.
+
 ## Rollout
 
 1. Set `WAITLIST_LIFECYCLE_ENABLED=true`, rollout `0`, dan isi `WAITLIST_INTERNAL_COHORT`.

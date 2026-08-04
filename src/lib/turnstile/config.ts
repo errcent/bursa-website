@@ -20,6 +20,20 @@ export function isTurnstileClientEnabled(): boolean {
   return Boolean(getTurnstileSiteKey());
 }
 
+/** Fail closed in production when Turnstile keys are missing. */
+export function isTurnstileRequiredInProduction(): boolean {
+  return process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+}
+
+export function assertTurnstileConfiguredForProduction(): void {
+  if (!isTurnstileRequiredInProduction()) return;
+  if (!isTurnstileServerEnabled()) {
+    throw new Error(
+      "Turnstile wajib di production: set NEXT_PUBLIC_TURNSTILE_SITE_KEY dan TURNSTILE_SECRET_KEY."
+    );
+  }
+}
+
 export function warnIfTurnstileMisconfigured(): void {
   const hasSite = Boolean(getTurnstileSiteKey());
   const hasSecret = Boolean(getTurnstileSecretKey());

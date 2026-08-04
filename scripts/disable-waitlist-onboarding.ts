@@ -10,13 +10,13 @@ if (!automationId) throw new Error("WAITLIST_ONBOARDING_AUTOMATION_ID wajib di s
 
 const resend = new Resend(apiKey);
 
-if (process.env.ALLOW_LIFECYCLE_AUTOMATION_ENABLE !== "true") {
-  throw new Error(
-    "Set ALLOW_LIFECYCLE_AUTOMATION_ENABLE=true untuk enable automation onboarding."
-  );
-}
-
 async function main() {
+  const disabledOnly = await resend.automations.update(automationId, { status: "disabled" });
+  if (!disabledOnly.error) {
+    console.log(JSON.stringify({ automationId, status: "disabled", mode: "status-only" }, null, 2));
+    return;
+  }
+
   const spec = buildWaitlistOnboardingAutomation({
     riskChecklist: "a10998ce-9a60-42c1-a252-0786865cf31b",
     productPreview: "705735f1-d9b5-4344-b060-ad1789718762",
@@ -24,10 +24,10 @@ async function main() {
   });
   const { data, error } = await resend.automations.update(automationId, {
     ...spec,
-    status: "enabled",
+    status: "disabled",
   });
   if (error) throw new Error(error.message);
-  console.log(JSON.stringify({ automationId: data?.id ?? automationId, status: "enabled" }, null, 2));
+  console.log(JSON.stringify({ automationId: data?.id ?? automationId, status: "disabled" }, null, 2));
 }
 
 void main();
