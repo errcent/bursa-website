@@ -13,7 +13,6 @@ const baseUrl = process.env.QA_BASE_URL ?? "http://localhost:3000";
 
 const viewports = [
   { name: "desktop", width: 1440, height: 900 },
-  { name: "tablet", width: 768, height: 1024 },
   { name: "mobile", width: 390, height: 844 },
 ];
 
@@ -21,12 +20,19 @@ const pages = [
   { id: "hub", path: "/lab", label: "Lab Hub" },
   { id: "position-size", path: "/lab/position-size", label: "Position Size" },
   { id: "monte-carlo", path: "/lab/monte-carlo", label: "Monte Carlo" },
+  { id: "trade-expectancy", path: "/lab/trade-expectancy", label: "Trade Expectancy" },
+];
+
+const redirectChecks = [
+  { from: "/lab/backtester", expectPath: "/lab" },
+  { from: "/lab/portfolio-var", expectPath: "/lab" },
+  { from: "/lab/volatility", expectPath: "/lab" },
 ];
 
 mkdirSync(outDir, { recursive: true });
 
 const browser = await chromium.launch();
-const report = { capturedAt: new Date().toISOString(), baseUrl, pages: [] };
+const report = { capturedAt: new Date().toISOString(), baseUrl, pages: [], redirects: [] };
 
 for (const vp of viewports) {
   const context = await browser.newContext({
@@ -51,28 +57,21 @@ for (const vp of viewports) {
 
       const metrics = await page.evaluate(() => {
         const main = document.querySelector("main");
-        const cards = document.querySelectorAll(".surface-card, .surface-card-hover");
-        const headings = [...document.querySelectorAll("h1, h2")].slice(0, 8).map((el) => ({
-          tag: el.tagName,
-          text: el.textContent?.trim().slice(0, 60) ?? "",
-          fontSize: getComputedStyle(el).fontSize,
+        const toolRows = document.querySelectorAll(".lab-tool-row").length;
+        const pills = document.querySelectorAll(".lab-pill").length;
+        const heroCinematic = document.querySelectorAll("main .hero-cinematic").length;
+        const headings = [...document.querySelectorAll("h1")].slice(0, 3).map((el) => ({
+          text: el.textContent?.trim().slice(0, 80) ?? "",
         }));
 
         const scrollWidth = main?.scrollWidth ?? document.documentElement.scrollWidth;
         const clientWidth = document.documentElement.clientWidth;
-        const horizontalOverflow = scrollWidth > clientWidth + 2;
-
-        const categoryBanners = [...document.querySelectorAll("[class*='bg-gradient-to-r']")].length;
-        const pillCount = document.querySelectorAll("button.rounded-full").length;
 
         return {
-          horizontalOverflow,
-          scrollWidth,
-          clientWidth,
-          cardCount: cards.length,
-          categoryBannerCount: categoryBanners,
-          filterPillCount: pillCount,
-          mainSections: document.querySelectorAll("main section").length,
+          horizontalOverflow: scrollWidth > clientWidth + 2,
+          toolRowCount: toolRows,
+          filterPillCount: pills,
+          heroCinematicInMain: heroCinematic,
           headings,
         };
       });
@@ -94,6 +93,27 @@ for (const vp of viewports) {
 
   await context.close();
 }
+
+const redirectContext = await browser.newContext();
+const redirectPage = await redirectContext.newPage();
+for (const check of redirectChecks) {
+  try {
+    const response = await redirectPage.goto(`${baseUrl}${check.from}`, {
+      waitUntil: "domcontentloaded",
+      timeout: 30000,
+    });
+    const finalPath = new URL(redirectPage.url()).pathname;
+    report.redirects.push({
+      ...check,
+      status: response?.status() ?? null,
+      finalPath,
+      ok: finalPath === check.expectPath,
+    });
+  } catch (error) {
+    report.redirects.push({ ...check, ok: false, error: String(error) });
+  }
+}
+await redirectContext.close();
 
 await browser.close();
 

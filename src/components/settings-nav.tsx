@@ -1,18 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { CreditCard, Languages, MonitorSmartphone, User, type LucideIcon } from "lucide-react";
+import { CreditCard, MonitorSmartphone, User, type LucideIcon } from "lucide-react";
 
 import { useLanguage } from "@/components/language-provider";
 import { cn } from "@/lib/utils";
 
-export type SettingsTab = "account" | "devices" | "payment" | "language";
+export type SettingsTab = "account" | "devices" | "payment";
 
 const TAB_ICONS: Record<SettingsTab, LucideIcon> = {
   account: User,
   devices: MonitorSmartphone,
   payment: CreditCard,
-  language: Languages,
 };
 
 interface SettingsNavProps {
@@ -27,7 +26,6 @@ export function SettingsNav({ active }: SettingsNavProps) {
     { id: "account", label: tabs.account },
     { id: "devices", label: tabs.devices },
     { id: "payment", label: tabs.payment },
-    { id: "language", label: tabs.language },
   ];
 
   return (

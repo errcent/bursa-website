@@ -2,11 +2,15 @@
 
 import { useState } from "react";
 
+import { LabCalculatorShell, LabOutputPanel } from "@/components/lab/lab-calculator-shell";
 import {
   LabCheckbox,
+  LabCopyResults,
   LabDirectionToggle,
   LabField,
+  LabInterpretation,
   LabNumberInput,
+  LabPresetBar,
   LabResultTile,
   LabTabsScroll,
   LabToolPanel,
@@ -42,12 +46,11 @@ function PipAndLeverageFields({
         id={`${idPrefix}-pips`}
         checked={showPips}
         onChange={setShowPips}
-        label="Tampilkan estimasi pip (forex)"
-        description="Berguna untuk pasangan mayor dan cross — sesuaikan ukuran pip jika perlu."
+        label="Estimasi pip (forex)"
       />
       <div className="grid gap-4 sm:grid-cols-2">
         {showPips && (
-          <LabField label="Ukuran 1 pip" id={`${idPrefix}-pipsize`} helperText="Umumnya 0.0001 (mayor) / 0.01 (JPY)">
+          <LabField label="Ukuran 1 pip" id={`${idPrefix}-pipsize`}>
             <LabNumberInput id={`${idPrefix}-pipsize`} value={pipSize} onChange={setPipSize} min={0} />
           </LabField>
         )}
@@ -66,6 +69,7 @@ function ModeA() {
   const [showPips, setShowPips] = useState(false);
   const [pipSize, setPipSize] = useState("0.0001");
   const [leverage, setLeverage] = useState("1");
+  const [preset, setPreset] = useState<string>();
 
   const entryNum = Number(entry) || 0;
   const currentNum = Number(current) || 0;
@@ -73,46 +77,80 @@ function ModeA() {
   const leveraged = pct * (Number(leverage) || 1);
   const pips = floatingPips(entryNum, currentNum, direction, Number(pipSize) || 0);
 
+  const copyText = `Floating P/L: ${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%\nLeveraged: ${leveraged >= 0 ? "+" : ""}${leveraged.toFixed(2)}%`;
+
   return (
-    <div className="flex flex-col gap-5">
-      <LabDirectionToggle value={direction} onChange={setDirection} />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <LabField label="Harga entry" id="fa-entry">
-          <LabNumberInput id="fa-entry" value={entry} onChange={setEntry} min={0} />
-        </LabField>
-        <LabField label="Harga saat ini" id="fa-current">
-          <LabNumberInput id="fa-current" value={current} onChange={setCurrent} min={0} />
-        </LabField>
-      </div>
-      <PipAndLeverageFields
-        showPips={showPips}
-        setShowPips={setShowPips}
-        pipSize={pipSize}
-        setPipSize={setPipSize}
-        leverage={leverage}
-        setLeverage={setLeverage}
-        idPrefix="fa"
-      />
-      <div className="grid gap-3 sm:grid-cols-3">
-        <LabResultTile
-          label="Floating P/L"
-          value={`${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`}
-          tone={pct >= 0 ? "positive" : "negative"}
-        />
-        <LabResultTile
-          label="Floating (dengan leverage)"
-          value={`${leveraged >= 0 ? "+" : ""}${leveraged.toFixed(2)}%`}
-          tone={leveraged >= 0 ? "positive" : "negative"}
-        />
-        {showPips && (
-          <LabResultTile
-            label="Estimasi pip"
-            value={`${pips >= 0 ? "+" : ""}${pips.toFixed(1)} pip`}
-            tone={pips >= 0 ? "positive" : "negative"}
+    <LabCalculatorShell
+      input={
+        <div className="flex flex-col gap-5">
+          <LabPresetBar
+            activeId={preset}
+            presets={[
+              { id: "idx", label: "Saham IDX" },
+              { id: "forex", label: "Forex" },
+            ]}
+            onSelect={(id) => {
+              setPreset(id);
+              if (id === "idx") {
+                setEntry("5000");
+                setCurrent("5150");
+                setShowPips(false);
+                setLeverage("1");
+              } else {
+                setEntry("1.0850");
+                setCurrent("1.0875");
+                setShowPips(true);
+                setPipSize("0.0001");
+              }
+            }}
           />
-        )}
-      </div>
-    </div>
+          <LabDirectionToggle value={direction} onChange={setDirection} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <LabField label="Harga entry" id="fa-entry">
+              <LabNumberInput id="fa-entry" value={entry} onChange={setEntry} min={0} />
+            </LabField>
+            <LabField label="Harga saat ini" id="fa-current">
+              <LabNumberInput id="fa-current" value={current} onChange={setCurrent} min={0} />
+            </LabField>
+          </div>
+          <PipAndLeverageFields
+            showPips={showPips}
+            setShowPips={setShowPips}
+            pipSize={pipSize}
+            setPipSize={setPipSize}
+            leverage={leverage}
+            setLeverage={setLeverage}
+            idPrefix="fa"
+          />
+        </div>
+      }
+      output={
+        <LabOutputPanel title="Floating P/L" footer={<LabCopyResults text={copyText} />}>
+          <LabResultTile
+            label="Floating"
+            value={`${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`}
+            tone={pct >= 0 ? "positive" : "negative"}
+          />
+          <LabResultTile
+            label="Dengan leverage"
+            value={`${leveraged >= 0 ? "+" : ""}${leveraged.toFixed(2)}%`}
+            tone={leveraged >= 0 ? "positive" : "negative"}
+            className="mt-2"
+          />
+          {showPips && (
+            <LabResultTile
+              label="Estimasi pip"
+              value={`${pips >= 0 ? "+" : ""}${pips.toFixed(1)} pip`}
+              tone={pips >= 0 ? "positive" : "negative"}
+              className="mt-2"
+            />
+          )}
+          <LabInterpretation className="mt-3">
+            Mode: floating saat ini · posisi {direction === "long" ? "long" : "short"}.
+          </LabInterpretation>
+        </LabOutputPanel>
+      }
+    />
   );
 }
 
@@ -124,30 +162,32 @@ function ModeB() {
   const entryNum = Number(entry) || 0;
   const targetNum = Number(targetFloating) || 0;
   const targetPrice = priceFromFloatingPercent(entryNum, targetNum, direction);
-  const priceMustRise = (targetNum >= 0) === (direction === "long");
+  const copyText = `Target floating ${targetNum}% → harga ${targetPrice.toLocaleString("id-ID")}`;
 
   return (
-    <div className="flex flex-col gap-5">
-      <LabDirectionToggle value={direction} onChange={setDirection} />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <LabField label="Harga entry" id="fb-entry">
-          <LabNumberInput id="fb-entry" value={entry} onChange={setEntry} min={0} />
-        </LabField>
-        <LabField label="Target floating" id="fb-target" suffix="%">
-          <LabNumberInput id="fb-target" value={targetFloating} onChange={setTargetFloating} />
-        </LabField>
-      </div>
-      <LabResultTile label="Harga yang harus dicapai" value={targetPrice.toLocaleString("id-ID", { maximumFractionDigits: 6 })} />
-      <p className="text-sm text-muted-foreground">
-        Untuk mencapai floating {targetNum >= 0 ? "+" : ""}
-        {targetNum}% pada posisi {direction === "long" ? "Long (Beli)" : "Short (Jual)"} dari harga
-        entry {entryNum.toLocaleString("id-ID")}, harga perlu {priceMustRise ? "naik" : "turun"} ke{" "}
-        <span className="font-medium text-foreground">
-          {targetPrice.toLocaleString("id-ID", { maximumFractionDigits: 6 })}
-        </span>
-        .
-      </p>
-    </div>
+    <LabCalculatorShell
+      input={
+        <div className="flex flex-col gap-5">
+          <LabDirectionToggle value={direction} onChange={setDirection} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <LabField label="Harga entry" id="fb-entry">
+              <LabNumberInput id="fb-entry" value={entry} onChange={setEntry} min={0} />
+            </LabField>
+            <LabField label="Target floating" id="fb-target" suffix="%">
+              <LabNumberInput id="fb-target" value={targetFloating} onChange={setTargetFloating} />
+            </LabField>
+          </div>
+        </div>
+      }
+      output={
+        <LabOutputPanel title="Harga target" footer={<LabCopyResults text={copyText} />}>
+          <LabResultTile label="Harga yang harus dicapai" value={targetPrice.toLocaleString("id-ID", { maximumFractionDigits: 6 })} />
+          <LabInterpretation className="mt-3">
+            Untuk floating {targetNum >= 0 ? "+" : ""}{targetNum}% dari entry {entryNum.toLocaleString("id-ID")}.
+          </LabInterpretation>
+        </LabOutputPanel>
+      }
+    />
   );
 }
 
@@ -164,53 +204,56 @@ function ModeC() {
   const pct = floatingPercent(entryNum, targetNum, direction);
   const leveraged = pct * (Number(leverage) || 1);
   const pips = floatingPips(entryNum, targetNum, direction, Number(pipSize) || 0);
+  const copyText = `Skenario: ${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`;
 
   return (
-    <div className="flex flex-col gap-5">
-      <LabDirectionToggle value={direction} onChange={setDirection} />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <LabField label="Harga entry" id="fc-entry">
-          <LabNumberInput id="fc-entry" value={entry} onChange={setEntry} min={0} />
-        </LabField>
-        <LabField label="Harga target / skenario" id="fc-target">
-          <LabNumberInput id="fc-target" value={targetPrice} onChange={setTargetPrice} min={0} />
-        </LabField>
-      </div>
-      <PipAndLeverageFields
-        showPips={showPips}
-        setShowPips={setShowPips}
-        pipSize={pipSize}
-        setPipSize={setPipSize}
-        leverage={leverage}
-        setLeverage={setLeverage}
-        idPrefix="fc"
-      />
-      <div className="grid gap-3 sm:grid-cols-3">
-        <LabResultTile
-          label="Floating pada harga skenario"
-          value={`${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`}
-          tone={pct >= 0 ? "positive" : "negative"}
-        />
-        <LabResultTile
-          label="Floating (dengan leverage)"
-          value={`${leveraged >= 0 ? "+" : ""}${leveraged.toFixed(2)}%`}
-          tone={leveraged >= 0 ? "positive" : "negative"}
-        />
-        {showPips && (
-          <LabResultTile
-            label="Estimasi pip"
-            value={`${pips >= 0 ? "+" : ""}${pips.toFixed(1)} pip`}
-            tone={pips >= 0 ? "positive" : "negative"}
+    <LabCalculatorShell
+      input={
+        <div className="flex flex-col gap-5">
+          <LabDirectionToggle value={direction} onChange={setDirection} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <LabField label="Harga entry" id="fc-entry">
+              <LabNumberInput id="fc-entry" value={entry} onChange={setEntry} min={0} />
+            </LabField>
+            <LabField label="Harga skenario" id="fc-target">
+              <LabNumberInput id="fc-target" value={targetPrice} onChange={setTargetPrice} min={0} />
+            </LabField>
+          </div>
+          <PipAndLeverageFields
+            showPips={showPips}
+            setShowPips={setShowPips}
+            pipSize={pipSize}
+            setPipSize={setPipSize}
+            leverage={leverage}
+            setLeverage={setLeverage}
+            idPrefix="fc"
           />
-        )}
-      </div>
-    </div>
+        </div>
+      }
+      output={
+        <LabOutputPanel title="Floating skenario" footer={<LabCopyResults text={copyText} />}>
+          <LabResultTile
+            label="Floating"
+            value={`${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`}
+            tone={pct >= 0 ? "positive" : "negative"}
+          />
+          {showPips && (
+            <LabResultTile
+              label="Estimasi pip"
+              value={`${pips >= 0 ? "+" : ""}${pips.toFixed(1)} pip`}
+              tone={pips >= 0 ? "positive" : "negative"}
+              className="mt-2"
+            />
+          )}
+        </LabOutputPanel>
+      }
+    />
   );
 }
 
 export function FloatingCalculator() {
   return (
-    <LabToolPanel title="Tiga mode perhitungan floating" description="Long/short, leverage opsional, dan estimasi pip untuk forex.">
+    <LabToolPanel title="Mode perhitungan">
       <Tabs defaultValue="a">
         <LabTabsScroll>
           <TabsList className="mb-5 w-max min-w-full sm:min-w-0 sm:w-auto">
@@ -219,15 +262,9 @@ export function FloatingCalculator() {
             <TabsTrigger value="c">Floating skenario</TabsTrigger>
           </TabsList>
         </LabTabsScroll>
-        <TabsContent value="a">
-          <ModeA />
-        </TabsContent>
-        <TabsContent value="b">
-          <ModeB />
-        </TabsContent>
-        <TabsContent value="c">
-          <ModeC />
-        </TabsContent>
+        <TabsContent value="a"><ModeA /></TabsContent>
+        <TabsContent value="b"><ModeB /></TabsContent>
+        <TabsContent value="c"><ModeC /></TabsContent>
       </Tabs>
     </LabToolPanel>
   );

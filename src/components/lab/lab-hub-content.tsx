@@ -2,24 +2,26 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Search, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { ChevronRight, Search, X } from "lucide-react";
 
-import { LabToolCard } from "@/components/lab/lab-tool-card";
-import { Reveal } from "@/components/motion/reveal";
+import { labScenarios } from "@/lib/lab/scenarios";
 import {
-  getFeaturedLabTools,
+  getAdvancedLabTools,
+  getEssentialLabTools,
   getLabTool,
-  getLabToolsByCategory,
   labCategories,
   labTools,
   searchLabTools,
+  type LabTool,
   type LabToolCategory,
 } from "@/lib/lab/tools";
-import { labWorkflows } from "@/lib/lab/workflows";
 import { cn } from "@/lib/utils";
 
-const ease = [0.22, 1, 0.36, 1] as const;
+const difficultyLabel: Record<NonNullable<LabTool["difficulty"]>, string> = {
+  pemula: "Pemula",
+  menengah: "Menengah",
+  lanjut: "Lanjut",
+};
 
 export function LabHubContent() {
   const [query, setQuery] = useState("");
@@ -31,11 +33,12 @@ export function LabHubContent() {
     return searched.filter((tool) => tool.category === activeCategory);
   }, [query, activeCategory]);
 
-  const featuredTools = getFeaturedLabTools();
-  const showFeatured = !query && activeCategory === "all";
+  const isFiltered = Boolean(query) || activeCategory !== "all";
+  const essentialTools = getEssentialLabTools();
+  const advancedTools = getAdvancedLabTools();
 
   return (
-    <div className="flex flex-col gap-12 sm:gap-14">
+    <div className="flex flex-col gap-10 sm:gap-12">
       <section aria-label="Pencarian dan filter" className="flex flex-col gap-4">
         <div className="relative">
           <Search
@@ -46,7 +49,7 @@ export function LabHubContent() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Cari kalkulator, simulasi, atau kata kunci…"
+            placeholder="Cari kalkulator atau kata kunci…"
             className="lab-search"
             aria-label="Cari tool Lab"
           />
@@ -79,61 +82,40 @@ export function LabHubContent() {
         </div>
       </section>
 
-      {!showFeatured && (
-        <ToolResults
-          activeCategory={activeCategory}
-          query={query}
-          filteredTools={filteredTools}
-        />
-      )}
+      {isFiltered ? (
+        <FilteredResults filteredTools={filteredTools} query={query} />
+      ) : (
+        <>
+          <section aria-label="Tool esensial">
+            <SectionHeader
+              title="Esensial"
+              description="Tool yang paling sering dipakai untuk risiko, biaya, dan probabilitas."
+            />
+            <ul className="mt-4 flex flex-col gap-2">
+              {essentialTools.map((tool) => (
+                <LabToolRow key={tool.id} tool={tool} />
+              ))}
+            </ul>
+          </section>
 
-      {showFeatured && (
-        <section aria-label="Tool unggulan">
-          <SectionHeader
-            eyebrow="Unggulan"
-            title="Mulai dari sini"
-            description="Empat tool paling sering dipakai untuk risiko, expectancy, simulasi, dan backtest."
-          />
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
-            {featuredTools.map((tool) => (
-              <LabToolCard key={tool.id} tool={tool} compact />
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section aria-label="Alur kerja terpandu">
-        <SectionHeader
-          eyebrow="Workflow"
-          title="Rangkaian tool terpandu"
-          description="Ikuti alur praktis — dari persiapan entry hingga review performa."
-        />
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4">
-          {labWorkflows.map((workflow, index) => {
-            const Icon = workflow.icon;
-            return (
-              <Reveal key={workflow.id} delay={index * 0.04}>
-                <div className="lab-workflow-card">
-                  <div className="flex items-start gap-3">
-                    <span
-                      className={cn(
-                        "inline-flex size-9 shrink-0 items-center justify-center rounded-xl border border-border/50 bg-muted/25",
-                        workflow.accent
-                      )}
-                    >
-                      <Icon className="size-4" />
-                    </span>
-                    <div className="min-w-0">
-                      <h3 className="font-heading text-[15px] font-semibold tracking-tight sm:text-base">
-                        {workflow.title}
-                      </h3>
-                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                        {workflow.description}
-                      </p>
-                    </div>
+          <section aria-label="Skenario terpandu">
+            <SectionHeader
+              title="Skenario"
+              description="Rangkaian singkat antar tool esensial."
+            />
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {labScenarios.map((scenario) => (
+                <div key={scenario.id} className="lab-workflow-card">
+                  <div>
+                    <h3 className="font-heading text-sm font-semibold tracking-tight">
+                      {scenario.title}
+                    </h3>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                      {scenario.description}
+                    </p>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {workflow.toolIds.map((toolId, stepIndex) => {
+                  <div className="flex flex-wrap gap-1.5">
+                    {scenario.toolIds.map((toolId, stepIndex) => {
                       const tool = getLabTool(toolId);
                       if (!tool) return null;
                       return (
@@ -147,123 +129,104 @@ export function LabHubContent() {
                     })}
                   </div>
                 </div>
-              </Reveal>
-            );
-          })}
-        </div>
-      </section>
+              ))}
+            </div>
+          </section>
 
-      {showFeatured && (
-        <ToolResults
-          activeCategory={activeCategory}
-          query={query}
-          filteredTools={filteredTools}
-        />
+          <details className="group">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
+              <SectionHeader
+                title="Lanjutan"
+                description={`${advancedTools.length} tool — Kelly, biaya, teknikal.`}
+              />
+              <ChevronRight className="size-5 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />
+            </summary>
+            <ul className="mt-4 flex flex-col gap-2">
+              {advancedTools.map((tool) => (
+                <LabToolRow key={tool.id} tool={tool} />
+              ))}
+            </ul>
+          </details>
+        </>
       )}
     </div>
   );
 }
 
-function ToolResults({
-  activeCategory,
-  query,
+function FilteredResults({
   filteredTools,
+  query,
 }: {
-  activeCategory: LabToolCategory | "all";
+  filteredTools: LabTool[];
   query: string;
-  filteredTools: ReturnType<typeof searchLabTools>;
 }) {
-  const isFiltered = activeCategory !== "all" || Boolean(query);
-
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={`${activeCategory}-${query}`}
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -4 }}
-        transition={{ duration: 0.22, ease }}
-        className={cn("flex flex-col", isFiltered ? "gap-5" : "gap-10")}
-      >
-        {activeCategory === "all" && !query
-          ? labCategories.map((category, categoryIndex) => {
-              const tools = getLabToolsByCategory(category.id);
-              if (tools.length === 0) return null;
-              return (
-                <section key={category.id} id={category.id} aria-label={category.title}>
-                  <Reveal delay={categoryIndex * 0.02}>
-                    <div className="lab-category-header">
-                      <span
-                        className={cn("lab-category-marker", category.markerClass)}
-                        aria-hidden
-                      />
-                      <div className="min-w-0">
-                        <h2 className="font-heading text-lg font-semibold tracking-tight sm:text-xl">
-                          {category.title}
-                        </h2>
-                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                          {category.description}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-                      {tools.map((tool) => (
-                        <LabToolCard key={tool.id} tool={tool} />
-                      ))}
-                    </div>
-                  </Reveal>
-                </section>
-              );
-            })
-          : (
-            <section aria-label="Hasil pencarian">
-              <SectionHeader
-                eyebrow="Hasil"
-                title={
-                  filteredTools.length > 0
-                    ? `${filteredTools.length} tool ditemukan`
-                    : "Tidak ada tool yang cocok"
-                }
-                description={
-                  filteredTools.length > 0
-                    ? "Pilih tool di bawah atau ubah filter pencarian."
-                    : "Coba kata kunci lain — misalnya pip, monte carlo, atau breakeven."
-                }
-              />
-              {filteredTools.length > 0 ? (
-                <div className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-                  {filteredTools.map((tool) => (
-                    <LabToolCard key={tool.id} tool={tool} />
-                  ))}
-                </div>
-              ) : (
-                <div className="surface-card mt-5 px-5 py-10 text-center sm:px-8">
-                  <p className="text-sm text-muted-foreground">
-                    Tidak ada hasil untuk filter ini. Reset pencarian atau pilih kategori lain.
-                  </p>
-                </div>
-              )}
-            </section>
-          )}
-      </motion.div>
-    </AnimatePresence>
+    <section aria-label="Hasil pencarian">
+      <SectionHeader
+        title={
+          filteredTools.length > 0
+            ? `${filteredTools.length} tool ditemukan`
+            : "Tidak ada tool yang cocok"
+        }
+        description={
+          filteredTools.length > 0
+            ? query
+              ? `Hasil untuk “${query}”.`
+              : "Pilih tool di bawah."
+            : "Coba kata kunci lain — misalnya pip, monte carlo, atau breakeven."
+        }
+      />
+      {filteredTools.length > 0 ? (
+        <ul className="mt-4 flex flex-col gap-2">
+          {filteredTools.map((tool) => (
+            <LabToolRow key={tool.id} tool={tool} />
+          ))}
+        </ul>
+      ) : (
+        <div className="surface-card mt-4 px-5 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            Tidak ada hasil. Reset pencarian atau pilih kategori lain.
+          </p>
+        </div>
+      )}
+    </section>
   );
 }
 
-function SectionHeader({
-  eyebrow,
-  title,
-  description,
-}: {
-  eyebrow: string;
-  title: string;
-  description: string;
-}) {
+function LabToolRow({ tool }: { tool: LabTool }) {
+  const Icon = tool.icon;
+  return (
+    <li>
+      <Link href={tool.href} className="lab-tool-row group">
+        <span className="lab-tool-card-icon">
+          <Icon className="size-4" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className="font-medium text-foreground group-hover:text-accent">
+              {tool.shortTitle ?? tool.title}
+            </span>
+            {tool.difficulty && (
+              <span className="text-[11px] text-muted-foreground">
+                · {difficultyLabel[tool.difficulty]}
+              </span>
+            )}
+          </span>
+          <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground line-clamp-2">
+            {tool.description}
+          </span>
+        </span>
+        <ChevronRight className="size-4 shrink-0 text-muted-foreground/50 group-hover:text-muted-foreground" />
+      </Link>
+    </li>
+  );
+}
+
+function SectionHeader({ title, description }: { title: string; description: string }) {
   return (
     <div>
-      <p className="eyebrow mb-1.5">{eyebrow}</p>
-      <h2 className="section-title">{title}</h2>
-      <p className="section-copy mt-1 max-w-2xl">{description}</p>
+      <h2 className="font-heading text-lg font-semibold tracking-tight sm:text-xl">{title}</h2>
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
     </div>
   );
 }

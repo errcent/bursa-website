@@ -1,10 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { LabCalculatorShell, LabOutputPanel } from "@/components/lab/lab-calculator-shell";
 import {
+  LabCopyResults,
   LabField,
+  LabInterpretation,
   LabNumberInput,
+  LabPresetBar,
   LabResultGrid,
   LabResultTile,
   LabToolPanel,
@@ -27,6 +32,7 @@ export function PipValueCalculator() {
   const [lots, setLots] = useState("1");
   const [contract, setContract] = useState("100000");
   const [rate, setRate] = useState("1");
+  const [activePreset, setActivePreset] = useState<string>();
 
   const result = useMemo(() => pipValue({
     pipSize: parseFloat(pipSize) || 0,
@@ -35,35 +41,84 @@ export function PipValueCalculator() {
     exchangeRate: parseFloat(rate) || 1,
   }), [pipSize, lots, contract, rate]);
 
+  const copyText = `Nilai pip: $${fmt(result)}`;
+
   return (
-    <LabToolPanel title="Nilai pip per lot" description="Standar mayor: pip 0,0001 · kontrak 100.000 unit.">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <LabField label="Ukuran pip" id="pv-ps" helperText="0,0001 mayor · 0,01 JPY"><LabNumberInput id="pv-ps" value={pipSize} onChange={setPipSize} /></LabField>
-        <LabField label="Lot size" id="pv-lot"><LabNumberInput id="pv-lot" value={lots} onChange={setLots} min={0} /></LabField>
-        <LabField label="Ukuran kontrak" id="pv-con"><LabNumberInput id="pv-con" value={contract} onChange={setContract} min={0} /></LabField>
-        <LabField label="Kurs konversi" id="pv-rate"><LabNumberInput id="pv-rate" value={rate} onChange={setRate} min={0} /></LabField>
-      </div>
-      <LabResultGrid className="sm:grid-cols-1 lg:grid-cols-2">
-        <LabResultTile label="Nilai per pip" value={`$${fmt(result)}`} />
-      </LabResultGrid>
-    </LabToolPanel>
+    <LabCalculatorShell
+      input={
+        <LabToolPanel title="Parameter pip">
+          <div className="flex flex-col gap-5">
+            <LabPresetBar
+              activeId={activePreset}
+              presets={[
+                { id: "eurusd", label: "EUR/USD mayor" },
+                { id: "usdjpy", label: "USD/JPY" },
+              ]}
+              onSelect={(id) => {
+                setActivePreset(id);
+                if (id === "eurusd") {
+                  setPipSize("0.0001");
+                  setLots("1");
+                  setContract("100000");
+                  setRate("1");
+                } else {
+                  setPipSize("0.01");
+                  setLots("1");
+                  setContract("100000");
+                  setRate("1");
+                }
+              }}
+            />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <LabField label="Ukuran pip" id="pv-ps"><LabNumberInput id="pv-ps" value={pipSize} onChange={setPipSize} /></LabField>
+              <LabField label="Lot size" id="pv-lot"><LabNumberInput id="pv-lot" value={lots} onChange={setLots} min={0} /></LabField>
+              <LabField label="Ukuran kontrak" id="pv-con"><LabNumberInput id="pv-con" value={contract} onChange={setContract} min={0} /></LabField>
+              <LabField label="Kurs konversi" id="pv-rate"><LabNumberInput id="pv-rate" value={rate} onChange={setRate} min={0} /></LabField>
+            </div>
+          </div>
+        </LabToolPanel>
+      }
+      output={
+        <LabOutputPanel title="Hasil" footer={<LabCopyResults text={copyText} />}>
+          <LabResultTile label="Nilai per pip" value={`$${fmt(result)}`} />
+          <LabInterpretation className="mt-3">
+            Setiap pergerakan 1 pip pada posisi ini bernilai ${fmt(result)}.
+          </LabInterpretation>
+          <Link href="/lab/lot-size" className="mt-3 inline-block text-xs font-medium text-accent hover:underline">
+            Lanjut ke Lot Size →
+          </Link>
+        </LabOutputPanel>
+      }
+    />
   );
 }
 
 export function LotSizeCalculator() {
   const [standard, setStandard] = useState("1");
   const result = useMemo(() => lotConversions(parseFloat(standard) || 0), [standard]);
+  const copyText = `Standard: ${fmt(result.standard)}\nMini: ${fmt(result.mini)}\nMicro: ${fmt(result.micro)}\nUnits: ${fmt(result.units, 0)}`;
 
   return (
-    <LabToolPanel title="Konversi lot forex" description="1 standard lot = 100.000 unit kontrak.">
-      <LabField label="Standard lots" id="ls-std"><LabNumberInput id="ls-std" value={standard} onChange={setStandard} min={0} step={0.01} /></LabField>
-      <LabResultGrid>
-        <LabResultTile label="Standard" value={fmt(result.standard)} />
-        <LabResultTile label="Mini" value={fmt(result.mini)} />
-        <LabResultTile label="Micro" value={fmt(result.micro)} />
-        <LabResultTile label="Units" value={fmt(result.units, 0)} />
-      </LabResultGrid>
-    </LabToolPanel>
+    <LabCalculatorShell
+      input={
+        <LabToolPanel title="Konversi lot">
+          <LabField label="Standard lots" id="ls-std"><LabNumberInput id="ls-std" value={standard} onChange={setStandard} min={0} step={0.01} /></LabField>
+        </LabToolPanel>
+      }
+      output={
+        <LabOutputPanel title="Konversi" footer={<LabCopyResults text={copyText} />}>
+          <LabResultGrid className="mt-0 grid-cols-1 gap-2">
+            <LabResultTile label="Standard" value={fmt(result.standard)} />
+            <LabResultTile label="Mini" value={fmt(result.mini)} />
+            <LabResultTile label="Micro" value={fmt(result.micro)} />
+            <LabResultTile label="Units" value={fmt(result.units, 0)} />
+          </LabResultGrid>
+          <Link href="/lab/margin-leverage" className="mt-3 inline-block text-xs font-medium text-accent hover:underline">
+            Lanjut ke Margin & Leverage →
+          </Link>
+        </LabOutputPanel>
+      }
+    />
   );
 }
 
@@ -74,18 +129,30 @@ export function MarginLeverageCalculator() {
     positionValue: parseFloat(value) || 0,
     leverage: parseFloat(leverage) || 0,
   }), [value, leverage]);
+  const copyText = `Margin: $${fmt(result.margin)}\nBuying power: $${fmt(result.buyingPower)}`;
 
   return (
-    <LabToolPanel title="Margin & buying power">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <LabField label="Nilai posisi" id="ml-val" suffix="$"><LabNumberInput id="ml-val" value={value} onChange={setValue} min={0} /></LabField>
-        <LabField label="Leverage" id="ml-lev" suffix="x"><LabNumberInput id="ml-lev" value={leverage} onChange={setLeverage} min={1} /></LabField>
-      </div>
-      <LabResultGrid className="lg:grid-cols-2">
-        <LabResultTile label="Margin dibutuhkan" value={`$${fmt(result.margin)}`} />
-        <LabResultTile label="Buying power" value={`$${fmt(result.buyingPower)}`} />
-      </LabResultGrid>
-    </LabToolPanel>
+    <LabCalculatorShell
+      input={
+        <LabToolPanel title="Eksposur & leverage">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <LabField label="Nilai posisi" id="ml-val" suffix="$"><LabNumberInput id="ml-val" value={value} onChange={setValue} min={0} /></LabField>
+            <LabField label="Leverage" id="ml-lev" suffix="x"><LabNumberInput id="ml-lev" value={leverage} onChange={setLeverage} min={1} /></LabField>
+          </div>
+        </LabToolPanel>
+      }
+      output={
+        <LabOutputPanel title="Hasil" footer={<LabCopyResults text={copyText} />}>
+          <LabResultGrid className="mt-0 grid-cols-1 gap-2">
+            <LabResultTile label="Margin dibutuhkan" value={`$${fmt(result.margin)}`} />
+            <LabResultTile label="Buying power" value={`$${fmt(result.buyingPower)}`} />
+          </LabResultGrid>
+          <LabInterpretation className="mt-3">
+            Margin = nilai posisi ÷ leverage. Maintenance margin tidak dihitung.
+          </LabInterpretation>
+        </LabOutputPanel>
+      }
+    />
   );
 }
 
@@ -98,18 +165,30 @@ export function SwapRolloverCalculator() {
     swapRate: parseFloat(rate) || 0,
     nights: parseInt(nights) || 0,
   }), [lots, rate, nights]);
+  const monthly = result * 30;
+  const copyText = `Swap ${nights} malam: $${fmt(result)}\nEstimasi/bulan: $${fmt(monthly)}`;
 
   return (
-    <LabToolPanel title="Biaya swap overnight" description="Triple swap Rabu tidak dihitung otomatis.">
-      <div className="grid gap-4 sm:grid-cols-3">
-        <LabField label="Lot size" id="sw-lot"><LabNumberInput id="sw-lot" value={lots} onChange={setLots} min={0} /></LabField>
-        <LabField label="Swap rate (per lot)" id="sw-rate"><LabNumberInput id="sw-rate" value={rate} onChange={setRate} /></LabField>
-        <LabField label="Malam hold" id="sw-n"><LabNumberInput id="sw-n" value={nights} onChange={setNights} min={0} /></LabField>
-      </div>
-      <LabResultGrid className="sm:grid-cols-1 lg:grid-cols-2">
-        <LabResultTile label="Total swap fee" value={`$${fmt(result)}`} tone={result < 0 ? "negative" : "positive"} />
-      </LabResultGrid>
-    </LabToolPanel>
+    <LabCalculatorShell
+      input={
+        <LabToolPanel title="Swap overnight">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <LabField label="Lot size" id="sw-lot"><LabNumberInput id="sw-lot" value={lots} onChange={setLots} min={0} /></LabField>
+            <LabField label="Swap rate (per lot)" id="sw-rate"><LabNumberInput id="sw-rate" value={rate} onChange={setRate} /></LabField>
+            <LabField label="Malam hold" id="sw-n"><LabNumberInput id="sw-n" value={nights} onChange={setNights} min={0} /></LabField>
+          </div>
+        </LabToolPanel>
+      }
+      output={
+        <LabOutputPanel title="Dampak biaya" footer={<LabCopyResults text={copyText} />}>
+          <LabResultGrid className="mt-0 grid-cols-1 gap-2">
+            <LabResultTile label="Total swap" value={`$${fmt(result)}`} tone={result < 0 ? "negative" : "positive"} />
+            <LabResultTile label="Estimasi / bulan (30 malam)" value={`$${fmt(monthly)}`} tone={monthly < 0 ? "negative" : "positive"} />
+          </LabResultGrid>
+          <LabInterpretation className="mt-3">Triple swap Rabu tidak dihitung otomatis.</LabInterpretation>
+        </LabOutputPanel>
+      }
+    />
   );
 }
 
@@ -126,23 +205,39 @@ export function CommissionSlippageCalculator() {
     slippagePerTrade: parseFloat(slippage) || 0,
     riskPerTrade: parseFloat(risk) || 0,
   }), [winRate, rr, commission, slippage, risk]);
+  const copyText = result
+    ? `Expectancy adjusted: ${fmt(result.adjustedExpectancy)}R\nBreakeven WR: ${fmt(result.breakevenWinRate)}%\nBiaya/tahun: Rp ${fmt(result.annualCost, 0)}`
+    : "";
 
   return (
-    <LabToolPanel title="Dampak biaya tersembunyi" description="Biaya trading menggerus expectancy — ukur sebelum optimisme.">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <LabField label="Win rate" id="cs-wr" suffix="%"><LabNumberInput id="cs-wr" value={winRate} onChange={setWinRate} min={0} max={100} /></LabField>
-        <LabField label="R:R" id="cs-rr"><LabNumberInput id="cs-rr" value={rr} onChange={setRr} min={0} /></LabField>
-        <LabField label="Komisi/trade" id="cs-comm" suffix="Rp"><LabNumberInput id="cs-comm" value={commission} onChange={setCommission} min={0} /></LabField>
-        <LabField label="Slippage/trade" id="cs-slip" suffix="Rp"><LabNumberInput id="cs-slip" value={slippage} onChange={setSlippage} min={0} /></LabField>
-        <LabField label="Risiko/trade" id="cs-risk" suffix="Rp"><LabNumberInput id="cs-risk" value={risk} onChange={setRisk} min={0} /></LabField>
-      </div>
-      <LabResultGrid>
-        <LabResultTile label="Expectancy (adjusted)" value={`${fmt(result.adjustedExpectancy)}R`} tone={result.adjustedExpectancy > 0 ? "positive" : "negative"} />
-        <LabResultTile label="Breakeven win rate" value={`${fmt(result.breakevenWinRate)}%`} />
-        <LabResultTile label="Biaya/trade" value={`Rp ${fmt(result.costPerTrade, 0)}`} />
-        <LabResultTile label="Biaya tahunan (252 hari)" value={`Rp ${fmt(result.annualCost, 0)}`} tone="negative" />
-      </LabResultGrid>
-    </LabToolPanel>
+    <LabCalculatorShell
+      input={
+        <LabToolPanel title="Biaya per trade">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <LabField label="Win rate" id="cs-wr" suffix="%"><LabNumberInput id="cs-wr" value={winRate} onChange={setWinRate} min={0} max={100} /></LabField>
+            <LabField label="R:R" id="cs-rr"><LabNumberInput id="cs-rr" value={rr} onChange={setRr} min={0} /></LabField>
+            <LabField label="Komisi/trade" id="cs-comm" suffix="Rp"><LabNumberInput id="cs-comm" value={commission} onChange={setCommission} min={0} /></LabField>
+            <LabField label="Slippage/trade" id="cs-slip" suffix="Rp"><LabNumberInput id="cs-slip" value={slippage} onChange={setSlippage} min={0} /></LabField>
+            <LabField label="Risiko/trade" id="cs-risk" suffix="Rp"><LabNumberInput id="cs-risk" value={risk} onChange={setRisk} min={0} /></LabField>
+          </div>
+        </LabToolPanel>
+      }
+      output={
+        <LabOutputPanel title="Dampak" footer={<LabCopyResults text={copyText} />}>
+          <LabResultGrid className="mt-0 grid-cols-1 gap-2">
+            <LabResultTile label="Expectancy (adjusted)" value={`${fmt(result.adjustedExpectancy)}R`} tone={result.adjustedExpectancy > 0 ? "positive" : "negative"} />
+            <LabResultTile label="Breakeven win rate" value={`${fmt(result.breakevenWinRate)}%`} />
+            <LabResultTile label="Biaya/trade" value={`Rp ${fmt(result.costPerTrade, 0)}`} />
+            <LabResultTile label="Biaya/tahun (252 trade)" value={`Rp ${fmt(result.annualCost, 0)}`} tone="negative" />
+          </LabResultGrid>
+          <LabInterpretation tone={result.adjustedExpectancy > 0 ? "positive" : "negative"} className="mt-3">
+            {result.adjustedExpectancy > 0
+              ? "Edge masih positif setelah biaya — tapi pastikan estimasi win rate realistis."
+              : "Biaya menggerus edge — strategi perlu win rate atau R:R lebih tinggi."}
+          </LabInterpretation>
+        </LabOutputPanel>
+      }
+    />
   );
 }
 
@@ -159,22 +254,33 @@ export function CryptoFeeCalculator() {
     fundingRate: parseFloat(funding) || 0,
     holdingHours: parseFloat(hours) || 0,
   }), [value, maker, taker, funding, hours]);
+  const monthlyFunding = (result.fundingCost / (parseFloat(hours) || 1)) * 24 * 30;
+  const copyText = `Total biaya: $${fmt(result.totalCost)}\nFunding/bulan: $${fmt(monthlyFunding)}`;
 
   return (
-    <LabToolPanel title="Biaya crypto & funding" description="Funding dihitung per periode 8 jam (standar perpetual).">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <LabField label="Nilai posisi" id="cf-val" suffix="$"><LabNumberInput id="cf-val" value={value} onChange={setValue} min={0} /></LabField>
-        <LabField label="Maker fee" id="cf-m" suffix="%"><LabNumberInput id="cf-m" value={maker} onChange={setMaker} min={0} /></LabField>
-        <LabField label="Taker fee" id="cf-t" suffix="%"><LabNumberInput id="cf-t" value={taker} onChange={setTaker} min={0} /></LabField>
-        <LabField label="Funding rate (8j)" id="cf-f" suffix="%"><LabNumberInput id="cf-f" value={funding} onChange={setFunding} /></LabField>
-        <LabField label="Durasi hold (jam)" id="cf-h"><LabNumberInput id="cf-h" value={hours} onChange={setHours} min={0} /></LabField>
-      </div>
-      <LabResultGrid>
-        <LabResultTile label="Biaya entry" value={`$${fmt(result.entryFee)}`} />
-        <LabResultTile label="Biaya exit" value={`$${fmt(result.exitFee)}`} />
-        <LabResultTile label="Funding cost" value={`$${fmt(result.fundingCost)}`} />
-        <LabResultTile label="Total biaya" value={`$${fmt(result.totalCost)}`} tone="negative" />
-      </LabResultGrid>
-    </LabToolPanel>
+    <LabCalculatorShell
+      input={
+        <LabToolPanel title="Fee perpetual">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <LabField label="Nilai posisi" id="cf-val" suffix="$"><LabNumberInput id="cf-val" value={value} onChange={setValue} min={0} /></LabField>
+            <LabField label="Maker fee" id="cf-m" suffix="%"><LabNumberInput id="cf-m" value={maker} onChange={setMaker} min={0} /></LabField>
+            <LabField label="Taker fee" id="cf-t" suffix="%"><LabNumberInput id="cf-t" value={taker} onChange={setTaker} min={0} /></LabField>
+            <LabField label="Funding rate (8j)" id="cf-f" suffix="%"><LabNumberInput id="cf-f" value={funding} onChange={setFunding} /></LabField>
+            <LabField label="Durasi hold (jam)" id="cf-h"><LabNumberInput id="cf-h" value={hours} onChange={setHours} min={0} /></LabField>
+          </div>
+        </LabToolPanel>
+      }
+      output={
+        <LabOutputPanel title="Biaya" footer={<LabCopyResults text={copyText} />}>
+          <LabResultGrid className="mt-0 grid-cols-1 gap-2">
+            <LabResultTile label="Entry (maker)" value={`$${fmt(result.entryFee)}`} />
+            <LabResultTile label="Exit (taker)" value={`$${fmt(result.exitFee)}`} />
+            <LabResultTile label="Funding" value={`$${fmt(result.fundingCost)}`} />
+            <LabResultTile label="Total per trade" value={`$${fmt(result.totalCost)}`} tone="negative" />
+            <LabResultTile label="Funding / bulan (est.)" value={`$${fmt(monthlyFunding)}`} tone="negative" />
+          </LabResultGrid>
+        </LabOutputPanel>
+      }
+    />
   );
 }

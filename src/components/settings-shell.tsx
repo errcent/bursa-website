@@ -6,13 +6,12 @@ import { useAuth } from "@/components/auth-provider";
 import { useLanguage } from "@/components/language-provider";
 import { SettingsAccount } from "@/components/settings-account";
 import { SettingsDevices } from "@/components/settings-devices";
-import { SettingsLanguage } from "@/components/settings-language";
 import { SettingsNav, type SettingsTab } from "@/components/settings-nav";
 import { SettingsPayment } from "@/components/settings-payment";
 import { SettingsSectionPanel } from "@/components/settings-section-panel";
 import { SettingsSignedOut } from "@/components/settings-signed-out";
 
-const VALID_TABS = new Set<SettingsTab>(["account", "devices", "payment", "language"]);
+const VALID_TABS = new Set<SettingsTab>(["account", "devices", "payment"]);
 
 function parseTab(value: string | null): SettingsTab {
   if (value && VALID_TABS.has(value as SettingsTab)) {
@@ -41,15 +40,7 @@ export function SettingsShell() {
     return (
       <div className="grid gap-8 lg:grid-cols-[13.75rem_minmax(0,1fr)] lg:gap-10">
         <SettingsNav active={activeTab} />
-        <div className="min-w-0">
-          {activeTab === "language" ? (
-            <SettingsSectionPanel title={s.language.title} description={s.language.description}>
-              <SettingsLanguage />
-            </SettingsSectionPanel>
-          ) : (
-            <SettingsSignedOut />
-          )}
-        </div>
+        <SettingsSignedOut />
       </div>
     );
   }
@@ -77,12 +68,6 @@ export function SettingsShell() {
         {activeTab === "payment" ? (
           <SettingsSectionPanel title={s.payment.title} description={s.payment.description}>
             <SettingsPayment embedded />
-          </SettingsSectionPanel>
-        ) : null}
-
-        {activeTab === "language" ? (
-          <SettingsSectionPanel title={s.language.title} description={s.language.description}>
-            <SettingsLanguage />
           </SettingsSectionPanel>
         ) : null}
       </div>

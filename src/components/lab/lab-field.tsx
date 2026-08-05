@@ -1,7 +1,9 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Copy } from "lucide-react";
+import { useState } from "react";
 
+import { LAB_MARKETS, type LabMarket } from "@/lib/lab/markets";
 import { cn } from "@/lib/utils";
 
 export const labInputClassName = "lab-input";
@@ -277,4 +279,146 @@ export function LabDirectionToggle({
 
 export function LabTabsScroll({ children }: { children: React.ReactNode }) {
   return <div className="lab-tabs-scroll">{children}</div>;
+}
+
+export function LabPresetBar<T extends string>({
+  presets,
+  activeId,
+  onSelect,
+  label = "Preset",
+}: {
+  presets: { id: T; label: string }[];
+  activeId?: T;
+  onSelect: (id: T) => void;
+  label?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+      <div className="flex flex-wrap gap-2">
+        {presets.map((preset) => (
+          <button
+            key={preset.id}
+            type="button"
+            onClick={() => onSelect(preset.id)}
+            className={cn(
+              "lab-pill",
+              activeId === preset.id ? "lab-pill--active" : "lab-pill--idle"
+            )}
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function LabMarketSelect({
+  value,
+  onChange,
+}: {
+  value: LabMarket;
+  onChange: (market: LabMarket) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Pasar</p>
+      <div className="flex flex-wrap gap-2">
+        {LAB_MARKETS.map((market) => (
+          <button
+            key={market.id}
+            type="button"
+            onClick={() => onChange(market.id)}
+            title={market.hint}
+            className={cn(
+              "lab-pill",
+              value === market.id ? "lab-pill--active" : "lab-pill--idle"
+            )}
+          >
+            {market.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function LabInterpretation({
+  children,
+  tone = "neutral",
+  className,
+}: {
+  children: React.ReactNode;
+  tone?: "neutral" | "positive" | "negative" | "warning";
+  className?: string;
+}) {
+  const prefix =
+    tone === "positive" || tone === "warning" ? "Dengan asumsi input ini, " : "";
+
+  return (
+    <p
+      className={cn(
+        "text-sm leading-relaxed",
+        tone === "positive" && "text-profit",
+        tone === "negative" && "text-loss",
+        tone === "warning" && "text-amber",
+        tone === "neutral" && "text-muted-foreground",
+        className
+      )}
+    >
+      {prefix}
+      {children}
+    </p>
+  );
+}
+
+export function LabCopyResults({
+  text,
+  label = "Salin hasil",
+}: {
+  text: string;
+  label?: string;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    if (!text.trim()) return;
+    const payload = text.includes("Edukasi —")
+      ? text
+      : `${text}\nEdukasi — bukan saran investasi.`;
+    try {
+      await navigator.clipboard.writeText(payload);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard unavailable */
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <button
+        type="button"
+        onClick={handleCopy}
+        disabled={!text.trim()}
+        className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-border/55 px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        {copied ? (
+          <>
+            <Check className="size-3.5 text-profit" />
+            Tersalin
+          </>
+        ) : (
+          <>
+            <Copy className="size-3.5" />
+            {label}
+          </>
+        )}
+      </button>
+      <p className="text-[11px] leading-relaxed text-muted-foreground">
+        Hasil disalin termasuk catatan edukasi.
+      </p>
+    </div>
+  );
 }

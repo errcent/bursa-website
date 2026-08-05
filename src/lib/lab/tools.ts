@@ -1,18 +1,15 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  Activity,
   ArrowLeftRight,
   Bitcoin,
   CircleDollarSign,
   Crosshair,
   Dices,
-  FlaskConical,
   Gauge,
   Layers,
   Percent,
   RefreshCw,
   Scale,
-  Shield,
   Sparkles,
   Target,
   TrendingDown,
@@ -23,9 +20,9 @@ export type LabToolCategory =
   | "risk-money"
   | "performance"
   | "trading-mechanics"
-  | "technical"
-  | "portfolio"
-  | "backtesting";
+  | "technical";
+
+export type LabToolTier = "essential" | "advanced";
 
 export type LabToolDifficulty = "pemula" | "menengah" | "lanjut";
 
@@ -66,26 +63,10 @@ export const labCategories: LabCategory[] = [
   {
     id: "technical",
     title: "Teknikal & Pasar",
-    description: "Volatilitas, trailing stop ATR, Fibonacci, dan pelacakan R-multiple.",
+    description: "Trailing stop ATR, Fibonacci, dan pelacakan R-multiple.",
     accent: "from-chart-2/15 to-transparent",
     pillLabel: "Teknikal",
     markerClass: "bg-chart-2",
-  },
-  {
-    id: "portfolio",
-    title: "Portofolio & Lanjutan",
-    description: "Analisis risiko agregat untuk portofolio multi-aset dan multi-strategi.",
-    accent: "from-primary/15 to-transparent",
-    pillLabel: "Portofolio",
-    markerClass: "bg-primary",
-  },
-  {
-    id: "backtesting",
-    title: "Uji Strategi & Backtest",
-    description: "Eksperimen aturan entry/exit sederhana pada data harga historis.",
-    accent: "from-chart-1/20 to-transparent",
-    pillLabel: "Backtest",
-    markerClass: "bg-chart-1",
   },
 ];
 
@@ -98,7 +79,7 @@ export type LabTool = {
   icon: LucideIcon;
   tag: string;
   category: LabToolCategory;
-  featured?: boolean;
+  tier: LabToolTier;
   difficulty?: LabToolDifficulty;
   timeEstimate?: string;
   keywords?: string[];
@@ -115,7 +96,7 @@ export const labTools: LabTool[] = [
     icon: Target,
     tag: "Kalkulator",
     category: "risk-money",
-    featured: true,
+    tier: "essential",
     difficulty: "pemula",
     timeEstimate: "1 menit",
     keywords: ["position size", "ukuran posisi", "risiko", "stop loss", "modal"],
@@ -130,6 +111,7 @@ export const labTools: LabTool[] = [
     icon: Scale,
     tag: "Kalkulator",
     category: "risk-money",
+    tier: "essential",
     difficulty: "pemula",
     timeEstimate: "1 menit",
     keywords: ["rr", "risk reward", "take profit", "stop loss"],
@@ -144,7 +126,7 @@ export const labTools: LabTool[] = [
     icon: CircleDollarSign,
     tag: "Kalkulator",
     category: "risk-money",
-    difficulty: "pemula",
+    tier: "essential",
     timeEstimate: "2 menit",
     keywords: ["breakeven", "impas", "komisi", "spread"],
   },
@@ -158,6 +140,7 @@ export const labTools: LabTool[] = [
     icon: Percent,
     tag: "Kalkulator",
     category: "risk-money",
+    tier: "advanced",
     difficulty: "menengah",
     timeEstimate: "1 menit",
     keywords: ["kelly", "position sizing", "fraksi modal"],
@@ -172,7 +155,7 @@ export const labTools: LabTool[] = [
     icon: Dices,
     tag: "Simulasi",
     category: "performance",
-    featured: true,
+    tier: "essential",
     difficulty: "menengah",
     timeEstimate: "3 menit",
     keywords: ["monte carlo", "simulasi", "drawdown", "ruin"],
@@ -187,7 +170,7 @@ export const labTools: LabTool[] = [
     icon: Sparkles,
     tag: "Kalkulator",
     category: "performance",
-    featured: true,
+    tier: "essential",
     difficulty: "menengah",
     timeEstimate: "2 menit",
     keywords: ["expectancy", "win rate", "matriks", "edge"],
@@ -202,6 +185,7 @@ export const labTools: LabTool[] = [
     icon: Gauge,
     tag: "Kalkulator",
     category: "trading-mechanics",
+    tier: "essential",
     difficulty: "pemula",
     timeEstimate: "1 menit",
     keywords: ["floating", "unrealized", "pip", "long short"],
@@ -216,6 +200,7 @@ export const labTools: LabTool[] = [
     icon: Crosshair,
     tag: "Kalkulator",
     category: "trading-mechanics",
+    tier: "essential",
     difficulty: "pemula",
     timeEstimate: "1 menit",
     keywords: ["pip", "point", "forex", "lot"],
@@ -230,6 +215,7 @@ export const labTools: LabTool[] = [
     icon: Layers,
     tag: "Kalkulator",
     category: "trading-mechanics",
+    tier: "essential",
     difficulty: "pemula",
     timeEstimate: "1 menit",
     keywords: ["lot", "mini", "mikro", "kontrak"],
@@ -244,6 +230,7 @@ export const labTools: LabTool[] = [
     icon: Zap,
     tag: "Kalkulator",
     category: "trading-mechanics",
+    tier: "essential",
     difficulty: "pemula",
     timeEstimate: "1 menit",
     keywords: ["margin", "leverage", "buying power"],
@@ -258,6 +245,7 @@ export const labTools: LabTool[] = [
     icon: RefreshCw,
     tag: "Kalkulator",
     category: "trading-mechanics",
+    tier: "advanced",
     difficulty: "menengah",
     timeEstimate: "2 menit",
     keywords: ["swap", "rollover", "overnight", "forex"],
@@ -272,6 +260,7 @@ export const labTools: LabTool[] = [
     icon: ArrowLeftRight,
     tag: "Kalkulator",
     category: "trading-mechanics",
+    tier: "advanced",
     difficulty: "menengah",
     timeEstimate: "2 menit",
     keywords: ["komisi", "slippage", "biaya", "expectancy"],
@@ -286,23 +275,10 @@ export const labTools: LabTool[] = [
     icon: Bitcoin,
     tag: "Kalkulator",
     category: "trading-mechanics",
+    tier: "advanced",
     difficulty: "menengah",
     timeEstimate: "2 menit",
     keywords: ["crypto", "funding", "maker taker", "perpetual"],
-  },
-  {
-    id: "volatility",
-    href: "/lab/volatility",
-    title: "Kalkulator Volatilitas",
-    shortTitle: "Volatilitas",
-    description:
-      "Hitung volatilitas historis (annualized) dan estimasi implied volatility sederhana.",
-    icon: Activity,
-    tag: "Kalkulator",
-    category: "technical",
-    difficulty: "menengah",
-    timeEstimate: "3 menit",
-    keywords: ["volatilitas", "historical", "implied", "opsi"],
   },
   {
     id: "atr-trailing-stop",
@@ -314,6 +290,7 @@ export const labTools: LabTool[] = [
     icon: TrendingDown,
     tag: "Kalkulator",
     category: "technical",
+    tier: "advanced",
     difficulty: "menengah",
     timeEstimate: "2 menit",
     keywords: ["atr", "trailing stop", "stop loss"],
@@ -328,6 +305,7 @@ export const labTools: LabTool[] = [
     icon: Sparkles,
     tag: "Kalkulator",
     category: "technical",
+    tier: "advanced",
     difficulty: "pemula",
     timeEstimate: "2 menit",
     keywords: ["fibonacci", "retracement", "extension"],
@@ -342,39 +320,10 @@ export const labTools: LabTool[] = [
     icon: Target,
     tag: "Tracker",
     category: "technical",
-    featured: true,
+    tier: "advanced",
     difficulty: "menengah",
     timeEstimate: "5 menit",
     keywords: ["r multiple", "journal", "statistik trade"],
-  },
-  {
-    id: "portfolio-var",
-    href: "/lab/portfolio-var",
-    title: "Analisis Risiko Portofolio (VaR)",
-    shortTitle: "Portfolio VaR",
-    description:
-      "Estimasi Value at Risk (VaR) untuk mengukur potensi kerugian maksimum portofolio trading.",
-    icon: Shield,
-    tag: "Analisis",
-    category: "portfolio",
-    difficulty: "lanjut",
-    timeEstimate: "2 menit",
-    keywords: ["var", "value at risk", "portofolio", "risiko"],
-  },
-  {
-    id: "backtester",
-    href: "/lab/backtester",
-    title: "Backtester Aturan Sederhana",
-    shortTitle: "Backtester",
-    description:
-      "Uji aturan MA crossover dan RSI oversold/overbought pada data harga historis.",
-    icon: FlaskConical,
-    tag: "Backtest",
-    category: "backtesting",
-    featured: true,
-    difficulty: "lanjut",
-    timeEstimate: "5 menit",
-    keywords: ["backtest", "ma crossover", "rsi", "strategi"],
   },
 ];
 
@@ -386,8 +335,17 @@ export function getLabToolsByCategory(category: LabToolCategory): LabTool[] {
   return labTools.filter((tool) => tool.category === category);
 }
 
+export function getEssentialLabTools(): LabTool[] {
+  return labTools.filter((tool) => tool.tier === "essential");
+}
+
+export function getAdvancedLabTools(): LabTool[] {
+  return labTools.filter((tool) => tool.tier === "advanced");
+}
+
+/** @deprecated Use getEssentialLabTools */
 export function getFeaturedLabTools(): LabTool[] {
-  return labTools.filter((tool) => tool.featured);
+  return getEssentialLabTools();
 }
 
 export function searchLabTools(query: string): LabTool[] {

@@ -30,6 +30,9 @@ const nextConfig: NextConfig = {
         destination: "/privasi/kebijakan",
         permanent: true,
       },
+      { source: "/lab/backtester", destination: "/lab", permanent: true },
+      { source: "/lab/portfolio-var", destination: "/lab", permanent: true },
+      { source: "/lab/volatility", destination: "/lab", permanent: true },
     ];
   },
 };

@@ -2,9 +2,7 @@ import type { ComponentType } from "react";
 
 import { FloatingCalculator } from "@/components/lab/floating-calculator";
 import { MonteCarloSimulator } from "@/components/lab/monte-carlo-simulator";
-import { BacktesterTool } from "@/components/lab/tools/backtesting";
 import { TradeExpectancyCalculator } from "@/components/lab/tools/performance";
-import { PortfolioVarCalculator } from "@/components/lab/tools/portfolio";
 import {
   BreakevenCalculator,
   KellyCriterionCalculator,
@@ -15,7 +13,6 @@ import {
   AtrTrailingStopCalculator,
   FibonacciCalculator,
   RMultipleTracker,
-  VolatilityCalculator,
 } from "@/components/lab/tools/technical";
 import {
   CommissionSlippageCalculator,
@@ -65,9 +62,9 @@ export const labToolConfigs: Record<string, LabToolConfig> = {
     assumptions: [
       "Setiap trade dianggap independen dengan probabilitas dan ukuran untung/rugi tetap.",
       "Probabilitas ruin = persentase simulasi yang berakhir dengan saldo ≤ 1% modal awal.",
-      "Equity curve menampilkan satu jalur acak sebagai contoh, bukan rata-rata semua simulasi.",
-      "Max drawdown dihitung dari jalur contoh yang sama dengan equity curve.",
-      "Simulasi berjalan di browser — semakin besar parameter, semakin lama waktu hitung.",
+      "p10/p50/p90 = persentil saldo akhir dari seluruh simulasi.",
+      "Equity curve menampilkan satu jalur acak sebagai contoh, bukan rata-rata.",
+      "Simulasi auto-run di browser — semakin besar parameter, semakin lama hitung.",
     ],
   },
   "trade-expectancy": {
@@ -127,13 +124,6 @@ export const labToolConfigs: Record<string, LabToolConfig> = {
       "Entry fee menggunakan maker rate, exit fee menggunakan taker rate.",
     ],
   },
-  volatility: {
-    component: VolatilityCalculator,
-    assumptions: [
-      "Historical vol = standar deviasi log-return × √(252), dalam %.",
-      "Implied vol menggunakan aproksimasi Brenner-Subrahmanyam, bukan Black-Scholes penuh.",
-    ],
-  },
   "atr-trailing-stop": {
     component: AtrTrailingStopCalculator,
     assumptions: [
@@ -153,21 +143,6 @@ export const labToolConfigs: Record<string, LabToolConfig> = {
     assumptions: [
       "Masukkan hasil trade dalam satuan R (1R = risiko awal per trade).",
       "Statistik agregat dihitung dari seluruh trade yang dimasukkan.",
-    ],
-  },
-  "portfolio-var": {
-    component: PortfolioVarCalculator,
-    assumptions: [
-      "VaR parametric menggunakan asumsi distribusi normal.",
-      "Z-score: 90% = 1.282, 95% = 1.645, 99% = 2.326.",
-    ],
-  },
-  backtester: {
-    component: BacktesterTool,
-    assumptions: [
-      "Backtester sederhana: MA crossover dan RSI oversold/overbought.",
-      "Tidak memperhitungkan biaya trading, slippage, atau look-ahead bias.",
-      "Gunakan data sample atau paste data harga sendiri.",
     ],
   },
 };
