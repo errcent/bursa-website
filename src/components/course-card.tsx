@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Flame } from "lucide-react";
 
 import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
 import { CourseThumbnail } from "@/components/course-thumbnail";
@@ -36,7 +35,6 @@ export function CourseCard({
   course,
   className,
   enrollment: enrollmentProp,
-  isBestseller = false,
   mentor: mentorProp,
   variant = "default",
   hideBookmark = false,
@@ -45,8 +43,6 @@ export function CourseCard({
   className?: string;
   /** When set, card is treated as purchased/enrolled (thin progress bar on the thumbnail). */
   enrollment?: CourseCardEnrollment | null;
-  /** Highlights the #1 popular course with a bestseller ribbon. */
-  isBestseller?: boolean;
   /** Optional mentor payload — avoids mock lookup when parent already has catalog data. */
   mentor?: Mentor | null;
   /** "featured" — cinematic overlay card for landing carousel; "catalog" — title below thumbnail. */
@@ -108,12 +104,6 @@ export function CourseCard({
         />
 
         <div className="pointer-events-none absolute left-2 top-2 z-10 flex items-center gap-1.5">
-          {isBestseller && (
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-amber px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-foreground shadow-sm">
-              <Flame className="size-3" />
-              Terlaris
-            </span>
-          )}
           <LevelBadge level={course.level} />
         </div>
 

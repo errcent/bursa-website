@@ -260,8 +260,6 @@ export function CourseCarousel({
 
           variant="featured"
 
-          isBestseller={index === 0}
-
           hideBookmark={hideBookmark}
 
         />
@@ -400,8 +398,6 @@ export function CourseCarousel({
 
                   variant="featured"
 
-                  isBestseller={index === 0}
-
                   hideBookmark={hideBookmark}
 
                 />
@@ -455,8 +451,6 @@ export function CourseCarousel({
                   className="w-full"
 
                   variant="featured"
-
-                  isBestseller={index === 0}
 
                   hideBookmark={hideBookmark}
 
