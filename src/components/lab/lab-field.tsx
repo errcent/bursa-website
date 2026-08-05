@@ -190,7 +190,7 @@ export function LabResultGrid({
   className?: string;
 }) {
   return (
-    <div className={cn("mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4", className)}>
+    <div className={cn("mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4", className)}>
       {children}
     </div>
   );
@@ -353,23 +353,18 @@ export function LabInterpretation({
   tone?: "neutral" | "positive" | "negative" | "warning";
   className?: string;
 }) {
-  const prefix =
-    tone === "positive" || tone === "warning" ? "Dengan asumsi input ini, " : "";
-
   return (
-    <p
+    <div
       className={cn(
-        "text-sm leading-relaxed",
-        tone === "positive" && "text-profit",
-        tone === "negative" && "text-loss",
-        tone === "warning" && "text-amber",
-        tone === "neutral" && "text-muted-foreground",
+        "lab-interpretation-block",
+        tone === "positive" && "border-profit/25 bg-profit/[0.06] text-profit",
+        tone === "negative" && "border-loss/25 bg-loss/[0.06] text-loss",
+        tone === "warning" && "border-amber/25 bg-amber/[0.06] text-amber",
         className
       )}
     >
-      {prefix}
       {children}
-    </p>
+    </div>
   );
 }
 

@@ -164,7 +164,7 @@ export function FloatingCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel description="Pilih mode, arah posisi, lalu isi harga.">
+        <LabToolPanel>
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-2">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Mode</p>

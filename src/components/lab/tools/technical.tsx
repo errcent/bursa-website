@@ -45,7 +45,7 @@ export function AtrTrailingStopCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel description="ATR × multiplier untuk level stop saat ini.">
+        <LabToolPanel>
           <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Harga saat ini" id="atr-p"><LabNumberInput id="atr-p" value={price} onChange={setPrice} min={0} /></LabField>
             <LabField label="ATR" id="atr-a"><LabNumberInput id="atr-a" value={atr} onChange={setAtr} min={0} /></LabField>
@@ -96,7 +96,7 @@ export function FibonacciCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel description="Swing high dan low untuk retracement & extension.">
+        <LabToolPanel>
           <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Swing high" id="fib-h"><LabNumberInput id="fib-h" value={high} onChange={setHigh} min={0} /></LabField>
             <LabField label="Swing low" id="fib-l"><LabNumberInput id="fib-l" value={low} onChange={setLow} min={0} /></LabField>
@@ -210,7 +210,7 @@ export function RMultipleTracker() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel description="1R = risiko awal per trade. Tambah atau hapus baris.">
+        <LabToolPanel>
           <div className="flex flex-col gap-2">
             {rows.map((row, index) => (
               <div key={row.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2">

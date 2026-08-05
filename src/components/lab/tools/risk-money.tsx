@@ -108,7 +108,7 @@ export function PositionSizeCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel description="Modal, risiko, entry, dan stop loss.">
+        <LabToolPanel>
           <div className="flex flex-col gap-5">
             <LabMarketSelect value={market} onChange={setMarket} />
             <LabPresetBar
@@ -173,14 +173,14 @@ export function PositionSizeCalculator() {
                 tone={parseFloat(riskPct) > 2 ? "warning" : "neutral"}
               >
                 {parseFloat(riskPct) > 2
-                  ? "Risiko di atas 2% per trade — umumnya dianggap agresif untuk kebanyakan trader."
+                  ? "Risiko di atas 2% per trade — umumnya dianggap agresif."
                   : market === "idx"
-                    ? `Untuk IDX, 1 lot = 100 lembar. Posisi ${fmt(result.lots, 2)} lot = ${fmt(result.units, 0)} lembar.`
+                    ? `1 lot = 100 lembar → ${fmt(result.lots, 2)} lot = ${fmt(result.units, 0)} lembar.`
                     : market === "forex"
-                      ? `Perhitungan inti sama; label lot disesuaikan (${fmt(result.lots, 2)} standard lot). Konfirmasi unit & margin dengan broker — bukan per pip.`
-                      : `Perhitungan inti sama; label kontrak disesuaikan. Konfirmasi ukuran kontrak dengan exchange.`}
+                      ? `${fmt(result.lots, 2)} standard lot — konfirmasi unit & margin dengan broker.`
+                      : "Konfirmasi ukuran kontrak dengan exchange."}
               </LabInterpretation>
-              <LabResultGrid className="mt-0 grid-cols-1 gap-2 sm:grid-cols-1">
+              <LabResultGrid className="mt-0">
                 <LabResultTile label="Jumlah risiko" value={formatMoney(result.riskAmount, market, 0)} tone="negative" />
                 <LabResultTile
                   label={market === "idx" ? "Lot (100 lembar)" : "Lot / unit"}
@@ -223,7 +223,7 @@ export function RiskRewardCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel description="Entry, stop loss, take profit, dan ukuran posisi.">
+        <LabToolPanel>
           <div className="flex flex-col gap-5">
             <LabPresetBar
               activeId={activePreset}
@@ -278,7 +278,7 @@ export function RiskRewardCalculator() {
                     ? "R:R positif, tapi di bawah 1:2 — pastikan win rate cukup tinggi."
                     : "R:R di bawah 1:1 — reward lebih kecil dari risk."}
               </LabInterpretation>
-              <LabResultGrid className="mt-0 grid-cols-1 gap-2 sm:grid-cols-1">
+              <LabResultGrid className="mt-0">
                 <LabResultTile label="Potensi rugi" value={fmt(result.riskAmount)} tone="negative" />
                 <LabResultTile label="Potensi untung" value={fmt(result.rewardAmount)} tone="positive" />
                 <LabResultTile label="Risk %" value={`${fmt(result.riskPercent)}%`} />
@@ -325,7 +325,7 @@ export function BreakevenCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel description="Komisi, spread, pajak, dan arah posisi.">
+        <LabToolPanel>
           <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Harga entry" id="be-entry"><LabNumberInput id="be-entry" value={entry} onChange={setEntry} min={0} /></LabField>
             <LabField label="Jumlah lembar" id="be-qty"><LabNumberInput id="be-qty" value={qty} onChange={setQty} min={0} /></LabField>
@@ -391,7 +391,7 @@ export function KellyCriterionCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel description="Win rate dan R:R untuk estimasi fraksi modal.">
+        <LabToolPanel>
           <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Win rate" id="kelly-wr" suffix="%"><LabNumberInput id="kelly-wr" value={winRate} onChange={setWinRate} min={0} max={100} /></LabField>
             <LabField label="R:R ratio" id="kelly-rr"><LabNumberInput id="kelly-rr" value={rr} onChange={setRr} min={0} /></LabField>
@@ -411,7 +411,7 @@ export function KellyCriterionCalculator() {
                     ? "Full Kelly agresif (>25%) — pertimbangkan half atau quarter Kelly untuk trading nyata."
                     : "Half/quarter Kelly lebih konservatif dan umum dipakai praktisi."}
               </LabInterpretation>
-              <LabResultGrid className="mt-0 grid-cols-1 gap-2">
+              <LabResultGrid className="mt-0">
                 <LabResultTile label="Full Kelly" value={`${fmt(result.full * 100)}%`} tone={result.full > 0 ? "positive" : "negative"} />
                 <LabResultTile label="Half Kelly (disarankan)" value={`${fmt(result.half * 100)}%`} />
                 <LabResultTile label="Quarter Kelly" value={`${fmt(result.quarter * 100)}%`} />

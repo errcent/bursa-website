@@ -302,7 +302,7 @@ export function MonteCarloSimulator() {
     <div className="flex flex-col gap-6">
       <LabCalculatorShell
         input={
-          <LabToolPanel description={`Auto-run · maks. ${MAX_SIMULATIONS} simulasi`}>
+          <LabToolPanel>
             <div className="flex flex-col gap-5">
               <LabPresetBar
                 activeId={activePreset}
@@ -411,14 +411,14 @@ export function MonteCarloSimulator() {
 
       {result && (
         <>
-          <LabToolPanel description="Satu simulasi acak — bukan median atau rata-rata semua jalur.">
+          <LabToolPanel title="Contoh jalur equity">
             <EquityCurveChart curve={result.equityCurve} startingCapital={result.startingCapital} />
             <p className="mt-2 text-xs text-muted-foreground">
               Akhir: {formatCurrency(result.equityCurve[result.equityCurve.length - 1]?.equity ?? 0)}
             </p>
           </LabToolPanel>
 
-          <LabToolPanel description={`${result.endings.length.toLocaleString("id-ID")} simulasi · sumbu = saldo akhir`}>
+          <LabToolPanel title="Distribusi saldo akhir">
             <div className="rounded-lg border border-border/40 bg-muted/10 px-2 pb-8 pt-3">
               <div className="flex h-40 items-end gap-0.5">
                 {result.bins.map((bin, i) => {

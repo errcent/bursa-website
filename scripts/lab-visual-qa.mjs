@@ -79,6 +79,17 @@ function collectMetrics() {
     return value.scrollWidth > value.clientWidth + 1;
   }).length;
 
+  const wrappedStatValues = [...document.querySelectorAll(".lab-stat-value")].filter((el) => {
+    const style = window.getComputedStyle(el);
+    return style.wordBreak === "break-all" || el.scrollHeight > el.clientHeight + 2;
+  }).length;
+
+  const crampedPanelCopy = document.querySelectorAll(".lab-panel-header p").length;
+
+  const lineClampOverflow = [...document.querySelectorAll("[class*='line-clamp']")].filter((el) => {
+    return el.scrollHeight > el.clientHeight + 2;
+  }).length;
+
   const nestedScrollContainers = [...document.querySelectorAll("main *")].filter((el) => {
     const style = window.getComputedStyle(el);
     const oy = style.overflowY;
@@ -91,6 +102,9 @@ function collectMetrics() {
     filterPillCount: document.querySelectorAll(".lab-pill").length,
     heroCinematicInMain: document.querySelectorAll("main .hero-cinematic").length,
     clippedResultTiles: clippedTiles,
+    wrappedStatValues,
+    crampedPanelCopy,
+    lineClampOverflow,
     nestedScrollContainers,
     headings: [...document.querySelectorAll("h1")].slice(0, 3).map((el) => ({
       text: el.textContent?.trim().slice(0, 80) ?? "",
@@ -123,7 +137,7 @@ const report = {
   baseUrl,
   pages: [],
   redirects: [],
-  summary: { total: 0, overflowFailures: 0, clippedFailures: 0, errors: 0 },
+  summary: { total: 0, overflowFailures: 0, clippedFailures: 0, textFailures: 0, errors: 0 },
 };
 
 for (const vp of viewports) {
@@ -153,6 +167,13 @@ for (const vp of viewports) {
       report.summary.total += 1;
       if (metrics.horizontalOverflow) report.summary.overflowFailures += 1;
       if (metrics.clippedResultTiles > 0) report.summary.clippedFailures += 1;
+      if (
+        metrics.wrappedStatValues > 0 ||
+        metrics.crampedPanelCopy > 0 ||
+        metrics.lineClampOverflow > 0
+      ) {
+        report.summary.textFailures += 1;
+      }
 
       report.pages.push({
         viewport: vp.name,
@@ -200,5 +221,5 @@ await browser.close();
 writeFileSync(join(outDir, "report.json"), JSON.stringify(report, null, 2));
 console.log(`Lab QA complete → ${outDir}`);
 console.log(
-  `Summary: ${report.summary.total} captures, overflow=${report.summary.overflowFailures}, clipped=${report.summary.clippedFailures}, errors=${report.summary.errors}`
+  `Summary: ${report.summary.total} captures, overflow=${report.summary.overflowFailures}, clipped=${report.summary.clippedFailures}, text=${report.summary.textFailures}, errors=${report.summary.errors}`
 );

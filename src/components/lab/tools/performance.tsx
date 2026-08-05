@@ -83,7 +83,7 @@ export function TradeExpectancyCalculator() {
     <div className="flex flex-col gap-8">
       <LabCalculatorShell
         input={
-          <LabToolPanel description="Win rate dan R:R dipakai bersama kalkulator & matriks.">
+          <LabToolPanel>
             <div className="grid gap-4 sm:grid-cols-2">
               <LabField label="Win rate" id="te-wr" suffix="%">
                 <LabNumberInput id="te-wr" value={winRate} onChange={setWinRate} min={0} max={100} />
@@ -116,7 +116,7 @@ export function TradeExpectancyCalculator() {
                     ? "Edge positif — rata-rata setiap trade menghasilkan lebih dari risiko (belum termasuk biaya)."
                     : "Edge negatif — strategi cenderung merugi secara matematis dengan asumsi ini."}
                 </LabInterpretation>
-                <LabResultGrid className="mt-0 grid-cols-1 gap-2">
+                <LabResultGrid className="mt-0">
                   <LabResultTile label="Expectancy (R)" value={fmt(result.expectancyR)} tone={result.expectancyR > 0 ? "positive" : "negative"} />
                   <LabResultTile label="Expectancy (Rp)" value={`Rp ${fmt(result.expectancyNominal, 0)}`} />
                   <LabResultTile label={`Total (${trades} trade)`} value={`Rp ${fmt(result.totalExpected, 0)}`} tone={result.totalExpected > 0 ? "positive" : "negative"} />
@@ -128,7 +128,7 @@ export function TradeExpectancyCalculator() {
         }
       />
 
-      <LabToolPanel description="Baris = win rate, kolom = R:R. Sel terhighlight = input kamu.">
+      <LabToolPanel title="Matriks expectancy">
         <div className="mb-4 md:hidden">
           <LabResultTile
             label={`Sel kamu (${winRateNum}% × ${rrNum}R)`}

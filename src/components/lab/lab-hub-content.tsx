@@ -114,16 +114,16 @@ export function LabHubContent() {
                       {scenario.description}
                     </p>
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="lab-workflow-steps">
                     {scenario.toolIds.map((toolId, stepIndex) => {
                       const tool = getLabTool(toolId);
                       if (!tool) return null;
                       return (
                         <Link key={toolId} href={tool.href} className="lab-workflow-step">
-                          <span className="font-mono text-[10px] text-muted-foreground">
+                          <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-md bg-muted/40 font-mono text-[10px] text-muted-foreground">
                             {stepIndex + 1}
                           </span>
-                          {tool.shortTitle ?? tool.title}
+                          <span className="min-w-0 truncate">{tool.shortTitle ?? tool.title}</span>
                         </Link>
                       );
                     })}
@@ -211,9 +211,6 @@ function LabToolRow({ tool }: { tool: LabTool }) {
                 · {difficultyLabel[tool.difficulty]}
               </span>
             )}
-          </span>
-          <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground line-clamp-2">
-            {tool.description}
           </span>
         </span>
         <ChevronRight className="size-4 shrink-0 text-muted-foreground/50 group-hover:text-muted-foreground" />

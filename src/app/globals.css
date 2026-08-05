@@ -310,7 +310,11 @@
   }
 
   .lab-workflow-step {
-    @apply inline-flex max-w-full items-center gap-1.5 rounded-lg border border-border/50 bg-muted/20 px-2.5 py-1 text-xs font-medium text-foreground/85 transition-colors hover:border-accent/25 hover:bg-accent-soft/30 hover:text-accent;
+    @apply flex w-full items-center gap-2.5 rounded-lg border border-border/50 bg-muted/15 px-3 py-2.5 text-sm font-medium text-foreground/90 transition-colors hover:border-accent/25 hover:bg-accent-soft/30 hover:text-accent;
+  }
+
+  .lab-workflow-steps {
+    @apply flex flex-col gap-1.5;
   }
 
   .lab-disclaimer {
@@ -322,15 +326,15 @@
   }
 
   .lab-panel-header {
-    @apply border-b border-border/45 px-5 py-4 sm:px-6 sm:py-5;
+    @apply border-b border-border/45 px-4 py-3 sm:px-5 sm:py-4;
   }
 
   .lab-panel-body {
-    @apply p-5 sm:p-6;
+    @apply p-4 sm:p-5;
   }
 
   .lab-result-tile {
-    @apply relative overflow-hidden rounded-xl border border-border/50 bg-card/40 p-3.5 transition-colors duration-150;
+    @apply relative min-w-0 rounded-xl border border-border/50 bg-card/40 p-4 transition-colors duration-150;
   }
 
   .lab-sidebar-nav {
@@ -370,11 +374,19 @@
   }
 
   .lab-stat-label {
-    @apply text-xs text-muted-foreground;
+    @apply text-xs leading-snug text-muted-foreground;
   }
 
   .lab-stat-value {
-    @apply break-all font-heading text-lg font-semibold tabular-nums tracking-tight sm:text-xl;
+    @apply mt-1 font-heading text-base font-semibold tabular-nums leading-snug tracking-tight sm:text-lg;
+  }
+
+  .lab-interpretation-block {
+    @apply rounded-xl border border-border/45 bg-muted/15 px-4 py-3 text-sm leading-relaxed text-muted-foreground;
+  }
+
+  .lab-output-panel {
+    @apply border-accent/10 bg-surface/40;
   }
 
   .guidance-mentor-carousel-bleed {
