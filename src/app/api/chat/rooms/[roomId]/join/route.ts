@@ -1,10 +1,8 @@
 import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
-import {
-  joinMentorHubIfEligible,
-  resolveChatRoomViewerFromEmail,
-} from "@/lib/chat/db-rooms";
+import { joinMentorHubIfEligible } from "@/lib/chat/db-rooms";
+import { resolveTrustedChatViewer } from "@/lib/chat/resolve-viewer";
 
 type RouteContext = {
   params: Promise<{ roomId: string }>;
@@ -20,15 +18,12 @@ type RouteContext = {
 export async function POST(request: NextRequest, context: RouteContext) {
   try {
     const { roomId } = await context.params;
-    const viewer = await resolveChatRoomViewerFromEmail(
-      request.headers.get("x-user-email"),
-      {
-        createIfMissing: true,
-        userId: request.headers.get("x-user-id"),
-        name: request.headers.get("x-user-name"),
-        role: request.headers.get("x-user-role"),
-      }
-    );
+    const viewer = await resolveTrustedChatViewer(request, {
+      createIfMissing: true,
+      userId: request.headers.get("x-user-id"),
+      name: request.headers.get("x-user-name"),
+      role: request.headers.get("x-user-role"),
+    });
     if (!viewer) {
       return jsonError("Autentikasi diperlukan.", 401);
     }

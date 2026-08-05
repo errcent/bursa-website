@@ -141,6 +141,7 @@ export const mentorApplicationSchema = z.object({
   cvDocumentName: z.string().min(1, "Nama file CV wajib diisi."),
   certificateDocumentUrl: z.string().optional(),
   certificateDocumentName: z.string().optional(),
+  turnstileToken: z.string().optional(),
 });
 
 export const createLessonQuestionSchema = z.object({

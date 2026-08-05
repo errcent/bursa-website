@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 
 import { checkApiRateLimit, rateLimitResponse } from "@/lib/auth/rate-limit";
 import { WEB_SESSION_COOKIE } from "@/lib/auth/web-session.constants";
+import { verifyWebSessionToken } from "@/lib/auth/web-session";
 import {
   isKomunitasApiPath,
   isKomunitasPagePath,
@@ -29,11 +30,14 @@ function applyMobileCors(response: NextResponse, origin: string | null): NextRes
   return response;
 }
 
-function hasSessionCookie(request: NextRequest): boolean {
-  return Boolean(request.cookies.get(WEB_SESSION_COOKIE)?.value);
+async function hasValidSession(request: NextRequest): Promise<boolean> {
+  const token = request.cookies.get(WEB_SESSION_COOKIE)?.value;
+  if (!token) return false;
+  const session = await verifyWebSessionToken(token);
+  return session !== null;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const origin = request.headers.get("origin");
   const isApi = request.nextUrl.pathname.startsWith("/api/");
   const { pathname } = request.nextUrl;
@@ -49,7 +53,7 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  if (pathname.startsWith("/api/admin") && !hasSessionCookie(request)) {
+  if (pathname.startsWith("/api/admin") && !(await hasValidSession(request))) {
     return applyMobileCors(
       NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
       origin
@@ -60,7 +64,7 @@ export function middleware(request: NextRequest) {
     (pathname.startsWith("/admin") ||
       pathname.startsWith("/developer") ||
       pathname.startsWith("/mentor")) &&
-    !hasSessionCookie(request)
+    !(await hasValidSession(request))
   ) {
     const login = new URL("/masuk", request.url);
     login.searchParams.set("next", pathname);

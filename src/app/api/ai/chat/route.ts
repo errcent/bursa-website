@@ -60,13 +60,13 @@ export async function POST(request: Request) {
   );
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const email = await resolveTrustedEmail(request);
+  if (!email) {
+    return NextResponse.json({ error: "Autentikasi diperlukan." }, { status: 401 });
+  }
+
   return NextResponse.json({
     enabled: isAiEnabled(),
-    models: {
-      router: process.env.AI_MODEL_ROUTER ?? "gpt-4o-mini",
-      agent: process.env.AI_MODEL_AGENT ?? "gpt-4o",
-    },
-    dailyBudgetPerUser: Number(process.env.AI_DAILY_TOKEN_BUDGET_PER_USER ?? 10000),
   });
 }

@@ -7,6 +7,10 @@ import { Loader2 } from "lucide-react";
 
 import { AuthField, authInputClassName } from "@/components/auth-field";
 import { Button } from "@/components/ui/button";
+import {
+  isTurnstileClientConfigured,
+  TurnstileWidget,
+} from "@/components/turnstile-widget";
 import { mentorInstruments } from "@/lib/mentor-program/content";
 import { getPriceGuidance } from "@/lib/mentor/price-guidance";
 import type { Instrument } from "@/lib/types";
@@ -89,14 +93,23 @@ export function MentorApplicationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingCv, setUploadingCv] = useState(false);
   const [uploadingCertificate, setUploadingCertificate] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRequired = isTurnstileClientConfigured();
 
   async function uploadDocument(
     file: File,
     kind: "cv" | "certificate"
   ): Promise<UploadedDocument> {
+    if (turnstileRequired && !turnstileToken) {
+      throw new Error("Selesaikan verifikasi keamanan terlebih dahulu.");
+    }
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("kind", kind);
+    if (turnstileToken) {
+      formData.append("turnstileToken", turnstileToken);
+    }
 
     const res = await fetch("/api/mentor/applications/upload", {
       method: "POST",
@@ -190,6 +203,10 @@ export function MentorApplicationForm() {
       next.cvDocument = "Tunggu hingga unggahan dokumen selesai.";
     }
     if (!form.agreedToTerms) next.agreedToTerms = "Kamu harus menyetujui syarat & ketentuan.";
+    if (turnstileRequired && !turnstileToken) {
+      setSubmitError("Selesaikan verifikasi keamanan terlebih dahulu.");
+      return false;
+    }
 
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -227,6 +244,7 @@ export function MentorApplicationForm() {
           cvDocumentName: cvDocument?.fileName,
           certificateDocumentUrl: certificateDocument?.url,
           certificateDocumentName: certificateDocument?.fileName,
+          turnstileToken: turnstileToken ?? undefined,
         }),
       });
 
@@ -570,6 +588,10 @@ export function MentorApplicationForm() {
       {errors.agreedToTerms && (
         <p className="-mt-4 text-xs text-destructive">{errors.agreedToTerms}</p>
       )}
+
+      {turnstileRequired ? (
+        <TurnstileWidget onToken={setTurnstileToken} className="flex justify-center" />
+      ) : null}
 
       <Button type="submit" className="h-11 w-full btn-primary sm:w-auto sm:px-10" disabled={isSubmitting}>
         {isSubmitting ? (

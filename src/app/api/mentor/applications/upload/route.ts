@@ -1,7 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/auth/rate-limit";
 import { persistMentorApplicationDocument } from "@/lib/mentor-program/document-storage";
+import {
+  isTurnstileBlockingMisconfiguration,
+  isTurnstileConfigured,
+  verifyTurnstileToken,
+} from "@/lib/turnstile/verify";
+import { assertDetectedFileType } from "@/lib/upload/validate-file";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
@@ -12,26 +19,32 @@ const ALLOWED_TYPES = new Set([
   "image/webp",
 ]);
 
-function extForMime(mimeType: string): string | null {
-  switch (mimeType) {
-    case "application/pdf":
-      return "pdf";
-    case "image/jpeg":
-      return "jpg";
-    case "image/png":
-      return "png";
-    case "image/webp":
-      return "webp";
-    default:
-      return null;
-  }
-}
-
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const ip = clientIp(request);
+    const rate = checkRateLimit(`mentor-upload:${ip}`, 10, 60 * 60 * 1000);
+    if (!rate.allowed) {
+      return rateLimitResponse(rate.retryAfterSec);
+    }
+
     const formData = await request.formData();
     const file = formData.get("file");
     const kindRaw = String(formData.get("kind") ?? "cv").trim();
+    const turnstileToken = String(formData.get("turnstileToken") ?? "").trim();
+
+    if (isTurnstileBlockingMisconfiguration()) {
+      return jsonError("Unggahan sementara tidak tersedia. Coba lagi nanti.", 503);
+    }
+
+    if (isTurnstileConfigured()) {
+      if (!turnstileToken) {
+        return jsonError("Verifikasi keamanan wajib. Muat ulang halaman dan coba lagi.", 400);
+      }
+      const valid = await verifyTurnstileToken(turnstileToken, ip);
+      if (!valid) {
+        return jsonError("Verifikasi keamanan gagal. Muat ulang halaman dan coba lagi.", 400);
+      }
+    }
 
     if (!(file instanceof File)) {
       return jsonError("File wajib diunggah.", 400);
@@ -41,25 +54,23 @@ export async function POST(request: Request) {
       return jsonError("Jenis dokumen tidak valid.", 400);
     }
 
-    if (!ALLOWED_TYPES.has(file.type)) {
-      return jsonError("Format tidak didukung. Gunakan PDF, JPG, PNG, atau WebP.", 400);
-    }
-
     if (file.size > MAX_BYTES) {
       return jsonError("Ukuran file maksimal 5 MB.", 400);
     }
 
-    const ext = extForMime(file.type);
-    if (!ext) {
-      return jsonError("Format tidak didukung.", 400);
+    const buffer = Buffer.from(await file.arrayBuffer());
+    let detected;
+    try {
+      detected = assertDetectedFileType(buffer, ALLOWED_TYPES);
+    } catch {
+      return jsonError("Format tidak didukung. Gunakan PDF, JPG, PNG, atau WebP.", 400);
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
     const { url, storage } = await persistMentorApplicationDocument(
       kindRaw,
       buffer,
-      file.type,
-      ext
+      detected.mime,
+      detected.ext
     );
 
     return jsonOk(

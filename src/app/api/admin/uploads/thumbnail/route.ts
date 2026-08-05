@@ -11,7 +11,6 @@ const ALLOWED_TYPES = new Set([
   "image/jpeg",
   "image/png",
   "image/webp",
-  "image/svg+xml",
 ]);
 
 export async function POST(request: Request) {
@@ -28,7 +27,7 @@ export async function POST(request: Request) {
 
     if (!ALLOWED_TYPES.has(file.type)) {
       return NextResponse.json(
-        { error: "Format tidak didukung. Gunakan JPG, PNG, WebP, atau SVG." },
+        { error: "Format tidak didukung. Gunakan JPG, PNG, atau WebP." },
         { status: 400 }
       );
     }
@@ -42,9 +41,7 @@ export async function POST(request: Request) {
         ? "png"
         : file.type === "image/webp"
           ? "webp"
-          : file.type === "image/svg+xml"
-            ? "svg"
-            : "jpg";
+          : "jpg";
     const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
     const uploadDir = path.join(process.cwd(), "public", "uploads", "courses");
     await mkdir(uploadDir, { recursive: true });

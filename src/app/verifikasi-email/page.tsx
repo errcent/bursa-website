@@ -8,6 +8,54 @@ import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { AuthPageShell } from "@/components/auth-page-shell";
 import { Button } from "@/components/ui/button";
 
+function ResendVerificationButton() {
+  const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function handleResend() {
+    setStatus("loading");
+    setMessage(null);
+    try {
+      const response = await fetch("/api/auth/resend-verification", { method: "POST" });
+      const payload = (await response.json()) as { message?: string; error?: string };
+      if (!response.ok) {
+        setStatus("error");
+        setMessage(payload.error ?? "Gagal mengirim ulang tautan.");
+        return;
+      }
+      setStatus("sent");
+      setMessage(payload.message ?? "Tautan verifikasi baru telah dikirim.");
+    } catch {
+      setStatus("error");
+      setMessage("Koneksi bermasalah. Coba lagi.");
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <Button
+        type="button"
+        variant="outline"
+        className="h-10"
+        disabled={status === "loading" || status === "sent"}
+        onClick={() => void handleResend()}
+      >
+        {status === "loading" ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Mengirim...
+          </>
+        ) : status === "sent" ? (
+          "Tautan terkirim"
+        ) : (
+          "Kirim ulang tautan verifikasi"
+        )}
+      </Button>
+      {message ? <p className="text-xs text-muted-foreground">{message}</p> : null}
+    </div>
+  );
+}
+
 type VerifyState = "loading" | "success" | "already" | "error";
 
 function EmailVerifyContent() {
@@ -76,6 +124,7 @@ function EmailVerifyContent() {
       <div className="flex flex-col items-center gap-4 text-center">
         <XCircle className="size-10 text-destructive" />
         <p className="text-sm text-muted-foreground">{errorMessage}</p>
+        <ResendVerificationButton />
         <Button className="h-11 btn-primary" render={<Link href="/masuk" />}>
           Kembali ke masuk
         </Button>

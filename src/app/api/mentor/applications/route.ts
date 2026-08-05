@@ -1,12 +1,25 @@
-import { after, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/auth/rate-limit";
 import { notifyAdminOfMentorApplication } from "@/lib/mentor-program/application-notification";
 import { createMentorApplication } from "@/lib/mentor-program/applications";
+import {
+  isTurnstileBlockingMisconfiguration,
+  isTurnstileConfigured,
+  verifyTurnstileToken,
+} from "@/lib/turnstile/verify";
 import { mentorApplicationSchema } from "@/lib/validations/api";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const ip = clientIp(request);
+    const rate = checkRateLimit(`mentor-app:${ip}`, 5, 60 * 60 * 1000);
+    if (!rate.allowed) {
+      return rateLimitResponse(rate.retryAfterSec);
+    }
+
     const body = await request.json();
     const parsed = mentorApplicationSchema.safeParse(body);
 
@@ -14,7 +27,28 @@ export async function POST(request: Request) {
       return jsonError(parsed.error.issues.map((i) => i.message).join(", "), 422);
     }
 
-    const { portfolioUrl, certificateDocumentUrl, certificateDocumentName, ...rest } = parsed.data;
+    if (isTurnstileBlockingMisconfiguration()) {
+      return jsonError("Formulir sementara tidak tersedia. Coba lagi nanti.", 503);
+    }
+
+    if (isTurnstileConfigured()) {
+      const token = parsed.data.turnstileToken?.trim();
+      if (!token) {
+        return jsonError("Verifikasi keamanan wajib. Muat ulang halaman dan coba lagi.", 400);
+      }
+      const valid = await verifyTurnstileToken(token, ip);
+      if (!valid) {
+        return jsonError("Verifikasi keamanan gagal. Muat ulang halaman dan coba lagi.", 400);
+      }
+    }
+
+    const {
+      portfolioUrl,
+      certificateDocumentUrl,
+      certificateDocumentName,
+      turnstileToken: _turnstile,
+      ...rest
+    } = parsed.data;
     const application = await createMentorApplication({
       ...rest,
       portfolioUrl: portfolioUrl || undefined,
@@ -22,8 +56,6 @@ export async function POST(request: Request) {
       certificateDocumentName: certificateDocumentName || undefined,
     });
 
-    // after() keeps the send off the response path while still guaranteeing it runs —
-    // a bare floating promise can be dropped when the serverless instance freezes.
     after(async () => {
       try {
         await notifyAdminOfMentorApplication(application);
@@ -39,8 +71,5 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  return NextResponse.json(
-    { error: "Method not allowed" },
-    { status: 405 }
-  );
+  return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
 }
