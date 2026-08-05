@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
+import { decryptUserPhone, encryptUserPhone } from "@/lib/auth/user-phone";
+import { hashPhoneForLookup } from "@/lib/crypto/field-encryption";
 import { updateUserProfileSchema } from "@/lib/validations/api";
 import { db } from "@/lib/db";
 
@@ -20,7 +22,7 @@ function serializeProfile(user: {
     email: user.email,
     name: user.nama,
     username: user.username,
-    phone: user.phone,
+    phone: decryptUserPhone(user.phone),
     bio: user.bio ?? "",
     avatarUrl: user.avatarUrl,
     role: user.role,
@@ -74,8 +76,9 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (body.phone) {
+      const phoneHash = hashPhoneForLookup(body.phone);
       const conflict = await db.user.findFirst({
-        where: { phone: body.phone, NOT: { id: user.id } },
+        where: { phoneHash, NOT: { id: user.id } },
         select: { id: true },
       });
       if (conflict) {
@@ -83,12 +86,21 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
+    const phoneUpdate =
+      body.phone !== undefined
+        ? body.phone
+          ? encryptUserPhone(body.phone)
+          : { phone: null, phoneHash: null }
+        : null;
+
     const updated = await db.user.update({
       where: { id: user.id },
       data: {
         ...(body.name !== undefined ? { nama: body.name.trim() } : {}),
         ...(body.username !== undefined ? { username: body.username || null } : {}),
-        ...(body.phone !== undefined ? { phone: body.phone } : {}),
+        ...(phoneUpdate
+          ? { phone: phoneUpdate.phone, phoneHash: phoneUpdate.phoneHash }
+          : {}),
         ...(body.bio !== undefined ? { bio: body.bio.trim() } : {}),
         ...(body.avatarUrl !== undefined
           ? { avatarUrl: body.avatarUrl?.trim() || null }

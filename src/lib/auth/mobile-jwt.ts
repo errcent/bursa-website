@@ -213,12 +213,15 @@ export async function verifyGoogleIdToken(idToken: string): Promise<{
 
   const data = (await res.json()) as {
     aud?: string;
+    iss?: string;
     email?: string;
     email_verified?: string | boolean;
     name?: string;
     sub?: string;
   };
 
+  const allowedIssuers = new Set(["accounts.google.com", "https://accounts.google.com"]);
+  if (!data.iss || !allowedIssuers.has(data.iss)) return null;
   if (data.aud !== clientId) return null;
   const verified = data.email_verified;
   if (verified !== "true" && verified !== true) return null;

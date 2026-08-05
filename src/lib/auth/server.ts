@@ -2,6 +2,7 @@ import type { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 import { db } from "@/lib/db";
+import { hashPhoneForLookup } from "@/lib/crypto/field-encryption";
 
 import { OAUTH_PASSWORD_MARKER } from "./google-oauth";
 import {
@@ -21,7 +22,10 @@ export async function findUserByIdentifier(identifier: string): Promise<User | n
     return db.user.findUnique({ where: { email: normalized } });
   }
   if (kind === "phone") {
-    return db.user.findUnique({ where: { phone: normalized } });
+    const phoneHash = hashPhoneForLookup(normalized);
+    const byHash = await db.user.findUnique({ where: { phoneHash } });
+    if (byHash) return byHash;
+    return db.user.findFirst({ where: { phone: normalized } });
   }
   return db.user.findUnique({ where: { username: normalized } });
 }

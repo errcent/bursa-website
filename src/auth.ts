@@ -15,6 +15,7 @@ if (isGoogleOAuthConfigured()) {
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      issuer: "https://accounts.google.com",
       /** Minimal scopes: email + public profile (name, picture). No Gmail or contacts. */
       authorization: {
         params: {
@@ -23,6 +24,7 @@ if (isGoogleOAuthConfigured()) {
           response_type: "code",
         },
       },
+      checks: ["pkce", "state"],
     })
   );
 }

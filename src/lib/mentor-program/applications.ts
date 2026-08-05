@@ -1,5 +1,6 @@
 import type { MentorApplicationStatus as DbMentorApplicationStatus } from "@prisma/client";
 
+import { decryptField, encryptField } from "@/lib/crypto/field-encryption";
 import { db } from "@/lib/db";
 import type { Instrument } from "@/lib/types";
 
@@ -85,7 +86,7 @@ function mapFromDb(row: {
     id: row.id,
     fullName: row.fullName,
     email: row.email,
-    phone: row.phone,
+    phone: decryptField(row.phone),
     professionalTitle: row.professionalTitle,
     instruments: row.instruments as Instrument[],
     yearsExperience: row.yearsExperience,
@@ -116,7 +117,7 @@ export async function createMentorApplication(
     data: {
       fullName: input.fullName,
       email: input.email,
-      phone: input.phone,
+      phone: encryptField(input.phone),
       professionalTitle: input.professionalTitle,
       instruments: input.instruments,
       yearsExperience: input.yearsExperience,

@@ -1,6 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 
-import { getAuthSecret } from "@/lib/auth/google-oauth";
+import { getAuthSecret } from "@/lib/auth/auth-secret";
 import { WEB_SESSION_COOKIE } from "@/lib/auth/web-session.constants";
 
 export { WEB_SESSION_COOKIE };

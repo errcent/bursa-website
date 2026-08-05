@@ -1,5 +1,7 @@
 import type { Lesson } from "@/lib/types";
 
+import crypto from "node:crypto";
+
 import { isPrototypeMode } from "@/lib/auth/prototype";
 
 const ENROLLMENTS_KEY = "bursa-enrollments";
@@ -83,19 +85,49 @@ export function canAccessVideo(
   return isEnrolled(userId, courseId);
 }
 
-function encodeBase64(value: string): string {
-  if (typeof btoa !== "undefined") return btoa(value);
-  return value;
+function signPlayback(body: string): string {
+  return crypto.createHmac("sha256", requireTokenSecret()).update(body).digest("base64url");
+}
+
+interface PlaybackPayload {
+  userId: string;
+  lessonId: string;
+  exp: number;
 }
 
 export function generatePlaybackToken(userId: string, lessonId: string): PlaybackToken {
-  const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
-  const payload = `${userId}:${lessonId}:${expiresAt}`;
-  const tokenSecret = requireTokenSecret();
-  const signature = encodeBase64(`${payload}:${tokenSecret}`);
-  const token = encodeBase64(`${payload}:${signature}`);
+  const exp = Date.now() + 2 * 60 * 60 * 1000;
+  const payload: PlaybackPayload = { userId, lessonId, exp };
+  const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const token = `${body}.${signPlayback(body)}`;
 
-  return { token, expiresAt, lessonId, userId };
+  return { token, expiresAt: new Date(exp).toISOString(), lessonId, userId };
+}
+
+export function verifyPlaybackToken(
+  token: string
+): { userId: string; lessonId: string } | null {
+  const parts = token.split(".");
+  if (parts.length !== 2) return null;
+  const [body, signature] = parts;
+  if (!body || !signature) return null;
+
+  const expected = signPlayback(body);
+  const sigBuf = Buffer.from(signature);
+  const expBuf = Buffer.from(expected);
+  if (sigBuf.length !== expBuf.length) return null;
+  if (!crypto.timingSafeEqual(sigBuf, expBuf)) return null;
+
+  try {
+    const payload = JSON.parse(
+      Buffer.from(body, "base64url").toString("utf8")
+    ) as PlaybackPayload;
+    if (typeof payload.exp !== "number" || Date.now() > payload.exp) return null;
+    if (!payload.userId || !payload.lessonId) return null;
+    return { userId: payload.userId, lessonId: payload.lessonId };
+  } catch {
+    return null;
+  }
 }
 
 export function watermarkConfig(userId: string, userEmail: string): WatermarkSettings {

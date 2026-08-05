@@ -172,6 +172,9 @@ function DashboardBody() {
               <Link href="/profil" className="link-muted mt-3 inline-flex text-sm">
                 Edit profil
               </Link>
+              <Link href="/dashboard/tersimpan" className="link-muted mt-2 inline-flex text-sm">
+                Lihat tersimpan
+              </Link>
             </Reveal>
           </div>
         </div>

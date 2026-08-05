@@ -466,3 +466,14 @@ export const learningGuidanceAnswersSchema = z.object({
     .optional()
     .default("mixed"),
 });
+
+export const toggleBookmarkSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("course"), slug: z.string().min(1) }),
+  z.object({
+    type: z.literal("lesson"),
+    courseSlug: z.string().min(1),
+    lessonId: z.string().min(1),
+  }),
+  z.object({ type: z.literal("playlist"), slug: z.string().min(1) }),
+  z.object({ type: z.literal("mentor"), slug: z.string().min(1) }),
+]);

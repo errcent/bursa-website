@@ -1,7 +1,10 @@
 import type { UserRole } from "@prisma/client";
 
+import { getAuthSecret } from "@/lib/auth/auth-secret";
 import { db } from "@/lib/db";
 import { markWaitlistConverted } from "@/lib/waitlist/resend";
+
+export { getAuthSecret };
 
 const OAUTH_PASSWORD_MARKER = "oauth-google";
 
@@ -22,24 +25,6 @@ export function isGoogleOAuthConfigured(): boolean {
   } catch {
     return false;
   }
-}
-
-/** NextAuth v5 accepts AUTH_SECRET; we also support NEXTAUTH_SECRET for ops docs. */
-export function getAuthSecret(): string {
-  const secret =
-    process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim();
-
-  if (secret) return secret;
-
-  const isBuildPhase =
-    process.env.NEXT_PHASE === "phase-production-build" ||
-    process.env.NEXT_PHASE === "phase-development-build";
-
-  if (process.env.NODE_ENV === "production" && !isBuildPhase) {
-    throw new Error("AUTH_SECRET or NEXTAUTH_SECRET is required in production");
-  }
-
-  return "bursa-build-placeholder-secret-not-for-production";
 }
 
 function mapClientRole(_email: string, roleHint?: string): UserRole {

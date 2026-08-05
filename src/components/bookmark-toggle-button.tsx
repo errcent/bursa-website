@@ -32,16 +32,16 @@ export function BookmarkToggleButton({
       aria-pressed={saved}
       aria-label={ariaLabel}
       title={ariaLabel}
-      onClick={(event) => {
+        onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
-        toggle();
+        void toggle();
       }}
       onKeyDown={(event) => {
         if (event.key !== "Enter" && event.key !== " ") return;
         event.preventDefault();
         event.stopPropagation();
-        toggle();
+        void toggle();
       }}
       className={cn(
         "pointer-events-auto inline-flex size-8 items-center justify-center rounded-full border backdrop-blur-sm transition-all duration-200",

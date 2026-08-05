@@ -22,8 +22,10 @@ model User {
   createdAt                      DateTime                  @default(now())
   /// Login handle — lowercase alphanumeric + underscore; separate from display name.
   username                       String?                   @unique
-  /// E.164 or Indonesian +62... format.
-  phone                          String?                   @unique
+  /// E.164 or Indonesian +62... format (encrypted at rest).
+  phone                          String?
+  /// SHA-256 of normalized phone for uniqueness lookups on encrypted values.
+  phoneHash                      String?                   @unique
   /// Set once the email is verified (magic link / OTP). Gate for public/ranking metrics (QC-20260719-26).
   emailVerifiedAt                DateTime?
   /// Set once the phone is verified. Second identity anchor for Sybil resistance (QC-20260719-26).
@@ -61,6 +63,7 @@ model User {
   reviews                        Review[]
   transactions                   Transaction[]
   watchlistItems                 WatchlistItem[]
+  bookmarkItems                  BookmarkItem[]
   learningGuidanceProfile        LearningGuidanceProfile?
   activeSessions                 UserSession[]
   refreshTokens                  RefreshToken[]
@@ -1194,6 +1197,28 @@ model MentorApplication {
 
   @@index([status, createdAt])
   @@index([email])
+}
+
+enum BookmarkTargetType {
+  COURSE
+  LESSON
+  PLAYLIST
+  MENTOR
+}
+
+model BookmarkItem {
+  id         String             @id @default(cuid())
+  userId     String
+  targetKey  String
+  type       BookmarkTargetType
+  slug       String?
+  courseSlug String?
+  lessonId   String?
+  createdAt  DateTime           @default(now())
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetKey])
+  @@index([userId, type, createdAt])
 }
 
 model PublicDocument {

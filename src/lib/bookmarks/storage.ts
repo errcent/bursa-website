@@ -112,6 +112,70 @@ export function toggleBookmark(scope: string, ref: BookmarkRef): boolean {
   return true;
 }
 
+export async function fetchRemoteBookmarks(): Promise<BookmarkEntry[]> {
+  const res = await fetch("/api/me/bookmarks", { credentials: "include", cache: "no-store" });
+  if (!res.ok) return [];
+  const data = (await res.json()) as { items?: BookmarkEntry[] };
+  return (data.items ?? []).filter(isBookmarkEntry);
+}
+
+/** Merge server bookmarks into local cache for logged-in users. */
+export async function mergeRemoteBookmarks(scope: string): Promise<BookmarkEntry[]> {
+  const remote = await fetchRemoteBookmarks();
+  const local = getBookmarks(scope);
+  const byId = new Map<string, BookmarkEntry>();
+  for (const entry of remote) byId.set(bookmarkId(entry), entry);
+  for (const entry of local) {
+    const id = bookmarkId(entry);
+    if (!byId.has(id)) byId.set(id, entry);
+  }
+  const merged = Array.from(byId.values());
+  writeRaw(scope, merged);
+
+  for (const entry of local) {
+    if (!remote.some((r) => bookmarkId(r) === bookmarkId(entry))) {
+      await fetch("/api/me/bookmarks", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(entry),
+      });
+    }
+  }
+
+  return merged;
+}
+
+export async function toggleBookmarkRemote(
+  scope: string,
+  ref: BookmarkRef
+): Promise<boolean> {
+  const res = await fetch("/api/me/bookmarks", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(ref),
+  });
+  if (!res.ok) {
+    return toggleBookmark(scope, ref);
+  }
+  const data = (await res.json()) as { saved?: boolean };
+  const saved = Boolean(data.saved);
+  const id = bookmarkId(ref);
+  const entries = getBookmarks(scope);
+  if (saved) {
+    if (!entries.some((e) => bookmarkId(e) === id)) {
+      writeRaw(scope, [...entries, { ...ref, savedAt: new Date().toISOString() }]);
+    }
+  } else {
+    writeRaw(
+      scope,
+      entries.filter((e) => bookmarkId(e) !== id)
+    );
+  }
+  return saved;
+}
+
 export function getBookmarkCount(scope: string): number {
   return getBookmarks(scope).length;
 }
