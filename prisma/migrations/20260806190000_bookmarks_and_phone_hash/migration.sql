@@ -1,5 +1,7 @@
 -- Bookmarks + phone encryption support (QC-20260720-01, QC-20260806-05)
 
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TYPE "BookmarkTargetType" AS ENUM ('COURSE', 'LESSON', 'PLAYLIST', 'MENTOR');
 
 CREATE TABLE "BookmarkItem" (
@@ -27,5 +29,5 @@ DROP INDEX IF EXISTS "User_phone_key";
 CREATE UNIQUE INDEX IF NOT EXISTS "User_phoneHash_key" ON "User"("phoneHash");
 
 UPDATE "User"
-SET "phoneHash" = encode(digest(lower(regexp_replace(coalesce("phone", ''), '\s+', '', 'g')), 'sha256'), 'hex')
+SET "phoneHash" = encode(digest(lower(regexp_replace(coalesce("phone", ''), '\s+', '', 'g'))::bytea, 'sha256'), 'hex')
 WHERE "phone" IS NOT NULL AND "phone" <> '' AND "phoneHash" IS NULL;
