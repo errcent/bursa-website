@@ -191,7 +191,7 @@ function EquityCurveChart({
     <svg
       viewBox={`0 0 ${width} ${height}`}
       className="w-full rounded-lg border border-border/40 bg-muted/10"
-      preserveAspectRatio="none"
+      preserveAspectRatio="xMidYMid meet"
       role="img"
       aria-label="Contoh equity curve satu simulasi"
     >
@@ -302,7 +302,7 @@ export function MonteCarloSimulator() {
     <div className="flex flex-col gap-6">
       <LabCalculatorShell
         input={
-          <LabToolPanel title="Parameter simulasi" description={`Auto-run · maks. ${MAX_SIMULATIONS} simulasi`}>
+          <LabToolPanel description={`Auto-run · maks. ${MAX_SIMULATIONS} simulasi`}>
             <div className="flex flex-col gap-5">
               <LabPresetBar
                 activeId={activePreset}
@@ -386,7 +386,7 @@ export function MonteCarloSimulator() {
           </LabToolPanel>
         }
         output={
-          <LabOutputPanel title="Ringkasan" footer={<LabCopyResults text={copyText} />}>
+          <LabOutputPanel footer={<LabCopyResults text={copyText} />}>
             {!result ? (
               <LabInterpretation>Isi parameter — simulasi berjalan otomatis.</LabInterpretation>
             ) : (
@@ -411,34 +411,44 @@ export function MonteCarloSimulator() {
 
       {result && (
         <>
-          <LabToolPanel title="Contoh 1 jalur equity" description="Satu simulasi acak — bukan median atau rata-rata semua jalur.">
+          <LabToolPanel description="Satu simulasi acak — bukan median atau rata-rata semua jalur.">
             <EquityCurveChart curve={result.equityCurve} startingCapital={result.startingCapital} />
             <p className="mt-2 text-xs text-muted-foreground">
               Akhir: {formatCurrency(result.equityCurve[result.equityCurve.length - 1]?.equity ?? 0)}
             </p>
           </LabToolPanel>
 
-          <LabToolPanel title="Distribusi saldo akhir" description={`${result.endings.length.toLocaleString("id-ID")} simulasi · sumbu = saldo akhir`}>
-            <div className="flex h-44 items-end gap-0.5 rounded-lg border border-border/40 bg-muted/10 px-2 pb-6 pt-3">
-              {result.bins.map((bin, i) => {
-                const heightPct = Math.max(2, (bin.count / maxBinCount) * 100);
-                const crossesStart = bin.from <= result.startingCapital && result.startingCapital < bin.to;
-                return (
-                  <div key={i} className="group relative flex flex-1 flex-col items-center justify-end" style={{ height: "100%" }}>
+          <LabToolPanel description={`${result.endings.length.toLocaleString("id-ID")} simulasi · sumbu = saldo akhir`}>
+            <div className="rounded-lg border border-border/40 bg-muted/10 px-2 pb-8 pt-3">
+              <div className="flex h-40 items-end gap-0.5">
+                {result.bins.map((bin, i) => {
+                  const heightPct = Math.max(2, (bin.count / maxBinCount) * 100);
+                  const crossesStart =
+                    bin.from <= result.startingCapital && result.startingCapital < bin.to;
+                  const showLabel =
+                    i === 0 || i === result.bins.length - 1 || i === Math.floor(result.bins.length / 2);
+                  return (
                     <div
-                      className={cn(
-                        "w-full rounded-t-sm transition-all",
-                        bin.from >= result.startingCapital ? "bg-profit/65" : "bg-loss/55",
-                        crossesStart && "ring-1 ring-accent/60"
+                      key={i}
+                      className="flex min-w-0 flex-1 flex-col items-center justify-end"
+                    >
+                      <div
+                        className={cn(
+                          "w-full rounded-t-sm transition-all",
+                          bin.from >= result.startingCapital ? "bg-profit/65" : "bg-loss/55",
+                          crossesStart && "ring-1 ring-accent/60"
+                        )}
+                        style={{ height: `${heightPct}%`, minHeight: "4px" }}
+                      />
+                      {showLabel && (
+                        <span className="mt-1.5 max-w-full truncate text-[9px] text-muted-foreground">
+                          {bin.label}
+                        </span>
                       )}
-                      style={{ height: `${heightPct}%` }}
-                    />
-                    {(i === 0 || i === result.bins.length - 1 || i === Math.floor(result.bins.length / 2)) && (
-                      <span className="absolute -bottom-5 text-[9px] text-muted-foreground">{bin.label}</span>
-                    )}
-                  </div>
-                );
-              })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             <div className="mt-6 flex justify-between text-xs text-muted-foreground">
               <span>{formatCompact(result.worst)}</span>

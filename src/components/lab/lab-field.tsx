@@ -218,10 +218,10 @@ export function LabResultTile({
         className
       )}
     >
-      <p className="stat-label">{label}</p>
+      <p className="lab-stat-label">{label}</p>
       <p
         className={cn(
-          "stat-value mt-1 text-xl tabular-nums sm:text-2xl",
+          "lab-stat-value mt-1",
           tone === "positive" && "text-profit",
           tone === "negative" && "text-loss"
         )}
@@ -416,9 +416,6 @@ export function LabCopyResults({
           </>
         )}
       </button>
-      <p className="text-[11px] leading-relaxed text-muted-foreground">
-        Hasil disalin termasuk catatan edukasi.
-      </p>
     </div>
   );
 }

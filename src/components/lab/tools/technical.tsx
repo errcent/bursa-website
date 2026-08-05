@@ -45,7 +45,7 @@ export function AtrTrailingStopCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel title="ATR & multiplier">
+        <LabToolPanel description="ATR × multiplier untuk level stop saat ini.">
           <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Harga saat ini" id="atr-p"><LabNumberInput id="atr-p" value={price} onChange={setPrice} min={0} /></LabField>
             <LabField label="ATR" id="atr-a"><LabNumberInput id="atr-a" value={atr} onChange={setAtr} min={0} /></LabField>
@@ -57,7 +57,7 @@ export function AtrTrailingStopCalculator() {
         </LabToolPanel>
       }
       output={
-        <LabOutputPanel title="Stop level" footer={<LabCopyResults text={copyText} />}>
+        <LabOutputPanel footer={<LabCopyResults text={copyText} />}>
           <LabResultGrid className="mt-0 grid-cols-1 gap-2">
             <LabResultTile label="Level stop" value={fmt(result.stopLevel)} tone="negative" />
             <LabResultTile label="Jarak stop" value={fmt(result.distance)} />
@@ -96,7 +96,7 @@ export function FibonacciCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel title="Swing range">
+        <LabToolPanel description="Swing high dan low untuk retracement & extension.">
           <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Swing high" id="fib-h"><LabNumberInput id="fib-h" value={high} onChange={setHigh} min={0} /></LabField>
             <LabField label="Swing low" id="fib-l"><LabNumberInput id="fib-l" value={low} onChange={setLow} min={0} /></LabField>
@@ -104,17 +104,17 @@ export function FibonacciCalculator() {
         </LabToolPanel>
       }
       output={
-        <LabOutputPanel title="Level" footer={<LabCopyResults text={copyText} />}>
+        <LabOutputPanel footer={<LabCopyResults text={copyText} />}>
           {!levels ? (
             <LabInterpretation>Isi swing high dan low.</LabInterpretation>
           ) : (
             <div className="flex flex-col gap-4">
-              <div className="relative rounded-lg border border-border/50 bg-muted/15 p-3">
-                <div className="mb-1 flex justify-between text-[9px] text-muted-foreground">
+              <div className="rounded-lg border border-border/50 bg-muted/15 p-3">
+                <div className="mb-2 flex justify-between text-[9px] text-muted-foreground">
                   <span>High {fmt(parseFloat(high), 0)}</span>
                   <span>Low {fmt(parseFloat(low), 0)}</span>
                 </div>
-                <div className="relative h-20 border-y border-border/30">
+                <div className="relative h-24 border-y border-border/30">
                   {levels.retracements.map((l) => {
                     const h = parseFloat(high);
                     const lo = parseFloat(low);
@@ -122,13 +122,13 @@ export function FibonacciCalculator() {
                     return (
                       <div
                         key={l.level}
-                        className="absolute left-0 right-0 border-t border-accent/50"
+                        className="absolute inset-x-0 flex items-center gap-2 border-t border-accent/50"
                         style={{ top: `${Math.min(100, Math.max(0, pct))}%` }}
-                        title={`${l.level}: ${fmt(l.price)}`}
                       >
-                        <span className="absolute right-0 -top-2.5 text-[9px] text-muted-foreground">
+                        <span className="shrink-0 truncate text-[9px] text-muted-foreground">
                           {l.level}
                         </span>
+                        <span className="min-w-0 flex-1" />
                       </div>
                     );
                   })}
@@ -210,10 +210,10 @@ export function RMultipleTracker() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel title="Daftar trade (R)" description="1R = risiko awal per trade. Tambah/hapus baris.">
+        <LabToolPanel description="1R = risiko awal per trade. Tambah atau hapus baris.">
           <div className="flex flex-col gap-2">
             {rows.map((row, index) => (
-              <div key={row.id} className="flex items-center gap-2">
+              <div key={row.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2">
                 <span className="w-6 text-xs text-muted-foreground">{index + 1}</span>
                 <LabNumberInput
                   id={`rm-${row.id}`}
@@ -244,7 +244,7 @@ export function RMultipleTracker() {
         </LabToolPanel>
       }
       output={
-        <LabOutputPanel title="Statistik" footer={<LabCopyResults text={copyText} />}>
+        <LabOutputPanel footer={<LabCopyResults text={copyText} />}>
           <LabResultGrid className="mt-0 grid-cols-1 gap-2">
             <LabResultTile label="Total R" value={`${fmt(stats.totalR)}R`} tone={stats.totalR > 0 ? "positive" : "negative"} />
             <LabResultTile label="Rata-rata R" value={`${fmt(stats.avgR)}R`} />

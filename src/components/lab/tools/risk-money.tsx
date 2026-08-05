@@ -108,7 +108,7 @@ export function PositionSizeCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel title="Parameter" description="Modal, risiko, entry, dan stop loss.">
+        <LabToolPanel description="Modal, risiko, entry, dan stop loss.">
           <div className="flex flex-col gap-5">
             <LabMarketSelect value={market} onChange={setMarket} />
             <LabPresetBar
@@ -163,7 +163,6 @@ export function PositionSizeCalculator() {
       }
       output={
         <LabOutputPanel
-          title="Hasil"
           footer={<LabCopyResults text={copyText} />}
         >
           {!result ? (
@@ -224,7 +223,7 @@ export function RiskRewardCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel title="Entry & target">
+        <LabToolPanel description="Entry, stop loss, take profit, dan ukuran posisi.">
           <div className="flex flex-col gap-5">
             <LabPresetBar
               activeId={activePreset}
@@ -250,7 +249,7 @@ export function RiskRewardCalculator() {
         </LabToolPanel>
       }
       output={
-        <LabOutputPanel title="Hasil" footer={<LabCopyResults text={copyText} />}>
+        <LabOutputPanel footer={<LabCopyResults text={copyText} />}>
           {!result ? (
             <LabInterpretation>Isi entry, SL, dan TP.</LabInterpretation>
           ) : (
@@ -326,7 +325,7 @@ export function BreakevenCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel title="Biaya transaksi">
+        <LabToolPanel description="Komisi, spread, pajak, dan arah posisi.">
           <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Harga entry" id="be-entry"><LabNumberInput id="be-entry" value={entry} onChange={setEntry} min={0} /></LabField>
             <LabField label="Jumlah lembar" id="be-qty"><LabNumberInput id="be-qty" value={qty} onChange={setQty} min={0} /></LabField>
@@ -341,7 +340,7 @@ export function BreakevenCalculator() {
         </LabToolPanel>
       }
       output={
-        <LabOutputPanel title="Hasil" footer={<LabCopyResults text={copyText} />}>
+        <LabOutputPanel footer={<LabCopyResults text={copyText} />}>
           {!result ? (
             <LabInterpretation>Isi entry dan jumlah lembar.</LabInterpretation>
           ) : (
@@ -392,7 +391,7 @@ export function KellyCriterionCalculator() {
   return (
     <LabCalculatorShell
       input={
-        <LabToolPanel title="Statistik strategi">
+        <LabToolPanel description="Win rate dan R:R untuk estimasi fraksi modal.">
           <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Win rate" id="kelly-wr" suffix="%"><LabNumberInput id="kelly-wr" value={winRate} onChange={setWinRate} min={0} max={100} /></LabField>
             <LabField label="R:R ratio" id="kelly-rr"><LabNumberInput id="kelly-rr" value={rr} onChange={setRr} min={0} /></LabField>
@@ -400,7 +399,7 @@ export function KellyCriterionCalculator() {
         </LabToolPanel>
       }
       output={
-        <LabOutputPanel title="Fraksi modal" footer={<LabCopyResults text={copyText} />}>
+        <LabOutputPanel footer={<LabCopyResults text={copyText} />}>
           {!result ? (
             <LabInterpretation>Isi win rate dan R:R.</LabInterpretation>
           ) : (

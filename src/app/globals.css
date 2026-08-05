@@ -310,7 +310,7 @@
   }
 
   .lab-workflow-step {
-    @apply inline-flex items-center gap-1.5 rounded-lg border border-border/50 bg-muted/20 px-2.5 py-1 text-xs font-medium text-foreground/85 transition-colors hover:border-accent/25 hover:bg-accent-soft/30 hover:text-accent;
+    @apply inline-flex max-w-full items-center gap-1.5 rounded-lg border border-border/50 bg-muted/20 px-2.5 py-1 text-xs font-medium text-foreground/85 transition-colors hover:border-accent/25 hover:bg-accent-soft/30 hover:text-accent;
   }
 
   .lab-disclaimer {
@@ -367,6 +367,14 @@
 
   .lab-hub-header {
     @apply border-b border-border/40 pb-6 sm:pb-8;
+  }
+
+  .lab-stat-label {
+    @apply text-xs text-muted-foreground;
+  }
+
+  .lab-stat-value {
+    @apply break-all font-heading text-lg font-semibold tabular-nums tracking-tight sm:text-xl;
   }
 
   .guidance-mentor-carousel-bleed {

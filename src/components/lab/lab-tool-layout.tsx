@@ -5,7 +5,6 @@ import { ArrowLeft } from "lucide-react";
 
 import { LabAssumptionsPanel } from "@/components/lab/lab-field";
 import { LabToolMobileNav, LabToolSidebar } from "@/components/lab/lab-tool-sidebar";
-import { LabToolCard } from "@/components/lab/lab-tool-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNavbar } from "@/components/site-navbar";
 import { getLabTool, getRelatedLabTools } from "@/lib/lab/tools";
@@ -33,27 +32,18 @@ export function LabToolLayout({
       <SiteNavbar />
       <main className="flex-1 overflow-x-clip">
         <div className="border-b border-border/40 bg-surface/30">
-          <div className="container-page py-5 sm:py-6">
+          <div className="container-page py-4 sm:py-5">
             <Link
               href="/lab"
-              className="mb-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="mb-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               <ArrowLeft className="size-3.5" />
               Bursa Lab
             </Link>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-md border border-border/50 bg-muted/25 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                {tag}
-              </span>
-              <span className="rounded-md border border-border/50 bg-muted/25 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                Client-side
-              </span>
-            </div>
-            <h1 className="mt-2 font-heading text-xl font-semibold tracking-tight sm:text-2xl">
-              {title}
-            </h1>
-            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              {description}
+            <h1 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">{title}</h1>
+            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">{description}</p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {tag} · Client-side · input tidak dikirim ke server
             </p>
           </div>
         </div>
@@ -73,14 +63,23 @@ export function LabToolLayout({
               )}
 
               {relatedTools.length > 0 && (
-                <div className="mt-10">
-                  <h2 className="text-sm font-semibold tracking-tight">Tool terkait</h2>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                <details className="group mt-8 surface-card overflow-hidden">
+                  <summary className="cursor-pointer list-none px-4 py-3 sm:px-5 [&::-webkit-details-marker]:hidden">
+                    <span className="text-sm font-semibold tracking-tight">Tool terkait</span>
+                  </summary>
+                  <ul className="border-t border-border/45 px-4 py-3 sm:px-5">
                     {relatedTools.map((tool) => (
-                      <LabToolCard key={tool.id} tool={tool} compact />
+                      <li key={tool.id}>
+                        <Link
+                          href={tool.href}
+                          className="block py-1.5 text-sm text-muted-foreground transition-colors hover:text-accent"
+                        >
+                          {tool.shortTitle ?? tool.title}
+                        </Link>
+                      </li>
                     ))}
-                  </div>
-                </div>
+                  </ul>
+                </details>
               )}
             </div>
           </div>

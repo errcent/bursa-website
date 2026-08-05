@@ -83,7 +83,7 @@ export function TradeExpectancyCalculator() {
     <div className="flex flex-col gap-8">
       <LabCalculatorShell
         input={
-          <LabToolPanel title="Parameter strategi" description="Win rate dan R:R dipakai bersama kalkulator & matriks.">
+          <LabToolPanel description="Win rate dan R:R dipakai bersama kalkulator & matriks.">
             <div className="grid gap-4 sm:grid-cols-2">
               <LabField label="Win rate" id="te-wr" suffix="%">
                 <LabNumberInput id="te-wr" value={winRate} onChange={setWinRate} min={0} max={100} />
@@ -101,7 +101,7 @@ export function TradeExpectancyCalculator() {
           </LabToolPanel>
         }
         output={
-          <LabOutputPanel title="Expectancy" footer={<LabCopyResults text={copyText} />}>
+          <LabOutputPanel footer={<LabCopyResults text={copyText} />}>
             {!result ? (
               <LabInterpretation>Isi parameter strategi.</LabInterpretation>
             ) : (
@@ -128,8 +128,18 @@ export function TradeExpectancyCalculator() {
         }
       />
 
-      <LabToolPanel title="Matriks Win Rate × R:R" description="Baris = win rate, kolom = R:R. Lingkaran = input kamu.">
-        <div className="overflow-x-auto">
+      <LabToolPanel description="Baris = win rate, kolom = R:R. Sel terhighlight = input kamu.">
+        <div className="mb-4 md:hidden">
+          <LabResultTile
+            label={`Sel kamu (${winRateNum}% × ${rrNum}R)`}
+            value={`${yourExpectancy >= 0 ? "+" : ""}${yourExpectancy.toFixed(2)} R`}
+            tone={matrixTone === "neutral" ? "neutral" : matrixTone}
+          />
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+            Geser ke layar lebih lebar untuk matriks penuh, atau putar perangkat ke landscape.
+          </p>
+        </div>
+        <div className="hidden overflow-x-auto md:block">
           <table className="w-full min-w-[560px] border-collapse text-sm">
             <thead>
               <tr>
