@@ -1,4 +1,4 @@
-﻿-- Bookmarks + phone encryption support (QC-20260720-01, QC-20260806-05)
+-- Bookmarks + phone encryption support (QC-20260720-01, QC-20260806-05)
 
 CREATE TYPE "BookmarkTargetType" AS ENUM ('COURSE', 'LESSON', 'PLAYLIST', 'MENTOR');
 
