@@ -64,9 +64,9 @@ export const CURATED_PLAYLIST_DEFINITIONS: Array<{
   lessonRefs: Array<{ courseSlug: string; legacyId: string }>;
 }> = [
   {
-    title: "Kesehatan Mental Trading",
+    title: "Psikologi & Disiplin Trading",
     slug: "kesehatan-mental-trading",
-    description: "Kurasi modul psikologi, disiplin, dan mindset dari lima mentor berbeda.",
+    description: "Kurasi modul psikologi, disiplin, dan rutinitas mental dari lima mentor berbeda.",
     lessonRefs: [
       { courseSlug: "psikologi-trading-anti-fomo", legacyId: "l1" },
       { courseSlug: "manajemen-risiko-crypto-pemula", legacyId: "l4" },
@@ -76,7 +76,7 @@ export const CURATED_PLAYLIST_DEFINITIONS: Array<{
     ],
   },
   {
-    title: "Fundasi Analisis Saham",
+    title: "Fondasi Analisis Saham",
     slug: "fundasi-analisis-saham",
     description: "Tiga pelajaran pembuka untuk memahami fundamental dan valuasi.",
     lessonRefs: [
@@ -86,9 +86,9 @@ export const CURATED_PLAYLIST_DEFINITIONS: Array<{
     ],
   },
   {
-    title: "Jalur Crypto Pemula",
+    title: "Program Dasar Crypto",
     slug: "jalur-crypto-pemula",
-    description: "Mulai dari on-chain dasar hingga manajemen risiko untuk trader crypto baru.",
+    description: "Dari analisis on-chain dasar hingga manajemen risiko untuk trader crypto baru.",
     lessonRefs: [
       { courseSlug: "crypto-on-chain-dasar", legacyId: "l1" },
       { courseSlug: "crypto-on-chain-dasar", legacyId: "l2" },
@@ -98,7 +98,7 @@ export const CURATED_PLAYLIST_DEFINITIONS: Array<{
     ],
   },
   {
-    title: "Teknikal Swing Trading",
+    title: "Program Teknikal Swing Trading",
     slug: "teknikal-swing-trading",
     description:
       "Rangkaian pelajaran candlestick, support/resistance, dan manajemen posisi untuk swing trader.",
@@ -111,7 +111,7 @@ export const CURATED_PLAYLIST_DEFINITIONS: Array<{
     ],
   },
   {
-    title: "Forex dari Nol",
+    title: "Program Dasar Forex",
     slug: "forex-dari-nol",
     description: "Memahami makro, suku bunga, dan reaksi pasar forex untuk pemula.",
     lessonRefs: [
@@ -122,9 +122,9 @@ export const CURATED_PLAYLIST_DEFINITIONS: Array<{
     ],
   },
   {
-    title: "Valuasi Lanjutan",
+    title: "Program Valuasi Lanjutan",
     slug: "valuasi-lanjutan",
-    description: "DCF, proyeksi arus kas, dan perbandingan sektor untuk analis yang ingin naik level.",
+    description: "DCF, proyeksi arus kas, dan perbandingan sektor untuk analis tingkat menengah.",
     lessonRefs: [
       { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l1" },
       { courseSlug: "membaca-laporan-keuangan-lanjutan", legacyId: "l3" },
@@ -134,7 +134,7 @@ export const CURATED_PLAYLIST_DEFINITIONS: Array<{
     ],
   },
   {
-    title: "Screening Saham Berkualitas",
+    title: "Program Screening Saham",
     slug: "screening-saham-berkualitas",
     description: "Dari membaca laporan keuangan hingga menyusun watchlist emiten berkualitas.",
     lessonRefs: [

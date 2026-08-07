@@ -24,19 +24,19 @@ const courses = [
   },
   {
     slug: "membaca-laporan-keuangan-lanjutan",
-    title: "Analisis Valuasi Lanjutan",
+    title: "Valuasi Saham Lanjutan",
     instrument: "Saham",
     level: "Menengah",
   },
   {
     slug: "swing-trading-teknikal-dasar",
-    title: "Swing Trading Saham",
+    title: "Analisis Teknikal Swing Trading",
     instrument: "Saham",
     level: "Pemula",
   },
   {
     slug: "crypto-on-chain-dasar",
-    title: "Data On-Chain untuk Crypto",
+    title: "Analisis On-Chain Crypto",
     instrument: "Crypto",
     level: "Menengah",
   },
@@ -48,7 +48,7 @@ const courses = [
   },
   {
     slug: "forex-makro-dasar",
-    title: "Forex & Narasi Makro",
+    title: "Analisis Makro Forex",
     instrument: "Forex",
     level: "Pemula",
   },

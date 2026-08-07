@@ -13,7 +13,7 @@ export const mentors: Mentor[] = [
   {
     slug: "andra-wicaksono",
     name: "Andra Wicaksono, CFA",
-    title: "Value Investing & Analisis Fundamental Saham",
+    title: "Value Investing & Analisis Fundamental",
     initials: "AW",
     avatarUrl: "/mentors/andra-wicaksono.svg",
     cutoutUrl: "/mentors/andra-wicaksono.svg",
@@ -34,7 +34,7 @@ export const mentors: Mentor[] = [
   {
     slug: "kirana-ayu",
     name: "Kirana Ayu",
-    title: "Crypto & On-Chain Analysis",
+    title: "Analisis On-Chain & Pasar Crypto",
     initials: "KA",
     avatarUrl: "/mentors/kirana-ayu.svg",
     cutoutUrl: "/mentors/kirana-ayu.svg",
@@ -55,7 +55,7 @@ export const mentors: Mentor[] = [
   {
     slug: "fajar-nugroho",
     name: "Fajar Nugroho",
-    title: "Forex & Analisis Makro Global",
+    title: "Analisis Makro Forex & Pasar Global",
     initials: "FN",
     avatarUrl: "/mentors/fajar-nugroho.svg",
     cutoutUrl: "/mentors/fajar-nugroho.svg",
@@ -75,7 +75,7 @@ export const mentors: Mentor[] = [
   {
     slug: "melati-putri",
     name: "Melati Putri",
-    title: "Swing Trading & Analisis Teknikal Saham",
+    title: "Swing Trading & Analisis Teknikal",
     initials: "MP",
     avatarUrl: "/mentors/melati-putri.svg",
     cutoutUrl: "/mentors/melati-putri.svg",
@@ -96,7 +96,7 @@ export const mentors: Mentor[] = [
   {
     slug: "bimo-satrio",
     name: "Bimo Satrio",
-    title: "Crypto Trading & Risk Management",
+    title: "Manajemen Risiko & Trading Crypto",
     initials: "BS",
     avatarUrl: "/mentors/bimo-satrio.svg",
     cutoutUrl: "/mentors/bimo-satrio.svg",
@@ -115,7 +115,7 @@ export const mentors: Mentor[] = [
   {
     slug: "rangga-dewantara",
     name: "Rangga Dewantara",
-    title: "Fundamental & Valuasi Saham Lanjutan",
+    title: "Valuasi Saham & Analisis Fundamental Lanjutan",
     initials: "RD",
     avatarUrl: "/mentors/rangga-dewantara.svg",
     cutoutUrl: "/mentors/rangga-dewantara.svg",
@@ -173,7 +173,7 @@ export const mentors: Mentor[] = [
   {
     slug: "salsa-maharani",
     name: "Salsa Maharani",
-    title: "DeFi, Tokenomics & Riset Kripto",
+    title: "DeFi, Tokenomics & Riset Crypto",
     initials: "SM",
     instruments: ["Crypto"],
     verified: true,
@@ -213,7 +213,7 @@ export const mentors: Mentor[] = [
 export const courses: Course[] = [
   {
     slug: "fundamental-saham-untuk-pemula",
-    title: "Fundamental Saham untuk Pemula: Dari Nol ke Analisis Laporan Keuangan",
+    title: "Analisis Fundamental Saham: Laporan Keuangan & Rasio Valuasi",
     mentorSlug: "andra-wicaksono",
     instrument: "Saham",
     level: "Pemula",
@@ -223,18 +223,18 @@ export const courses: Course[] = [
     studentsCount: 3240,
     durationHours: 6,
     shortDescription:
-      "Kelas fondasi untuk memahami cara membaca laporan keuangan emiten dan menilai kualitas bisnis sebelum membeli sahamnya — tanpa jargon yang membingungkan.",
+      "Program fondasi untuk membaca laporan keuangan emiten dan menilai kualitas bisnis sebelum mengambil keputusan investasi.",
     outcomes: [
-      "Membaca laporan neraca, laba-rugi, dan arus kas dengan percaya diri",
-      "Menghitung rasio kunci (PER, PBV, ROE, DER) dan memahami artinya",
-      "Menyaring saham berkualitas dari ribuan emiten di BEI",
-      "Menghindari jebakan 'saham gorengan' lewat red flag laporan keuangan",
+      "Membaca laporan neraca, laba-rugi, dan arus kas secara sistematis",
+      "Menghitung rasio kunci (PER, PBV, ROE, DER) dan menafsirkan implikasinya",
+      "Menyaring saham berkualitas dari populasi emiten di BEI",
+      "Mengidentifikasi red flag laporan keuangan sebelum entry",
     ],
     modules: [
       {
-        title: "Modul 1 — Mengenal Dunia Saham",
+        title: "Modul 1 — Fondasi Analisis Saham",
         lessons: [
-          { id: "l1", title: "Kenapa Belajar Fundamental, Bukan Ikut-ikutan", durationMinutes: 12, preview: true },
+          { id: "l1", title: "Mengapa Analisis Fundamental Menjadi Dasar Keputusan", durationMinutes: 12, preview: true },
           { id: "l2", title: "Anatomi Laporan Keuangan Emiten", durationMinutes: 18 },
           { id: "l3", title: "Studi Kasus: Membaca Laporan BBCA", durationMinutes: 22 },
         ],
@@ -266,7 +266,7 @@ export const courses: Course[] = [
   },
   {
     slug: "membaca-laporan-keuangan-lanjutan",
-    title: "Analisis Valuasi Lanjutan: DCF dan Relative Valuation Praktis",
+    title: "Valuasi Saham Lanjutan: DCF & Relative Valuation",
     mentorSlug: "rangga-dewantara",
     instrument: "Saham",
     level: "Menengah",
@@ -310,7 +310,7 @@ export const courses: Course[] = [
   },
   {
     slug: "swing-trading-teknikal-dasar",
-    title: "Swing Trading Saham: Membaca Chart Tanpa Bikin Pusing",
+    title: "Analisis Teknikal Swing Trading: Struktur Chart & Rencana Eksekusi",
     mentorSlug: "melati-putri",
     instrument: "Saham",
     level: "Pemula",
@@ -320,16 +320,16 @@ export const courses: Course[] = [
     studentsCount: 4110,
     durationHours: 5,
     shortDescription:
-      "Panduan runtut membaca candlestick, support-resistance, dan indikator populer untuk mulai swing trading dengan disiplin, bukan tebak-tebakan.",
+      "Kurikulum runtut untuk membaca candlestick, support-resistance, dan indikator pendukung dalam kerangka swing trading yang terukur.",
     outcomes: [
       "Membaca pola candlestick dan struktur harga dasar",
       "Menentukan level support & resistance secara objektif",
       "Menyusun rencana entry, stop loss, dan target harga",
-      "Membangun jurnal trading sederhana untuk evaluasi diri",
+      "Membangun jurnal trading untuk evaluasi performa",
     ],
     modules: [
       {
-        title: "Modul 1 — Bahasa Chart",
+        title: "Modul 1 — Dasar Pembacaan Chart",
         lessons: [
           { id: "l1", title: "Anatomi Candlestick", durationMinutes: 15, preview: true },
           { id: "l2", title: "Support & Resistance Praktis", durationMinutes: 18 },
@@ -344,7 +344,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Modul 3 — Indikator Pendukung (Bukan Pengganti Chart)",
+        title: "Modul 3 — Indikator Pendukung",
         lessons: [
           { id: "l6", title: "Moving Average untuk Konfirmasi Trend", durationMinutes: 16 },
           { id: "l7", title: "RSI & Volume: Kapan Dipakai, Kapan Diabaikan", durationMinutes: 18 },
@@ -355,7 +355,7 @@ export const courses: Course[] = [
   },
   {
     slug: "crypto-on-chain-dasar",
-    title: "Membaca Data On-Chain untuk Keputusan Trading Crypto",
+    title: "Analisis On-Chain Crypto: Metrik Blockchain untuk Keputusan Trading",
     mentorSlug: "kirana-ayu",
     instrument: "Crypto",
     level: "Menengah",
@@ -391,7 +391,7 @@ export const courses: Course[] = [
   },
   {
     slug: "manajemen-risiko-crypto-pemula",
-    title: "Manajemen Risiko untuk Trader Crypto Pemula",
+    title: "Manajemen Risiko Crypto: Position Sizing & Disiplin Modal",
     mentorSlug: "bimo-satrio",
     instrument: "Crypto",
     level: "Pemula",
@@ -401,7 +401,7 @@ export const courses: Course[] = [
     studentsCount: 980,
     durationHours: 4,
     shortDescription:
-      "Kelas fondasi wajib sebelum trading crypto sungguhan — fokus penuh pada cara bertahan hidup di pasar yang sangat volatil.",
+      "Program fondasi manajemen modal untuk pasar crypto — position sizing, stop loss, dan disiplin eksekusi di lingkungan volatil.",
     outcomes: [
       "Memahami ukuran posisi yang aman untuk modal terbatas",
       "Menyusun aturan stop loss pribadi dan mematuhinya",
@@ -410,10 +410,10 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Mindset Bertahan Hidup",
+        title: "Modul 1 — Fondasi Manajemen Modal",
         lessons: [
-          { id: "l1", title: "Kenapa 90% Trader Baru Rugi di Tahun Pertama", durationMinutes: 11, preview: true },
-          { id: "l2", title: "Position Sizing untuk Modal Kecil", durationMinutes: 15 },
+          { id: "l1", title: "Penyebab Umum Kegagalan Trader Baru", durationMinutes: 11, preview: true },
+          { id: "l2", title: "Position Sizing untuk Modal Terbatas", durationMinutes: 15 },
         ],
       },
       {
@@ -427,7 +427,7 @@ export const courses: Course[] = [
   },
   {
     slug: "forex-makro-dasar",
-    title: "Forex untuk Pemula: Membaca Narasi Makro di Balik Pergerakan Mata Uang",
+    title: "Analisis Makro Forex: Suku Bunga, Inflasi & Pergerakan Mata Uang",
     mentorSlug: "fajar-nugroho",
     instrument: "Forex",
     level: "Pemula",
@@ -437,7 +437,7 @@ export const courses: Course[] = [
     studentsCount: 1560,
     durationHours: 7,
     shortDescription:
-      "Pahami kenapa nilai tukar bergerak — suku bunga, inflasi, dan sentimen global — sebelum mulai membaca chart pair forex favoritmu.",
+      "Kerangka analisis makro untuk memahami pergerakan nilai tukar — suku bunga, inflasi, dan sentimen global — sebelum membaca chart pair mayor.",
     outcomes: [
       "Memahami hubungan suku bunga bank sentral dengan nilai tukar",
       "Membaca kalender ekonomi dan dampaknya ke pair mayor",
@@ -471,7 +471,7 @@ export const courses: Course[] = [
   },
   {
     slug: "screening-saham-dividen-konsisten",
-    title: "Screening Saham Dividen Konsisten untuk Investor Jangka Menengah",
+    title: "Strategi Dividen Saham: Screening Emiten & Kebijakan Distribusi",
     mentorSlug: "andra-wicaksono",
     instrument: "Saham",
     level: "Menengah",
@@ -508,7 +508,7 @@ export const courses: Course[] = [
   },
   {
     slug: "price-action-swing-saham-menengah",
-    title: "Price Action Swing Saham: Struktur Market & Timing Entry",
+    title: "Price Action Swing Trading Saham: Struktur Pasar & Timing Entry",
     mentorSlug: "melati-putri",
     instrument: "Saham",
     level: "Menengah",
@@ -518,7 +518,7 @@ export const courses: Course[] = [
     studentsCount: 1780,
     durationHours: 6,
     shortDescription:
-      "Naik level dari teknikal dasar — pelajari struktur higher high/low, zona supply-demand, dan timing entry swing di saham IDX likuid.",
+      "Program lanjutan teknikal — struktur higher high/low, zona supply-demand, dan timing entry swing pada saham IDX likuid.",
     outcomes: [
       "Mengenali struktur trend dan titik balik (change of character)",
       "Menentukan zona entry berdasarkan price action murni",
@@ -541,7 +541,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Modul 3 — Studi Kasus Live",
+        title: "Modul 3 — Studi Kasus Terapan",
         lessons: [
           { id: "l5", title: "Replay Trade: Entry di Zona Demand", durationMinutes: 25 },
           { id: "l6", title: "Kesalahan Umum Swing Trader Pemula", durationMinutes: 15 },
@@ -551,7 +551,7 @@ export const courses: Course[] = [
   },
   {
     slug: "siklus-bitcoin-halving-dan-makro-kripto",
-    title: "Siklus Bitcoin Halving & Makro Kripto untuk Trader Menengah",
+    title: "Siklus Pasar Crypto: Halving Bitcoin & Kerangka Analisis Makro",
     mentorSlug: "kirana-ayu",
     instrument: "Crypto",
     level: "Menengah",
@@ -561,12 +561,12 @@ export const courses: Course[] = [
     studentsCount: 1340,
     durationHours: 5,
     shortDescription:
-      "Pahami bagaimana halving, likuiditas global, dan sentimen makro memengaruhi siklus bull-bear kripto — bukan prediksi harga, tapi kerangka berpikir.",
+      "Kerangka analisis siklus pasar crypto — halving, likuiditas global, dan sentimen makro — untuk keputusan akumulasi dan distribusi yang terukur.",
     outcomes: [
       "Memahami mekanisme halving dan dampak historisnya",
       "Membaca korelasi BTC dengan DXY dan risk-on/risk-off",
       "Menyusun strategi akumulasi vs distribusi per fase siklus",
-      "Menghindari FOMO di puncak euforia pasar",
+      "Mengenali fase euforia pasar tanpa bereaksi impulsif",
     ],
     modules: [
       {
@@ -588,7 +588,7 @@ export const courses: Course[] = [
   },
   {
     slug: "scalping-saham-intraday-jam-perdagangan",
-    title: "Scalping Saham IDX: Setup Jam Perdagangan Pagi & Sore",
+    title: "Scalping Saham IDX: Setup Intraday & Disiplin Eksekusi",
     mentorSlug: "dian-pratiwi",
     instrument: "Saham",
     level: "Pemula",
@@ -598,7 +598,7 @@ export const courses: Course[] = [
     studentsCount: 2210,
     durationHours: 4,
     shortDescription:
-      "Kelas praktis scalping saham likuid IDX — fokus jam 09:00–10:30 dan 14:00–15:00 dengan aturan risiko harian yang jelas.",
+      "Program praktis scalping saham likuid IDX — fokus sesi pagi dan sore dengan aturan risiko harian yang jelas.",
     outcomes: [
       "Memilih saham likuid yang cocok untuk scalping",
       "Menentukan stop loss harian sebelum buka chart",
@@ -631,7 +631,7 @@ export const courses: Course[] = [
   },
   {
     slug: "eksekusi-scalping-order-book-idx",
-    title: "Eksekusi Scalping: Membaca Order Book & Arus Bid-Offer IDX",
+    title: "Mikrostruktur Pasar IDX: Order Book & Arus Bid-Offer",
     mentorSlug: "dian-pratiwi",
     instrument: "Saham",
     level: "Menengah",
@@ -641,7 +641,7 @@ export const courses: Course[] = [
     studentsCount: 980,
     durationHours: 5,
     shortDescription:
-      "Level lanjutan scalping — pelajari cara membaca depth of market, spoofing sederhana, dan timing entry dari arus bid-offer saham tier 1.",
+      "Program lanjutan scalping — depth of market, pola order tipikal, dan timing entry dari arus bid-offer saham tier 1.",
     outcomes: [
       "Membaca order book dan imbalance bid-offer",
       "Mengenali tanda-tanda manipulasi order tipikal",
@@ -667,7 +667,7 @@ export const courses: Course[] = [
   },
   {
     slug: "price-action-forex-tanpa-indikator",
-    title: "Price Action Forex: Struktur Pasar Tanpa Indikator Berlebihan",
+    title: "Price Action Forex: Struktur Pasar pada Pair Mayor",
     mentorSlug: "hendra-wijaya",
     instrument: "Forex",
     level: "Pemula",
@@ -677,16 +677,16 @@ export const courses: Course[] = [
     studentsCount: 1670,
     durationHours: 6,
     shortDescription:
-      "Belajar membaca struktur pasar forex mayor dengan candlestick dan level kunci — tanpa dashboard indikator yang membingungkan.",
+      "Kurikulum membaca struktur pasar forex mayor melalui candlestick dan level kunci, dengan penekanan pada kejelasan chart daripada indikator berlapis.",
     outcomes: [
       "Mengidentifikasi trend, range, dan breakout di pair mayor",
       "Menentukan support/resistance dari swing high-low",
       "Menyusun rencana trade dengan risk-reward minimum 1:2",
-      "Menghindari overtrading di sesi sepi",
+      "Menghindari overtrading di sesi likuiditas rendah",
     ],
     modules: [
       {
-        title: "Modul 1 — Bahasa Price Action",
+        title: "Modul 1 — Dasar Price Action",
         lessons: [
           { id: "l1", title: "Struktur Pasar: Trend vs Range", durationMinutes: 15, preview: true },
           { id: "l2", title: "Swing High/Low sebagai Level Kunci", durationMinutes: 18 },
@@ -747,7 +747,7 @@ export const courses: Course[] = [
   },
   {
     slug: "defi-dan-tokenomics-pemula",
-    title: "DeFi & Tokenomics untuk Pemula: Riset Sebelum Beli Token",
+    title: "Dasar DeFi & Tokenomics: Framework Riset Proyek Crypto",
     mentorSlug: "salsa-maharani",
     instrument: "Crypto",
     level: "Pemula",
@@ -757,12 +757,12 @@ export const courses: Course[] = [
     studentsCount: 890,
     durationHours: 4,
     shortDescription:
-      "Pahami dasar DeFi, supply token, vesting, dan red flag tokenomics sebelum masuk ke proyek kripto baru.",
+      "Framework riset DeFi dan tokenomics — supply, vesting, dan red flag — sebelum mengambil posisi pada proyek crypto baru.",
     outcomes: [
-      "Membaca whitepaper bagian tokenomics dengan cepat",
+      "Membaca bagian tokenomics whitepaper secara efisien",
       "Memahami FDV, circulating supply, dan unlock schedule",
       "Mengenali red flag: infinite mint, team allocation berlebihan",
-      "Checklist riset 15 menit sebelum entry",
+      "Checklist riset terstruktur sebelum entry",
     ],
     modules: [
       {
@@ -783,7 +783,7 @@ export const courses: Course[] = [
   },
   {
     slug: "riset-narrative-kripto-menengah",
-    title: "Riset Narrative Kripto: Layer 2, RWA, dan Siklus Hype",
+    title: "Riset Narrative Crypto: Layer 2, RWA & Evaluasi Siklus Pasar",
     mentorSlug: "salsa-maharani",
     instrument: "Crypto",
     level: "Menengah",
@@ -793,12 +793,12 @@ export const courses: Course[] = [
     studentsCount: 720,
     durationHours: 5,
     shortDescription:
-      "Pelajari cara mengevaluasi narrative kripto (L2, RWA, AI) tanpa terjebak hype — framework riset fundamental untuk trader menengah.",
+      "Framework evaluasi narrative crypto (L2, RWA, AI) berbasis metrik fundamental — untuk memisahkan momentum pasar dari substansi proyek.",
     outcomes: [
-      "Memetakan narrative panas vs fundamental proyek",
+      "Memetakan narrative aktif versus fundamental proyek",
       "Menilai TVL, developer activity, dan adoption metrics",
       "Menyusun watchlist narrative dengan kriteria objektif",
-      "Timing entry/exit berdasarkan fase narrative, bukan FOMO",
+      "Menentukan timing entry/exit berdasarkan fase narrative",
     ],
     modules: [
       {
@@ -826,7 +826,7 @@ export const courses: Course[] = [
   },
   {
     slug: "psikologi-trading-anti-fomo",
-    title: "Psikologi Trading: Mengatasi FOMO, Revenge Trade & Overconfidence",
+    title: "Psikologi Trading: Bias Kognitif, Disiplin & Rutinitas Mental",
     mentorSlug: "arif-kurniawan",
     instrument: "Saham",
     level: "Pemula",
@@ -836,18 +836,18 @@ export const courses: Course[] = [
     studentsCount: 3100,
     durationHours: 4,
     shortDescription:
-      "Kelas wajib sebelum naik modal — pelajari bias kognitif yang merusak akun trading dan cara membangun rutinitas mental yang konsisten.",
+      "Program psikologi trading — bias kognitif yang merusak performa, serta kerangka disiplin dan rutinitas mental yang dapat diukur.",
     outcomes: [
       "Mengenali FOMO, revenge trade, dan confirmation bias",
-      "Menyusun aturan trading tertulis yang bisa dipatuhi",
+      "Menyusun aturan trading tertulis yang dapat dipatuhi",
       "Teknik pause & pre-mortem sebelum entry",
-      "Membangun rutinitas review mingguan tanpa self-blame",
+      "Membangun rutinitas review mingguan yang objektif",
     ],
     modules: [
       {
-        title: "Modul 1 — Bias yang Merusak Akun",
+        title: "Modul 1 — Bias Kognitif dalam Trading",
         lessons: [
-          { id: "l1", title: "FOMO: Dari Gejala ke Penyebab", durationMinutes: 13, preview: true },
+          { id: "l1", title: "FOMO: Identifikasi Gejala dan Akar Masalah", durationMinutes: 13, preview: true },
           { id: "l2", title: "Revenge Trade & Overconfidence", durationMinutes: 15 },
         ],
       },
@@ -859,17 +859,17 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Modul 3 — Recovery Setelah Drawdown",
+        title: "Modul 3 — Pemulihan Setelah Drawdown",
         lessons: [
-          { id: "l5", title: "Protokol Setelah 3 Loss Beruntun", durationMinutes: 17 },
-          { id: "l6", title: "Kapan Pause Trading — Rules of Thumb", durationMinutes: 12 },
+          { id: "l5", title: "Protokol Setelah Serangkaian Loss", durationMinutes: 17 },
+          { id: "l6", title: "Kriteria Pause Trading yang Objektif", durationMinutes: 12 },
         ],
       },
     ],
   },
   {
     slug: "blueprint-manajemen-risiko-trader",
-    title: "Blueprint Manajemen Risiko: Position Sizing Lintas Saham & Forex",
+    title: "Manajemen Risiko Portofolio: Position Sizing Lintas Instrumen",
     mentorSlug: "arif-kurniawan",
     instrument: "Forex",
     level: "Menengah",
@@ -879,7 +879,7 @@ export const courses: Course[] = [
     studentsCount: 1890,
     durationHours: 5,
     shortDescription:
-      "Framework position sizing dan risk-of-ruin untuk trader yang sudah punya strategi tapi belum konsisten menjaga modal.",
+      "Framework position sizing dan risk-of-ruin untuk trader yang sudah memiliki strategi tetapi belum konsisten dalam menjaga modal.",
     outcomes: [
       "Menghitung risk per trade berdasarkan % equity",
       "Position sizing untuk saham IDX vs lot forex",
@@ -920,7 +920,7 @@ export const reviews: Review[] = [
     comment:
       "Saya benar-benar pemula. Materinya runtut dan mudah diikuti. Saya juga tidak didorong langsung trading pakai uang asli.",
     date: "2 minggu lalu",
-    courseTag: "Fundamental Saham untuk Pemula",
+    courseTag: "Analisis Fundamental Saham",
     mentorTag: "Andra Wicaksono, CFA",
   },
   {
@@ -930,7 +930,7 @@ export const reviews: Review[] = [
     comment:
       "Saya pernah ikut kelas online yang isinya rangkuman umum saja. Di sini ada latihan per modul, jadi belajarnya lebih terarah.",
     date: "1 bulan lalu",
-    courseTag: "Membaca Data On-Chain untuk Keputusan Trading Crypto",
+    courseTag: "Analisis On-Chain Crypto",
     mentorTag: "Kirana Ayu",
   },
   {
@@ -940,7 +940,7 @@ export const reviews: Review[] = [
     comment:
       "Kontennya bagus dan tidak menjual janji profit. Fokusnya edukasi proses. Ke depan akan lebih kuat jika studi kasusnya ditambah.",
     date: "1 bulan lalu",
-    courseTag: "Forex untuk Pemula: Membaca Narasi Makro",
+    courseTag: "Analisis Makro Forex",
     mentorTag: "Fajar Nugroho",
   },
   {
@@ -950,7 +950,7 @@ export const reviews: Review[] = [
     comment:
       "Materi scalping Dian sangat praktis — checklist pre-market-nya langsung saya pakai di jam buka BEI.",
     date: "3 minggu lalu",
-    courseTag: "Scalping Saham IDX: Setup Jam Perdagangan",
+    courseTag: "Scalping Saham IDX",
     mentorTag: "Dian Pratiwi",
   },
   {
@@ -960,7 +960,7 @@ export const reviews: Review[] = [
     comment:
       "Kelas psikologi Arif membantu saya berhenti revenge trade. Fokus edukasi, bukan janji profit.",
     date: "2 minggu lalu",
-    courseTag: "Psikologi Trading: Mengatasi FOMO",
+    courseTag: "Psikologi Trading",
     mentorTag: "Arif Kurniawan",
   },
 ];
