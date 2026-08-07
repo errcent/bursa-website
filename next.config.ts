@@ -19,6 +19,9 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://*.posthog.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
+      // Native <video> falls back to default-src when media-src is omitted — that
+      // blocks Bunny CDN + demo MP4 hosts (MEDIA_ERR_SRC_NOT_SUPPORTED / URL safety).
+      "media-src 'self' blob: https:",
       "font-src 'self' data:",
       "connect-src 'self' https: wss:",
       "frame-src https://challenges.cloudflare.com",
