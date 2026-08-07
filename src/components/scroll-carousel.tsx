@@ -361,7 +361,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
           type="button"
           variant="outline"
           size="icon-sm"
-          className="absolute left-1 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border-border/80 bg-background/95 shadow-md backdrop-blur-sm sm:flex"
+          className="absolute left-1 top-1/2 z-20 hidden -translate-y-1/2 rounded-md border-border/80 bg-background/95 shadow-md backdrop-blur-sm sm:flex"
           onClick={() => scrollByStep(-1)}
           aria-label="Gulir ke kiri"
         >
@@ -374,7 +374,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
           type="button"
           variant="outline"
           size="icon-sm"
-          className="absolute right-1 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border-border/80 bg-background/95 shadow-md backdrop-blur-sm sm:flex"
+          className="absolute right-1 top-1/2 z-20 hidden -translate-y-1/2 rounded-md border-border/80 bg-background/95 shadow-md backdrop-blur-sm sm:flex"
           onClick={() => scrollByStep(1)}
           aria-label="Gulir ke kanan"
         >

@@ -12,7 +12,7 @@ function AuthMobileBackButton({ href }: { href: string }) {
     <Button
       variant="ghost"
       size="icon"
-      className="fixed left-4 top-4 z-50 size-11 rounded-full border border-border/60 bg-card/90 shadow-sm backdrop-blur-sm sm:hidden"
+      className="fixed left-4 top-4 z-50 size-11 rounded-md border border-border/60 bg-card/90 shadow-sm backdrop-blur-sm sm:hidden"
       style={{ top: "max(1rem, env(safe-area-inset-top))" }}
       aria-label="Kembali"
       render={<Link href={href} />}

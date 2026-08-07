@@ -83,7 +83,7 @@ export function CourseDetailHero({
               <div className="mt-7">
                 <Button
                   size="lg"
-                  className="h-12 gap-2.5 rounded-full bg-white px-7 text-sm font-semibold text-black shadow-lg shadow-black/25 hover:bg-white/92"
+                  className="h-12 gap-2.5 rounded-md bg-white px-7 text-sm font-semibold text-black shadow-lg shadow-black/25 hover:bg-white/92"
                   render={<Link href={ctaHref} />}
                 >
                   <Play className="size-4 fill-current" />

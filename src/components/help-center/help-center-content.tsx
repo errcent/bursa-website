@@ -73,7 +73,7 @@ export function HelpCenterContent() {
             type="button"
             onClick={() => setActiveCategory("Semua")}
             className={cn(
-              "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+              "rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
               activeCategory === "Semua"
                 ? "border-accent/40 bg-accent-soft text-accent"
                 : "border-border bg-card/40 text-muted-foreground hover:border-accent/25 hover:text-foreground"
@@ -87,7 +87,7 @@ export function HelpCenterContent() {
               type="button"
               onClick={() => setActiveCategory(category)}
               className={cn(
-                "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                "rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
                 activeCategory === category
                   ? "border-accent/40 bg-accent-soft text-accent"
                   : "border-border bg-card/40 text-muted-foreground hover:border-accent/25 hover:text-foreground"

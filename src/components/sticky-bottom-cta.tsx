@@ -114,7 +114,7 @@ export function StickyBottomCta() {
     >
       <Link
         href={ctaHref}
-        className="btn-primary flex h-12 min-h-12 w-full items-center justify-center gap-2 rounded-full text-[15px] font-medium"
+        className="btn-primary flex h-12 min-h-12 w-full items-center justify-center gap-2 rounded-md text-[15px] font-medium"
       >
         {ctaLabel}
         <ArrowRight className="size-4" aria-hidden />

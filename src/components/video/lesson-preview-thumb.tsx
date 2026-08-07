@@ -68,7 +68,7 @@ export function LessonPreviewThumb({
         <>
           <div className="absolute inset-0 bg-black/35" />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="flex size-9 items-center justify-center rounded-full border border-white/25 bg-black/60 text-white sm:size-10">
+            <div className="flex size-9 items-center justify-center rounded-md border border-white/25 bg-black/60 text-white sm:size-10">
               <Lock className="size-4 sm:size-[18px]" />
             </div>
           </div>

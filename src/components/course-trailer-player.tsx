@@ -353,7 +353,7 @@ export function CourseTrailerPlayer({
             <button
               type="button"
               onClick={() => void togglePlay()}
-              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-black"
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-md bg-white text-black"
               aria-label={isPlaying ? "Jeda" : "Putar"}
             >
               {isPlaying ? <Pause className="size-4" /> : <Play className="size-4 fill-current" />}

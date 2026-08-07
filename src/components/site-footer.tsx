@@ -90,7 +90,7 @@ function SocialLinkButtons() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Bursa di ${link.label}`}
-            className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-accent"
+            className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-accent"
           >
             <Icon className="size-4" />
           </a>

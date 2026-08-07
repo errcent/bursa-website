@@ -468,7 +468,7 @@ export function ProfileEditor() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={saving || loadingProfile}
-              className="absolute -bottom-1 -right-1 inline-flex size-8 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-sm transition hover:bg-muted disabled:opacity-50"
+              className="absolute -bottom-1 -right-1 inline-flex size-8 items-center justify-center rounded-md border border-border bg-background text-foreground shadow-sm transition hover:bg-muted disabled:opacity-50"
               aria-label="Unggah foto profil"
             >
               <Camera className="size-3.5" />

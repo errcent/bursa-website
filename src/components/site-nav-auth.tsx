@@ -78,7 +78,7 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         className={cn(
-          "flex size-9 items-center justify-center rounded-full border border-border outline-none transition-colors hover:border-accent/40 hover:bg-accent/5 focus-visible:ring-2 focus-visible:ring-ring"
+          "flex size-9 items-center justify-center rounded-md border border-border outline-none transition-colors hover:border-accent/40 hover:bg-accent/5 focus-visible:ring-2 focus-visible:ring-ring"
         )}
         aria-label={`Menu akun ${session.name}`}
       >

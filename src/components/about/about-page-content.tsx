@@ -157,7 +157,7 @@ export function AboutPageContent() {
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button
             size="lg"
-            className="btn-primary h-12 rounded-full px-8"
+            className="btn-primary h-12 rounded-md px-8"
             render={<Link href="/katalog" />}
           >
             Lihat Katalog
@@ -165,7 +165,7 @@ export function AboutPageContent() {
           <Button
             size="lg"
             variant="outline"
-            className="h-12 rounded-full border-border/70 bg-card/40 px-7"
+            className="h-12 rounded-md border-border/70 bg-card/40 px-7"
             render={<Link href="/bantuan" />}
           >
             Pusat Bantuan

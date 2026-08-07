@@ -120,7 +120,7 @@ export function SignalComposeModal({ open, onOpenChange, onSubmit }: SignalCompo
                   type="button"
                   onClick={() => setInstrument(inst)}
                   className={cn(
-                    "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                    "rounded-md border px-3 py-1 text-xs font-medium transition-colors",
                     instrument === inst
                       ? "border-accent/40 bg-accent/15 text-accent"
                       : "border-border hover:bg-muted/50"

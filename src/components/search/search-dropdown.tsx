@@ -352,7 +352,7 @@ export function SearchDropdown({
                           key={s.query}
                           type="button"
                           onClick={() => onTrendingClick(s.query)}
-                          className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-accent/30 hover:bg-muted hover:text-foreground"
+                          className="rounded-md border border-border bg-muted px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-accent/30 hover:bg-muted hover:text-foreground"
                         >
                           {s.label}
                         </button>
@@ -427,7 +427,7 @@ export function SearchDropdown({
                           key={s.query}
                           type="button"
                           onClick={() => onTrendingClick(s.query)}
-                          className="rounded-full border border-border bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground transition-all hover:border-accent/25 hover:bg-accent/12 hover:text-foreground"
+                          className="rounded-md border border-border bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground transition-all hover:border-accent/25 hover:bg-accent/12 hover:text-foreground"
                         >
                           {s.label}
                         </button>

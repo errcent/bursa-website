@@ -11,7 +11,7 @@ export function CourseDetailBackButton() {
       href="/katalog"
       aria-label="Kembali ke katalog"
       className={cn(
-        "fixed z-[60] inline-flex size-11 items-center justify-center rounded-full",
+        "fixed z-[60] inline-flex size-11 items-center justify-center rounded-md",
         "bg-black/40 text-white/90 ring-1 ring-white/15 backdrop-blur-sm",
         "transition-colors hover:bg-black/55 hover:text-white",
         "md:hidden",

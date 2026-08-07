@@ -28,7 +28,7 @@ export function HomeFaqSection() {
             <p className="section-copy mt-3">Tidak menemukan jawaban yang kamu cari?</p>
             <Button
               size="lg"
-              className="btn-primary mt-6 h-11 rounded-full px-7 text-sm"
+              className="btn-primary mt-6 h-11 rounded-md px-7 text-sm"
               render={<Link href="/bantuan" />}
             >
               Hubungi Support

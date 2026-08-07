@@ -352,7 +352,7 @@ export function MentorApplicationForm() {
                 onClick={() => toggleInstrument(instrument)}
                 disabled={isSubmitting}
                 className={cn(
-                  "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                  "rounded-md border px-4 py-2 text-sm font-medium transition-colors",
                   selected
                     ? "border-accent/40 bg-accent/15 text-foreground"
                     : "border-border bg-background/40 text-muted-foreground hover:border-accent/25"

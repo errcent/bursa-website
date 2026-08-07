@@ -252,7 +252,7 @@ export function HomeDiscoverSection({
         <div className="discover-shell__footer">
           <Button
             size="lg"
-            className="btn-primary h-11 rounded-full px-7"
+            className="btn-primary h-11 rounded-md px-7"
             render={<Link href={meta.guidanceHref} />}
           >
             <motion.span

@@ -27,7 +27,7 @@ export function CarouselNavButtons({
       <Button
         variant="outline"
         size="icon-sm"
-        className="rounded-full border-border/60 bg-card/50 backdrop-blur-sm"
+        className="rounded-md border-border/60 bg-card/50 backdrop-blur-sm"
         onClick={onPrev}
         disabled={!canScrollLeft}
         aria-label={prevLabel}
@@ -37,7 +37,7 @@ export function CarouselNavButtons({
       <Button
         variant="outline"
         size="icon-sm"
-        className="rounded-full border-border/60 bg-card/50 backdrop-blur-sm"
+        className="rounded-md border-border/60 bg-card/50 backdrop-blur-sm"
         onClick={onNext}
         disabled={!canScrollRight}
         aria-label={nextLabel}

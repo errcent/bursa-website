@@ -43,7 +43,7 @@ export function SettingsNav({ active }: SettingsNavProps) {
               href={`/pengaturan?tab=${item.id}`}
               scroll={false}
               className={cn(
-                "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-medium transition-colors",
+                "inline-flex shrink-0 items-center gap-1.5 rounded-md border px-3.5 py-2 text-sm font-medium transition-colors",
                 selected
                   ? "border-foreground/15 bg-foreground/5 text-foreground"
                   : "border-transparent bg-muted/40 text-muted-foreground hover:text-foreground"

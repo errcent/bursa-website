@@ -44,7 +44,7 @@ export function BookmarkToggleButton({
         void toggle();
       }}
       className={cn(
-        "pointer-events-auto inline-flex size-8 items-center justify-center rounded-full border backdrop-blur-sm transition-all duration-200",
+        "pointer-events-auto inline-flex size-8 items-center justify-center rounded-md border backdrop-blur-sm transition-all duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         saved
           ? "border-accent/45 bg-accent/25 text-accent opacity-100 shadow-[0_0_0_1px_color-mix(in_oklch,var(--accent)_18%,transparent)]"
