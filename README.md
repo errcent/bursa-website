@@ -90,15 +90,15 @@ Build **tetap jalan** tanpa variabel Google ? tombol menampilkan petunjuk konfig
    - User type: **External** (testing) atau Internal (Workspace)
    - Isi app name (Bursa), support email, logo opsional
    - Scopes: cukup default `email`, `profile`, `openid` ? **jangan** tambah Gmail/Drive
-   - Tambahkan domain produksi di **Authorized domains** (mis. `bursanalar.vercel.app`)
+   - Tambahkan domain produksi di **Authorized domains**: `bursanalar.com`
 3. **Credentials** ? **Create credentials** ? **OAuth client ID**
    - Application type: **Web application**
    - **Authorized JavaScript origins:**
      - `http://localhost:3000` (dev)
-     - `https://bursanalar.vercel.app` (production)
+     - `https://bursanalar.com` (production)
    - **Authorized redirect URIs:**
      - `http://localhost:3000/api/auth/callback/google`
-     - `https://bursanalar.vercel.app/api/auth/callback/google`
+     - `https://bursanalar.com/api/auth/callback/google`
 4. Salin **Client ID** dan **Client secret** ke Vercel env vars + `.env` lokal
 5. Redeploy setelah env vars disimpan
 
@@ -193,7 +193,7 @@ Widget Turnstile muncul di `/waitlist` saat **kedua** env var di bawah diset. Ve
 2. **Add widget**
    - Widget name: `Bursa Waitlist`
    - Widget mode: **Managed** (recommended)
-   - Hostnames (wajib lengkap): `bursanalar.com`, `www.bursanalar.com`, `bursanalar.vercel.app`, `bursa-website.vercel.app`, `localhost`
+   - Hostnames (wajib lengkap): `bursanalar.com`, `localhost` (alias `.vercel.app` / `www` di-redirect ke `bursanalar.com`)
 3. Salin **Site Key** ? `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
 4. Salin **Secret Key** ? `TURNSTILE_SECRET_KEY`
 5. Set di `.env` lokal **dan** Vercel ? Environment Variables ? **Production + Preview**
@@ -308,7 +308,7 @@ Vercel ? project **bursa-website** ? **Settings** ? **Environment Variables** ? 
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key (waitlist) |
 | `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key (server only) |
 
-Untuk Google OAuth, tambahkan redirect URI `https://bursanalar.vercel.app/api/auth/callback/google` di Google Cloud Console (lihat bagian Login dengan Google di atas).
+Untuk Google OAuth, tambahkan redirect URI `https://bursanalar.com/api/auth/callback/google` di Google Cloud Console (lihat bagian Login dengan Google di atas).
 
 ### 3. Migrate & seed
 
@@ -325,7 +325,7 @@ Ini mengisi akun demo (`learner@test.dev`, dll.) dan data katalog.
 
 Push ke `master` atau klik **Redeploy** di Vercel setelah env vars disimpan.
 
-Site: https://bursanalar.vercel.app
+Site: https://bursanalar.com
 
 ### 5. Commit message vs isi deploy
 

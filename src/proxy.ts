@@ -10,12 +10,26 @@ import {
   KOMUNITAS_ENABLED,
 } from "@/lib/features/komunitas";
 
+const CANONICAL_HOST = "bursanalar.com";
+
 const MOBILE_DEV_ORIGINS = new Set([
   "http://localhost:8081",
   "http://127.0.0.1:8081",
   "http://localhost:19006",
   "http://127.0.0.1:19006",
 ]);
+
+/** Paths that need auth / rate-limit / komunitas guards (not just host redirect). */
+function needsRequestGuard(pathname: string): boolean {
+  return (
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/developer") ||
+    pathname.startsWith("/mentor") ||
+    pathname === "/komunitas" ||
+    pathname.startsWith("/komunitas/")
+  );
+}
 
 function applyMobileCors(response: NextResponse, origin: string | null): NextResponse {
   if (origin && MOBILE_DEV_ORIGINS.has(origin)) {
@@ -37,10 +51,31 @@ async function hasValidSession(request: NextRequest): Promise<boolean> {
   return Boolean(session);
 }
 
+/** Production-only: force all non-canonical hosts onto bursanalar.com. */
+function canonicalHostRedirect(request: NextRequest): NextResponse | null {
+  if (process.env.VERCEL_ENV !== "production") return null;
+
+  const host = request.headers.get("host")?.split(":")[0]?.toLowerCase();
+  if (!host || host === CANONICAL_HOST) return null;
+
+  const url = request.nextUrl.clone();
+  url.protocol = "https:";
+  url.hostname = CANONICAL_HOST;
+  url.port = "";
+  return NextResponse.redirect(url, 308);
+}
+
 export async function proxy(request: NextRequest) {
-  const origin = request.headers.get("origin");
-  const isApi = request.nextUrl.pathname.startsWith("/api/");
+  const hostRedirect = canonicalHostRedirect(request);
+  if (hostRedirect) return hostRedirect;
+
   const { pathname } = request.nextUrl;
+  if (!needsRequestGuard(pathname)) {
+    return NextResponse.next();
+  }
+
+  const origin = request.headers.get("origin");
+  const isApi = pathname.startsWith("/api/");
 
   if (isApi && request.method === "OPTIONS") {
     return applyMobileCors(new NextResponse(null, { status: 204 }), origin);
@@ -93,21 +128,10 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/api/:path*",
-    "/admin/:path*",
-    "/developer/:path*",
-    "/mentor/:path*",
-    "/komunitas",
-    "/komunitas/:path*",
-    "/admin/chat-rooms/:path*",
-    "/mentor/chat/:path*",
-    "/api/chat/:path*",
-    "/api/trading/:path*",
-    "/api/admin/chat-rooms/:path*",
-    "/api/admin/collaboration-chat/:path*",
-    "/api/admin/branch-change-requests/:path*",
-    "/api/mentor/collaboration-chat/:path*",
-    "/api/mentor/chat-rooms/:path*",
-    "/api/mentor/branch-change-requests/:path*",
+    /*
+     * Broad match so production host redirect covers all pages.
+     * Skip Next internals and common static assets.
+     */
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|webmanifest)$).*)",
   ],
 };

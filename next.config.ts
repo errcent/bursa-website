@@ -42,7 +42,21 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
+    const canonicalHostRedirects = [
+      "bursanalar.vercel.app",
+      "bursa-website.vercel.app",
+      "bursanalar-errcent1.vercel.app",
+      "bursanalar-git-master-errcent1.vercel.app",
+      "www.bursanalar.com",
+    ].map((host) => ({
+      source: "/:path*",
+      has: [{ type: "host" as const, value: host }],
+      destination: "https://bursanalar.com/:path*",
+      permanent: true,
+    }));
+
     return [
+      ...canonicalHostRedirects,
       {
         source: "/kebijakan-privasi",
         destination: "/privasi/kebijakan",
