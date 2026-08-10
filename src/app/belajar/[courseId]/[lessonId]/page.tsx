@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ChevronLeft } from "lucide-react";
 
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { LearningWorkspace } from "@/components/learning-workspace";
 import { getCatalogCourseSlugs, getCourseBySlug, getMentorBySlug } from "@/lib/catalog/server";
 
@@ -57,8 +58,8 @@ export default async function LearningPage({
           <ChevronLeft className="size-4" />
           <span className="hidden sm:inline">Kembali</span>
         </Link>
-        <Link href="/" className="truncate text-lg font-semibold">
-          Bursa
+        <Link href="/" className="shrink-0 truncate" aria-label="Bursa">
+          <BrandLogo variant="product" decorative />
         </Link>
         <span className="ml-auto max-w-[45%] truncate text-xs text-muted-foreground sm:max-w-none">
           {course.title}
