@@ -66,7 +66,7 @@ interface MessageBubbleProps {
   currentUserId?: string;
   /**
    * Every id that identifies the signed-in user. Client auth often uses
-   * `user-demo-*` while message authors use Prisma cuids — pass both so
+   * `user-demo-*` while message authors use Prisma cuids, pass both so
    * optimistic and server messages resolve as own.
    */
   ownUserIds?: readonly string[];

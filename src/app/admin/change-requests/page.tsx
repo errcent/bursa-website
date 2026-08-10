@@ -42,7 +42,7 @@ function targetLabel(target: AdminChangeRequest["targetType"]) {
 }
 
 function formatValue(value: unknown) {
-  if (value === null || value === undefined || value === "") return "—";
+  if (value === null || value === undefined || value === "") return "-";
   if (typeof value === "boolean") return value ? "Ya" : "Tidak";
   return String(value);
 }
@@ -379,7 +379,7 @@ export default function AdminChangeRequestsPage() {
                 value={adminNote}
                 onChange={(e) => setAdminNote(e.target.value)}
                 disabled={preview.status !== "pending"}
-                placeholder="Opsional — alasan reject atau catatan approve"
+                placeholder="Opsional, alasan reject atau catatan approve"
               />
             </label>
 

@@ -142,12 +142,6 @@ export function DeviceMockupSection({
                   delay={0.04}
                 />
               </h2>
-              <Reveal delay={0.1} className="mt-5">
-                <p className="section-copy mx-auto max-w-xl text-base">
-                  Scroll katalog, pilih kelas, putar video, tulis catatan — lanjut fullscreen
-                  tanpa putus.
-                </p>
-              </Reveal>
             </div>
 
             <div className="device-mockup-stage">

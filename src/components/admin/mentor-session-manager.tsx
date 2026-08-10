@@ -261,7 +261,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
                           : "Tersedia"}
                       </Badge>
                     </td>
-                    <td className="py-3 pr-4 text-muted-foreground">{slot.notes ?? "—"}</td>
+                    <td className="py-3 pr-4 text-muted-foreground">{slot.notes ?? "-"}</td>
                     <td className="py-3">
                       {!slot.isBooked && (
                         <div className="flex gap-1">

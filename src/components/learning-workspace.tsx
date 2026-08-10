@@ -539,7 +539,7 @@ export function LearningWorkspace({
                           nextLessonContext.lessonIndex
                         )
                       ? "Preview gratis tersedia"
-                      : "Konten berbayar — preview dibatasi"}
+                      : "Konten berbayar, preview dibatasi"}
                 </p>
               </div>
             </Link>

@@ -37,15 +37,15 @@ interface NotesRichEditorProps {
   minHeightClass?: string;
   autofocus?: boolean;
   /**
-   * compact — toolbar tetap (B/I/U/coret, daftar) — default, paling mudah di mobile
-   * full — toolbar lengkap + heading/undo
-   * bubble — hanya popup saat seleksi teks
-   * none — tanpa toolbar
+   * compact, toolbar tetap (B/I/U/coret, daftar), default, paling mudah di mobile
+   * full, toolbar lengkap + heading/undo
+   * bubble, hanya popup saat seleksi teks
+   * none, tanpa toolbar
    */
   toolbar?: "compact" | "full" | "bubble" | "none";
   /** @deprecated Prefer `toolbar="full"` */
   showToolbar?: boolean;
-  /** Tanpa border/card — langsung area tulis */
+  /** Tanpa border/card, langsung area tulis */
   bare?: boolean;
   /** Isi parent flex; konten editor scroll di dalam area */
   fillHeight?: boolean;

@@ -18,7 +18,7 @@ const LETTER_STAGGER = 0.05;
 const REVEAL_UNIT_DURATION = WORD_REVEAL_DURATION;
 const TITLE_TAGLINE_GAP = 0.18;
 
-/** Timeline (seconds) — total ~3.77s after slower text reveal */
+/** Timeline (seconds), total ~3.77s after slower text reveal */
 const T_BLANK = 0.45;
 const T = {
   blank: T_BLANK,

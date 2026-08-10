@@ -154,7 +154,7 @@ export default function AdminPendapatanPage() {
             <p className="text-xs text-muted-foreground">{row.buyerEmail}</p>
           </div>
         ) : (
-          <span className="text-muted-foreground">—</span>
+          <span className="text-muted-foreground">-</span>
         ),
     },
     {
@@ -304,7 +304,7 @@ export default function AdminPendapatanPage() {
             Rincian asal usul pendapatan platform (komisi{" "}
             {report.commissionRatePercent}% dari harga kelas).
             {source === "mock" && (
-              <span className="ml-2 text-amber">(mode demo — API tidak tersedia)</span>
+              <span className="ml-2 text-amber">(mode demo, API tidak tersedia)</span>
             )}
           </p>
         </div>

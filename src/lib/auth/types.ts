@@ -25,7 +25,7 @@ export interface AuthSession {
 }
 
 export interface StoredUser extends AuthUser {
-  /** Mock only — jangan simpan password plain di produksi. */
+  /** Mock only, jangan simpan password plain di produksi. */
   password: string;
 }
 

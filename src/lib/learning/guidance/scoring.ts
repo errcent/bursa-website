@@ -134,7 +134,7 @@ function scoreLevelFit(
   if (gap === 1) {
     if (courseIndex > idealIndex) {
       if (experience === "never" || experience === "demo") {
-        return { points: 6, text: "Satu tingkat di atas — selesaikan fondasi dulu" };
+        return { points: 6, text: "Satu tingkat di atas, selesaikan fondasi dulu" };
       }
       return { points: 22, text: "Langkah lanjutan setelah fondasi kuat" };
     }
@@ -192,7 +192,7 @@ function scoreStyleAndPace(
   if (hours >= band.min && hours <= band.max) {
     results.push({ points: 10, text: `Durasi selaras dengan ${band.label}` });
   } else if (hours < band.min) {
-    results.push({ points: 3, text: "Materi ringkas — cocok sebagai intro" });
+    results.push({ points: 3, text: "Materi ringkas, cocok sebagai intro" });
   } else {
     results.push({ points: 4, text: "Materi lebih mendalam untuk gaya tradingmu" });
   }
@@ -286,7 +286,7 @@ function scoreFormatPreference(
     return { points: 4, text: "Belajar mandiri dengan video terstruktur" };
   }
   if (format === "mixed") {
-    return { points: 5, text: "Format fleksibel — video, live, dan komunitas" };
+    return { points: 5, text: "Format fleksibel, video, live, dan komunitas" };
   }
   return { points: 0, text: "" };
 }

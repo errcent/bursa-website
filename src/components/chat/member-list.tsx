@@ -134,7 +134,7 @@ export function MemberList({
         return (
           <section key={role}>
             <h3 className="mb-2 px-2 font-mono text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-              {config.label} — {roleMembers.length}
+              {config.label}, {roleMembers.length}
             </h3>
             <ul className="flex flex-col gap-0.5">
               {online.map(renderMember)}

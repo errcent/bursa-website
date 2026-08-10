@@ -34,7 +34,7 @@ export async function resolveExpiredSignals(where?: { roomId?: string; mentorId?
   });
 }
 
-/** Platform-computed outcome tally for a mentor — derived only, never mentor-set (QC-20260719-19/20). */
+/** Platform-computed outcome tally for a mentor, derived only, never mentor-set (QC-20260719-19/20). */
 export async function getMentorSignalOutcomes(mentorId: string) {
   const grouped = await db.tradingSignal.groupBy({
     by: ["outcome"],

@@ -45,7 +45,7 @@ export interface ProtectedVideoPlayerProps {
   durationMinutes: number;
   /** Guest free-preview mode (no watermark). False for enrolled full access. */
   isPreview: boolean;
-  /** Enrolled / subscribed — unlocks paid lessons via playback token. */
+  /** Enrolled / subscribed, unlocks paid lessons via playback token. */
   hasAccess?: boolean;
   userId?: string;
   userEmail?: string;
@@ -55,7 +55,7 @@ export interface ProtectedVideoPlayerProps {
   seekRequestSeconds?: number | null;
   onTimeUpdate?: (seconds: number) => void;
   onProtectionViolation?: (type: ProtectionViolationType, lessonId: string) => void;
-  /** Device mockup — skip DRM/blur/watermark and use demo playback. */
+  /** Device mockup, skip DRM/blur/watermark and use demo playback. */
   mockupMode?: boolean;
   /** Inset fullscreen for device mockup scroll (not browser Fullscreen API). */
   simulatedFullscreen?: boolean;
@@ -86,7 +86,7 @@ export function ProtectedVideoPlayer({
 }: ProtectedVideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  /** Signed server heartbeat token — enables verified watch-time accrual (QC-20260719-46). */
+  /** Signed server heartbeat token, enables verified watch-time accrual (QC-20260719-46). */
   const heartbeatTokenRef = useRef<string | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -575,7 +575,7 @@ export function ProtectedVideoPlayer({
       {isBlurred && isProtected && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-background/40 backdrop-blur-md">
           <p className="rounded-lg bg-black/60 px-4 py-2 text-sm text-white">
-            Video disembunyikan — kembali ke tab ini untuk melanjutkan
+            Video disembunyikan, kembali ke tab ini untuk melanjutkan
           </p>
         </div>
       )}

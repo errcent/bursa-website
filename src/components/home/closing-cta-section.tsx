@@ -10,7 +10,7 @@ import { Reveal } from "@/components/motion/reveal";
 import { WordReveal } from "@/components/motion/word-reveal";
 import { Button } from "@/components/ui/button";
 
-/** The single closing CTA of the landing page — waitlist-focused close. */
+/** The single closing CTA of the landing page, waitlist-focused close. */
 export function ClosingCtaSection() {
   const { session, isLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
@@ -27,10 +27,7 @@ export function ClosingCtaSection() {
     : "Gabung waitlist Bursa";
   const body = showMemberExperience
     ? "Akses dashboard untuk melanjutkan progres kelas dan materi yang sudah kamu mulai."
-    : "Jadi yang pertama tahu saat Bursa dibuka. Tinggalkan email — kami kabari begitu kelas dan mentor siap.";
-  const footnote = showMemberExperience
-    ? "Progres belajar tersimpan di akun kamu."
-    : "Gratis masuk waitlist. Tanpa spam — hanya kabar penting.";
+    : "Jadi yang pertama tahu saat Bursa dibuka. Tinggalkan email, kami kabari begitu kelas dan mentor siap.";
 
   return (
     <section className="section-closing relative overflow-hidden py-16 sm:py-20 md:py-24">
@@ -72,8 +69,6 @@ export function ClosingCtaSection() {
                 </Button>
               ) : null}
             </div>
-
-            <p className="mt-6 font-mono text-[10px] text-muted-foreground/60">{footnote}</p>
           </Reveal>
         </div>
       </div>

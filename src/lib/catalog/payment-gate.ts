@@ -1,4 +1,4 @@
-/** Paid checkout via payment gateway — enable when Midtrans/Xendit is live. */
+/** Paid checkout via payment gateway, enable when Midtrans/Xendit is live. */
 export function isPaidCheckoutEnabled(): boolean {
   return process.env.NEXT_PUBLIC_CHECKOUT_ENABLED === "true";
 }

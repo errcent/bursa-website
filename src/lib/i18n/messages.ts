@@ -1,5 +1,5 @@
 /**
- * Prototype i18n message catalog — settings page + shared UI labels only.
+ * Prototype i18n message catalog, settings page + shared UI labels only.
  * Full app translation (100+ pages) is planned as future work; extend this file
  * or split by namespace as coverage grows.
  */
@@ -192,7 +192,7 @@ const id: Messages = {
       title: "Bahasa aplikasi",
       description: "Pilih bahasa antarmuka. Default platform adalah Bahasa Indonesia.",
       idLabel: "Bahasa Indonesia",
-      idDescription: "Default — seluruh label pengaturan dan UI umum",
+      idDescription: "Default, seluruh label pengaturan dan UI umum",
       enLabel: "English",
       enDescription: "Interface labels in English",
       activeLocale: "Bahasa aktif",
@@ -208,7 +208,7 @@ const id: Messages = {
     },
     theme: {
       dark: "Gelap",
-      darkDescription: "Default — slate navy dengan aksen lavender",
+      darkDescription: "Default, slate navy dengan aksen lavender",
       light: "Terang",
       lightDescription: "Lebih terang untuk membaca lama",
       system: "Sistem",
@@ -304,7 +304,7 @@ const en: Messages = {
       title: "App language",
       description: "Choose the interface language. The platform default is Bahasa Indonesia.",
       idLabel: "Bahasa Indonesia",
-      idDescription: "Default — settings labels and common UI copy",
+      idDescription: "Default, settings labels and common UI copy",
       enLabel: "English",
       enDescription: "Interface labels in English",
       activeLocale: "Active language",
@@ -319,7 +319,7 @@ const en: Messages = {
     },
     theme: {
       dark: "Dark",
-      darkDescription: "Default — slate navy with lavender accents",
+      darkDescription: "Default, slate navy with lavender accents",
       light: "Light",
       lightDescription: "Brighter for extended reading",
       system: "System",

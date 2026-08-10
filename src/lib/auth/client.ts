@@ -340,7 +340,7 @@ export function loginWithOAuth(input: {
 export function login(
   input: LoginInput
 ): { ok: true; session: AuthSession } | { ok: false; error: string } {
-  // Sync entry — local fallback when API unavailable (offline dev).
+  // Sync entry, local fallback when API unavailable (offline dev).
   return loginLocal(input);
 }
 
@@ -622,7 +622,7 @@ export async function logout(): Promise<void> {
   try {
     await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
   } catch {
-    // ignore — local session already cleared
+    // ignore, local session already cleared
   }
 }
 

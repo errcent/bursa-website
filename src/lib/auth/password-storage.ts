@@ -1,6 +1,6 @@
 const HASH_PREFIX = "h1:";
 
-/** One-way hash for prototype localStorage — not for server-side auth. */
+/** One-way hash for prototype localStorage, not for server-side auth. */
 export function hashPasswordForStorage(password: string): string {
   if (!password) return "";
   let h = 5381;

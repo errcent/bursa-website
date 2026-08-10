@@ -56,7 +56,7 @@ export function CheckoutSuccessClient({
         role: active?.role,
       }),
     }).catch(() => {
-      /* network failure — local enroll still unlocks learning UI */
+      /* network failure, local enroll still unlocks learning UI */
     });
   }, [session, slug]);
 
@@ -116,7 +116,7 @@ export function CheckoutSuccessClient({
             </h1>
             <p className="mt-2 max-w-md text-center text-sm text-muted-foreground">
               Akses kelas kamu sudah aktif
-              {KOMUNITAS_ENABLED ? " — kamu juga bisa bergabung ke komunitas mentor jika tersedia" : ""}.
+              {KOMUNITAS_ENABLED ? ", kamu juga bisa bergabung ke komunitas mentor jika tersedia" : ""}.
             </p>
 
             <Card className="surface-card mt-10 w-full max-w-lg overflow-hidden border-0 bg-transparent shadow-none">

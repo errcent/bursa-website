@@ -37,7 +37,7 @@ export function WaitlistFounderStoryEmail(props: WaitlistFounderStoryProps) {
       </p>
       <p style={emailTextStyles.paragraph}>
         Karena itu, kami memilih memulai dari pendidikan. Kami ingin membuat
-        konsep yang terasa rumit menjadi lebih mudah diperiksa—tanpa menutupi
+        konsep yang terasa rumit menjadi lebih mudah diperiksa, tanpa menutupi
         ketidakpastian, tanpa mendorong keputusan terburu-buru, dan tanpa
         menjanjikan hasil.
       </p>
@@ -48,7 +48,7 @@ export function WaitlistFounderStoryEmail(props: WaitlistFounderStoryProps) {
         berikutnya.
       </p>
       <p style={{ ...emailTextStyles.paragraph, color: emailTextStyles.muted }}>
-        — Tim pendiri Bursa Nalar
+        Tim pendiri Bursa Nalar
       </p>
     </BrandedEmailLayout>
   );
@@ -62,11 +62,11 @@ export function waitlistFounderStoryPlainText(
     "",
     "Bursa Nalar berawal dari pengamatan sederhana: banyak orang diminta membuat keputusan finansial sebelum memiliki bahasa dan kerangka untuk menilai pilihannya.",
     "",
-    "Karena itu, kami memilih memulai dari pendidikan. Kami ingin membuat konsep yang terasa rumit menjadi lebih mudah diperiksa—tanpa menutupi ketidakpastian, tanpa mendorong keputusan terburu-buru, dan tanpa menjanjikan hasil.",
+    "Karena itu, kami memilih memulai dari pendidikan. Kami ingin membuat konsep yang terasa rumit menjadi lebih mudah diperiksa, tanpa menutupi ketidakpastian, tanpa mendorong keputusan terburu-buru, dan tanpa menjanjikan hasil.",
     "",
     "Produk yang baik seharusnya membantu pengguna bertanya dengan lebih tajam, bukan sekadar memberi lebih banyak informasi. Masukan Anda akan membantu kami memilih materi yang paling relevan untuk dibangun berikutnya.",
     "",
-    "— Tim pendiri Bursa Nalar",
+    "Tim pendiri Bursa Nalar",
     "",
     `Pilih materi berikutnya: ${props.nextMaterialUrl}`,
     "",

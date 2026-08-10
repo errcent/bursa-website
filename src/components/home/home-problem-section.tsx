@@ -10,19 +10,19 @@ const painPoints = [
     num: "01",
     title: "Masuk Pasar dengan Fondasi Rapuh",
     description:
-      "Banyak trader ambil posisi sebelum benar-benar paham risikonya. Pemula, menengah, bahkan profesional — fondasi yang rapuh membuat setiap keputusan jadi taruhan, bukan perhitungan.",
+      "Posisi dibuka sebelum risiko dipahami. Fondasi rapuh membuat setiap keputusan jadi taruhan.",
   },
   {
     num: "02",
     title: "Mengikuti Gaya yang Tidak Cocok",
     description:
-      "Meniru gaya trading atau manajemen risiko orang lain — mentor, tren, influencer — tanpa menyesuaikan profilmu sendiri. Cara cepat kehilangan kendali atas keputusan.",
+      "Meniru gaya orang lain tanpa menyesuaikan profil risikomu sendiri.",
   },
   {
     num: "03",
     title: "Kebanjiran Informasi Tanpa Jalur Jelas",
     description:
-      "Artikel, video, grup chat, saran mentor — sumber belajar berceceran dan sering saling bertentangan. Waktu habis menyaring noise, bukan membangun pemahaman yang kokoh.",
+      "Sumber belajar berceceran dan saling bertentangan. Waktu habis memilah, bukan belajar.",
   },
 ] as const;
 
@@ -41,12 +41,6 @@ export function HomeProblemSection() {
             trigger="inView"
             delay={0.04}
           />
-          <Reveal delay={0.1} className="mt-5">
-            <p className="section-copy mx-auto max-w-2xl text-base sm:text-lg">
-              Riset akademis menemukan pola yang sama berulang — ketiganya bekerja
-              diam-diam, sebelum kamu sadar dampaknya.
-            </p>
-          </Reveal>
         </div>
 
         <Stagger className="grid gap-4 sm:gap-5 md:grid-cols-3 md:gap-6">
@@ -57,12 +51,6 @@ export function HomeProblemSection() {
                 whileHover={{ y: -3 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               >
-                <span
-                  className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-accent/80 md:hidden"
-                  aria-hidden
-                >
-                  Hambatan {point.num}
-                </span>
                 <span className="editorial-num hidden md:block" aria-hidden>
                   {point.num}
                 </span>
@@ -76,14 +64,6 @@ export function HomeProblemSection() {
             </StaggerItem>
           ))}
         </Stagger>
-
-        <Reveal delay={0.12} className="mt-10 text-center md:mt-14">
-          <p className="editorial-citation mx-auto max-w-2xl font-mono text-[10px] leading-relaxed sm:text-[11px]">
-            Berdasarkan studi akademik 2025 tentang hambatan trader pemula,
-            dipublikasikan di International Conference on Pervasive Computational
-            Technologies (ICPCT).
-          </p>
-        </Reveal>
       </div>
     </section>
   );

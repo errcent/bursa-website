@@ -4,7 +4,7 @@ import sharp from "sharp";
 /** Max raw upload size accepted before processing (5 MB). */
 export const AVATAR_MAX_INPUT_BYTES = 5 * 1024 * 1024;
 
-/** Max width/height after resize — profile photos don't need to be huge. */
+/** Max width/height after resize, profile photos don't need to be huge. */
 export const AVATAR_MAX_DIMENSION = 512;
 
 /** Target max file size after compression (400 KB). */

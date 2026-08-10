@@ -296,7 +296,7 @@ function DashboardBody() {
                     <div className="max-w-sm">
                       <p className="font-heading text-sm font-medium">Belum ada profil belajar</p>
                       <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                        Ikuti quiz singkat (~2 menit) di Panduan Belajar — kami rekomendasikan kelas
+                        Ikuti quiz singkat (~2 menit) di Panduan Belajar, kami rekomendasikan kelas
                         yang selaras dengan tujuan dan levelmu.
                       </p>
                     </div>

@@ -20,7 +20,7 @@ export default function ResetPasswordPage() {
   return (
     <AuthPageShell
       title="Buat kata sandi baru"
-      description="Pilih kata sandi yang kuat — kami simpan dalam bentuk terenkripsi (bcrypt)."
+      description="Pilih kata sandi yang kuat, kami simpan dalam bentuk terenkripsi (bcrypt)."
     >
       <Suspense fallback={<FormFallback />}>
         <ResetPasswordForm />

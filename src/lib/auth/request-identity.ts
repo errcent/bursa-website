@@ -35,7 +35,7 @@ export async function resolveTrustedEmail(request: Request): Promise<string | nu
 
 /**
  * Resolve the authenticated Prisma user from a trusted session only.
- * Rejects userId-only spoofing — email must come from NextAuth or prototype bridge.
+ * Rejects userId-only spoofing, email must come from NextAuth or prototype bridge.
  */
 export async function resolveAuthenticatedUser(
   request: Request,

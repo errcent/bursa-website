@@ -12,7 +12,7 @@ export const DEVICE_SCREEN_INSET_PX = {
   height: (DEVICE_SCENE_HEIGHT * screen.h) / 100,
 } as const;
 
-/** Logical UI width — app layouts are authored at this width then scaled into the inset. */
+/** Logical UI width, app layouts are authored at this width then scaled into the inset. */
 export const DEVICE_SCREEN_DESIGN_WIDTH = 1024;
 
 /** Matches inset aspect ratio so scaled content fills the screen hole vertically. */

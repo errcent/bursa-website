@@ -1,5 +1,5 @@
 /**
- * AI feature config — blueprint only; routes return 503 until enabled.
+ * AI feature config, blueprint only; routes return 503 until enabled.
  */
 
 export const AI_ENABLED =

@@ -20,12 +20,12 @@ const schema = z.object({
 });
 
 const REQUEST_LABELS: Record<string, string> = {
-  ACCESS: "Akses data — minta salinan data pribadi",
-  CORRECTION: "Koreksi — perbaiki data tidak akurat",
-  DELETION: "Penghapusan — hapus akun dan data",
+  ACCESS: "Akses data, minta salinan data pribadi",
+  CORRECTION: "Koreksi, perbaiki data tidak akurat",
+  DELETION: "Penghapusan, hapus akun dan data",
   WITHDRAW_CONSENT: "Tarik persetujuan pemrosesan non-esensial",
   OBJECTION: "Keberatan atas pemrosesan tertentu",
-  PORTABILITY: "Portabilitas — export data format terbaca",
+  PORTABILITY: "Portabilitas, export data format terbaca",
 };
 
 export function DsarRequestForm() {

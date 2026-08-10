@@ -1,7 +1,7 @@
 import { MentorTransactionList } from "@/components/instruktur-dashboard/mentor-transaction-list";
 
 export const metadata = {
-  title: "Transaksi & Komisi — Dashboard Instruktur",
+  title: "Transaksi & Komisi, Dashboard Instruktur",
 };
 
 export default function InstrukturDashboardTransaksiPage() {

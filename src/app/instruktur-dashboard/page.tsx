@@ -66,11 +66,11 @@ export default function InstrukturDashboardHomePage() {
     () => [
       {
         label: "Total siswa",
-        value: profile ? profile.studentsCount.toLocaleString("id-ID") : "—",
+        value: profile ? profile.studentsCount.toLocaleString("id-ID") : "-",
       },
       {
         label: "Rating rata-rata",
-        value: profile ? profile.rating.toFixed(1) : "—",
+        value: profile ? profile.rating.toFixed(1) : "-",
       },
       {
         label: "Pendapatan bulan ini (net)",

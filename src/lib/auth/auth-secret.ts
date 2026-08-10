@@ -1,4 +1,4 @@
-/** Auth secret helper — edge/proxy safe (no Prisma imports). */
+/** Auth secret helper, edge/proxy safe (no Prisma imports). */
 export function getAuthSecret(): string {
   const secret =
     process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim();

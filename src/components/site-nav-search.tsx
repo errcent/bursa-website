@@ -109,7 +109,7 @@ export function SiteNavSearch({
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Node | null;
       if (!target) return;
-      // Panel is portaled to document.body — treat it as inside the search UI
+      // Panel is portaled to document.body, treat it as inside the search UI
       if (
         target instanceof Element &&
         target.closest("[data-search-dropdown]")

@@ -29,7 +29,7 @@ export interface SearchSuggestion {
   category: "trending" | "instrument" | "level" | "topic";
 }
 
-/** Kata kunci SEO — disusun untuk intent pencarian edukasi trading Indonesia */
+/** Kata kunci SEO, disusun untuk intent pencarian edukasi trading Indonesia */
 export const TRENDING_SEARCHES: SearchSuggestion[] = [
   { label: "Fundamental saham pemula", query: "fundamental saham", category: "trending" },
   { label: "Swing trading teknikal", query: "swing trading", category: "trending" },

@@ -10,7 +10,7 @@ import { MentorCard } from "@/components/mentor-card";
 import { peekGetScrollPerView } from "@/components/scroll-carousel";
 import type { ScoredMentor } from "@/lib/learning/guidance/types";
 
-/** Vertical mentor tile width on mobile — one card + peek of the next. */
+/** Vertical mentor tile width on mobile, one card + peek of the next. */
 const GUIDANCE_MENTOR_PEEK_RATIO = 0.56;
 const GUIDANCE_MENTOR_GAP = 12;
 

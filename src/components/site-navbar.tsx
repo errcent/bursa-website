@@ -77,7 +77,7 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
   const searchActive = !isHeroAnchor || searchReveal;
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileCatalogSearchOpen, setMobileCatalogSearchOpen] = useState(false);
-  /** Deferred to mount — sessionStorage differs between SSR and client. */
+  /** Deferred to mount, sessionStorage differs between SSR and client. */
   const [runIntro, setRunIntro] = useState(false);
   const roleLinks = getRoleNavLinks(session?.role);
   const primaryCtaHref = session ? "/dashboard" : "/katalog";

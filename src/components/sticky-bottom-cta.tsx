@@ -7,10 +7,10 @@ import { ArrowRight } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 
-/** Only these marketing pages may show the sticky CTA (not /katalog — user is already browsing). */
+/** Only these marketing pages may show the sticky CTA (not /katalog, user is already browsing). */
 const ALLOWED_PATHS = ["/"] as const;
 
-/** App / auth / checkout routes — always hide, even if allowlist logic changes. */
+/** App / auth / checkout routes, always hide, even if allowlist logic changes. */
 const HIDDEN_PATH_PREFIXES = [
   "/komunitas",
   "/belajar",

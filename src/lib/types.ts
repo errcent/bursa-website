@@ -59,21 +59,21 @@ export interface Course {
   thumbnailUrl?: string;
   outcomes: string[];
   modules: Module[];
-  /** Prisma Module (section) count — admin/internal; not shown to learners. */
+  /** Prisma Module (section) count, admin/internal; not shown to learners. */
   moduleCount?: number;
-  /** Total video count — listing queries aggregate lessons across modules. */
+  /** Total video count, listing queries aggregate lessons across modules. */
   lessonCount?: number;
   /** ISO date for "Baru di Bursa" catalog row. */
   createdAt?: string;
-  /** Number of (non-flagged) reviews behind `rating` — shown as "(n)" and used for min-sample. */
+  /** Number of (non-flagged) reviews behind `rating`, shown as "(n)" and used for min-sample. */
   ratingCount?: number;
   /** Bayesian-shrunk rating used for ranking (QC-20260719-17). */
   bayesianRating?: number;
   /** Time-decayed rating used for staleness signalling (QC-20260719-18). */
   decayedRating?: number;
-  /** Distinct COMPLETED paid buyers — popularity signal for ranking (QC-20260719-27). */
+  /** Distinct COMPLETED paid buyers, popularity signal for ranking (QC-20260719-27). */
   paidStudentsCount?: number;
-  /** ISO date content was last materially updated — staleness penalty input (QC-20260719-18). */
+  /** ISO date content was last materially updated, staleness penalty input (QC-20260719-18). */
   contentUpdatedAt?: string;
 }
 
@@ -83,8 +83,8 @@ export interface Review {
   rating: number;
   comment: string;
   date: string;
-  /** Course title the reviewer took — surfaced as a tag on the review card. */
+  /** Course title the reviewer took, surfaced as a tag on the review card. */
   courseTag?: string;
-  /** Mentor name the reviewer studied with — surfaced as a tag on the review card. */
+  /** Mentor name the reviewer studied with, surfaced as a tag on the review card. */
   mentorTag?: string;
 }

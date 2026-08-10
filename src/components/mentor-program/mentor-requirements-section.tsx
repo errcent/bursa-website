@@ -12,7 +12,7 @@ export function MentorRequirementsSection() {
         <p className="eyebrow mb-2">Persyaratan</p>
         <h2 className="section-title">Siapa yang cocok jadi mentor?</h2>
         <p className="section-copy mt-2 max-w-2xl">
-          Kami mencari praktisi yang serius mengajar — bukan yang hanya menjual mimpi profit.
+          Kami mencari praktisi yang serius mengajar, bukan yang hanya menjual mimpi profit.
         </p>
       </Reveal>
 

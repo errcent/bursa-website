@@ -5,7 +5,7 @@ export type LabScenario = {
   toolIds: string[];
 };
 
-/** Guided entry paths — link chains of Essential tools only. */
+/** Guided entry paths, link chains of Essential tools only. */
 export const labScenarios: LabScenario[] = [
   {
     id: "pre-entry",

@@ -11,7 +11,7 @@ const OVERVIEW_STEPS = [
   {
     step: "01",
     title: "Jawab pertanyaan singkat",
-    description: "Sekitar 2 menit — fokus instrumen, level, dan tujuan belajarmu.",
+    description: "Sekitar 2 menit, fokus instrumen, level, dan tujuan belajarmu.",
   },
   {
     step: "02",

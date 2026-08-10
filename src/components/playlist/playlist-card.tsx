@@ -33,7 +33,7 @@ export function PlaylistCard({
 }: {
   playlist: PlaylistSummary;
   className?: string;
-  /** "catalog" — title below thumbnail; meta pill stays bottom-right on thumbnail. */
+  /** "catalog", title below thumbnail; meta pill stays bottom-right on thumbnail. */
   variant?: "default" | "catalog";
 }) {
   const subtitle = playlistSubtitle(playlist);

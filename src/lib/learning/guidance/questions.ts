@@ -44,7 +44,7 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
   {
     id: "experience",
     title: "Sejauh mana pengalaman tradingmu?",
-    subtitle: "Jujur di sini — kami akan mulai dari level yang tepat, bukan yang terlalu cepat.",
+    subtitle: "Jujur di sini, kami akan mulai dari level yang tepat, bukan yang terlalu cepat.",
     options: [
       {
         value: "never",
@@ -76,12 +76,12 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
       {
         value: "scalping",
         label: "Scalping",
-        description: "Entry cepat — menit hingga beberapa jam.",
+        description: "Entry cepat, menit hingga beberapa jam.",
       },
       {
         value: "day_trading",
         label: "Day trading",
-        description: "Posisi dibuka-tutup dalam hari yang sama — beberapa jam hingga satu hari.",
+        description: "Posisi dibuka-tutup dalam hari yang sama, beberapa jam hingga satu hari.",
       },
       {
         value: "swing",
@@ -131,7 +131,7 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
       {
         value: "conservative",
         label: "Konservatif",
-        description: "Prioritas lindungi modal — risiko kecil, target realistis.",
+        description: "Prioritas lindungi modal, risiko kecil, target realistis.",
       },
       {
         value: "moderate",
@@ -163,7 +163,7 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
       {
         value: "dedicated",
         label: "Lebih dari 7 jam",
-        description: "Fokus serius — siap deep dive.",
+        description: "Fokus serius, siap deep dive.",
       },
     ],
   },
@@ -171,13 +171,13 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
     id: "capitalRange",
     title: "Kisaran modal yang siap kamu alokasikan? (opsional)",
     subtitle:
-      "Opsional — jika diisi, kami sesuaikan level kelas dan ekspektasi risiko. Bisa dilewati kapan saja.",
+      "Opsional, jika diisi, kami sesuaikan level kelas dan ekspektasi risiko. Bisa dilewati kapan saja.",
     optional: true,
     options: [
       {
         value: "under_5m",
         label: "Di bawah Rp 5 juta",
-        description: "Mulai kecil — fokus belajar dulu.",
+        description: "Mulai kecil, fokus belajar dulu.",
       },
       {
         value: "5_20m",
@@ -192,7 +192,7 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
       {
         value: "above_50m",
         label: "Di atas Rp 50 juta",
-        description: "Modal signifikan — butuh disiplin risiko ketat.",
+        description: "Modal signifikan, butuh disiplin risiko ketat.",
       },
       {
         value: "prefer_not_say",

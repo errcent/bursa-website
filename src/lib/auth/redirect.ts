@@ -1,4 +1,4 @@
-/** Default landing after login/register — beranda. */
+/** Default landing after login/register, beranda. */
 export const POST_AUTH_HOME = "/";
 
 const AUTH_PAGES = ["/masuk", "/daftar"];
@@ -56,7 +56,7 @@ export function buildRegisterHref(returnPath?: string | null): string {
   return `/daftar?next=${encodeURIComponent(next)}`;
 }
 
-/** Hard navigation after auth — avoids stale client state on /masuk and /daftar. */
+/** Hard navigation after auth, avoids stale client state on /masuk and /daftar. */
 export function redirectAfterAuth(next: string): void {
   if (typeof window === "undefined") return;
   const target = resolvePostAuthRedirect(next);

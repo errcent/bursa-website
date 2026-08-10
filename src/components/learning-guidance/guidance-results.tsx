@@ -162,7 +162,7 @@ export function GuidanceResults({
         <div className="rounded-2xl border border-border/60 bg-accent-soft/20 p-5 sm:p-6">
           <p className="text-sm font-medium text-foreground/90">Catatan edukasi</p>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Rekomendasi ini membantu mempersempit pilihan berdasarkan jawaban kuis — bukan saran
+            Rekomendasi ini membantu mempersempit pilihan berdasarkan jawaban kuis, bukan saran
             investasi, prediksi pasar, atau jaminan hasil trading. Keputusan akhir tetap di tangan
             kamu; evaluasi ulang profil jika tujuan atau toleransi risikomu berubah.
           </p>

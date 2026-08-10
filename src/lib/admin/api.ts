@@ -92,7 +92,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<ApiResult<T
     if (process.env.NODE_ENV === "production") {
       throw error instanceof Error ? error : new Error("Permintaan admin gagal");
     }
-    // Collaboration chat has no mock — surface the real failure.
+    // Collaboration chat has no mock, surface the real failure.
     if (path === "/collaboration-chat") {
       throw error instanceof Error ? error : new Error("Gagal memuat ruang kolaborasi.");
     }

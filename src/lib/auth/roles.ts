@@ -7,7 +7,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   developer: "Developer",
 };
 
-/** Consumer UI: default learner role is hidden — only privileged roles get a badge. */
+/** Consumer UI: default learner role is hidden, only privileged roles get a badge. */
 export function getConsumerRoleLabel(role: UserRole | undefined | null): string | null {
   if (!role || role === "learner") return null;
   return ROLE_LABELS[role];

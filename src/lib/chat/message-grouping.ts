@@ -7,11 +7,11 @@ export type MessageGroupPosition = "standalone" | "first" | "middle" | "last";
 
 export interface MessageGroupMeta {
   position: MessageGroupPosition;
-  /** Avatar for others (and optional own) — WhatsApp: last in streak. */
+  /** Avatar for others (and optional own), WhatsApp: last in streak. */
   showAvatar: boolean;
-  /** Author name / role badges — first in streak. */
+  /** Author name / role badges, first in streak. */
   showName: boolean;
-  /** Timestamp — last in streak (gap already ended the group). */
+  /** Timestamp, last in streak (gap already ended the group). */
   showTime: boolean;
   /** Tighter vertical padding when glued to neighbors in the streak. */
   isGroupedWithPrev: boolean;

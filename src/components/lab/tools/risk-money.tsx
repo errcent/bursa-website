@@ -101,7 +101,7 @@ export function PositionSizeCalculator() {
         `Risiko: ${formatMoney(result.riskAmount, market, 0)} (${riskPct}%)`,
         `Posisi: ${fmt(result.lots, market === "forex" ? 2 : 2)} ${result.lotLabel} (${fmt(result.units, 0)} ${UNIT_LABEL[market]})`,
         `Nilai posisi: ${formatMoney(result.positionValue, market, 0)}`,
-        "Edukasi — bukan saran investasi.",
+        "Edukasi, bukan saran investasi.",
       ].join("\n")
     : "";
 
@@ -173,11 +173,11 @@ export function PositionSizeCalculator() {
                 tone={parseFloat(riskPct) > 2 ? "warning" : "neutral"}
               >
                 {parseFloat(riskPct) > 2
-                  ? "Risiko di atas 2% per trade — umumnya dianggap agresif."
+                  ? "Risiko di atas 2% per trade, umumnya dianggap agresif."
                   : market === "idx"
                     ? `1 lot = 100 lembar → ${fmt(result.lots, 2)} lot = ${fmt(result.units, 0)} lembar.`
                     : market === "forex"
-                      ? `${fmt(result.lots, 2)} standard lot — konfirmasi unit & margin dengan broker.`
+                      ? `${fmt(result.lots, 2)} standard lot, konfirmasi unit & margin dengan broker.`
                       : "Konfirmasi ukuran kontrak dengan exchange."}
               </LabInterpretation>
               <LabResultGrid className="mt-0">
@@ -273,10 +273,10 @@ export function RiskRewardCalculator() {
               </div>
               <LabInterpretation tone={result.ratio >= 2 ? "positive" : result.ratio >= 1 ? "neutral" : "negative"}>
                 {result.ratio >= 2
-                  ? "R:R ≥ 1:2 — umumnya dianggap sehat jika win rate mendukung."
+                  ? "R:R ≥ 1:2, umumnya dianggap sehat jika win rate mendukung."
                   : result.ratio >= 1
-                    ? "R:R positif, tapi di bawah 1:2 — pastikan win rate cukup tinggi."
-                    : "R:R di bawah 1:1 — reward lebih kecil dari risk."}
+                    ? "R:R positif, tapi di bawah 1:2, pastikan win rate cukup tinggi."
+                    : "R:R di bawah 1:1, reward lebih kecil dari risk."}
               </LabInterpretation>
               <LabResultGrid className="mt-0">
                 <LabResultTile label="Potensi rugi" value={fmt(result.riskAmount)} tone="negative" />
@@ -406,9 +406,9 @@ export function KellyCriterionCalculator() {
             <div className="flex flex-col gap-4">
               <LabInterpretation tone={result.full > 0.25 ? "warning" : result.full > 0 ? "neutral" : "negative"}>
                 {result.full <= 0
-                  ? "Kelly negatif — strategi ini tidak layak secara matematis dengan asumsi ini."
+                  ? "Kelly negatif, strategi ini tidak layak secara matematis dengan asumsi ini."
                   : result.full > 0.25
-                    ? "Full Kelly agresif (>25%) — pertimbangkan half atau quarter Kelly untuk trading nyata."
+                    ? "Full Kelly agresif (>25%), pertimbangkan half atau quarter Kelly untuk trading nyata."
                     : "Half/quarter Kelly lebih konservatif dan umum dipakai praktisi."}
               </LabInterpretation>
               <LabResultGrid className="mt-0">

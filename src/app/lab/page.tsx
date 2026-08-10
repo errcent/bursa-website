@@ -7,9 +7,9 @@ import { SiteNavbar } from "@/components/site-navbar";
 import { labTools } from "@/lib/lab/tools";
 
 export const metadata: Metadata = {
-  title: "Bursa Lab — Kalkulator Trading",
+  title: "Bursa Lab · Kalkulator Trading",
   description:
-    "Kalkulator dan simulator trading client-side untuk risiko, biaya, dan probabilitas — saham, forex, dan crypto.",
+    "Kalkulator dan simulator trading client-side untuk risiko, biaya, dan probabilitas, saham, forex, dan crypto.",
 };
 
 export default function LabPage() {
@@ -34,7 +34,7 @@ export default function LabPage() {
           <LabHubContent />
 
           <p className="lab-disclaimer mt-12">
-            Perhitungan bersifat edukatif — bukan rekomendasi investasi. Hasil bergantung pada asumsi
+            Perhitungan bersifat edukatif, bukan rekomendasi investasi. Hasil bergantung pada asumsi
             yang kamu masukkan.
           </p>
         </div>

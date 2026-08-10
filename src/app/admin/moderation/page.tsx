@@ -80,7 +80,7 @@ export default function AdminModerationPage() {
       header: "Pelapor",
       render: (row) => (
         <div>
-          <p className="text-sm">{row.reporterName ?? "—"}</p>
+          <p className="text-sm">{row.reporterName ?? "-"}</p>
           <p className="text-xs text-muted-foreground">{row.reporterEmail}</p>
         </div>
       ),
@@ -185,7 +185,7 @@ export default function AdminModerationPage() {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Pelapor</p>
-                <p>{preview.reporterName ?? "—"}</p>
+                <p>{preview.reporterName ?? "-"}</p>
                 <p className="text-xs text-muted-foreground">{preview.reporterEmail}</p>
               </div>
               <div>
@@ -202,7 +202,7 @@ export default function AdminModerationPage() {
                   {preview.history.map((h) => (
                     <li key={h.id} className="flex justify-between rounded bg-muted/60 px-3 py-2">
                       <span>
-                        {h.action} — {h.actor}
+                        {h.action}, {h.actor}
                       </span>
                       <time className="text-xs text-muted-foreground">
                         {new Date(h.createdAt).toLocaleString("id-ID")}

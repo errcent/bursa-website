@@ -69,7 +69,7 @@ export function GuidanceSaveChoice({
           </h2>
           <p className="section-copy">
             Jawaban kuis barumu menghasilkan jalur belajar yang berbeda dari profil tersimpan di
-            akunmu. Pilih salah satu — keduanya tetap bisa kamu ubah lagi nanti lewat kuis ulang.
+            akunmu. Pilih salah satu, keduanya tetap bisa kamu ubah lagi nanti lewat kuis ulang.
           </p>
         </div>
       </Reveal>

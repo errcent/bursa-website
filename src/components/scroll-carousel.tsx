@@ -33,10 +33,10 @@ export const defaultGetScrollPerView = peekGetScrollPerView;
 /**
  * Responsive multi-up density for desktop course carousels (landing "Kelas
  * populer" + catalog instrument rows): ~2.4 cards at md, ~3.4 at lg, ~4.2 at
- * xl (container width, not viewport — carousels sit inside a max-width
+ * xl (container width, not viewport, carousels sit inside a max-width
  * container that caps out around 1152px). These functions are only ever
- * wired up to the `hidden md:block` desktop carousel branch — mobile uses a
- * separate CSS peek layout — so there is no "1 per view" case here.
+ * wired up to the `hidden md:block` desktop carousel branch, mobile uses a
+ * separate CSS peek layout, so there is no "1 per view" case here.
  */
 export function courseCarouselGetScrollPerView(width: number) {
   if (width >= 1100) return 4.2;
@@ -48,7 +48,7 @@ export function courseCarouselGetScrollPerView(width: number) {
 export const landingCourseGetScrollPerView = courseCarouselGetScrollPerView;
 export const catalogCourseGetScrollPerView = courseCarouselGetScrollPerView;
 
-/** Home discover section — slightly denser than landing/catalog, but still readable. */
+/** Home discover section, slightly denser than landing/catalog, but still readable. */
 export function discoverCourseGetScrollPerView(width: number) {
   if (width < 768) return 1;
   if (width >= 1100) return 4.6;
@@ -65,7 +65,7 @@ export function discoverMentorGetScrollPerView(width: number) {
   return 2.4;
 }
 
-/** Mobile peek for discover — smaller than default 0.76 but not cramped. */
+/** Mobile peek for discover, smaller than default 0.76 but not cramped. */
 export const DISCOVER_MOBILE_PEEK_RATIO = 0.68;
 
 /**

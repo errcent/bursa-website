@@ -309,7 +309,7 @@ export function RegisterForm() {
       </div>
 
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Materi di platform ini bersifat edukasi — bukan rekomendasi investasi.
+        Materi di platform ini bersifat edukasi, bukan rekomendasi investasi.
       </p>
 
       <Button type="submit" className="h-11 w-full btn-primary" disabled={isSubmitting}>

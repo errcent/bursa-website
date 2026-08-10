@@ -17,7 +17,7 @@ const value: LanguageContextValue = {
   mounted: true,
 };
 
-/** Fixed Bahasa Indonesia — locale switching removed from product UI. */
+/** Fixed Bahasa Indonesia, locale switching removed from product UI. */
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }

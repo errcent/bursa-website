@@ -206,7 +206,7 @@ const getCachedCatalogData = unstable_cache(
   { revalidate: CATALOG_REVALIDATE_SECONDS, tags: [CATALOG_CACHE_TAG] }
 );
 
-/** Mentors visible in public catalog — verified profiles only. */
+/** Mentors visible in public catalog, verified profiles only. */
 export async function getCatalogMentors(): Promise<Mentor[]> {
   return fetchCatalogMentorsListing();
 }
@@ -224,7 +224,7 @@ export async function getCatalogData(): Promise<{
   return getCachedCatalogData();
 }
 
-/** Single mentor by slug — verified profiles only (public catalog). */
+/** Single mentor by slug, verified profiles only (public catalog). */
 export async function getMentorBySlug(slug: string): Promise<Mentor | null> {
   const profile = await db.mentorProfile.findFirst({
     where: { slug, verificationStatus: VerificationStatus.VERIFIED },
@@ -390,7 +390,7 @@ export function revalidateCatalog() {
   revalidatePath("/playlist");
 }
 
-/** Top-rated reviews for homepage social proof — from live Review rows. */
+/** Top-rated reviews for homepage social proof, from live Review rows. */
 export async function getFeaturedReviews(limit = 6) {
   const reviews = await db.review.findMany({
     where: { comment: { not: "" } },

@@ -9,7 +9,7 @@ import { isPrototypeMode } from "@/lib/auth/prototype";
  * watch time the SERVER verified. On playback start the server issues a short-lived HMAC-signed
  * heartbeat token bound to (user, lesson). While playing, the client pings `/api/video/heartbeat`
  * with the token + current playhead. The server credits watch time by the *advance in playhead*
- * but clamps it to real wall-clock elapsed × a small speed factor — so seeking to the end or
+ * but clamps it to real wall-clock elapsed × a small speed factor, so seeking to the end or
  * replaying a token cannot mint watch time. Accumulated `verifiedWatchedSeconds` is the sole gate
  * for `completed=true`.
  */
@@ -40,7 +40,7 @@ export interface PlaybackHeartbeatToken {
 interface HeartbeatPayload {
   userId: string;
   lessonId: string;
-  /** Random per-playback-session id — lets us distinguish concurrent sessions if needed. */
+  /** Random per-playback-session id, lets us distinguish concurrent sessions if needed. */
   sid: string;
   /** Issued-at epoch ms. */
   iat: number;
@@ -105,7 +105,7 @@ export interface HeartbeatCreditInput {
   lastHeartbeatAt: Date | null;
   /** Current playhead position reported by the client (seconds). */
   position: number;
-  /** Lesson duration (seconds) — verified time is capped at this. */
+  /** Lesson duration (seconds), verified time is capped at this. */
   durationSeconds: number;
   /** Server "now" (defaults to Date.now). */
   now?: Date;

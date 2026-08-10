@@ -24,7 +24,7 @@ export const mentorBenefits: MentorBenefit[] = [
     icon: "wallet",
     title: "Pendapatan langsung ke kamu",
     description:
-      "Murid membayar per kelas langsung ke akun mentor. Platform mengambil komisi 25% — sisanya (75%) menjadi milikmu.",
+      "Murid membayar per kelas langsung ke akun mentor. Platform mengambil komisi 25%, sisanya (75%) menjadi milikmu.",
   },
   {
     icon: "users",
@@ -42,7 +42,7 @@ export const mentorBenefits: MentorBenefit[] = [
     icon: "video",
     title: "Infrastruktur kelas lengkap",
     description:
-      "Upload video, modul terstruktur, progress tracking, dan ruang komunitas — tanpa bangun platform sendiri.",
+      "Upload video, modul terstruktur, progress tracking, dan ruang komunitas, tanpa bangun platform sendiri.",
   },
   {
     icon: "message",
@@ -141,7 +141,7 @@ export const mentorFaqs = [
   {
     question: "Apakah ada biaya untuk mendaftar sebagai mentor?",
     answer:
-      "Tidak ada biaya pendaftaran. Platform mengambil komisi 25% dari setiap transaksi kelas yang berhasil — hanya saat kamu mendapatkan murid.",
+      "Tidak ada biaya pendaftaran. Platform mengambil komisi 25% dari setiap transaksi kelas yang berhasil, hanya saat kamu mendapatkan murid.",
   },
   {
     question: "Berapa lama proses verifikasi?",

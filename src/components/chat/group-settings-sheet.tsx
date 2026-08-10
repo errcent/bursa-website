@@ -110,7 +110,7 @@ export function GroupSettingsSheet({
       if (res.ok) {
         onRoomUpdate({ name: trimmed });
       } else {
-        // Mock / offline fallback — still update local UI
+        // Mock / offline fallback, still update local UI
         onRoomUpdate({ name: trimmed });
       }
     } catch {

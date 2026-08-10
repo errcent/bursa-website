@@ -8,7 +8,7 @@ import { SiteNavbar } from "@/components/site-navbar";
 import { WaitlistForm } from "@/components/waitlist-form";
 
 export const metadata: Metadata = {
-  title: "Gabung Waitlist — Bursa",
+  title: "Gabung Waitlist, Bursa",
   description:
     "Daftar ke waitlist Bursa dan jadi yang pertama tahu saat platform edukasi trading kami dibuka.",
 };
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 const perks = [
   "Akses lebih awal ke katalog kelas & mentor terverifikasi",
   "Info pertama saat pendaftaran dibuka",
-  "Tanpa spam — kami hanya kirim kabar penting",
+  "Tanpa spam, kami hanya kirim kabar penting",
 ];
 
 export default function WaitlistPage() {

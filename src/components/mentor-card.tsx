@@ -16,7 +16,7 @@ export function MentorCard({
 }: {
   mentor: Mentor;
   className?: string;
-  /** "compact" — smaller overlay tile; "discover" — landing carousel; "catalog" — name below photo. */
+  /** "compact", smaller overlay tile; "discover", landing carousel; "catalog", name below photo. */
   variant?: "default" | "compact" | "discover" | "catalog";
   /** Hide bookmark toggle (e.g. landing page). */
   hideBookmark?: boolean;

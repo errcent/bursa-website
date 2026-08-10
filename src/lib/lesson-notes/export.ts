@@ -221,7 +221,7 @@ export function buildMarkdownExport(content: string, meta: NoteExportMeta) {
   return lines.join("\n");
 }
 
-/** Plain-text export — no markdown markers, suitable for Notepad / email. */
+/** Plain-text export, no markdown markers, suitable for Notepad / email. */
 export function buildTxtExport(content: string, meta: NoteExportMeta) {
   const lines = [
     `Catatan: ${meta.lessonTitle}`,
@@ -245,7 +245,7 @@ export function buildNotionMarkdownExport(content: string, meta: NoteExportMeta)
   const exportedAt = (meta.exportedAt ?? new Date()).toISOString();
   const lines = [
     "---",
-    `title: "Catatan — ${meta.lessonTitle.replace(/"/g, "'")}"`,
+    `title: "Catatan, ${meta.lessonTitle.replace(/"/g, "'")}"`,
     `course: "${meta.courseTitle.replace(/"/g, "'")}"`,
     `exported: ${exportedAt}`,
     "---",
@@ -411,7 +411,7 @@ export async function buildDocxBlob(content: string, meta: NoteExportMeta) {
 
   const doc = new Document({
     creator: "Project Platform",
-    title: `Catatan — ${meta.lessonTitle}`,
+    title: `Catatan, ${meta.lessonTitle}`,
     description: `Catatan lesson dari kelas ${meta.courseTitle}`,
     sections: [
       {

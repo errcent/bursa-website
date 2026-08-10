@@ -1,7 +1,7 @@
 import { MentorCourseManager } from "@/components/instruktur-dashboard/mentor-course-manager";
 
 export const metadata = {
-  title: "Course Saya — Dashboard Instruktur",
+  title: "Course Saya, Dashboard Instruktur",
 };
 
 export default function InstrukturDashboardCoursePage() {

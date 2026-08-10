@@ -141,7 +141,7 @@ export default function AdminWaitlistPage() {
       render: (row) =>
         [row.experienceLevel, row.marketInterest, row.referred ? "referral" : null]
           .filter(Boolean)
-          .join(" · ") || "—",
+          .join(" · ") || "-",
     },
     {
       key: "createdAt",

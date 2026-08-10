@@ -294,7 +294,7 @@ export function MonteCarloSimulator() {
         `p90: ${formatCurrency(result.p90)}`,
         `Ruin: ${(result.ruinShare * 100).toFixed(1)}%`,
         `Profit: ${(result.profitableShare * 100).toFixed(1)}%`,
-        "Edukasi — bukan saran investasi.",
+        "Edukasi, bukan saran investasi.",
       ].join("\n")
     : "";
 
@@ -339,7 +339,7 @@ export function MonteCarloSimulator() {
               />
               {isPreviewRun && (
                 <p className="rounded-lg border border-border/50 bg-muted/20 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
-                  Preview {AUTO_RUN_CAP} simulasi — hasil di bawah memakai sample. Jalankan penuh untuk{" "}
+                  Preview {AUTO_RUN_CAP} simulasi, hasil di bawah memakai sample. Jalankan penuh untuk{" "}
                   {parsed.numSimulations.toLocaleString("id-ID")} simulasi.
                 </p>
               )}
@@ -388,12 +388,12 @@ export function MonteCarloSimulator() {
         output={
           <LabOutputPanel footer={<LabCopyResults text={copyText} />}>
             {!result ? (
-              <LabInterpretation>Isi parameter — simulasi berjalan otomatis.</LabInterpretation>
+              <LabInterpretation>Isi parameter, simulasi berjalan otomatis.</LabInterpretation>
             ) : (
               <div className="flex flex-col gap-4">
                 <LabInterpretation tone={result.p50 > result.startingCapital ? "positive" : "negative"}>
                   Median saldo akhir {result.p50 >= result.startingCapital ? "di atas" : "di bawah"} modal awal.
-                  {result.ruinShare > 0.05 && " Probabilitas ruin signifikan — review risiko per trade."}
+                  {result.ruinShare > 0.05 && " Probabilitas ruin signifikan, review risiko per trade."}
                 </LabInterpretation>
                 <LabResultGrid className="mt-0 grid-cols-1 gap-2">
                   <LabResultTile label="p10 (pesimis)" value={formatCurrency(result.p10)} tone="negative" />

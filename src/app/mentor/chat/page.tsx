@@ -143,7 +143,7 @@ export default function MentorChatPage() {
                 </div>
                 <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                   {collab.description ??
-                    "Thread privat Anda dengan admin — mentor lain tidak melihat percakapan ini."}
+                    "Thread privat Anda dengan admin, mentor lain tidak melihat percakapan ini."}
                 </p>
                 <p className="mt-2 flex items-center gap-1 text-[11px] text-muted-foreground">
                   <Users className="size-3" />
@@ -156,7 +156,7 @@ export default function MentorChatPage() {
             </div>
             {readOnly || !collab.currentUserId ? (
               <p className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground">
-                Mode QC — chat privat mentor–admin terkunci untuk developer.
+                Mode QC, chat privat mentor–admin terkunci untuk developer.
               </p>
             ) : (
               <StaffChatPanel roomId={collab.id} currentUserId={collab.currentUserId} />
@@ -219,7 +219,7 @@ export default function MentorChatPage() {
                     {readOnly && hasPrivateBranch ? (
                       <Button size="sm" variant="outline" disabled>
                         <Lock className="size-3.5" />
-                        QC — cabang privat terkunci
+                        QC, cabang privat terkunci
                       </Button>
                     ) : null}
                     <Button

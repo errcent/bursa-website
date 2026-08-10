@@ -39,12 +39,6 @@ export function HomeSolutionSection() {
             trigger="inView"
             delay={0.04}
           />
-          <Reveal delay={0.1} className="mt-5">
-            <p className="section-copy mx-auto max-w-xl text-base">
-              Setiap hambatan punya jawaban. Bursa dirancang untuk menggantikan
-              kebingungan dengan struktur yang jelas.
-            </p>
-          </Reveal>
         </div>
 
         <Reveal delay={0.05}>
@@ -61,7 +55,7 @@ export function HomeSolutionSection() {
                     transition={{ duration: 0.25 }}
                   >
                     <div className="solution-pair-item">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground/70">
+                      <span className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground/70">
                         Hambatan {row.num}
                       </span>
                       <p className="break-words text-[0.9375rem] leading-relaxed text-muted-foreground">
@@ -69,7 +63,7 @@ export function HomeSolutionSection() {
                       </p>
                     </div>
                     <div className="solution-pair-item">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">
+                      <span className="font-mono text-xs uppercase tracking-[0.16em] text-accent">
                         Solusi Bursa
                       </span>
                       <p className="break-words font-heading text-base font-medium leading-relaxed text-foreground">
@@ -81,13 +75,6 @@ export function HomeSolutionSection() {
               ))}
             </Stagger>
           </div>
-        </Reveal>
-
-        <Reveal delay={0.12} className="mt-10 text-center md:mt-14">
-          <p className="mx-auto max-w-xl text-base leading-relaxed text-foreground/85">
-            Trading selalu ada risikonya. Risiko karena salah belajar — itu yang
-            kami bantu hilangkan.
-          </p>
         </Reveal>
       </div>
     </section>

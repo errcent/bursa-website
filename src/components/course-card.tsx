@@ -43,9 +43,9 @@ export function CourseCard({
   className?: string;
   /** When set, card is treated as purchased/enrolled (thin progress bar on the thumbnail). */
   enrollment?: CourseCardEnrollment | null;
-  /** Optional mentor payload — avoids mock lookup when parent already has catalog data. */
+  /** Optional mentor payload, avoids mock lookup when parent already has catalog data. */
   mentor?: Mentor | null;
-  /** "featured" — cinematic overlay card for landing carousel; "catalog" — title below thumbnail. */
+  /** "featured", cinematic overlay card for landing carousel; "catalog", title below thumbnail. */
   variant?: "default" | "featured" | "catalog";
   /** Hide bookmark toggle (e.g. landing page). */
   hideBookmark?: boolean;

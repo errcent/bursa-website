@@ -30,7 +30,7 @@ export default function JadiMentorPage() {
         <InfoPageHero
           eyebrow="Program Mentor"
           title="Jadi Mentor di Bursa"
-          description={`Bagikan keahlian tradingmu ke ribuan pelajar. Kamu fokus mengajar — kami urus infrastruktur, pembayaran, dan kepercayaan. Komisi platform hanya ${commissionPercent}%.`}
+          description={`Bagikan keahlian tradingmu ke ribuan pelajar. Kamu fokus mengajar, kami urus infrastruktur, pembayaran, dan kepercayaan. Komisi platform hanya ${commissionPercent}%.`}
         />
 
         <div className="container-page section-spacious">

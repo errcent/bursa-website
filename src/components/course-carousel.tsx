@@ -312,7 +312,7 @@ export function CourseCarousel({
 
                   {" "}
 
-                  — dipercaya{" "}
+                 , dipercaya{" "}
 
                   <span className="font-medium text-foreground">{studentStat} siswa</span>
 

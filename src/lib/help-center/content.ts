@@ -35,7 +35,7 @@ export const helpFaqs: HelpFaq[] = [
     category: "Akun",
     question: "Bisakah saya menghapus akun secara permanen?",
     answer:
-      "Ya. Buka Pengaturan → Akun → Hapus akun. Proses irreversible — progress kelas dan riwayat transaksi akan dihapus sesuai kebijakan retensi data. Akses kelas yang sudah dibeli tidak dapat dipulihkan.",
+      "Ya. Buka Pengaturan → Akun → Hapus akun. Proses irreversible, progress kelas dan riwayat transaksi akan dihapus sesuai kebijakan retensi data. Akses kelas yang sudah dibeli tidak dapat dipulihkan.",
   },
   {
     id: "bayar-metode",
@@ -70,7 +70,7 @@ export const helpFaqs: HelpFaq[] = [
     category: "Belajar",
     question: "Apakah progress belajar tersimpan antar perangkat?",
     answer:
-      "Progress belajar dan catatan video tersinkron via akun Bursa — masuk dengan akun yang sama di desktop atau mobile untuk melanjutkan dari posisi terakhir. Simpanan kelas/video (bookmark) saat ini tersimpan di perangkat browser atau aplikasi; sinkron antar perangkat untuk bookmark sedang dalam rencana.",
+      "Progress belajar dan catatan video tersinkron via akun Bursa · masuk dengan akun yang sama di desktop atau mobile untuk melanjutkan dari posisi terakhir. Simpanan kelas/video (bookmark) saat ini tersimpan di perangkat browser atau aplikasi; sinkron antar perangkat untuk bookmark sedang dalam rencana.",
   },
   {
     id: "belajar-sertifikat",
@@ -112,7 +112,7 @@ export const helpFaqs: HelpFaq[] = [
     category: "Mentor",
     question: "Apakah materi kelas perlu disetujui tim Bursa?",
     answer:
-      "Ya. Semua kelas baru melalui review kurasi sebelum publikasi — untuk memastikan kualitas edukasi, kepatuhan regulasi, dan tidak ada janji keuntungan pasti.",
+      "Ya. Semua kelas baru melalui review kurasi sebelum publikasi, untuk memastikan kualitas edukasi, kepatuhan regulasi, dan tidak ada janji keuntungan pasti.",
   },
 ];
 

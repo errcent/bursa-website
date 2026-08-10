@@ -17,7 +17,7 @@ import {
 import type { Course, Lesson, Mentor } from "@/lib/types";
 
 const DEMO_NOTE_FULL =
-  "<p><strong>Support area 1.0850</strong> — tunggu konfirmasi volume sebelum entry.</p><p>Risk 1% per posisi, stop di bawah swing low terakhir.</p>";
+  "<p><strong>Support area 1.0850</strong>, tunggu konfirmasi volume sebelum entry.</p><p>Risk 1% per posisi, stop di bawah swing low terakhir.</p>";
 
 type DeviceLearningPreviewProps = {
   course: Course;

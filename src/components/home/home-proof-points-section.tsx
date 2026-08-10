@@ -9,7 +9,7 @@ const proofPoints = [
   {
     step: "01",
     title: "Pilih instrumen dan level",
-    description: "Sesuaikan dengan pengalamanmu — saham, crypto, atau forex.",
+    description: "Sesuaikan dengan pengalamanmu, saham, crypto, atau forex.",
   },
   {
     step: "02",
@@ -19,7 +19,7 @@ const proofPoints = [
   {
     step: "03",
     title: "Mulai dari preview gratis",
-    description: "Jelajahi cuplikan kelas di katalog — tanpa komitmen.",
+    description: "Jelajahi cuplikan kelas di katalog, tanpa komitmen.",
   },
 ];
 

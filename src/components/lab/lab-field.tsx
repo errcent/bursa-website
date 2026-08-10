@@ -379,9 +379,9 @@ export function LabCopyResults({
 
   async function handleCopy() {
     if (!text.trim()) return;
-    const payload = text.includes("Edukasi —")
+    const payload = text.includes("Edukasi,")
       ? text
-      : `${text}\nEdukasi — bukan saran investasi.`;
+      : `${text}\nEdukasi, bukan saran investasi.`;
     try {
       await navigator.clipboard.writeText(payload);
       setCopied(true);

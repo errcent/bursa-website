@@ -43,7 +43,7 @@ export async function buildSearchMetadata(query?: string): Promise<Metadata> {
   const courseCount = results.filter((r) => r.type === "course").length;
   const mentorCount = results.filter((r) => r.type === "mentor").length;
 
-  const title = `Hasil "${trimmed}" — ${courseCount} kelas, ${mentorCount} mentor`;
+  const title = `Hasil "${trimmed}", ${courseCount} kelas, ${mentorCount} mentor`;
   const description = `Temukan ${courseCount} kelas dan ${mentorCount} mentor terkait "${trimmed}" di Bursa. Edukasi trading saham, crypto, dan forex dari instruktur terverifikasi.`;
 
   return {

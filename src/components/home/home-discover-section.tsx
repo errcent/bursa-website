@@ -44,7 +44,7 @@ const viewMeta = {
   kelas: {
     eyebrow: "Ragam Kelas",
     title: "Banyak jalur, satu platform",
-    copy: "Forex, saham, kripto — dari pemula hingga lanjutan. Kurikulum terstruktur dengan level, instrumen, dan pendekatan yang berbeda-beda.",
+    copy: "Forex, saham, kripto. Kurikulum terstruktur dari pemula hingga lanjutan.",
     guidanceHref: "/panduan-belajar",
     guidanceLabel: "Temukan kelas yang sesuai profilmu",
     tabLabel: "Ragam Kelas",
@@ -53,7 +53,7 @@ const viewMeta = {
   mentor: {
     eyebrow: "Ragam Mentor",
     title: "Setiap mentor, pendekatan unik",
-    copy: "Scalping, swing, fundamental — mentor di Bursa hadir dengan spesialisasi instrumen, level, dan filosofi risiko yang masing-masing berbeda.",
+    copy: "Scalping, swing, fundamental. Mentor dengan spesialisasi dan filosofi risiko masing-masing.",
     guidanceHref: "/panduan-belajar",
     guidanceLabel: "Temukan mentor yang selaras gaya belajarmu",
     tabLabel: "Ragam Mentor",

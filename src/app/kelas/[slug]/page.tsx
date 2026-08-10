@@ -47,7 +47,7 @@ const faqs = [
   {
     question: "Apakah cocok untuk pemula total?",
     answer:
-      "Lihat badge level di atas — setiap kelas dirancang untuk level pengalaman tertentu agar hasil belajarnya optimal.",
+      "Lihat badge level di atas, setiap kelas dirancang untuk level pengalaman tertentu agar hasil belajarnya optimal.",
   },
 ];
 

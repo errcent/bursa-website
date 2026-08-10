@@ -55,7 +55,7 @@ export default function CheckEmailPage() {
   return (
     <AuthPageShell
       title="Periksa email kamu"
-      description="Langkah berikutnya ada di kotak masuk — buka tautan reset untuk melanjutkan."
+      description="Langkah berikutnya ada di kotak masuk, buka tautan reset untuk melanjutkan."
     >
       <Suspense fallback={<CheckEmailFallback />}>
         <CheckEmailContent />

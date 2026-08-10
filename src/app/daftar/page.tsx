@@ -20,7 +20,7 @@ export default function RegisterPage() {
   return (
     <AuthPageShell
       title="Buat akun gratis"
-      description="Mulai jelajahi katalog kelas trading — saham, crypto, dan forex."
+      description="Mulai jelajahi katalog kelas trading, saham, crypto, dan forex."
       showMobileBack
     >
       <Suspense fallback={<RegisterFormFallback />}>

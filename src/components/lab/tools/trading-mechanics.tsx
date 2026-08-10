@@ -232,8 +232,8 @@ export function CommissionSlippageCalculator() {
           </LabResultGrid>
           <LabInterpretation tone={result.adjustedExpectancy > 0 ? "positive" : "negative"} className="mt-3">
             {result.adjustedExpectancy > 0
-              ? "Edge masih positif setelah biaya — tapi pastikan estimasi win rate realistis."
-              : "Biaya menggerus edge — strategi perlu win rate atau R:R lebih tinggi."}
+              ? "Edge masih positif setelah biaya, tapi pastikan estimasi win rate realistis."
+              : "Biaya menggerus edge, strategi perlu win rate atau R:R lebih tinggi."}
           </LabInterpretation>
         </LabOutputPanel>
       }

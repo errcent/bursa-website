@@ -28,7 +28,7 @@ export async function detectReviewAnomaly(params: {
   }
 
   // 2) Reciprocal ring: reviewer is themselves a mentor whose course the target
-  //    mentor has reviewed — a mutual-praise edge in the reputation graph.
+  //    mentor has reviewed, a mutual-praise edge in the reputation graph.
   const reviewerMentor = await db.mentorProfile.findUnique({
     where: { userId: params.reviewerUserId },
     select: { id: true },

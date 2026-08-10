@@ -1,6 +1,6 @@
 import { createHash, createHmac } from "crypto";
 
-/** Default signed URL lifetime — aligned with playback token TTL (2 h). */
+/** Default signed URL lifetime, aligned with playback token TTL (2 h). */
 export const BUNNY_PLAYBACK_TTL_SECONDS = 2 * 60 * 60;
 
 const BUNNY_VIDEO_PREFIX = "bunny:";
@@ -18,7 +18,7 @@ export interface BunnyPlaybackResult {
   url: string;
   provider: "bunny";
   expiresAt: string;
-  /** Signed iframe URL — for future embed player; not used by native `<video>`. */
+  /** Signed iframe URL, for future embed player; not used by native `<video>`. */
   embedUrl?: string;
 }
 
@@ -73,7 +73,7 @@ export function parseBunnyVideoId(stored: string | null | undefined): string | n
     const cdnMatch = url.pathname.match(/^\/([0-9a-f-]{36})(?:\/|$)/i);
     if (cdnMatch?.[1]) return cdnMatch[1];
   } catch {
-    // Not a URL — ignore.
+    // Not a URL, ignore.
   }
 
   return null;

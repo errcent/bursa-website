@@ -67,7 +67,7 @@ function TransactionRow({ item }: { item: MentorTransactionItem }) {
             </div>
             <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
               <dt className="text-muted-foreground">Periode payout</dt>
-              <dd>{item.payoutPeriod ?? "—"}</dd>
+              <dd>{item.payoutPeriod ?? "-"}</dd>
             </div>
           </dl>
         </div>
@@ -118,8 +118,8 @@ export function MentorTransactionList() {
       <div className="surface-card flex flex-col items-center gap-3 p-8 text-center">
         <p className="font-heading text-sm font-medium">Belum ada transaksi</p>
         <p className="max-w-md text-sm text-muted-foreground">
-          Transaksi muncul setelah siswa menyelesaikan checkout. Payout mentor diproses bulanan —
-          komisi platform 25% ditampilkan di setiap baris.
+          Transaksi muncul setelah siswa menyelesaikan checkout. Payout mentor diproses bulanan.
+          Komisi platform 25% ditampilkan di setiap baris.
         </p>
       </div>
     );

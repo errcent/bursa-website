@@ -137,7 +137,7 @@ export function LabHubContent() {
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
               <SectionHeader
                 title="Lanjutan"
-                description={`${advancedTools.length} tool — Kelly, biaya, teknikal.`}
+                description={`${advancedTools.length} tool, Kelly, biaya, teknikal.`}
               />
               <ChevronRight className="size-5 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />
             </summary>
@@ -173,7 +173,7 @@ function FilteredResults({
             ? query
               ? `Hasil untuk “${query}”.`
               : "Pilih tool di bawah."
-            : "Coba kata kunci lain — misalnya pip, monte carlo, atau breakeven."
+            : "Coba kata kunci lain, misalnya pip, monte carlo, atau breakeven."
         }
       />
       {filteredTools.length > 0 ? (

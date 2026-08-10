@@ -17,7 +17,7 @@ function escapeHtml(value: string): string {
 }
 
 function formatRupiah(amount?: number): string {
-  if (amount == null) return "—";
+  if (amount == null) return "-";
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
@@ -67,8 +67,8 @@ function buildApplicationFields(application: MentorApplication): ApplicationFiel
     { label: "Judul Profesional", value: application.professionalTitle },
     { label: "Instrumen", value: application.instruments.join(", ") },
     { label: "Tahun Pengalaman", value: String(application.yearsExperience) },
-    { label: "Sertifikasi / Lisensi", value: application.licenseLabel || "—" },
-    { label: "Link Portofolio", value: application.portfolioUrl || "—" },
+    { label: "Sertifikasi / Lisensi", value: application.licenseLabel || "-" },
+    { label: "Link Portofolio", value: application.portfolioUrl || "-" },
     {
       label: "Estimasi Harga Kelas",
       value: formatRupiah(application.estimatedCoursePrice),
@@ -176,7 +176,7 @@ function buildPlainTextEmail(application: MentorApplication): string {
   const fields = buildApplicationFields(application);
   const lines = fields.map((field) => `${field.label}: ${field.value}`);
   return [
-    "Aplikasi Mentor Baru — Bursa",
+    "Aplikasi Mentor Baru, Bursa",
     "",
     ...lines,
     "",
@@ -249,14 +249,14 @@ export async function notifyAdminOfMentorApplication(
 ): Promise<{ sent: boolean; error?: string }> {
   if (!isMentorApplicationEmailEnabled()) {
     console.warn(
-      "[mentor-application] Email not sent — RESEND_API_KEY missing or MENTOR_APPLICATION_EMAIL_ENABLED=false."
+      "[mentor-application] Email not sent, RESEND_API_KEY missing or MENTOR_APPLICATION_EMAIL_ENABLED=false."
     );
     return { sent: false, error: "Email tidak dikonfigurasi." };
   }
 
   const adminEmail = getMentorApplicationAdminEmail();
   const pdfFilename = `aplikasi-mentor-${application.id}.pdf`;
-  const subject = `[Bursa] Aplikasi Mentor Baru — ${application.fullName}`;
+  const subject = `[Bursa] Aplikasi Mentor Baru, ${application.fullName}`;
 
   const result = await sendTransactionalEmail({
     category: "mentor_admin",

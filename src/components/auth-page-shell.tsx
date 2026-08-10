@@ -32,7 +32,7 @@ export function AuthPageShell({
   title: string;
   description: string;
   children: React.ReactNode;
-  /** Fixed back button — top-left, mobile viewport only. */
+  /** Fixed back button, top-left, mobile viewport only. */
   showMobileBack?: boolean;
   mobileBackHref?: string;
 }) {

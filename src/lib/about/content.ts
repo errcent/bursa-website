@@ -2,13 +2,13 @@ export const aboutHero = {
   eyebrow: "Tentang Kami",
   title: "Belajar dari yang terbukti, bukan yang viral",
   description:
-    "Bursa adalah platform edukasi trading untuk saham, crypto, dan forex — dengan mentor terverifikasi, kurikulum terstruktur, dan komunitas yang akuntabel. Bukan broker, bukan penyedia sinyal.",
+    "Bursa adalah platform edukasi trading untuk saham, crypto, dan forex, dengan mentor terverifikasi, kurikulum terstruktur, dan komunitas yang akuntabel. Bukan broker, bukan penyedia sinyal.",
 };
 
 export const aboutIntro = {
   title: "Apa itu Bursa?",
   paragraphs: [
-    "Bursa Trading Academy adalah platform edukasi trading di Indonesia yang menghadirkan banyak mentor dan instruktur terverifikasi dalam satu ekosistem belajar. Kami mengumpulkan kelas berkualitas tinggi untuk saham, crypto, dan forex — dengan video berurutan, progress tracking, dan ruang komunitas per mentor.",
+    "Bursa Trading Academy adalah platform edukasi trading di Indonesia yang menghadirkan banyak mentor dan instruktur terverifikasi dalam satu ekosistem belajar. Kami mengumpulkan kelas berkualitas tinggi untuk saham, crypto, dan forex, dengan video berurutan, progress tracking, dan ruang komunitas per mentor.",
     "Berbeda dari konten gratis yang tersebar atau kelas dari satu figur tanpa verifikasi independen, Bursa dibangun sebagai infrastruktur kepercayaan: setiap mentor dan kurikulum ditinjau tim sebelum tayang. Kamu bayar per kelas tanpa langganan bulanan, dan platform tidak mengelola dana tradingmu.",
   ],
 };
@@ -17,7 +17,7 @@ export const aboutMissionVision = {
   mission: {
     title: "Misi",
     description:
-      "Memberikan tempat tepercaya bagi masyarakat Indonesia yang serius ingin menguasai skill trading dan investasi — dengan standar kurikulum, produksi konten, dan verifikasi mentor yang dapat dipertanggungjawabkan.",
+      "Memberikan tempat tepercaya bagi masyarakat Indonesia yang serius ingin menguasai skill trading dan investasi, dengan standar kurikulum, produksi konten, dan verifikasi mentor yang dapat dipertanggungjawabkan.",
   },
   vision: {
     title: "Visi",
@@ -31,7 +31,7 @@ export const aboutWhyUse = [
     icon: "shield" as const,
     title: "Mentor terverifikasi",
     description:
-      "Setiap instruktur melalui proses kurasi — kredensial, kurikulum, dan aspek kepatuhan diperiksa sebelum kelas tayang.",
+      "Setiap instruktur melalui proses kurasi, kredensial, kurikulum, dan aspek kepatuhan diperiksa sebelum kelas tayang.",
   },
   {
     icon: "layers" as const,
@@ -43,7 +43,7 @@ export const aboutWhyUse = [
     icon: "wallet" as const,
     title: "Bayar per kelas",
     description:
-      "Tanpa biaya langganan platform. Kamu hanya membayar kelas yang dipilih — transparan sebelum checkout.",
+      "Tanpa biaya langganan platform. Kamu hanya membayar kelas yang dipilih, transparan sebelum checkout.",
   },
   {
     icon: "users" as const,
@@ -55,7 +55,7 @@ export const aboutWhyUse = [
     icon: "video" as const,
     title: "Produksi berkualitas",
     description:
-      "Konten video dengan standar produksi profesional — mudah diikuti, terstruktur, dan dilindungi untuk murid terdaftar.",
+      "Konten video dengan standar produksi profesional, mudah diikuti, terstruktur, dan dilindungi untuk murid terdaftar.",
   },
   {
     icon: "ban" as const,
@@ -70,7 +70,7 @@ export const aboutPillars = [
     step: "01",
     title: "Verified Track Record",
     description:
-      "Instruktur dengan kredibilitas yang dapat diaudit — lisensi relevan, riwayat kompetisi, atau reputasi institusional sebelum tayang.",
+      "Instruktur dengan kredibilitas yang dapat diaudit, lisensi relevan, riwayat kompetisi, atau reputasi institusional sebelum tayang.",
   },
   {
     step: "02",
@@ -82,6 +82,6 @@ export const aboutPillars = [
     step: "03",
     title: "Struktur & Komunitas",
     description:
-      "Jalur pemula hingga mahir, progress tracking, dan komunitas by-level — belajar yang terukur, bukan sekadar menonton.",
+      "Jalur pemula hingga mahir, progress tracking, dan komunitas by-level, belajar yang terukur, bukan sekadar menonton.",
   },
 ];

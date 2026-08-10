@@ -1,4 +1,4 @@
-/** Client lesson id used in URLs — legacy mock id or Prisma cuid. */
+/** Client lesson id used in URLs, legacy mock id or Prisma cuid. */
 export function toClientLessonId(lesson: { legacyId: string | null; id: string }): string {
   return lesson.legacyId ?? lesson.id;
 }

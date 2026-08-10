@@ -30,7 +30,7 @@ export const mockMembers: ChatMember[] = [
     initials: "BS",
     role: "member",
     isOnline: true,
-    bio: "Belajar saham pemula — fokus risk management.",
+    bio: "Belajar saham pemula, fokus risk management.",
   },
   {
     id: "m-4",
@@ -55,7 +55,7 @@ export const mockMembers: ChatMember[] = [
     initials: "SN",
     role: "moderator",
     isOnline: true,
-    bio: "Moderator komunitas — bantu jaga kualitas diskusi.",
+    bio: "Moderator komunitas, bantu jaga kualitas diskusi.",
   },
 ];
 
@@ -65,7 +65,7 @@ export const mockRooms: ChatRoom[] = [
     slug: "komunitas-publik",
     name: "Komunitas Publik Bursa",
     description:
-      "Ruang publik terbuka untuk semua anggota — diskusi umum pasar dan komunitas trading.",
+      "Ruang publik terbuka untuk semua anggota, diskusi umum pasar dan komunitas trading.",
     channelCategory: "Publik",
     roomKind: "public",
     channelType: "text",
@@ -81,7 +81,7 @@ export const mockRooms: ChatRoom[] = [
   {
     id: "room-andra-hub",
     slug: "komunitas-andra-wicaksono",
-    name: "Grup Mentor — AW",
+    name: "Grup Mentor, AW",
     description:
       "Satu hub mentor dengan cabang publik (diskusi) dan privat (internal).",
     channelCategory: "Komunitas",
@@ -138,7 +138,7 @@ export const mockRooms: ChatRoom[] = [
   {
     id: "room-pemula-saham",
     slug: "komunitas-melati-putri",
-    name: "Grup Mentor — MP",
+    name: "Grup Mentor, MP",
     description: "Hub mentor dengan cabang publik 1 arah / 2 arah dan cabang privat.",
     channelCategory: "Komunitas",
     roomKind: "mentor_community",
@@ -190,7 +190,7 @@ export const mockRooms: ChatRoom[] = [
   {
     id: "room-menengah-crypto",
     slug: "komunitas-kirana",
-    name: "Grup Mentor — KA",
+    name: "Grup Mentor, KA",
     description: "On-chain analysis, manajemen risiko, dan review setup $BTC & altcoin.",
     channelCategory: "Komunitas",
     roomKind: "mentor_community",
@@ -296,7 +296,7 @@ export const mockMessages: Record<string, ChatMessage[]> = {
       id: "msg-2",
       roomId: "room-andra-hub",
       type: "signal",
-      content: "Setup swing trade $BBCA — fundamental masih kuat, entry di support.",
+      content: "Setup swing trade $BBCA, fundamental masih kuat, entry di support.",
       author: mockMembers[0],
       createdAt: minutesAgo(45),
       signal: {
@@ -333,7 +333,7 @@ export const mockMessages: Record<string, ChatMessage[]> = {
       id: "msg-4",
       roomId: "room-andra-hub",
       type: "signal",
-      content: "Short term scalp $BTC — momentum lemah di resistance.",
+      content: "Short term scalp $BTC, momentum lemah di resistance.",
       author: mockMembers[1],
       createdAt: minutesAgo(15),
       signal: {
@@ -413,7 +413,7 @@ export const mockMessages: Record<string, ChatMessage[]> = {
       embeds: [
         {
           url: "https://www.tradingview.com",
-          title: "TradingView — Chart & Analisis",
+          title: "TradingView, Chart & Analisis",
           description: "Platform charting interaktif untuk saham, crypto, dan forex.",
           siteName: "TradingView",
           color: "#2962ff",
@@ -462,7 +462,7 @@ export const mockMessages: Record<string, ChatMessage[]> = {
       id: "msg-f1",
       roomId: "room-mahir-forex",
       type: "signal",
-      content: "EURUSD breakout — NFP data mendukung dollar weakness sementara.",
+      content: "EURUSD breakout, NFP data mendukung dollar weakness sementara.",
       author: mockMembers[0],
       createdAt: minutesAgo(90),
       signal: {
@@ -483,14 +483,14 @@ export const mockMessages: Record<string, ChatMessage[]> = {
       roomId: "room-pemula-crypto",
       type: "announcement",
       content:
-        "📢 Pengumuman: Modul 1 — Pengenalan Blockchain sudah tersedia. Baca materi di https://www.investopedia.com sebelum sesi berikutnya.",
+        "📢 Pengumuman: Modul 1: Pengenalan Blockchain sudah tersedia. Baca materi di https://www.investopedia.com sebelum sesi berikutnya.",
       author: mockMembers[1],
       createdAt: minutesAgo(10),
       isPinned: true,
       embeds: [
         {
           url: "https://www.investopedia.com",
-          title: "Investopedia — Edukasi Investasi",
+          title: "Investopedia, Edukasi Investasi",
           description: "Artikel dan definisi istilah keuangan untuk investor pemula hingga mahir.",
           siteName: "Investopedia",
           color: "#2d6a4f",

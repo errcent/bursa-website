@@ -163,7 +163,7 @@ export default function AdminPublicDocumentsPage() {
         <div>
           <h1 className="font-heading text-2xl font-semibold">Dokumen Publik</h1>
           <p className="text-sm text-muted-foreground">
-            Kelola Privacy Center & Trust Center — sync dari vault, edit, publish.
+            Kelola Privacy Center & Trust Center, sync dari vault, edit, publish.
           </p>
         </div>
         <div className="flex gap-2">
@@ -179,7 +179,7 @@ export default function AdminPublicDocumentsPage() {
       </div>
 
       <div className="rounded-lg border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
-        Dokumen legal masih <strong>DRAFT</strong> — publish final butuh review advokat + persetujuan founder.
+        Dokumen legal masih <strong>DRAFT</strong>, publish final butuh review advokat + persetujuan founder.
       </div>
 
       {loading ? (

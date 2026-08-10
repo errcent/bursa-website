@@ -25,7 +25,7 @@ const formatIdr = (value: number) =>
 
 /**
  * Non-binding price guidance surfaced in the form (QC-20260719-48/44). Spans Pemula→Mahir per
- * selected instrument so a new mentor sees a reference band. Pricing stays mentor-set — there is
+ * selected instrument so a new mentor sees a reference band. Pricing stays mentor-set, there is
  * NO floor and NO enforcement (LOCKED).
  */
 function priceGuidanceFor(instrument: Instrument) {
@@ -193,7 +193,7 @@ export function MentorApplicationForm() {
       next.yearsExperience = "Pengalaman minimal 1 tahun.";
     }
     if (!form.bio.trim() || form.bio.trim().length < 50) {
-      next.bio = "Bio minimal 50 karakter — jelaskan pengalaman mengajar dan tradingmu.";
+      next.bio = "Bio minimal 50 karakter, jelaskan pengalaman mengajar dan tradingmu.";
     }
     if (!form.philosophy.trim() || form.philosophy.trim().length < 30) {
       next.philosophy = "Filosofi trading minimal 30 karakter.";

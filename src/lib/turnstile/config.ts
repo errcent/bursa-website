@@ -1,4 +1,4 @@
-/** Cloudflare Turnstile — visible widget, always passes (dev/test only). */
+/** Cloudflare Turnstile, visible widget, always passes (dev/test only). */
 export const TURNSTILE_TEST_SITE_KEY = "2x00000000000000000000AB";
 export const TURNSTILE_TEST_SECRET_KEY = "2x0000000000000000000000000000000AA";
 

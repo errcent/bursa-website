@@ -41,7 +41,7 @@ export const createChatMessageSchema = z.object({
     .enum(["TEXT", "SIGNAL", "POLL", "CHART", "ANNOUNCEMENT", "SYSTEM"])
     .default("TEXT"),
   metadata: z.record(z.string(), z.unknown()).optional(),
-  /** User ids @mentioned in the message — stored in metadata.mentions. */
+  /** User ids @mentioned in the message, stored in metadata.mentions. */
   mentions: z.array(z.string().min(1)).max(50).optional(),
   replyToId: z.string().optional(),
 });
@@ -312,7 +312,7 @@ export const createWatchlistItemSchema = z.object({
     .max(20, "Ticker maksimal 20 karakter.")
     .regex(/^[A-Za-z0-9.\-/=]+$/, "Ticker hanya boleh huruf, angka, dan . - / =")
     .transform((v) => v.toUpperCase()),
-  /** Optional — defaults to SAHAM so clients can add by ticker only */
+  /** Optional, defaults to SAHAM so clients can add by ticker only */
   instrument: watchlistInstrumentSchema.optional().default("SAHAM"),
   notes: z
     .string()

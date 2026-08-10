@@ -31,8 +31,8 @@ export function CheckoutUnavailable({ course }: { course: Course }) {
             </div>
             <h2 className="mt-5 font-heading text-lg font-medium">Pembayaran belum dibuka</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Bursa masih dalam tahap preview. Katalog kelas saat ini bersifat demonstrasi —
-              checkout akan diumumkan saat peluncuran resmi.
+              Bursa masih dalam tahap preview. Katalog kelas saat ini bersifat demonstrasi.
+              Checkout akan diumumkan saat peluncuran resmi.
             </p>
             <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
               <Button className="btn-primary" render={<Link href="/waitlist" />}>

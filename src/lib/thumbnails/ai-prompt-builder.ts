@@ -44,7 +44,7 @@ export function buildAiThumbnailPrompt(input: ThumbnailPromptInput): string {
       `Subject: online trading course titled "${input.title}".`,
       `Learning focus: ${input.summary}`,
       `Market: ${instrument}. Visual environment: ${INSTRUMENT_VISUALS[instrument]}.`,
-      `Audience level: ${level} — tone should feel ${LEVEL_MOOD[level]}.`,
+      `Audience level: ${level}, tone should feel ${LEVEL_MOOD[level]}.`,
       `Key visual motifs: ${keywords}.`,
       `When clicked, user enters this specific class about ${input.destinationLabel}.`,
     ].join(" ");

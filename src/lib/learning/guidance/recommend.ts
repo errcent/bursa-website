@@ -37,7 +37,7 @@ function resolveLearningFormat(
   return answers.learningFormat ?? DEFAULT_LEARNING_FORMAT;
 }
 
-/** Prisma enum values as literals — safe before `prisma generate` refreshes runtime exports. */
+/** Prisma enum values as literals, safe before `prisma generate` refreshes runtime exports. */
 const EXPERIENCE_TIER = {
   NEVER: "NEVER",
   DEMO: "DEMO",
@@ -214,23 +214,23 @@ function buildPathNarrative(
         ? "Profil konservatif + Forex: mulai tanpa leverage tinggi dan posisi sangat kecil."
         : "Dengan profil risiko konservatif, mulai dari manajemen risiko dan posisi kecil."
       : answers.riskTolerance === "aggressive"
-        ? "Profil agresif — pastikan disiplin stop-loss dan jangan over-leverage."
+        ? "Profil agresif, pastikan disiplin stop-loss dan jangan over-leverage."
         : "Dengan risiko seimbang, kombinasikan teori dengan latihan terukur.";
 
   const capitalNote =
     answers.capitalRange && answers.capitalRange !== "prefer_not_say"
       ? answers.capitalRange === "under_5m"
-        ? " Modal kecil — prioritaskan belajar di demo sebelum live."
+        ? " Modal kecil, prioritaskan belajar di demo sebelum live."
         : answers.capitalRange === "above_50m"
-          ? " Modal signifikan — manajemen risiko harus jadi prioritas #1."
+          ? " Modal signifikan, manajemen risiko harus jadi prioritas #1."
           : ""
       : "";
 
   const experienceStep =
     answers.experience === "never"
-      ? `Mulai dari akun demo dan kelas ${profile.idealLevelUi} — jangan loncat ke live sebelum paham risk management.`
+      ? `Mulai dari akun demo dan kelas ${profile.idealLevelUi}, jangan loncat ke live sebelum paham risk management.`
       : profile.maxLevelIndex < 2
-        ? `Fokus ke kelas level ${levelLabel} di ${answers.instrument} — hindari materi Mahir dulu sampai fondasi kuat.`
+        ? `Fokus ke kelas level ${levelLabel} di ${answers.instrument}, hindari materi Mahir dulu sampai fondasi kuat.`
         : `Mulai dari kelas level ${levelLabel} di ${answers.instrument} untuk fondasi yang tepat.`;
 
   return {
@@ -242,11 +242,11 @@ function buildPathNarrative(
         ? "Manfaatkan sesi live mentor untuk validasi strategi secara langsung."
         : answers.learningFormat === "community"
           ? "Gabung komunitas mentor untuk belajar dari diskusi dan studi kasus."
-          : "Ikuti video secara berurutan — jangan loncat sebelum paham risk management.",
+          : "Ikuti video secara berurutan, jangan loncat sebelum paham risk management.",
       answers.timeAvailability === "minimal"
         ? "Alokasikan 20–30 menit per hari; konsistensi lebih penting dari durasi."
         : "Jadwalkan 3–5 sesi belajar per minggu dan catat setiap evaluasi trading.",
-      "Rekomendasi ini berdasarkan jawabanmu — bukan jaminan hasil. Review ulang jika tujuan atau instrumenmu berubah.",
+      "Rekomendasi ini berdasarkan jawabanmu, bukan jaminan hasil. Review ulang jika tujuan atau instrumenmu berubah.",
     ],
   };
 }

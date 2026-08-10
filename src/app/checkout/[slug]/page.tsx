@@ -28,7 +28,7 @@ export async function generateMetadata({
   const course = await getCourseBySlug(slug);
   if (!course) return {};
   return {
-    title: `Checkout — ${course.title}`,
+    title: `Checkout, ${course.title}`,
     description: `Selesaikan pembelian akses kelas ${course.title} di Bursa Trading Academy.`,
   };
 }

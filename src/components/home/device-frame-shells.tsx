@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 const SCENE = DEVICE_SCENE_INSETS;
 
-/** Fixed design canvas — scene scales uniformly from this width. */
+/** Fixed design canvas, scene scales uniformly from this width. */
 export const DEVICE_SCENE_WIDTH = 920;
 export const DEVICE_SCENE_HEIGHT = Math.round(
   (DEVICE_SCENE_WIDTH * SCENE.viewBox.h) / SCENE.viewBox.w,

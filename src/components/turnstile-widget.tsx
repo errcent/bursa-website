@@ -35,7 +35,7 @@ const SCRIPT_SRC =
   "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
 /**
- * Cloudflare error codes that retrying never fixes — they mean the sitekey or its
+ * Cloudflare error codes that retrying never fixes, they mean the sitekey or its
  * allowed-hostname list is wrong, so Cloudflare's own "Unable to connect to website /
  * Troubleshoot" box misleads visitors into blaming their network.
  * https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/error-codes/
@@ -108,7 +108,7 @@ export function TurnstileWidget({ onToken, className, onFatalError }: TurnstileW
       <div className={className} role="alert">
         <p className="text-sm text-destructive">
           Verifikasi keamanan sedang bermasalah di sisi kami (kode {fatalErrorCode}). Bukan
-          dari koneksi kamu — coba lagi beberapa saat lagi.
+          dari koneksi kamu, coba lagi beberapa saat lagi.
         </p>
       </div>
     );

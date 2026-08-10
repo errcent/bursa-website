@@ -39,7 +39,7 @@ export const labCategories: LabCategory[] = [
   {
     id: "risk-money",
     title: "Manajemen Risiko & Modal",
-    description: "Ukuran posisi, breakeven, dan Kelly — fondasi sebelum kamu menekan tombol entry.",
+    description: "Ukuran posisi, breakeven, dan Kelly, fondasi sebelum kamu menekan tombol entry.",
     accent: "from-emerald/20 to-transparent",
     pillLabel: "Risiko",
     markerClass: "bg-emerald",
@@ -47,7 +47,7 @@ export const labCategories: LabCategory[] = [
   {
     id: "performance",
     title: "Performa & Probabilitas",
-    description: "Monte Carlo, expectancy, dan distribusi hasil — uji edge strategi secara matematis.",
+    description: "Monte Carlo, expectancy, dan distribusi hasil, uji edge strategi secara matematis.",
     accent: "from-accent/20 to-transparent",
     pillLabel: "Probabilitas",
     markerClass: "bg-accent",
@@ -55,7 +55,7 @@ export const labCategories: LabCategory[] = [
   {
     id: "trading-mechanics",
     title: "Mekanika Trading",
-    description: "Pip, lot, margin, swap, komisi — pahami biaya nyata di forex, saham, dan crypto.",
+    description: "Pip, lot, margin, swap, komisi, pahami biaya nyata di forex, saham, dan crypto.",
     accent: "from-amber/15 to-transparent",
     pillLabel: "Mekanika",
     markerClass: "bg-amber",
@@ -122,7 +122,7 @@ export const labTools: LabTool[] = [
     title: "Kalkulator Harga Breakeven",
     shortTitle: "Harga Breakeven",
     description:
-      "Tentukan harga impas setelah komisi, spread, dan pajak — long maupun short.",
+      "Tentukan harga impas setelah komisi, spread, dan pajak, long maupun short.",
     icon: CircleDollarSign,
     tag: "Kalkulator",
     category: "risk-money",
@@ -151,7 +151,7 @@ export const labTools: LabTool[] = [
     title: "Simulator Monte Carlo",
     shortTitle: "Monte Carlo",
     description:
-      "Simulasikan ribuan skenario — probabilitas ruin, equity curve, max drawdown, dan distribusi saldo akhir.",
+      "Simulasikan ribuan skenario, probabilitas ruin, equity curve, max drawdown, dan distribusi saldo akhir.",
     icon: Dices,
     tag: "Simulasi",
     category: "performance",
@@ -316,7 +316,7 @@ export const labTools: LabTool[] = [
     title: "Pelacak R-Multiple",
     shortTitle: "R-Multiple",
     description:
-      "Catat dan analisis R-multiple per trade — rata-rata R, expectancy, dan distribusi hasil.",
+      "Catat dan analisis R-multiple per trade, rata-rata R, expectancy, dan distribusi hasil.",
     icon: Target,
     tag: "Tracker",
     category: "technical",

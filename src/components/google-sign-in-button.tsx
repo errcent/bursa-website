@@ -125,7 +125,7 @@ export function GoogleSignInButton({ mode }: { mode: "login" | "register" }) {
   );
 }
 
-/** Sync banner — use {@link useOAuthSync} + auth form spinner for full UX. */
+/** Sync banner, use {@link useOAuthSync} + auth form spinner for full UX. */
 export function OAuthSessionSync() {
   const { syncing, error } = useOAuthSync();
 

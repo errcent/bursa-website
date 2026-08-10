@@ -44,7 +44,7 @@ export function WaitlistConfirmationEmail(props: WaitlistConfirmationProps) {
       <p style={emailTextStyles.paragraph}>
         Kami akan mengirim materi edukasi ringkas sekitar satu kali per minggu,
         ditambah pembaruan produk penting bila diperlukan. Fokus kami adalah
-        membantu Anda memahami proses berpikir, risiko, dan pilihan—bukan
+        membantu Anda memahami proses berpikir, risiko, dan pilihan, bukan
         menjanjikan hasil finansial.
       </p>
       <p style={emailTextStyles.paragraph}>
@@ -65,7 +65,7 @@ export function waitlistConfirmationPlainText(
     "",
     "Terima kasih telah bergabung dengan Bursa Nalar. Status pendaftaran Anda sudah dikonfirmasi.",
     "",
-    "Kami akan mengirim materi edukasi ringkas sekitar satu kali per minggu, ditambah pembaruan produk penting bila diperlukan. Fokus kami adalah membantu Anda memahami proses berpikir, risiko, dan pilihan—bukan menjanjikan hasil finansial.",
+    "Kami akan mengirim materi edukasi ringkas sekitar satu kali per minggu, ditambah pembaruan produk penting bila diperlukan. Fokus kami adalah membantu Anda memahami proses berpikir, risiko, dan pilihan, bukan menjanjikan hasil finansial.",
     "",
     `Atur preferensi dan lihat pratinjau: ${props.preferencesUrl}`,
     "",

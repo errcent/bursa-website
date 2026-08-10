@@ -17,18 +17,18 @@ export function resolveHeroIntroDelay(): number {
   }
 }
 
-/** SSR / hydration snapshot — first-visit intro timing (no sessionStorage). */
+/** SSR / hydration snapshot, first-visit intro timing (no sessionStorage). */
 export function resolveHeroIntroDelaySSR(): number {
   return INTRO_REVEAL_START_MS / 1000 + HERO_HEADLINE_BASE_DELAY;
 }
 
-/** Delay for hero subcopy — chains continuously after headline word stagger (Atom-style). */
+/** Delay for hero subcopy, chains continuously after headline word stagger (Atom-style). */
 export function resolveHeroSubcopyDelay(headlineLines: string[]): number {
   const base = resolveHeroIntroDelay();
   return resolveHeroSubcopyDelayFromBase(headlineLines, base);
 }
 
-/** SSR-safe subcopy delay — matches first-visit timing for hydration. */
+/** SSR-safe subcopy delay, matches first-visit timing for hydration. */
 export function resolveHeroSubcopyDelaySSR(headlineLines: string[]): number {
   return resolveHeroSubcopyDelayFromBase(headlineLines, resolveHeroIntroDelaySSR());
 }

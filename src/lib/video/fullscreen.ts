@@ -30,7 +30,7 @@ export async function exitFullscreen(): Promise<void> {
   try {
     await exit();
   } catch {
-    // ignore — element may already be out of fullscreen
+    // ignore, element may already be out of fullscreen
   }
 }
 

@@ -50,7 +50,7 @@ export function DeveloperSidebar() {
       <div className="space-y-2 border-t border-border p-4">
         <p className="flex items-start gap-2 text-[11px] text-muted-foreground">
           <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-emerald" />
-          Chat internal mentor tetap privat — QC tidak membuka isi pesan.
+          Chat internal mentor tetap privat, QC tidak membuka isi pesan.
         </p>
         <Link href="/" className="text-xs text-muted-foreground hover:text-foreground">
           ← Kembali ke situs

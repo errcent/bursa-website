@@ -134,9 +134,9 @@ export function SettingsAccount({ embedded: _embedded = false }: { embedded?: bo
           />
           <InfoRow
             label="Username"
-            value={session.username ? `@${session.username}` : "—"}
+            value={session.username ? `@${session.username}` : "-"}
           />
-          <InfoRow label="Telepon" value={session.phone ?? "—"} />
+          <InfoRow label="Telepon" value={session.phone ?? "-"} />
         </div>
 
         <SubsectionLabel>{t.passwordTitle}</SubsectionLabel>

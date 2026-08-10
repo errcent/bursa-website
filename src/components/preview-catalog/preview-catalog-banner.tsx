@@ -40,8 +40,8 @@ export function PreviewCatalogBanner() {
       role="note"
       className="border-b border-amber-500/25 bg-amber-500/10 px-3 py-2.5 sm:px-5"
     >
-      <div className="container-page flex items-start gap-3">
-        <span className="mt-0.5 shrink-0 rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-200">
+      <div className="container-page flex items-center gap-3">
+        <span className="shrink-0 rounded-md bg-amber-500/20 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-200">
           Preview
         </span>
         <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">

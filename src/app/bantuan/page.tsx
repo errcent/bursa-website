@@ -8,7 +8,7 @@ import { SiteNavbar } from "@/components/site-navbar";
 export const metadata: Metadata = {
   title: "Pusat Bantuan",
   description:
-    "FAQ dan panduan Bursa — akun, pembayaran, belajar, komunitas, dan program mentor. Hubungi support jika pertanyaanmu belum terjawab.",
+    "FAQ dan panduan Bursa · akun, pembayaran, belajar, komunitas, dan program mentor. Hubungi support jika pertanyaanmu belum terjawab.",
 };
 
 export default function BantuanPage() {

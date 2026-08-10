@@ -77,7 +77,7 @@ export default function MentorDashboardPage() {
           <div className="surface-card p-5">
             <p className="text-xs text-muted-foreground">Total siswa</p>
             <p className="mt-1 font-heading text-2xl font-semibold tabular-nums">
-              {studentsCount !== null ? studentsCount.toLocaleString("id-ID") : "—"}
+              {studentsCount !== null ? studentsCount.toLocaleString("id-ID") : "-"}
             </p>
           </div>
         </div>

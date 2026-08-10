@@ -147,7 +147,7 @@ export function SessionBookingPage({ slug, mentorName, sessionPrice }: Props) {
             <div className="surface-card mt-8 max-w-2xl p-6 text-center">
               <Calendar className="mx-auto size-8 text-muted-foreground/50" />
               <p className="mt-3 text-sm text-muted-foreground">
-                Belum ada slot tersedia saat ini. Tim kami sedang mengatur jadwal — silakan cek
+                Belum ada slot tersedia saat ini. Tim kami sedang mengatur jadwal, silakan cek
                 kembali dalam beberapa hari.
               </p>
             </div>

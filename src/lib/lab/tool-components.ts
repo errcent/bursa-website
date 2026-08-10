@@ -33,7 +33,7 @@ export const labToolConfigs: Record<string, LabToolConfig> = {
     component: PositionSizeCalculator,
     assumptions: [
       "Ukuran posisi dihitung agar kerugian maksimum jika stop loss tersentuh sama dengan % risiko yang ditentukan.",
-      "Tidak memperhitungkan slippage, spread, atau komisi — tambahkan buffer manual jika perlu.",
+      "Tidak memperhitungkan slippage, spread, atau komisi, tambahkan buffer manual jika perlu.",
     ],
   },
   "risk-reward": {
@@ -53,7 +53,7 @@ export const labToolConfigs: Record<string, LabToolConfig> = {
   "kelly-criterion": {
     component: KellyCriterionCalculator,
     assumptions: [
-      "Kelly penuh sering terlalu agresif untuk trading nyata — half/quarter Kelly lebih umum dipakai.",
+      "Kelly penuh sering terlalu agresif untuk trading nyata, half/quarter Kelly lebih umum dipakai.",
       "Asumsi win rate dan R:R stabil dan independen antar trade.",
     ],
   },
@@ -64,7 +64,7 @@ export const labToolConfigs: Record<string, LabToolConfig> = {
       "Probabilitas ruin = persentase simulasi yang berakhir dengan saldo ≤ 1% modal awal.",
       "p10/p50/p90 = persentil saldo akhir dari seluruh simulasi.",
       "Equity curve menampilkan satu jalur acak sebagai contoh, bukan rata-rata.",
-      "Simulasi auto-run di browser — semakin besar parameter, semakin lama hitung.",
+      "Simulasi auto-run di browser, semakin besar parameter, semakin lama hitung.",
     ],
   },
   "trade-expectancy": {
@@ -93,7 +93,7 @@ export const labToolConfigs: Record<string, LabToolConfig> = {
     component: LotSizeCalculator,
     assumptions: [
       "1 standard lot = 100,000 units. Mini = 0.1 lot, Micro = 0.01 lot.",
-      "Konversi standar forex — kontrak lain (gold, index) mungkin berbeda.",
+      "Konversi standar forex, kontrak lain (gold, index) mungkin berbeda.",
     ],
   },
   "margin-leverage": {
@@ -128,7 +128,7 @@ export const labToolConfigs: Record<string, LabToolConfig> = {
     component: AtrTrailingStopCalculator,
     assumptions: [
       "Stop level = Harga ± (ATR × Multiplier).",
-      "Trailing stop sebenarnya bergerak mengikuti harga — ini menghitung level saat ini saja.",
+      "Trailing stop sebenarnya bergerak mengikuti harga, ini menghitung level saat ini saja.",
     ],
   },
   fibonacci: {

@@ -68,7 +68,7 @@ export default function AdminDashboardPage() {
           <p className="text-sm text-muted-foreground">
             Ringkasan operasional platform Bursa.
             {source === "mock" && (
-              <span className="ml-2 text-amber">(mode demo — API tidak tersedia)</span>
+              <span className="ml-2 text-amber">(mode demo, API tidak tersedia)</span>
             )}
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function AdminDashboardPage() {
             label="Pendapatan platform"
             value={formatRupiah(stats.revenue)}
             icon={DollarSign}
-            hint={`Komisi ${Math.round(PLATFORM_COMMISSION_RATE * 100)}% — klik untuk rincian`}
+            hint={`Komisi ${Math.round(PLATFORM_COMMISSION_RATE * 100)}%, klik untuk rincian`}
           />
         </Link>
         <StatCard

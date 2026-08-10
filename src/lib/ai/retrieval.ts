@@ -12,7 +12,7 @@ export type RetrievedChunk = {
   score: number;
 };
 
-/** Wrap RAG chunk as untrusted data — never treat as instructions. */
+/** Wrap RAG chunk as untrusted data, never treat as instructions. */
 function wrapRetrievedContent(content: string): string {
   return `<retrieved trusted="false">\n${content}\n</retrieved>`;
 }
@@ -25,7 +25,7 @@ function roleFilter(userRole: UserRole) {
 }
 
 /**
- * Hybrid retrieval placeholder — keyword match until pgvector embeddings ship.
+ * Hybrid retrieval placeholder, keyword match until pgvector embeddings ship.
  * Only PUBLIC chunks are returned to the support bot.
  */
 export async function retrieveChunks(
@@ -73,7 +73,7 @@ export async function retrieveChunks(
   }));
 }
 
-/** Static FAQ cache — zero LLM tokens on hit. */
+/** Static FAQ cache, zero LLM tokens on hit. */
 const FAQ_CACHE: Record<string, string> = {
   "cara daftar":
     "Buka /daftar, isi email dan kata sandi, atau gunakan Lanjutkan dengan Google di /masuk.",
@@ -92,7 +92,7 @@ export function lookupFaq(query: string): string | null {
 }
 
 /**
- * Intent router placeholder — cheap classifier before LLM.
+ * Intent router placeholder, cheap classifier before LLM.
  * Returns: faq | rag (action path disabled until tool sandbox exists)
  */
 export function routeIntent(query: string): "faq" | "rag" {

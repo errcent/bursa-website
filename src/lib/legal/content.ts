@@ -133,7 +133,7 @@ export const termsOfService: LegalDocument = {
       title: "8. Pembayaran, Harga & Pajak",
       paragraphs: [
         "Pembayaran kelas dilakukan per kelas. Setelah pembayaran berhasil diverifikasi, akses kelas aktif sesuai ketentuan produk. Rincian harga, komisi Platform, dan payout Mentor ditampilkan pada halaman checkout sebelum konfirmasi.",
-        "Pembayaran diproses melalui mitra payment gateway resmi. Bursa tidak pernah menyimpan data kartu pembayaran mentah — seluruh pemrosesan kartu tunduk pada standar keamanan mitra yang tersertifikasi PCI-DSS.",
+        "Pembayaran diproses melalui mitra payment gateway resmi. Bursa tidak pernah menyimpan data kartu pembayaran mentah, seluruh pemrosesan kartu tunduk pada standar keamanan mitra yang tersertifikasi PCI-DSS.",
         "Harga dapat sudah atau belum termasuk pajak (mis. PPN atas jasa digital) sesuai ketentuan perpajakan Indonesia yang berlaku pada saat transaksi. Bursa berhak mengubah struktur harga di masa mendatang dengan pemberitahuan yang wajar bagi produk yang bersifat berkelanjutan.",
       ],
     },
@@ -282,7 +282,7 @@ export const privacyPolicy: LegalDocument = {
       bullets: [
         "Identitas: nama, email, nomor telepon (opsional), username",
         "Akun: kata sandi ter-hash (bcrypt), preferensi tampilan, riwayat enrollment",
-        "Login Google (opsional): email, nama tampilan, dan URL foto profil publik dari akun Google — kami tidak mengakses Gmail, kontak, atau kalender",
+        "Login Google (opsional): email, nama tampilan, dan URL foto profil publik dari akun Google, kami tidak mengakses Gmail, kontak, atau kalender",
         "Reset kata sandi: alamat email untuk mengirim tautan reset (token disimpan sebagai hash, bukan plaintext)",
         "Transaksi: kelas yang dibeli, status pembayaran, bukti transaksi",
         "Komunitas: pesan chat, reaksi, dan aktivitas di ruang diskusi",
@@ -307,7 +307,7 @@ export const privacyPolicy: LegalDocument = {
       title: "3. Berbagi Data dengan Pihak Ketiga",
       paragraphs: [
         "Kami tidak menjual data pribadimu. Data dapat dibagikan kepada penyedia layanan tepercaya (pembayaran, hosting, email) yang terikat perjanjian kerahasiaan.",
-        "Login Google memproses data melalui Google OAuth — hanya email dan profil publik. Kamu bisa mencabut akses Google kapan saja melalui pengaturan akun Google (Security → Third-party access).",
+        "Login Google memproses data melalui Google OAuth, hanya email dan profil publik. Kamu bisa mencabut akses Google kapan saja melalui pengaturan akun Google (Security → Third-party access).",
         "Mentor menerima informasi terbatas yang diperlukan untuk mengelola murid dan kelas (nama, email enrollment, progress belajar).",
       ],
     },

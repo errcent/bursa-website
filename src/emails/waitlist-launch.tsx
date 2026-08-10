@@ -31,7 +31,7 @@ const content: Record<
   }
 > = {
   waitlist_launch_announcement: {
-    subject: "Bursa segera dibuka — ini yang perlu kamu tahu",
+    subject: "Bursa segera dibuka, ini yang perlu kamu tahu",
     preview: "Tanggal akses sudah ditetapkan, tanpa urgensi atau janji yang dibuat-buat.",
     heading: "Tanggal peluncuran Bursa sudah ditetapkan",
     paragraphs: [

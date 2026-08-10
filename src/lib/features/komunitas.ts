@@ -1,6 +1,6 @@
 /**
  * Komunitas (chat/community) feature flag.
- * Disabled by default — set NEXT_PUBLIC_KOMUNITAS_ENABLED=true to restore.
+ * Disabled by default, set NEXT_PUBLIC_KOMUNITAS_ENABLED=true to restore.
  */
 
 export const KOMUNITAS_ENABLED =

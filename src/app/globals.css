@@ -122,7 +122,7 @@
   --nav-glass-rgb: 8 10 18;
   /* Matches `.nav-shell` / `.hero-nav-float--pad` + bar height (h-14 → sm:h-[3.75rem]). */
   --site-header-bar: 3.5rem;
-  --site-header-pad-top: max(0.5rem, env(safe-area-inset-top, 0px));
+  --site-header-pad-top: max(0.25rem, env(safe-area-inset-top, 0px));
   --site-header-offset: calc(var(--site-header-pad-top) + var(--site-header-bar));
   --atom-card-radius: 14px;
   --atom-card-inset: inset 0 2px 0 rgba(255, 255, 255, 0.1);
@@ -145,7 +145,7 @@
 @media (min-width: 640px) {
   :root {
     --site-header-bar: 3.75rem;
-    --site-header-pad-top: max(1rem, env(safe-area-inset-top, 0px));
+    --site-header-pad-top: max(0.5rem, env(safe-area-inset-top, 0px));
   }
 }
 
@@ -462,14 +462,14 @@
   .hero-nav-float--pad {
     padding-inline: max(0.75rem, env(safe-area-inset-left, 0px))
       max(0.75rem, env(safe-area-inset-right, 0px));
-    padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+    padding-top: max(0.25rem, env(safe-area-inset-top, 0px));
   }
 
   @media (min-width: 640px) {
     .hero-nav-float--pad {
       padding-inline: max(1.5rem, env(safe-area-inset-left, 0px))
         max(1.5rem, env(safe-area-inset-right, 0px));
-      padding-top: max(1rem, env(safe-area-inset-top, 0px));
+      padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
     }
   }
   .hero-cinematic::after {
@@ -526,7 +526,7 @@
   }
 
   .eyebrow-tight {
-    @apply font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-accent;
+    @apply font-mono text-xs font-semibold uppercase tracking-[0.18em] text-accent;
   }
 
   .section-cinematic-dark {
@@ -1137,7 +1137,7 @@
   }
 
   .nav-shell {
-    @apply px-3 pt-2 sm:px-6 sm:pt-4;
+    @apply px-3 pt-1 sm:px-6 sm:pt-2;
   }
 
   .nav-shell--hero-anchor {

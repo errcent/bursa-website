@@ -64,7 +64,7 @@ export function AtrTrailingStopCalculator() {
             <LabResultTile label="Jarak %" value={`${fmt(result.distancePercent)}%`} />
           </LabResultGrid>
           <LabInterpretation className="mt-3">
-            Stop = harga {direction === "long" ? "−" : "+"} (ATR × {mult}). Ini level saat ini — trailing stop bergerak mengikuti harga.
+            Stop = harga {direction === "long" ? "−" : "+"} (ATR × {mult}). Ini level saat ini, trailing stop bergerak mengikuti harga.
           </LabInterpretation>
         </LabOutputPanel>
       }
@@ -271,8 +271,8 @@ export function RMultipleTracker() {
           )}
           <LabInterpretation tone={stats.expectancy > 0 ? "positive" : "negative"} className="mt-3">
             {stats.expectancy > 0
-              ? "Expectancy positif — rata-rata setiap trade menghasilkan lebih dari 1R yang dirisikokan."
-              : "Expectancy negatif — review strategi atau sample trade."}
+              ? "Expectancy positif, rata-rata setiap trade menghasilkan lebih dari 1R yang dirisikokan."
+              : "Expectancy negatif, review strategi atau sample trade."}
           </LabInterpretation>
         </LabOutputPanel>
       }

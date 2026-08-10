@@ -15,7 +15,7 @@ export const WORD_REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 export const WORD_REVEAL_STAGGER = 0.09;
 export const WORD_REVEAL_DURATION = 0.5;
 
-/** Atom AI hero presets — headline: y10/blur10; body copy: y5/blur2. */
+/** Atom AI hero presets, headline: y10/blur10; body copy: y5/blur2. */
 export const WORD_REVEAL_PRESETS = {
   headline: { y: 10, blur: 10 },
   body: { y: 5, blur: 2 },
@@ -33,7 +33,7 @@ export type WordRevealProps = {
   text?: string;
   segments?: WordSegment[];
   className?: string;
-  /** Applied to each word span — use for `text-gradient` so clip + opacity stay on the same node. */
+  /** Applied to each word span, use for `text-gradient` so clip + opacity stay on the same node. */
   wordClassName?: string;
   delay?: number;
   stagger?: number;
@@ -117,7 +117,7 @@ function wordRevealFailsafeMs(
   return (delay + (wordCount - 1) * stagger + duration + 0.5) * 1000;
 }
 
-/** Transparent full text — receives selection/copy while animated words stay visual-only. */
+/** Transparent full text, receives selection/copy while animated words stay visual-only. */
 function CopySelectionLayer({ text }: { text: string }) {
   return (
     <span

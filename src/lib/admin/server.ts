@@ -42,7 +42,7 @@ export async function requireAdminPanel(request: Request) {
   return user;
 }
 
-/** Admin only — use for mutations. Developers must not mutate via admin API. */
+/** Admin only, use for mutations. Developers must not mutate via admin API. */
 export async function requireAdmin(request: Request) {
   const user = await requireAdminPanel(request);
   if (!user || user.role !== UserRole.ADMIN) return null;
@@ -263,7 +263,7 @@ export async function buildRevenueReport(): Promise<AdminRevenueReport> {
     const lines: AdminRevenueLine[] = transactions.map((tx) => {
       const breakdown = calculateCheckoutBreakdown(tx.amount);
       const mentorId = tx.course?.mentor.id ?? tx.mentor?.id ?? "unknown";
-      const mentorName = tx.course?.mentor.user.nama ?? tx.mentor?.user.nama ?? "—";
+      const mentorName = tx.course?.mentor.user.nama ?? tx.mentor?.user.nama ?? "-";
       return {
         id: tx.id,
         source: "transaction",

@@ -4,7 +4,7 @@ export function isPreviewCatalogActive(): boolean {
   return !isPaidCheckoutEnabled();
 }
 
-/** Layer 1 — compact dismissible banner on list/discovery pages. */
+/** Layer 1, compact dismissible banner on list/discovery pages. */
 export function isPreviewBannerPath(pathname: string): boolean {
   if (pathname === "/" || pathname === "/katalog") return true;
   if (pathname === "/panduan-belajar" || pathname === "/panduan-belajar/quiz") return true;
@@ -12,7 +12,7 @@ export function isPreviewBannerPath(pathname: string): boolean {
   return false;
 }
 
-/** Layer 2 — detail notice (no banner on these paths). */
+/** Layer 2, detail notice (no banner on these paths). */
 export function isPreviewDetailPath(pathname: string): boolean {
   return pathname.startsWith("/kelas/") || pathname.startsWith("/instruktur/");
 }

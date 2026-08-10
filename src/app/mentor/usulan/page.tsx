@@ -74,7 +74,7 @@ function targetLabel(target: TargetKind) {
 }
 
 function formatValue(value: unknown) {
-  if (value === null || value === undefined || value === "") return "—";
+  if (value === null || value === undefined || value === "") return "-";
   if (typeof value === "boolean") return value ? "Ya" : "Tidak";
   return String(value);
 }

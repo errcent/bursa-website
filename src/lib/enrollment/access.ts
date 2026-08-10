@@ -10,7 +10,7 @@ export interface EnrollmentAccess {
 
 /**
  * Resolve a learner's access to a course. `enrolled` gates write actions on paid
- * content (progress, Q&A, notes, likes — QC-20260719-16/28/29); `isPaid` gates the
+ * content (progress, Q&A, notes, likes, QC-20260719-16/28/29); `isPaid` gates the
  * verified-purchase review/eligibility path and ranking metrics (QC-20260719-15/26/27).
  */
 export async function getEnrollmentAccess(
@@ -36,7 +36,7 @@ export async function getEnrollmentAccess(
   };
 }
 
-/** True when the course is free (price <= 0) — free courses do not require a paid tx. */
+/** True when the course is free (price <= 0), free courses do not require a paid tx. */
 export async function isFreeCourse(courseId: string): Promise<boolean> {
   const course = await db.course.findUnique({
     where: { id: courseId },

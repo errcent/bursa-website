@@ -47,7 +47,7 @@ export function MentorLayoutShell({ children }: { children: React.ReactNode }) {
                   {session?.name ?? "Mentor"}
                   {readOnly && (
                     <span className="ml-2 text-xs font-normal text-amber">
-                      (QC — hanya lihat)
+                      (QC, hanya lihat)
                     </span>
                   )}
                 </p>

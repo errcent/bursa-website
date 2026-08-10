@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Renders trust-badge copy instantly and fully legible — no character-by-character
+ * Renders trust-badge copy instantly and fully legible, no character-by-character
  * typewriter delay. Kept as a dedicated component (rather than inlining a <span>)
  * so hero badges share one place to adjust badge text styling.
  */

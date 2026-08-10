@@ -56,7 +56,7 @@ export function AboutPageContent() {
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
                 <span className="font-medium text-foreground">Penting:</span> Materi di Bursa
                 bersifat edukasi, bukan rekomendasi investasi. Trading dan investasi mengandung
-                risiko kerugian modal — keputusan sepenuhnya tanggung jawab pengguna.
+                risiko kerugian modal, keputusan sepenuhnya tanggung jawab pengguna.
               </p>
             </div>
           </div>

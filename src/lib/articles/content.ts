@@ -36,7 +36,7 @@ export const articles: Article[] = [
     blocks: [
       {
         type: "paragraph",
-        text: "Candlestick adalah representasi visual pergerakan harga dalam periode waktu tertentu. Setiap batang menampilkan harga buka, tutup, tertinggi, dan terendah — informasi yang sama dengan bar chart, tetapi lebih mudah dibaca sekilas.",
+        text: "Candlestick adalah representasi visual pergerakan harga dalam periode waktu tertentu. Setiap batang menampilkan harga buka, tutup, tertinggi, dan terendah, informasi yang sama dengan bar chart, tetapi lebih mudah dibaca sekilas.",
       },
       { type: "heading", level: 2, text: "Anatomi candlestick" },
       {
@@ -44,13 +44,13 @@ export const articles: Article[] = [
         items: [
           "Body (badan): jarak antara harga buka dan tutup. Body hijau/bullish berarti harga tutup di atas harga buka.",
           "Wick (sumbu): garis tipis di atas dan bawah body yang menunjukkan harga ekstrem selama periode.",
-          "Range: selisih antara high dan low — semakin panjang wick, semakin volatil periode tersebut.",
+          "Range: selisih antara high dan low, semakin panjang wick, semakin volatil periode tersebut.",
         ],
       },
       { type: "heading", level: 2, text: "Tiga pola dasar yang sering muncul" },
       {
         type: "paragraph",
-        text: "Doji menandakan keragu-raguan pasar — harga buka dan tutup hampir sama. Hammer muncul setelah downtrend dan bisa jadi sinyal pembalikan, terutama jika wick bawah panjang. Engulfing bullish terjadi ketika candle bullish menelan seluruh body candle bearish sebelumnya.",
+        text: "Doji menandakan keragu-raguan pasar, harga buka dan tutup hampir sama. Hammer muncul setelah downtrend dan bisa jadi sinyal pembalikan, terutama jika wick bawah panjang. Engulfing bullish terjadi ketika candle bullish menelan seluruh body candle bearish sebelumnya.",
       },
       {
         type: "quote",
@@ -59,7 +59,7 @@ export const articles: Article[] = [
       { type: "heading", level: 3, text: "Latihan praktis" },
       {
         type: "paragraph",
-        text: "Buka chart saham atau crypto favoritmu di timeframe daily. Tandai 10 candle terakhir, identifikasi body vs wick, lalu cari apakah ada pola doji atau hammer. Catat apa yang terjadi pada harga 3–5 candle berikutnya — ini latihan observasi, bukan prediksi.",
+        text: "Buka chart saham atau crypto favoritmu di timeframe daily. Tandai 10 candle terakhir, identifikasi body vs wick, lalu cari apakah ada pola doji atau hammer. Catat apa yang terjadi pada harga 3–5 candle berikutnya, ini latihan observasi, bukan prediksi.",
       },
     ],
   },
@@ -67,7 +67,7 @@ export const articles: Article[] = [
     slug: "cara-membaca-laporan-keuangan",
     title: "Cara Membaca Laporan Keuangan Emiten",
     excerpt:
-      "Tiga laporan utama — neraca, laba rugi, dan arus kas — serta metrik yang perlu diperhatikan investor pemula.",
+      "Tiga laporan utama, neraca, laba rugi, dan arus kas, serta metrik yang perlu diperhatikan investor pemula.",
     category: "Fundamental",
     readTimeMinutes: 8,
     publishedAt: "25 Juni 2026",
@@ -102,7 +102,7 @@ export const articles: Article[] = [
     slug: "support-dan-resistance",
     title: "Mengenal Support dan Resistance",
     excerpt:
-      "Level harga di mana buying atau selling pressure cenderung muncul — fondasi analisis teknikal yang paling sering dipakai trader.",
+      "Level harga di mana buying atau selling pressure cenderung muncul, fondasi analisis teknikal yang paling sering dipakai trader.",
     category: "Teknikal",
     readTimeMinutes: 5,
     publishedAt: "22 Juni 2026",
@@ -110,7 +110,7 @@ export const articles: Article[] = [
     blocks: [
       {
         type: "paragraph",
-        text: "Support adalah level harga di mana tekanan beli cenderung muncul, mencegah harga turun lebih jauh. Resistance kebalikannya — level di mana tekanan jual muncul dan harga sulit menembus ke atas.",
+        text: "Support adalah level harga di mana tekanan beli cenderung muncul, mencegah harga turun lebih jauh. Resistance kebalikannya, level di mana tekanan jual muncul dan harga sulit menembus ke atas.",
       },
       { type: "heading", level: 2, text: "Cara mengidentifikasi level" },
       {
@@ -123,12 +123,12 @@ export const articles: Article[] = [
       },
       {
         type: "quote",
-        text: "Support yang sudah ditembus bisa berubah menjadi resistance — dan sebaliknya. Ini disebut role reversal.",
+        text: "Support yang sudah ditembus bisa berubah menjadi resistance, dan sebaliknya. Ini disebut role reversal.",
       },
       { type: "heading", level: 3, text: "Tips praktis" },
       {
         type: "paragraph",
-        text: "Gambar zone, bukan garis tipis. Support dan resistance adalah area, bukan harga exact. Kombinasikan dengan volume — breakout dengan volume tinggi lebih valid dibanding breakout tipis tanpa volume.",
+        text: "Gambar zone, bukan garis tipis. Support dan resistance adalah area, bukan harga exact. Kombinasikan dengan volume, breakout dengan volume tinggi lebih valid dibanding breakout tipis tanpa volume.",
       },
     ],
   },
@@ -136,7 +136,7 @@ export const articles: Article[] = [
     slug: "risk-management-aturan-1-persen",
     title: "Risk Management: Aturan 1% per Trade",
     excerpt:
-      "Mengapa membatasi risiko per transaksi adalah skill paling penting — lebih dari entry atau exit yang sempurna.",
+      "Mengapa membatasi risiko per transaksi adalah skill paling penting, lebih dari entry atau exit yang sempurna.",
     category: "Psikologi",
     readTimeMinutes: 7,
     publishedAt: "18 Juni 2026",
@@ -144,7 +144,7 @@ export const articles: Article[] = [
     blocks: [
       {
         type: "paragraph",
-        text: "Aturan 1% berarti kamu tidak pernah mempertaruhkan lebih dari 1% total modal pada satu transaksi. Dengan modal Rp100 juta, risiko maksimal per trade adalah Rp1 juta — bukan nominal posisi Rp1 juta, melainkan kerugian maksimal jika stop loss kena.",
+        text: "Aturan 1% berarti kamu tidak pernah mempertaruhkan lebih dari 1% total modal pada satu transaksi. Dengan modal Rp100 juta, risiko maksimal per trade adalah Rp1 juta, bukan nominal posisi Rp1 juta, melainkan kerugian maksimal jika stop loss kena.",
       },
       { type: "heading", level: 2, text: "Menghitung ukuran posisi" },
       {
@@ -162,7 +162,7 @@ export const articles: Article[] = [
       },
       {
         type: "quote",
-        text: "Trader yang survive bukan yang paling sering benar — melainkan yang paling disiplin membatasi kerugian.",
+        text: "Trader yang survive bukan yang paling sering benar, melainkan yang paling disiplin membatasi kerugian.",
       },
     ],
   },
@@ -186,14 +186,14 @@ export const articles: Article[] = [
         items: [
           "Gunakan exchange terdaftar dan aktifkan 2FA (authenticator app, bukan SMS).",
           "Mulai dengan Bitcoin dan Ethereum sebelum eksplor altcoin.",
-          "Jangan simpan semua aset di exchange — pertimbangkan cold wallet untuk holding jangka panjang.",
+          "Jangan simpan semua aset di exchange, pertimbangkan cold wallet untuk holding jangka panjang.",
           "Waspada DM yang menjanjikan signal VIP atau guaranteed profit.",
         ],
       },
       { type: "heading", level: 2, text: "Volatilitas bukan alasan skip risk management" },
       {
         type: "paragraph",
-        text: "Stop loss tetap wajib meski pasar crypto bergerak cepat. Gunakan position sizing kecil saat belajar. Catat setiap trade di journal — win rate dan R:R jauh lebih penting daripada satu trade untung besar.",
+        text: "Stop loss tetap wajib meski pasar crypto bergerak cepat. Gunakan position sizing kecil saat belajar. Catat setiap trade di journal, win rate dan R:R jauh lebih penting daripada satu trade untung besar.",
       },
     ],
   },
@@ -201,7 +201,7 @@ export const articles: Article[] = [
     slug: "pasangan-mata-uang-major-forex",
     title: "Mengenal Pasangan Mata Uang Major di Forex",
     excerpt:
-      "EUR/USD, GBP/USD, USD/JPY — karakteristik pasangan major dan mengapa mereka populer di kalangan trader pemula.",
+      "EUR/USD, GBP/USD, USD/JPY, karakteristik pasangan major dan mengapa mereka populer di kalangan trader pemula.",
     category: "Forex",
     readTimeMinutes: 5,
     publishedAt: "12 Juni 2026",
@@ -209,16 +209,16 @@ export const articles: Article[] = [
     blocks: [
       {
         type: "paragraph",
-        text: "Pasangan major melibatkan USD dan mata uang ekonomi besar lainnya. Mereka paling likuid, spread tipis, dan banyak sumber analisis — ideal untuk belajar mekanisme forex sebelum masuk ke pasangan eksotis.",
+        text: "Pasangan major melibatkan USD dan mata uang ekonomi besar lainnya. Mereka paling likuid, spread tipis, dan banyak sumber analisis, ideal untuk belajar mekanisme forex sebelum masuk ke pasangan eksotis.",
       },
       { type: "heading", level: 2, text: "Empat major yang paling diperdagangkan" },
       {
         type: "bullets",
         items: [
-          "EUR/USD — pasangan paling likuid di dunia, spread rendah, reaksi terhadap data ECB dan Fed.",
-          "GBP/USD (Cable) — volatilitas lebih tinggi, sensitif terhadap kebijakan BoE.",
-          "USD/JPY — safe haven flow, dipengaruhi yield differential AS–Jepang.",
-          "USD/CHF — sering bergerak inverse dengan EUR/USD.",
+          "EUR/USD, pasangan paling likuid di dunia, spread rendah, reaksi terhadap data ECB dan Fed.",
+          "GBP/USD (Cable), volatilitas lebih tinggi, sensitif terhadap kebijakan BoE.",
+          "USD/JPY, safe haven flow, dipengaruhi yield differential AS–Jepang.",
+          "USD/CHF, sering bergerak inverse dengan EUR/USD.",
         ],
       },
       { type: "heading", level: 3, text: "Waktu trading" },
@@ -240,7 +240,7 @@ export const articles: Article[] = [
     blocks: [
       {
         type: "paragraph",
-        text: "Day trading menutup posisi dalam hari yang sama; swing trading menahan posisi beberapa hari hingga minggu. Keduanya valid — pilihan terbaik tergantung waktu luang, toleransi stres, dan modal.",
+        text: "Day trading menutup posisi dalam hari yang sama; swing trading menahan posisi beberapa hari hingga minggu. Keduanya valid, pilihan terbaik tergantung waktu luang, toleransi stres, dan modal.",
       },
       { type: "heading", level: 2, text: "Day trading" },
       {

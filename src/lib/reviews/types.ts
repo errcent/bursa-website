@@ -32,6 +32,6 @@ export interface ReviewEligibility {
 export const REVIEW_RULES = [
   "Selesaikan lebih banyak video terlebih dahulu sebelum mengirim ulasan.",
   "Satu akun hanya boleh mengirim satu ulasan per kelas.",
-  "Ulasan harus berdasarkan pengalaman belajarmu sendiri — bukan review palsu atau buzzer.",
+  "Ulasan harus berdasarkan pengalaman belajarmu sendiri, bukan review palsu atau buzzer.",
   "Hindari spam, bahasa kasar, dan janji profit yang menyesatkan.",
 ] as const;

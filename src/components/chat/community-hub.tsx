@@ -24,7 +24,7 @@ import type { ChannelCategory, ChatRoom } from "@/lib/chat/types";
 const categoryDescriptions: Record<ChannelCategory, string> = {
   Publik: "Terbuka untuk semua anggota platform",
   Internal: "Kolaborasi staf (bukan hub mentor)",
-  Komunitas: "Satu grup per mentor — cabang publik & privat di dalamnya",
+  Komunitas: "Satu grup per mentor, cabang publik & privat di dalamnya",
   Trading: "Desk trading aktif dengan analisis mendalam",
 };
 
@@ -100,7 +100,7 @@ function RoomCard({ room, locked }: { room: ChatRoom; locked?: boolean }) {
         <h3 className="truncate font-heading text-sm font-semibold">{room.name}</h3>
         <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
           {locked
-            ? "Konten privat mentor — tidak tersedia untuk role developer."
+            ? "Konten privat mentor, tidak tersedia untuk role developer."
             : room.description}
         </p>
         {!locked && room.branches && room.branches.length > 0 && (
@@ -119,7 +119,7 @@ function RoomCard({ room, locked }: { room: ChatRoom; locked?: boolean }) {
       <div className="mt-auto flex items-center justify-between text-[11px] text-muted-foreground">
         <span className="flex items-center gap-1">
           <Users className="size-3" />
-          {locked ? "—" : `${onlineCount} online`}
+          {locked ? "-" : `${onlineCount} online`}
         </span>
         <span className="flex items-center gap-1">
           <MessageSquare className="size-3" />

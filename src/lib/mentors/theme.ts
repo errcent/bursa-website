@@ -6,7 +6,7 @@ export interface MentorTheme {
 }
 
 /**
- * One distinct backdrop per mentor slug — until real headshot photography exists,
+ * One distinct backdrop per mentor slug, until real headshot photography exists,
  * this is the "photo" for course/mentor cards. Hue loosely echoes each mentor's
  * instrument/teaching style, but every mentor gets a unique combination so a row
  * of cards reads as distinct people at a glance (Masterclass-style density).

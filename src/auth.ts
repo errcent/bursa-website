@@ -32,7 +32,7 @@ if (isGoogleOAuthConfigured()) {
 /**
  * NextAuth v5 validates OAuth `state` automatically (CSRF protection on authorization
  * code flow). Do not disable state checks. Redirect URIs must be whitelisted in Google
- * Cloud Console — see Documentation/18 § Google OAuth.
+ * Cloud Console, see Documentation/18 § Google OAuth.
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,

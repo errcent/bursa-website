@@ -4,7 +4,7 @@ interface TrackRecordSparklineProps {
 }
 
 /**
- * Placeholder chart kinerja kumulatif — akan digantikan data performa nyata
+ * Placeholder chart kinerja kumulatif, akan digantikan data performa nyata
  * setelah fitur Signal/Track Record divalidasi legal (lihat
  * "07 - Hypercritical Review & Open Questions" di dokumentasi).
  */

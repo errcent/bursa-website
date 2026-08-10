@@ -17,7 +17,7 @@ import { SearchSeoJsonLd } from "@/components/search/search-seo-jsonld";
 
 import "./globals.css";
 
-/** Body / UI copy — light & regular weights */
+/** Body / UI copy, light & regular weights */
 const fontSans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
@@ -43,7 +43,7 @@ const INTRO_PENDING_SCRIPT = `(function(){try{if(!sessionStorage.getItem("bursa-
 
 export const metadata: Metadata = {
   title: {
-    default: "Bursa — Katalog Mentor dan Kelas Trading",
+    default: "Bursa · Katalog Mentor dan Kelas Trading",
     template: "%s · Bursa",
   },
   description:

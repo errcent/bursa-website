@@ -3,7 +3,7 @@ import { defaultCourseThumbnailPath } from "./courses/thumbnails";
 
 /**
  * Seluruh data di file ini adalah DATA DUMMY untuk kebutuhan prototype visual.
- * Nama mentor, angka performa, dan testimoni bersifat fiktif — belum ada
+ * Nama mentor, angka performa, dan testimoni bersifat fiktif, belum ada
  * mentor/emiten sungguhan yang diverifikasi. Lihat dokumentasi produk di
  * folder "01 - Riset & Strategi" dan "04 - Konten & Instruktur" untuk kriteria
  * kurasi mentor sesungguhnya sebelum data ini diganti data real.
@@ -40,7 +40,7 @@ export const mentors: Mentor[] = [
     cutoutUrl: "/mentors/kirana-ayu.svg",
     instruments: ["Crypto"],
     verified: true,
-    licenseLabel: "Sertifikasi Kompetensi Aset Kripto — Bappebti",
+    licenseLabel: "Sertifikasi Kompetensi Aset Kripto, Bappebti",
     yearsExperience: 7,
     studentsCount: 6210,
     coursesCount: 2,
@@ -147,7 +147,7 @@ export const mentors: Mentor[] = [
     rating: 4.7,
     bio: "Ex-day trader di meja prop lokal, kini fokus mengajar scalping saham IDX dengan aturan risiko ketat. Dikenal karena checklist entry yang bisa langsung dipakai di jam perdagangan pagi.",
     philosophy:
-      "\"Scalping bukan cari cuan cepat — scalping adalah disiplin eksekusi berulang dengan edge kecil yang konsisten.\"",
+      "\"Scalping bukan cari cuan cepat, scalping adalah disiplin eksekusi berulang dengan edge kecil yang konsisten.\"",
     trackRecord: [6, 11, 9, 14, 12, 17, 15, 20, 18, 23, 21, 26],
     availableFor1on1: true,
     sessionPrice: "Rp550.000 / 30 menit",
@@ -159,7 +159,7 @@ export const mentors: Mentor[] = [
     initials: "HW",
     instruments: ["Forex"],
     verified: true,
-    licenseLabel: "Eks Senior Dealer FX — 10 Tahun",
+    licenseLabel: "Eks Senior Dealer FX, 10 Tahun",
     yearsExperience: 10,
     studentsCount: 2980,
     coursesCount: 2,
@@ -177,14 +177,14 @@ export const mentors: Mentor[] = [
     initials: "SM",
     instruments: ["Crypto"],
     verified: true,
-    licenseLabel: "Sertifikasi Kompetensi Aset Kripto — Bappebti",
+    licenseLabel: "Sertifikasi Kompetensi Aset Kripto, Bappebti",
     yearsExperience: 6,
     studentsCount: 2140,
     coursesCount: 2,
     rating: 4.7,
     bio: "Peneliti DeFi independen yang aktif membedah whitepaper dan tokenomics sebelum masuk posisi. Kelasnya cocok untuk trader kripto yang ingin naik level dari sekadar chart ke riset fundamental on-chain.",
     philosophy:
-      "\"Di kripto, narrative bisa menggerakkan harga — tapi tokenomics yang buruk tetap akan kehabisan bahan bakar. Riset dulu, FOMO belakangan.\"",
+      "\"Di kripto, narrative bisa menggerakkan harga, tapi tokenomics yang buruk tetap akan kehabisan bahan bakar. Riset dulu, FOMO belakangan.\"",
     trackRecord: [4, 7, 6, 10, 9, 13, 11, 15, 14, 18, 16, 21],
     availableFor1on1: true,
     sessionPrice: "Rp650.000 / 45 menit",
@@ -196,14 +196,14 @@ export const mentors: Mentor[] = [
     initials: "AK",
     instruments: ["Saham", "Forex"],
     verified: true,
-    licenseLabel: "Certified Trading Coach — BAPPEBTI",
+    licenseLabel: "Certified Trading Coach, BAPPEBTI",
     yearsExperience: 11,
     studentsCount: 4520,
     coursesCount: 2,
     rating: 4.9,
     bio: "Mentor lintas instrumen dengan fokus disiplin, journaling, dan manajemen risiko portofolio. Banyak alumni dari trader yang sudah paham teknikal tapi masih sering overtrade.",
     philosophy:
-      "\"Edge terbesar kebanyakan trader bukan strategi baru — tapi kemampuan berhenti trading saat kondisi mental sedang buruk.\"",
+      "\"Edge terbesar kebanyakan trader bukan strategi baru, tapi kemampuan berhenti trading saat kondisi mental sedang buruk.\"",
     trackRecord: [11, 15, 13, 18, 16, 21, 19, 24, 22, 27, 25, 30],
     availableFor1on1: true,
     sessionPrice: "Rp700.000 / 45 menit",
@@ -232,7 +232,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Fondasi Analisis Saham",
+        title: "Modul 1: Fondasi Analisis Saham",
         lessons: [
           { id: "l1", title: "Mengapa Analisis Fundamental Menjadi Dasar Keputusan", durationMinutes: 12, preview: true },
           { id: "l2", title: "Anatomi Laporan Keuangan Emiten", durationMinutes: 18 },
@@ -240,7 +240,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Modul 2 — Rasio & Valuasi Dasar",
+        title: "Modul 2: Rasio & Valuasi Dasar",
         lessons: [
           { id: "l4", title: "PER dan PBV: Mahal atau Murah?", durationMinutes: 20 },
           { id: "l5", title: "ROE, DER, dan Kesehatan Bisnis", durationMinutes: 19 },
@@ -248,14 +248,14 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Modul 3 — Membangun Watchlist Pertama",
+        title: "Modul 3: Membangun Watchlist Pertama",
         lessons: [
           { id: "l7", title: "Kriteria Screening Saham Berkualitas", durationMinutes: 17 },
           { id: "l8", title: "Menyusun Watchlist & Rencana Belajar Lanjutan", durationMinutes: 14 },
         ],
       },
       {
-        title: "Modul 4 — Studi Kasus Emiten BEI",
+        title: "Modul 4: Studi Kasus Emiten BEI",
         lessons: [
           { id: "l9", title: "Membaca Tren Pendapatan 3 Tahun", durationMinutes: 19 },
           { id: "l10", title: "Red Flag Laporan Keuangan yang Sering Terlewat", durationMinutes: 16 },
@@ -276,7 +276,7 @@ export const courses: Course[] = [
     studentsCount: 1870,
     durationHours: 8,
     shortDescription:
-      "Pelajari metodologi valuasi yang dipakai analis profesional — DCF dan relative valuation — untuk menilai wajar tidaknya harga sebuah saham secara mandiri.",
+      "Pelajari metodologi valuasi yang dipakai analis profesional, DCF dan relative valuation, untuk menilai wajar tidaknya harga sebuah saham secara mandiri.",
     outcomes: [
       "Membangun model DCF sederhana dengan asumsi yang masuk akal",
       "Melakukan relative valuation antar emiten sejenis di satu sektor",
@@ -285,14 +285,14 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Kerangka Berpikir Valuasi",
+        title: "Modul 1: Kerangka Berpikir Valuasi",
         lessons: [
           { id: "l1", title: "Harga vs Nilai: Kenapa Keduanya Berbeda", durationMinutes: 14, preview: true },
           { id: "l2", title: "Kapan Pakai DCF, Kapan Pakai Relative Valuation", durationMinutes: 16 },
         ],
       },
       {
-        title: "Modul 2 — Discounted Cash Flow (DCF)",
+        title: "Modul 2: Discounted Cash Flow (DCF)",
         lessons: [
           { id: "l3", title: "Memproyeksikan Arus Kas Bebas", durationMinutes: 24 },
           { id: "l4", title: "Menentukan Discount Rate yang Wajar", durationMinutes: 20 },
@@ -300,7 +300,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Modul 3 — Relative Valuation",
+        title: "Modul 3: Relative Valuation",
         lessons: [
           { id: "l6", title: "Memilih Peer Group yang Tepat", durationMinutes: 18 },
           { id: "l7", title: "Studi Kasus Perbandingan Sektor Perbankan", durationMinutes: 22 },
@@ -329,14 +329,14 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Dasar Pembacaan Chart",
+        title: "Modul 1: Dasar Pembacaan Chart",
         lessons: [
           { id: "l1", title: "Anatomi Candlestick", durationMinutes: 15, preview: true },
           { id: "l2", title: "Support & Resistance Praktis", durationMinutes: 18 },
         ],
       },
       {
-        title: "Modul 2 — Menyusun Rencana Trading",
+        title: "Modul 2: Menyusun Rencana Trading",
         lessons: [
           { id: "l3", title: "Entry, Stop Loss, dan Target Realistis", durationMinutes: 20 },
           { id: "l4", title: "Position Sizing & Manajemen Risiko", durationMinutes: 17 },
@@ -344,7 +344,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Modul 3 — Indikator Pendukung",
+        title: "Modul 3: Indikator Pendukung",
         lessons: [
           { id: "l6", title: "Moving Average untuk Konfirmasi Trend", durationMinutes: 16 },
           { id: "l7", title: "RSI & Volume: Kapan Dipakai, Kapan Diabaikan", durationMinutes: 18 },
@@ -365,7 +365,7 @@ export const courses: Course[] = [
     studentsCount: 2650,
     durationHours: 6,
     shortDescription:
-      "Melampaui candlestick — pelajari cara membaca data on-chain (exchange flow, whale activity, network health) untuk memahami kondisi pasar kripto secara lebih dalam.",
+      "Melampaui candlestick, pelajari cara membaca data on-chain (exchange flow, whale activity, network health) untuk memahami kondisi pasar kripto secara lebih dalam.",
     outcomes: [
       "Memahami metrik on-chain dasar (active address, exchange netflow)",
       "Mengenali pola akumulasi & distribusi 'whale'",
@@ -374,14 +374,14 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Dasar Data On-Chain",
+        title: "Modul 1: Dasar Data On-Chain",
         lessons: [
           { id: "l1", title: "Apa Itu Data On-Chain dan Kenapa Penting", durationMinutes: 13, preview: true },
           { id: "l2", title: "Membaca Exchange Netflow", durationMinutes: 19 },
         ],
       },
       {
-        title: "Modul 2 — Studi Kasus Praktis",
+        title: "Modul 2: Studi Kasus Praktis",
         lessons: [
           { id: "l3", title: "Mengenali Pola Akumulasi Whale", durationMinutes: 21 },
           { id: "l4", title: "Menyusun Checklist Riset Sebelum Entry", durationMinutes: 16 },
@@ -401,7 +401,7 @@ export const courses: Course[] = [
     studentsCount: 980,
     durationHours: 4,
     shortDescription:
-      "Program fondasi manajemen modal untuk pasar crypto — position sizing, stop loss, dan disiplin eksekusi di lingkungan volatil.",
+      "Program fondasi manajemen modal untuk pasar crypto, position sizing, stop loss, dan disiplin eksekusi di lingkungan volatil.",
     outcomes: [
       "Memahami ukuran posisi yang aman untuk modal terbatas",
       "Menyusun aturan stop loss pribadi dan mematuhinya",
@@ -410,14 +410,14 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Fondasi Manajemen Modal",
+        title: "Modul 1: Fondasi Manajemen Modal",
         lessons: [
           { id: "l1", title: "Penyebab Umum Kegagalan Trader Baru", durationMinutes: 11, preview: true },
           { id: "l2", title: "Position Sizing untuk Modal Terbatas", durationMinutes: 15 },
         ],
       },
       {
-        title: "Modul 2 — Aturan & Disiplin",
+        title: "Modul 2: Aturan & Disiplin",
         lessons: [
           { id: "l3", title: "Menyusun Aturan Stop Loss Pribadi", durationMinutes: 14 },
           { id: "l4", title: "Mengenali Bias Psikologis Trading", durationMinutes: 18 },
@@ -437,7 +437,7 @@ export const courses: Course[] = [
     studentsCount: 1560,
     durationHours: 7,
     shortDescription:
-      "Kerangka analisis makro untuk memahami pergerakan nilai tukar — suku bunga, inflasi, dan sentimen global — sebelum membaca chart pair mayor.",
+      "Kerangka analisis makro untuk memahami pergerakan nilai tukar, suku bunga, inflasi, dan sentimen global, sebelum membaca chart pair mayor.",
     outcomes: [
       "Memahami hubungan suku bunga bank sentral dengan nilai tukar",
       "Membaca kalender ekonomi dan dampaknya ke pair mayor",
@@ -446,21 +446,21 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Fondasi Makroekonomi",
+        title: "Modul 1: Fondasi Makroekonomi",
         lessons: [
           { id: "l1", title: "Kenapa Nilai Tukar Bergerak", durationMinutes: 16, preview: true },
           { id: "l2", title: "Suku Bunga Bank Sentral dan Dampaknya", durationMinutes: 21 },
         ],
       },
       {
-        title: "Modul 2 — Membaca Kalender Ekonomi",
+        title: "Modul 2: Membaca Kalender Ekonomi",
         lessons: [
           { id: "l3", title: "Rilis Data yang Wajib Dipantau", durationMinutes: 18 },
           { id: "l4", title: "Studi Kasus Reaksi Pasar Pasca Rilis NFP", durationMinutes: 24 },
         ],
       },
       {
-        title: "Modul 3 — Menyusun Trading Plan Makro",
+        title: "Modul 3: Menyusun Trading Plan Makro",
         lessons: [
           { id: "l5", title: "Bias Harian dari Narasi Makro", durationMinutes: 17 },
           { id: "l6", title: "Korelasi DXY dengan Pair Mayor", durationMinutes: 20 },
@@ -490,14 +490,14 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Dasar Dividen BEI",
+        title: "Modul 1: Dasar Dividen BEI",
         lessons: [
           { id: "l1", title: "Jenis Dividen & Timeline Pembayaran", durationMinutes: 14, preview: true },
           { id: "l2", title: "Yield vs Growth: Pilih Fokus Portofolio", durationMinutes: 17 },
         ],
       },
       {
-        title: "Modul 2 — Screening Praktis",
+        title: "Modul 2: Screening Praktis",
         lessons: [
           { id: "l3", title: "Payout Ratio & DER yang Aman", durationMinutes: 19 },
           { id: "l4", title: "Studi Kasus: Perbankan vs Konsumer", durationMinutes: 21 },
@@ -518,7 +518,7 @@ export const courses: Course[] = [
     studentsCount: 1780,
     durationHours: 6,
     shortDescription:
-      "Program lanjutan teknikal — struktur higher high/low, zona supply-demand, dan timing entry swing pada saham IDX likuid.",
+      "Program lanjutan teknikal, struktur higher high/low, zona supply-demand, dan timing entry swing pada saham IDX likuid.",
     outcomes: [
       "Mengenali struktur trend dan titik balik (change of character)",
       "Menentukan zona entry berdasarkan price action murni",
@@ -527,21 +527,21 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Struktur Pasar",
+        title: "Modul 1: Struktur Pasar",
         lessons: [
-          { id: "l1", title: "Higher High, Higher Low — Bahasa Trend", durationMinutes: 16, preview: true },
+          { id: "l1", title: "Higher High, Higher Low, Bahasa Trend", durationMinutes: 16, preview: true },
           { id: "l2", title: "Change of Character vs Pullback Biasa", durationMinutes: 18 },
         ],
       },
       {
-        title: "Modul 2 — Zona & Timing",
+        title: "Modul 2: Zona & Timing",
         lessons: [
           { id: "l3", title: "Supply & Demand di Chart Saham IDX", durationMinutes: 20 },
           { id: "l4", title: "Multi-Timeframe: Daily + 4H", durationMinutes: 22 },
         ],
       },
       {
-        title: "Modul 3 — Studi Kasus Terapan",
+        title: "Modul 3: Studi Kasus Terapan",
         lessons: [
           { id: "l5", title: "Replay Trade: Entry di Zona Demand", durationMinutes: 25 },
           { id: "l6", title: "Kesalahan Umum Swing Trader Pemula", durationMinutes: 15 },
@@ -561,7 +561,7 @@ export const courses: Course[] = [
     studentsCount: 1340,
     durationHours: 5,
     shortDescription:
-      "Kerangka analisis siklus pasar crypto — halving, likuiditas global, dan sentimen makro — untuk keputusan akumulasi dan distribusi yang terukur.",
+      "Kerangka analisis siklus pasar crypto, halving, likuiditas global, dan sentimen makro, untuk keputusan akumulasi dan distribusi yang terukur.",
     outcomes: [
       "Memahami mekanisme halving dan dampak historisnya",
       "Membaca korelasi BTC dengan DXY dan risk-on/risk-off",
@@ -570,14 +570,14 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Anatomi Siklus Kripto",
+        title: "Modul 1: Anatomi Siklus Crypto",
         lessons: [
           { id: "l1", title: "Empat Fase Siklus: Akumulasi hingga Distribusi", durationMinutes: 15, preview: true },
           { id: "l2", title: "Halving: Supply Shock vs Narrative", durationMinutes: 18 },
         ],
       },
       {
-        title: "Modul 2 — Makro & On-Chain",
+        title: "Modul 2: Makro & On-Chain",
         lessons: [
           { id: "l3", title: "Likuiditas Global & Aliran Dana Institusi", durationMinutes: 20 },
           { id: "l4", title: "Metrik On-Chain untuk Deteksi Fase", durationMinutes: 22 },
@@ -598,7 +598,7 @@ export const courses: Course[] = [
     studentsCount: 2210,
     durationHours: 4,
     shortDescription:
-      "Program praktis scalping saham likuid IDX — fokus sesi pagi dan sore dengan aturan risiko harian yang jelas.",
+      "Program praktis scalping saham likuid IDX, fokus sesi pagi dan sore dengan aturan risiko harian yang jelas.",
     outcomes: [
       "Memilih saham likuid yang cocok untuk scalping",
       "Menentukan stop loss harian sebelum buka chart",
@@ -607,21 +607,21 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Persiapan Pre-Market",
+        title: "Modul 1: Persiapan Pre-Market",
         lessons: [
           { id: "l1", title: "Kriteria Saham Scalping di BEI", durationMinutes: 12, preview: true },
           { id: "l2", title: "Aturan Risiko Harian: Max Loss & Max Trade", durationMinutes: 14 },
         ],
       },
       {
-        title: "Modul 2 — Setup Intraday",
+        title: "Modul 2: Setup Intraday",
         lessons: [
           { id: "l3", title: "Breakout Opening Range", durationMinutes: 18 },
           { id: "l4", title: "Mean Reversion di Sesi Sore", durationMinutes: 16 },
         ],
       },
       {
-        title: "Modul 3 — Eksekusi & Review",
+        title: "Modul 3: Eksekusi & Review",
         lessons: [
           { id: "l5", title: "Order Types: Limit vs Market di IDX", durationMinutes: 15 },
           { id: "l6", title: "Jurnal Scalp: Template 5 Menit", durationMinutes: 13 },
@@ -641,7 +641,7 @@ export const courses: Course[] = [
     studentsCount: 980,
     durationHours: 5,
     shortDescription:
-      "Program lanjutan scalping — depth of market, pola order tipikal, dan timing entry dari arus bid-offer saham tier 1.",
+      "Program lanjutan scalping, depth of market, pola order tipikal, dan timing entry dari arus bid-offer saham tier 1.",
     outcomes: [
       "Membaca order book dan imbalance bid-offer",
       "Mengenali tanda-tanda manipulasi order tipikal",
@@ -650,16 +650,16 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Dasar Order Book",
+        title: "Modul 1: Dasar Order Book",
         lessons: [
           { id: "l1", title: "Anatomi Bid, Offer, dan Queue", durationMinutes: 16, preview: true },
           { id: "l2", title: "Imbalance & Momentum Singkat", durationMinutes: 19 },
         ],
       },
       {
-        title: "Modul 2 — Studi Kasus Tier 1",
+        title: "Modul 2: Studi Kasus Tier 1",
         lessons: [
-          { id: "l3", title: "Replay: BBCA vs BMRI — Perbedaan Likuiditas", durationMinutes: 22 },
+          { id: "l3", title: "Replay: BBCA vs BMRI, Perbedaan Likuiditas", durationMinutes: 22 },
           { id: "l4", title: "Kapan Skip Trade: Spread & Slippage", durationMinutes: 17 },
         ],
       },
@@ -686,21 +686,21 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Dasar Price Action",
+        title: "Modul 1: Dasar Price Action",
         lessons: [
           { id: "l1", title: "Struktur Pasar: Trend vs Range", durationMinutes: 15, preview: true },
           { id: "l2", title: "Swing High/Low sebagai Level Kunci", durationMinutes: 18 },
         ],
       },
       {
-        title: "Modul 2 — Pair Mayor",
+        title: "Modul 2: Pair Mayor",
         lessons: [
           { id: "l3", title: "EUR/USD: Karakter & Sesi Terbaik", durationMinutes: 20 },
           { id: "l4", title: "GBP/JPY: Volatilitas & Manajemen Risiko", durationMinutes: 21 },
         ],
       },
       {
-        title: "Modul 3 — Rencana Trade",
+        title: "Modul 3: Rencana Trade",
         lessons: [
           { id: "l5", title: "Template Trade Plan 1 Halaman", durationMinutes: 14 },
           { id: "l6", title: "Studi Kasus: 3 Trade Kalah & Pelajaran", durationMinutes: 19 },
@@ -720,7 +720,7 @@ export const courses: Course[] = [
     studentsCount: 1120,
     durationHours: 5,
     shortDescription:
-      "Fokus pada volatilitas sesi London open dan overlap NY — setup momentum dan pullback cepat dengan stop ketat.",
+      "Fokus pada volatilitas sesi London open dan overlap NY, setup momentum dan pullback cepat dengan stop ketat.",
     outcomes: [
       "Memetakan jam trading optimal per pair",
       "Setup momentum break di London open",
@@ -729,14 +729,14 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Peta Sesi",
+        title: "Modul 1: Peta Sesi",
         lessons: [
           { id: "l1", title: "Sesi Asia, London, NY: Volatilitas & Spread", durationMinutes: 14, preview: true },
           { id: "l2", title: "Pair Pilihan per Sesi", durationMinutes: 16 },
         ],
       },
       {
-        title: "Modul 2 — Setup Scalp",
+        title: "Modul 2: Setup Scalp",
         lessons: [
           { id: "l3", title: "London Breakout: Rules & Filter", durationMinutes: 20 },
           { id: "l4", title: "NY Pullback: Entry & Invalidation", durationMinutes: 18 },
@@ -757,7 +757,7 @@ export const courses: Course[] = [
     studentsCount: 890,
     durationHours: 4,
     shortDescription:
-      "Framework riset DeFi dan tokenomics — supply, vesting, dan red flag — sebelum mengambil posisi pada proyek crypto baru.",
+      "Framework riset DeFi dan tokenomics, supply, vesting, dan red flag, sebelum mengambil posisi pada proyek crypto baru.",
     outcomes: [
       "Membaca bagian tokenomics whitepaper secara efisien",
       "Memahami FDV, circulating supply, dan unlock schedule",
@@ -766,14 +766,14 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Dasar DeFi",
+        title: "Modul 1: Dasar DeFi",
         lessons: [
           { id: "l1", title: "Apa Itu DeFi vs CeFi", durationMinutes: 12, preview: true },
           { id: "l2", title: "AMM, Liquidity Pool, Impermanent Loss", durationMinutes: 17 },
         ],
       },
       {
-        title: "Modul 2 — Tokenomics",
+        title: "Modul 2: Tokenomics",
         lessons: [
           { id: "l3", title: "Supply, Vesting, & Cliff", durationMinutes: 16 },
           { id: "l4", title: "Studi Kasus: Token Bagus vs Token Trap", durationMinutes: 20 },
@@ -793,7 +793,7 @@ export const courses: Course[] = [
     studentsCount: 720,
     durationHours: 5,
     shortDescription:
-      "Framework evaluasi narrative crypto (L2, RWA, AI) berbasis metrik fundamental — untuk memisahkan momentum pasar dari substansi proyek.",
+      "Framework evaluasi narrative crypto (L2, RWA, AI) berbasis metrik fundamental, untuk memisahkan momentum pasar dari substansi proyek.",
     outcomes: [
       "Memetakan narrative aktif versus fundamental proyek",
       "Menilai TVL, developer activity, dan adoption metrics",
@@ -802,21 +802,21 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Framework Narrative",
+        title: "Modul 1: Framework Narrative",
         lessons: [
           { id: "l1", title: "Hype Cycle vs Adoption Curve", durationMinutes: 14, preview: true },
           { id: "l2", title: "Layer 2, RWA, AI: Apa yang Harus Dicek", durationMinutes: 18 },
         ],
       },
       {
-        title: "Modul 2 — Metrik & Studi Kasus",
+        title: "Modul 2: Metrik & Studi Kasus",
         lessons: [
           { id: "l3", title: "TVL, Active Addresses, GitHub Activity", durationMinutes: 19 },
           { id: "l4", title: "Studi Kasus Narrative 2024–2025", durationMinutes: 23 },
         ],
       },
       {
-        title: "Modul 3 — Portfolio Narrative",
+        title: "Modul 3: Portfolio Narrative",
         lessons: [
           { id: "l5", title: "Alokasi Risiko per Narrative", durationMinutes: 16 },
           { id: "l6", title: "Exit Plan: Kapan Narrative Mati", durationMinutes: 15 },
@@ -836,7 +836,7 @@ export const courses: Course[] = [
     studentsCount: 3100,
     durationHours: 4,
     shortDescription:
-      "Program psikologi trading — bias kognitif yang merusak performa, serta kerangka disiplin dan rutinitas mental yang dapat diukur.",
+      "Program psikologi trading, bias kognitif yang merusak performa, serta kerangka disiplin dan rutinitas mental yang dapat diukur.",
     outcomes: [
       "Mengenali FOMO, revenge trade, dan confirmation bias",
       "Menyusun aturan trading tertulis yang dapat dipatuhi",
@@ -845,21 +845,21 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Bias Kognitif dalam Trading",
+        title: "Modul 1: Bias Kognitif dalam Trading",
         lessons: [
           { id: "l1", title: "FOMO: Identifikasi Gejala dan Akar Masalah", durationMinutes: 13, preview: true },
           { id: "l2", title: "Revenge Trade & Overconfidence", durationMinutes: 15 },
         ],
       },
       {
-        title: "Modul 2 — Rutinitas Mental",
+        title: "Modul 2: Rutinitas Mental",
         lessons: [
           { id: "l3", title: "Pre-Trade Checklist Psikologis", durationMinutes: 14 },
           { id: "l4", title: "Jurnal Emosi: Template Harian", durationMinutes: 16 },
         ],
       },
       {
-        title: "Modul 3 — Pemulihan Setelah Drawdown",
+        title: "Modul 3: Pemulihan Setelah Drawdown",
         lessons: [
           { id: "l5", title: "Protokol Setelah Serangkaian Loss", durationMinutes: 17 },
           { id: "l6", title: "Kriteria Pause Trading yang Objektif", durationMinutes: 12 },
@@ -888,21 +888,21 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Modul 1 — Matematika Risiko",
+        title: "Modul 1: Matematika Risiko",
         lessons: [
           { id: "l1", title: "Risk per Trade & Kelly Criterion (Praktis)", durationMinutes: 16, preview: true },
           { id: "l2", title: "Risk of Ruin: Kapan Akun Terancam", durationMinutes: 18 },
         ],
       },
       {
-        title: "Modul 2 — Lintas Instrumen",
+        title: "Modul 2: Lintas Instrumen",
         lessons: [
           { id: "l3", title: "Sizing Saham IDX: Lot & Broker Fee", durationMinutes: 17 },
           { id: "l4", title: "Sizing Forex: Pip Value & Leverage", durationMinutes: 19 },
         ],
       },
       {
-        title: "Modul 3 — Policy & Audit",
+        title: "Modul 3: Policy & Audit",
         lessons: [
           { id: "l5", title: "Menyusun Risk Policy Pribadi", durationMinutes: 15 },
           { id: "l6", title: "Audit Bulanan: Apakah Policy Dipatuhi?", durationMinutes: 14 },
@@ -948,7 +948,7 @@ export const reviews: Review[] = [
     initials: "BS",
     rating: 5,
     comment:
-      "Materi scalping Dian sangat praktis — checklist pre-market-nya langsung saya pakai di jam buka BEI.",
+      "Materi scalping Dian sangat praktis, checklist pre-market-nya langsung saya pakai di jam buka BEI.",
     date: "3 minggu lalu",
     courseTag: "Scalping Saham IDX",
     mentorTag: "Dian Pratiwi",

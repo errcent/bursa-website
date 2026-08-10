@@ -1,4 +1,4 @@
-/** Komisi platform indikatif — disepakati internal founder, konsisten di seluruh UI checkout. */
+/** Komisi platform indikatif, disepakati internal founder, konsisten di seluruh UI checkout. */
 export const PLATFORM_COMMISSION_RATE = 0.25;
 
 export interface CheckoutBreakdown {

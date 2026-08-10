@@ -21,7 +21,7 @@ import type { PlaylistDetail, PlaylistItemAccessStatus, PlaylistItemView } from 
 import { cn } from "@/lib/utils";
 
 function formatDuration(minutes: number | null) {
-  if (!minutes || minutes <= 0) return "—";
+  if (!minutes || minutes <= 0) return "-";
   if (minutes < 60) return `${minutes} mnt`;
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;

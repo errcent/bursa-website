@@ -10,7 +10,7 @@ import { getAllArticles } from "@/lib/articles/content";
 export const metadata: Metadata = {
   title: "Artikel",
   description:
-    "Artikel edukasi trading — saham, crypto, forex, analisis teknikal, fundamental, dan psikologi trader dari tim Bursa.",
+    "Artikel edukasi trading, saham, crypto, forex, analisis teknikal, fundamental, dan psikologi trader dari tim Bursa.",
 };
 
 export default function ArtikelPage() {
@@ -23,7 +23,7 @@ export default function ArtikelPage() {
         <InfoPageHero
           eyebrow="Edukasi"
           title="Artikel & Insight Trading"
-          description="Tulisan ringkas untuk memperdalam pemahaman — dari candlestick dasar hingga risk management. Materi edukasi, bukan rekomendasi investasi."
+          description="Tulisan ringkas untuk memperdalam pemahaman, dari candlestick dasar hingga risk management. Materi edukasi, bukan rekomendasi investasi."
         />
 
         <div className="container-page section-spacious">

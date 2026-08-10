@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
-/** Solid popover fill — never glass / never token alpha. */
+/** Solid popover fill, never glass / never token alpha. */
 const PANEL_SURFACE =
   "bg-popover text-popover-foreground dark:!bg-[#0d0d0f] dark:!text-[#e5e5e5]";
 
@@ -130,7 +130,7 @@ interface SearchDropdownProps {
   onActiveIndexChange: (index: number) => void;
   onRemoveRecent?: (query: string) => void;
   onClearRecent?: () => void;
-  /** When true, panel only renders query results — no empty-state suggestions. */
+  /** When true, panel only renders query results, no empty-state suggestions. */
   queryOnly?: boolean;
   /** Hide the "view all results" footer action (e.g. on catalog page). */
   hideViewAll?: boolean;
@@ -235,7 +235,7 @@ export function SearchDropdown({
               backgroundColor: "var(--popover)",
             }}
             className={cn(
-              // Portaled + solid popover — escapes surface-card backdrop-blur stacking
+              // Portaled + solid popover, escapes surface-card backdrop-blur stacking
               "fixed z-[200] isolate overflow-hidden rounded-2xl border-2 border-border shadow-[0_28px_64px_-12px_rgba(0,0,0,0.7),0_12px_28px_-8px_rgba(0,0,0,0.5)] dark:border-white/10",
               PANEL_SURFACE,
               className

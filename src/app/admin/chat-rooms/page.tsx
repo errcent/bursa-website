@@ -218,7 +218,7 @@ export default function AdminChatRoomsPage() {
             </Badge>
           </div>
           <p className="text-xs text-muted-foreground">
-            Satu thread privat per mentor dengan admin — mentor tidak digabung dalam satu grup.
+            Satu thread privat per mentor dengan admin, mentor tidak digabung dalam satu grup.
           </p>
           <div className="flex flex-col gap-3 lg:flex-row">
             <ul className="max-h-[420px] w-full shrink-0 space-y-1 overflow-y-auto lg:w-64">
@@ -398,7 +398,7 @@ export default function AdminChatRoomsPage() {
       <FormModal
         open={membersOpen}
         onClose={() => setMembersOpen(false)}
-        title={selectedRoom ? `Anggota — ${selectedRoom.name}` : "Anggota"}
+        title={selectedRoom ? `Anggota, ${selectedRoom.name}` : "Anggota"}
       >
         <ul className="space-y-2 text-sm">
           {members.map((m) => (

@@ -25,7 +25,7 @@ export function LessonPreviewThumb({
   title: string;
   /** Free-preview lesson (first of module 1 or preview flag). */
   isFree: boolean;
-  /** Enrolled / subscribed — clear thumbnail even for paid lessons. */
+  /** Enrolled / subscribed, clear thumbnail even for paid lessons. */
   hasAccess?: boolean;
   durationMinutes: number;
   /** Override badge text (e.g. `16:00` for MasterClass-style curriculum rows). */

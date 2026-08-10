@@ -25,7 +25,7 @@ export function savePendingGuidance(
     };
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch {
-    // quota / private mode — non-blocking
+    // quota / private mode, non-blocking
   }
 }
 

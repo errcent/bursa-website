@@ -10,7 +10,7 @@ import {
   normalizeLoginIdentifier,
 } from "./validation";
 
-/** Non-bcrypt markers — OAuth-only and client-auth bridge accounts cannot password-login. */
+/** Non-bcrypt markers, OAuth-only and client-auth bridge accounts cannot password-login. */
 const NON_PASSWORD_MARKERS = new Set(["client-auth-bridge", OAUTH_PASSWORD_MARKER]);
 
 /** Find a user by username, email, or phone (E.164 / Indonesian). */
@@ -31,7 +31,7 @@ export async function findUserByIdentifier(identifier: string): Promise<User | n
 }
 
 export async function verifyPassword(user: User, password: string): Promise<boolean> {
-  // Reject before bcrypt.compare — marker strings are not valid bcrypt hashes.
+  // Reject before bcrypt.compare, marker strings are not valid bcrypt hashes.
   if (NON_PASSWORD_MARKERS.has(user.passwordHash)) return false;
   return bcrypt.compare(password, user.passwordHash);
 }

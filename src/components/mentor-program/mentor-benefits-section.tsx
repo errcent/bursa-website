@@ -28,7 +28,7 @@ export function MentorBenefitsSection() {
         <p className="eyebrow mb-2">Keuntungan</p>
         <h2 className="section-title">Mengapa mengajar di Bursa?</h2>
         <p className="section-copy mt-2 max-w-2xl">
-          Fokus pada mengajar — kami yang urus infrastruktur, pembayaran, dan kepercayaan murid.
+          Fokus pada mengajar, kami yang urus infrastruktur, pembayaran, dan kepercayaan murid.
         </p>
       </Reveal>
 

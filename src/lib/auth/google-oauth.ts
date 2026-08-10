@@ -39,7 +39,7 @@ function mapClientRole(_email: string, roleHint?: string): UserRole {
 
 /**
  * Create or link a Prisma user after Google OAuth.
- * Data minimization: email, display name, avatar URL only — no Gmail read scope.
+ * Data minimization: email, display name, avatar URL only, no Gmail read scope.
  */
 export async function upsertGoogleOAuthUser(input: {
   email: string;

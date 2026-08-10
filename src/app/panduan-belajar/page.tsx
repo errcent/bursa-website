@@ -27,7 +27,7 @@ export default function PanduanBelajarPage() {
               </h1>
               <p className="section-copy mt-4 max-w-2xl text-base sm:text-[1.05rem]">
                 Quiz singkat untuk memetakan profil belajarmu, lalu rekomendasi kelas dan mentor
-                yang selaras — tanpa komitmen.
+                yang selaras, tanpa komitmen.
               </p>
             </Reveal>
           </div>

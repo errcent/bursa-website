@@ -14,7 +14,7 @@ export const waitlistSubmitSchema = z.object({
   utmContent: z.string().trim().max(128).optional(),
   referralCode: z.string().trim().max(64).optional(),
   turnstileToken: z.string().trim().optional(),
-  /** Honeypot — must stay empty for real users. */
+  /** Honeypot, must stay empty for real users. */
   website: z.string().max(0).optional(),
 });
 

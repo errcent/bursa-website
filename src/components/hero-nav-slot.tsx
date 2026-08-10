@@ -13,7 +13,7 @@ const SEARCH_VISIBLE_THRESHOLD = 0.06;
 
 /**
  * Keeps the navbar docked to the bottom of a full-viewport hero until scroll
- * would push it past the viewport top — then pins it at the top.
+ * would push it past the viewport top, then pins it at the top.
  *
  * Position + glass/search progress vars are updated directly on the DOM each frame
  * after hydration (no React state per scroll tick) so movement stays 1:1 with scroll.
@@ -81,7 +81,7 @@ export function HeroNavSlot({ children }: { children: React.ReactNode }) {
       inner.dataset.pinned = nextPinned ? "true" : "false";
 
       const navGlass = inner.querySelector<HTMLElement>("[data-hero-nav-glass]");
-      // Single glass path: strength 0→1 matches Katalog `.nav-glass` at 1 — no class swap at pin.
+      // Single glass path: strength 0→1 matches Katalog `.nav-glass` at 1, no class swap at pin.
       const glassStrength = nextPinned ? 1 : progress;
       const blurPx = `${glassStrength * 24}px`;
       navGlass?.style.setProperty("--nav-glass-strength", String(glassStrength));

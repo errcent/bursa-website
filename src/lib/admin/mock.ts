@@ -38,7 +38,7 @@ let mockCourses: AdminCourse[] = courses.map((c, i) => {
     slug: c.slug,
     title: c.title,
     mentorId: `mentor-mock-${mentors.findIndex((m) => m.slug === c.mentorSlug)}`,
-    mentorName: mentor?.name ?? "—",
+    mentorName: mentor?.name ?? "-",
     instrument: c.instrument,
     level: c.level,
     price: c.price,
@@ -67,7 +67,7 @@ let mockCourses: AdminCourse[] = courses.map((c, i) => {
 let mockChatRooms: AdminChatRoom[] = mentors.slice(0, 3).flatMap((m, mi) =>
   ["Pemula", "Menengah", "Mahir"].map((tier, ti) => ({
     id: `room-mock-${mi}-${ti}`,
-    name: `Komunitas ${tier} — ${m.initials}`,
+    name: `Komunitas ${tier}, ${m.initials}`,
     slug: `${tier.toLowerCase()}-${m.slug}`,
     mentorId: `mentor-mock-${mi}`,
     mentorName: m.name,
@@ -311,7 +311,7 @@ export function createMockCourse(input: Omit<AdminCourse, "id" | "slug" | "mento
     ...input,
     id: `course-mock-${Date.now()}`,
     slug,
-    mentorName: mentor?.name ?? "—",
+    mentorName: mentor?.name ?? "-",
     studentsCount: 0,
   };
   mockCourses = [course, ...mockCourses];
@@ -497,7 +497,7 @@ export function createMockChatRoom(input: Omit<AdminChatRoom, "id" | "slug" | "m
     ...input,
     id: `room-mock-${Date.now()}`,
     slug: input.name.toLowerCase().replace(/\s+/g, "-"),
-    mentorName: mentor?.name ?? "—",
+    mentorName: mentor?.name ?? "-",
     memberCount: 0,
     isActive: true,
   };

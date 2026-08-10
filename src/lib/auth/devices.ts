@@ -1,5 +1,5 @@
 /** Prototype device-session store (localStorage). Production: persist DeviceSession in DB and enforce server-side.
- *  Max 2 simultaneous devices per account — enforced on login in registerDeviceOnLogin(). */
+ *  Max 2 simultaneous devices per account, enforced on login in registerDeviceOnLogin(). */
 
 export const MAX_DEVICES_PER_ACCOUNT = 2;
 
@@ -22,7 +22,7 @@ function sessionsKey(userId: string) {
   return `${DEVICE_SESSIONS_PREFIX}${userId}`;
 }
 
-/** Simple fingerprint from userAgent + screen — replace with robust client id in production. */
+/** Simple fingerprint from userAgent + screen, replace with robust client id in production. */
 export function getDeviceFingerprint(): string {
   if (!isBrowser()) return "dev-ssr";
   const raw = [
@@ -172,7 +172,7 @@ export function revokeDeviceSession(userId: string, deviceId: string): void {
 
 export function formatLastActive(iso: string): string {
   const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "—";
+  if (Number.isNaN(date.getTime())) return "-";
   const diffMs = Date.now() - date.getTime();
   const minutes = Math.floor(diffMs / 60_000);
   if (minutes < 1) return "Baru saja";

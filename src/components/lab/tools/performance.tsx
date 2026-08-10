@@ -113,8 +113,8 @@ export function TradeExpectancyCalculator() {
                 />
                 <LabInterpretation tone={result.expectancyR > 0 ? "positive" : "negative"}>
                   {result.expectancyR > 0
-                    ? "Edge positif — rata-rata setiap trade menghasilkan lebih dari risiko (belum termasuk biaya)."
-                    : "Edge negatif — strategi cenderung merugi secara matematis dengan asumsi ini."}
+                    ? "Edge positif, rata-rata setiap trade menghasilkan lebih dari risiko (belum termasuk biaya)."
+                    : "Edge negatif, strategi cenderung merugi secara matematis dengan asumsi ini."}
                 </LabInterpretation>
                 <LabResultGrid className="mt-0">
                   <LabResultTile label="Expectancy (R)" value={fmt(result.expectancyR)} tone={result.expectancyR > 0 ? "positive" : "negative"} />

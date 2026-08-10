@@ -14,7 +14,7 @@ export function QcBanner({ panelLabel }: { panelLabel: string }) {
     <div className="border-b border-amber/30 bg-amber/10 px-4 py-2 text-center text-xs text-amber sm:text-sm">
       <span className="inline-flex items-center justify-center gap-2">
         <Eye className="size-3.5 shrink-0" />
-        Mode QC Developer — meninjau {panelLabel} (hanya lihat). Chat internal mentor tetap
+        Mode QC Developer, meninjau {panelLabel} (hanya lihat). Chat internal mentor tetap
         terkunci.{" "}
         <Link href="/developer" className="font-medium underline underline-offset-2">
           Kembali ke QC

@@ -8,7 +8,7 @@ export interface PaymentMethodOption {
   description: string;
 }
 
-/** Metode pembayaran Indonesia — selaras dengan checkout & integrasi Midtrans (P3). */
+/** Metode pembayaran Indonesia, selaras dengan checkout & integrasi Midtrans (P3). */
 export const PAYMENT_METHOD_OPTIONS: PaymentMethodOption[] = [
   {
     id: "gopay",

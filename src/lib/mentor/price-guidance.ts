@@ -6,7 +6,7 @@ import type { Instrument, Level } from "@/lib/types";
  * LOCKED constraints preserved: pricing stays mentor-set, there is NO price floor
  * and NO enforcement. These reference ranges only reduce bad anchoring for new
  * mentors and are paired with the message that discovery ranking is non-price
- * (QC-20260719-02) — so undercutting does NOT buy visibility.
+ * (QC-20260719-02), so undercutting does NOT buy visibility.
  */
 export interface PriceGuidance {
   min: number;
@@ -29,7 +29,7 @@ const LEVEL_MULTIPLIER: Record<Level, number> = {
 };
 
 const GUIDANCE_NOTE =
-  "Rentang referensi (non-binding). Harga tetap sepenuhnya kamu tentukan — tidak ada batas bawah. " +
+  "Rentang referensi (non-binding). Harga tetap sepenuhnya kamu tentukan, tidak ada batas bawah. " +
   "Peringkat & discovery TIDAK berbasis harga, jadi banting harga tidak menaikkan visibilitas.";
 
 export function getPriceGuidance(instrument: Instrument, level: Level): PriceGuidance {
