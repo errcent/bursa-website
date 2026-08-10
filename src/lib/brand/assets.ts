@@ -14,8 +14,8 @@ export const BRAND_ASSETS = {
 } as const;
 
 export const BRAND_SLOTS = {
-  productNavDesktop: { w: 118, h: 25, src: BRAND_ASSETS.productNav, ratio: 4.8 },
-  productNavMobile: { w: 100, h: 21, src: BRAND_ASSETS.productNav, ratio: 4.8 },
+  productNavDesktop: { w: 96, h: 20, src: BRAND_ASSETS.productNav, ratio: 4.8 },
+  productNavMobile: { w: 84, h: 18, src: BRAND_ASSETS.productNav, ratio: 4.8 },
   productFooter: { w: 128, h: 27, src: BRAND_ASSETS.productNav, ratio: 4.8 },
   productAdmin: { w: 96, h: 20, src: BRAND_ASSETS.productNav, ratio: 4.8 },
   wordmarkPreloader: { w: 176, h: 24, src: BRAND_ASSETS.wordmark, ratio: 1000 / 136 },
