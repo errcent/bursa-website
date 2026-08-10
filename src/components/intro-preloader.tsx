@@ -21,7 +21,7 @@ const T = {
   exitRadial: 1.1,
 } as const;
 
-const WM_DELAY = T.blank + 0.35;
+const TAGLINE_DELAY = T.blank + 0.55;
 
 const LOGO_FADE_LEAD = 0.1;
 const TOTAL_DURATION = T.holdEnd + T.exitLead + T.exitRadial;
@@ -69,10 +69,35 @@ function AmbientDrift() {
   );
 }
 
+function ProductLogo({ className }: { className?: string }) {
+  return (
+    <>
+      <Image
+        src={productMobile.src}
+        alt=""
+        width={productMobile.w}
+        height={productMobile.h}
+        priority
+        className={cn("h-auto w-auto max-w-none sm:hidden", className)}
+        style={{ width: productMobile.w, height: productMobile.h }}
+      />
+      <Image
+        src={productDesktop.src}
+        alt=""
+        width={productDesktop.w}
+        height={productDesktop.h}
+        priority
+        className={cn("hidden h-auto w-auto max-w-none sm:block", className)}
+        style={{ width: productDesktop.w, height: productDesktop.h }}
+      />
+    </>
+  );
+}
+
 function ProgressBar() {
   return (
     <div
-      className="relative mt-8 h-[2px] w-[220px] overflow-visible sm:w-[300px] md:w-[340px]"
+      className="relative mt-6 h-[2px] w-[168px] overflow-visible sm:w-[200px]"
       aria-hidden
     >
       <div className="absolute inset-0 rounded-full bg-white/[0.08]" />
@@ -123,37 +148,33 @@ function ProgressBar() {
   );
 }
 
-function PreloaderLogoAssets({ priority = false }: { priority?: boolean }) {
+function BottomWordmark() {
   return (
-    <div className="flex flex-col items-center gap-4">
-      <Image
-        src={productMobile.src}
-        alt=""
-        width={productMobile.w}
-        height={productMobile.h}
-        priority={priority}
-        className="h-auto w-auto max-w-none sm:hidden"
-        style={{ width: productMobile.w, height: productMobile.h }}
-      />
-      <Image
-        src={productDesktop.src}
-        alt=""
-        width={productDesktop.w}
-        height={productDesktop.h}
-        priority={priority}
-        className="hidden h-auto w-auto max-w-none sm:block"
-        style={{ width: productDesktop.w, height: productDesktop.h }}
-      />
-      <Image
-        src={wordmark.src}
-        alt=""
-        width={wordmark.w}
-        height={wordmark.h}
-        priority={priority}
-        className="h-auto w-auto max-w-none opacity-90"
-        style={{ width: wordmark.w, height: wordmark.h }}
-      />
-    </div>
+    <motion.div
+      className="pointer-events-none absolute inset-x-0 bottom-8 flex justify-center sm:bottom-10"
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: TAGLINE_DELAY, duration: 0.5, ease: REVEAL_EASE }}
+    >
+      <motion.div
+        animate={{ opacity: [1, 1, 0, 0] }}
+        transition={{
+          duration: TOTAL_DURATION,
+          times: [0, LOGO_FADE_START / TOTAL_DURATION, RADIAL_START / TOTAL_DURATION, 1],
+          ease: [REVEAL_EASE, RADIAL_EXIT_EASE],
+        }}
+      >
+        <Image
+          src={wordmark.src}
+          alt=""
+          width={wordmark.w}
+          height={wordmark.h}
+          priority
+          className="h-auto w-auto max-w-none opacity-70"
+          style={{ width: wordmark.w, height: wordmark.h }}
+        />
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -184,7 +205,7 @@ export function IntroPreloader({ onComplete }: IntroPreloaderProps) {
         animate={{ opacity: 0 }}
         transition={{ delay: 0.35, duration: 0.2, ease: "easeOut" }}
       >
-        <PreloaderLogoAssets priority />
+        <ProductLogo />
       </motion.div>
     );
   }
@@ -230,8 +251,8 @@ export function IntroPreloader({ onComplete }: IntroPreloaderProps) {
         initial={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
         animate={{
           opacity: [1, 1, 0.94, 0.72, 0],
-          scale: [1, 1, 1.03, 1.02, 0.97],
-          filter: ["blur(0px)", "blur(0px)", "blur(1px)", "blur(4px)", "blur(14px)"],
+          scale: [1, 1, 1.02, 1.01, 0.98],
+          filter: ["blur(0px)", "blur(0px)", "blur(1px)", "blur(3px)", "blur(12px)"],
         }}
         transition={{
           duration: TOTAL_DURATION,
@@ -241,48 +262,17 @@ export function IntroPreloader({ onComplete }: IntroPreloaderProps) {
         style={{ willChange: "transform, opacity, filter" }}
       >
         <motion.div
-          className="flex flex-col items-center gap-4"
-          initial={{ opacity: 0, y: 12, scale: 0.96 }}
+          className="flex flex-col items-center"
+          initial={{ opacity: 0, y: 10, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: T.blank, duration: 0.55, ease: REVEAL_EASE }}
+          transition={{ delay: T.blank, duration: 0.5, ease: REVEAL_EASE }}
         >
-          <Image
-            src={productMobile.src}
-            alt=""
-            width={productMobile.w}
-            height={productMobile.h}
-            priority
-            className="h-auto w-auto max-w-none sm:hidden"
-            style={{ width: productMobile.w, height: productMobile.h }}
-          />
-          <Image
-            src={productDesktop.src}
-            alt=""
-            width={productDesktop.w}
-            height={productDesktop.h}
-            priority
-            className="hidden h-auto w-auto max-w-none sm:block"
-            style={{ width: productDesktop.w, height: productDesktop.h }}
-          />
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: WM_DELAY, duration: 0.45, ease: REVEAL_EASE }}
-          >
-            <Image
-              src={wordmark.src}
-              alt=""
-              width={wordmark.w}
-              height={wordmark.h}
-              priority
-              className="h-auto w-auto max-w-none opacity-90"
-              style={{ width: wordmark.w, height: wordmark.h }}
-            />
-          </motion.div>
+          <ProductLogo />
+          <ProgressBar />
         </motion.div>
-
-        <ProgressBar />
       </motion.div>
+
+      <BottomWordmark />
     </motion.div>
   );
 }

@@ -14,13 +14,13 @@ export const BRAND_ASSETS = {
 } as const;
 
 export const BRAND_SLOTS = {
-  productNavDesktop: { w: 144, h: 30, src: BRAND_ASSETS.productNav, ratio: 4.8 },
-  productNavMobile: { w: 120, h: 25, src: BRAND_ASSETS.productNav, ratio: 4.8 },
-  productFooter: { w: 144, h: 30, src: BRAND_ASSETS.productNav, ratio: 4.8 },
+  productNavDesktop: { w: 118, h: 25, src: BRAND_ASSETS.productNav, ratio: 4.8 },
+  productNavMobile: { w: 100, h: 21, src: BRAND_ASSETS.productNav, ratio: 4.8 },
+  productFooter: { w: 128, h: 27, src: BRAND_ASSETS.productNav, ratio: 4.8 },
   productAdmin: { w: 96, h: 20, src: BRAND_ASSETS.productNav, ratio: 4.8 },
   wordmarkPreloader: { w: 176, h: 24, src: BRAND_ASSETS.wordmark, ratio: 1000 / 136 },
-  productPreloaderDesktop: { w: 288, h: 60, src: BRAND_ASSETS.productNav, ratio: 4.8 },
-  productPreloaderMobile: { w: 240, h: 50, src: BRAND_ASSETS.productNav, ratio: 4.8 },
+  productPreloaderDesktop: { w: 200, h: 42, src: BRAND_ASSETS.productNav, ratio: 4.8 },
+  productPreloaderMobile: { w: 168, h: 35, src: BRAND_ASSETS.productNav, ratio: 4.8 },
   lockupStackedAuth: { w: 131, h: 40, src: BRAND_ASSETS.lockupStacked, ratio: 657 / 200 },
   lockupHorizontalFooter: { w: 342, h: 40, src: BRAND_ASSETS.lockupHorizontal, ratio: 1711 / 200 },
 } as const;
