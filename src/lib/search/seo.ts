@@ -4,8 +4,7 @@ import { articles } from "@/lib/articles/content";
 import { getCatalogData } from "@/lib/catalog/server";
 import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { searchAll } from "@/lib/search/engine";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursanalar.com";
+import { DEFAULT_OG, SITE_URL } from "@/lib/site-metadata";
 
 export async function buildSearchMetadata(query?: string): Promise<Metadata> {
   const trimmed = query?.trim();
@@ -34,6 +33,7 @@ export async function buildSearchMetadata(query?: string): Promise<Metadata> {
         url: `${SITE_URL}/katalog`,
         type: "website",
         locale: "id_ID",
+        images: [DEFAULT_OG],
       },
     };
   }
@@ -65,6 +65,7 @@ export async function buildSearchMetadata(query?: string): Promise<Metadata> {
       url: `${SITE_URL}/katalog?q=${encodeURIComponent(trimmed)}`,
       type: "website",
       locale: "id_ID",
+      images: [DEFAULT_OG],
     },
     robots: {
       index: true,

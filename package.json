@@ -26,7 +26,8 @@
     "thumbnails:generate": "tsx scripts/generate-ai-thumbnails.ts",
     "audit:pages": "tsx scripts/audit-pages-network.ts",
     "sync-legal": "tsx scripts/copy-legal-content.ts && tsx scripts/sync-legal-drafts.ts",
-    "copy-legal": "tsx scripts/copy-legal-content.ts"
+    "copy-legal": "tsx scripts/copy-legal-content.ts",
+    "sync:brand": "tsx scripts/sync-brand-assets.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

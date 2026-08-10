@@ -1,6 +1,7 @@
 import { isEmailConfigured } from "@/lib/email/config";
 import { escapeHtml, getSiteUrl } from "@/lib/email/escape";
 import { sendTransactionalEmail } from "@/lib/email/send";
+import { authEmailHeaderHtml } from "@/emails/branded-email-layout";
 
 export function isAuthEmailEnabled(): boolean {
   const flag = process.env.AUTH_EMAIL_ENABLED?.trim().toLowerCase();
@@ -26,6 +27,7 @@ export async function sendWelcomeEmail(input: {
 
   const html = `
     <div style="font-family:Inter,Arial,sans-serif;line-height:1.6;color:#111;max-width:560px">
+      ${authEmailHeaderHtml("light")}
       <p style="font-size:18px;font-weight:600;margin:0 0 12px">Selamat datang di Bursa, ${safeName}!</p>
       <p style="margin:0 0 16px">
         Akun kamu (<strong>${safeEmail}</strong>) berhasil dibuat dengan Google.
@@ -82,6 +84,7 @@ export async function sendAccountVerificationEmail(input: {
 
   const html = `
     <div style="font-family:Inter,Arial,sans-serif;line-height:1.6;color:#111;max-width:560px">
+      ${authEmailHeaderHtml("light")}
       <p style="font-size:18px;font-weight:600;margin:0 0 12px">Verifikasi email akun Bursa</p>
       <p style="margin:0 0 16px">
         Hai ${safeName}, klik tombol di bawah untuk memverifikasi
@@ -137,6 +140,7 @@ export async function sendPasswordResetEmail(input: {
 
   const html = `
     <div style="font-family:Inter,Arial,sans-serif;line-height:1.6;color:#111;max-width:560px">
+      ${authEmailHeaderHtml("light")}
       <p style="font-size:18px;font-weight:600;margin:0 0 12px">Reset kata sandi Bursa</p>
       <p style="margin:0 0 16px">
         Hai ${safeName}, kami menerima permintaan reset kata sandi untuk

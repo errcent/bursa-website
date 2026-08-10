@@ -1,0 +1,74 @@
+{
+  "syncedAt": "2026-08-10T16:31:15.917Z",
+  "entries": [
+    {
+      "source": "logo_product_bursa_navbar.png",
+      "output": "brand/logo_product_bursa_navbar.png"
+    },
+    {
+      "source": "logo_wordmark_bursanalar.png",
+      "output": "brand/logo_wordmark_bursanalar.png"
+    },
+    {
+      "source": "logo_lockup_horizontal.png",
+      "output": "brand/logo_lockup_horizontal.png"
+    },
+    {
+      "source": "logo_lockup_stacked-3.png",
+      "output": "brand/logo_lockup_stacked.png",
+      "note": "canonical LOCKUP-S dark UI"
+    },
+    {
+      "source": "logo_lockup_stacked.png",
+      "output": "brand/logo_lockup_stacked_light.png",
+      "note": "LOCKUP-S light bake"
+    },
+    {
+      "source": "logo_icon_mark.png",
+      "output": "brand/logo_icon_mark.png"
+    },
+    {
+      "source": "web_email_header_dark.png",
+      "output": "brand/web_email_header_dark.png"
+    },
+    {
+      "source": "web_email_header_light.png",
+      "output": "brand/web_email_header_light.png"
+    },
+    {
+      "source": "web_og_default.png",
+      "output": "og/default.png",
+      "note": "256KB"
+    },
+    {
+      "source": "web_twitter_card.png",
+      "output": "og/twitter.png",
+      "note": "278KB"
+    },
+    {
+      "source": "logo_icon_mark.png",
+      "output": "favicon.ico",
+      "note": "derived"
+    },
+    {
+      "source": "logo_icon_mark.png",
+      "output": "icon-192.png",
+      "note": "derived"
+    },
+    {
+      "source": "logo_icon_mark.png",
+      "output": "icon-512.png",
+      "note": "derived"
+    },
+    {
+      "source": "logo_icon_mark.png",
+      "output": "App/assets/images/*",
+      "note": "app icons derived"
+    },
+    {
+      "source": "audit",
+      "output": "brand/manifest.json",
+      "note": "LOCKUP-S: -3 dark canonical; -1/-2 duplicates skipped"
+    }
+  ]
+}

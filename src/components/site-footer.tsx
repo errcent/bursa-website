@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 
 import { RiskDisclaimer } from "@/components/risk-disclaimer";
 import { AppDownloadBadges } from "@/components/app-download-badges";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import {
   Accordion,
   AccordionContent,
@@ -280,7 +281,7 @@ export function SiteFooter() {
     <footer className="footer-glass relative mt-auto overflow-hidden pt-8">
       <div className="container-page grid gap-8 py-12 sm:gap-10 sm:py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="flex flex-col gap-4">
-          <span className="font-heading text-xl font-semibold tracking-tight">Bursa</span>
+          <BrandLogo variant="product" slot="productFooter" decorative className="self-start" />
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
             Platform edukasi trading untuk saham, crypto, dan forex dengan katalog mentor, kelas,
             dan proses belajar yang terstruktur.

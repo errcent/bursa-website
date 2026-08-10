@@ -138,7 +138,7 @@ Semua email transaksional lewat Resend dan **env-gated**: tanpa `RESEND_API_KEY`
 | `AUTH_WELCOME_EMAIL_ENABLED` | Email selamat datang Google OAuth; default off untuk launch |
 | `WAITLIST_LIFECYCLE_ROLLOUT_PERCENT` | Persentase deterministik `0`, `10`, `50`, atau `100`; default `0` |
 | `WAITLIST_INTERNAL_COHORT` | Daftar email internal dipisah koma yang selalu masuk rollout |
-| `WAITLIST_EMAIL_FROM` | Sender marketing terpisah, mis. `Bursa Nalar <belajar@bursanalar.com>` |
+| `WAITLIST_EMAIL_FROM` | Sender marketing terpisah, mis. `Bursa <belajar@bursanalar.com>` |
 | `WAITLIST_REPLY_TO` | Mailbox balasan yang benar-benar dipantau |
 | `WAITLIST_PREFERENCES_SECRET` | Secret HMAC untuk tautan preference/unsubscribe; jangan expose ke client |
 | `RESEND_WEBHOOK_SECRET` | Signing secret endpoint `/api/webhooks/resend` |

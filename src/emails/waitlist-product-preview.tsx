@@ -5,7 +5,7 @@ import {
 } from "./branded-email-layout";
 
 export const WAITLIST_PRODUCT_PREVIEW_SUBJECT =
-  "Pratinjau Bursa Nalar: belajar sebelum memilih";
+  "Pratinjau Bursa: belajar sebelum memilih";
 export const WAITLIST_PRODUCT_PREVIEW_PREVIEW =
   "Lihat arah produk kami dan bantu tentukan materi edukasi yang paling berguna.";
 
@@ -31,14 +31,14 @@ export function WaitlistProductPreviewEmail(
       <h1 style={emailTextStyles.heading}>Belajar sebelum memilih</h1>
       <p style={emailTextStyles.paragraph}>Halo,</p>
       <p style={emailTextStyles.paragraph}>
-        Bursa Nalar sedang dibangun sebagai ruang belajar yang membantu
+        Bursa sedang dibangun sebagai ruang belajar yang membantu
         pengguna memahami istilah, membandingkan pertimbangan, dan mengenali
         risiko sebelum mengambil keputusan.
       </p>
       <p style={emailTextStyles.paragraph}>
         Pratinjau awal kami menempatkan konteks edukasi di depan: penjelasan
         singkat, pertanyaan pemeriksaan, serta jalur belajar yang bisa dipilih
-        sesuai kebutuhan. Bursa Nalar tidak menjanjikan keuntungan dan tidak
+        sesuai kebutuhan. Bursa tidak menjanjikan keuntungan dan tidak
         menggantikan nasihat profesional yang mempertimbangkan situasi pribadi.
       </p>
       <p style={emailTextStyles.paragraph}>
@@ -55,9 +55,9 @@ export function waitlistProductPreviewPlainText(
   return [
     "Belajar sebelum memilih",
     "",
-    "Bursa Nalar sedang dibangun sebagai ruang belajar yang membantu pengguna memahami istilah, membandingkan pertimbangan, dan mengenali risiko sebelum mengambil keputusan.",
+    "Bursa sedang dibangun sebagai ruang belajar yang membantu pengguna memahami istilah, membandingkan pertimbangan, dan mengenali risiko sebelum mengambil keputusan.",
     "",
-    "Pratinjau awal kami menempatkan konteks edukasi di depan: penjelasan singkat, pertanyaan pemeriksaan, serta jalur belajar yang bisa dipilih sesuai kebutuhan. Bursa Nalar tidak menjanjikan keuntungan dan tidak menggantikan nasihat profesional yang mempertimbangkan situasi pribadi.",
+    "Pratinjau awal kami menempatkan konteks edukasi di depan: penjelasan singkat, pertanyaan pemeriksaan, serta jalur belajar yang bisa dipilih sesuai kebutuhan. Bursa tidak menjanjikan keuntungan dan tidak menggantikan nasihat profesional yang mempertimbangkan situasi pribadi.",
     "",
     "Satu pertanyaan dari kami: materi mana yang ingin Anda pelajari lebih dulu? Jawaban Anda membantu kami menentukan urutan materi berikutnya.",
     "",

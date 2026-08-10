@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { useReducedMotion } from "motion/react";
 
 import { SnapPresence } from "@/components/motion/snap";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { Button } from "@/components/ui/button";
 
 function AuthMobileBackButton({ href }: { href: string }) {
@@ -45,8 +46,8 @@ export function AuthPageShell({
         {mobileBack}
         <div className="relative w-full max-w-md">
           <div className="mb-8 text-center">
-            <Link href="/" className="font-heading text-2xl font-semibold tracking-tight">
-              Bursa
+            <Link href="/" className="inline-flex justify-center" aria-label="Bursa">
+              <BrandLogo variant="lockup-s" decorative />
             </Link>
             <h1 className="mt-6 font-heading text-2xl font-semibold tracking-tight text-gradient sm:text-3xl">
               {title}
@@ -64,8 +65,8 @@ export function AuthPageShell({
       {mobileBack}
       <div className="relative w-full max-w-md">
         <SnapPresence seed={5} className="mb-8 text-center">
-          <Link href="/" className="font-heading text-2xl font-semibold tracking-tight">
-            Bursa
+          <Link href="/" className="inline-flex justify-center" aria-label="Bursa">
+            <BrandLogo variant="lockup-s" decorative />
           </Link>
           <h1 className="mt-6 font-heading text-2xl font-semibold tracking-tight text-gradient sm:text-3xl">
             {title}

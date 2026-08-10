@@ -1,5 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 
+import { emailHeaderUrl } from "@/lib/site-metadata";
+
 export interface BrandedEmailLayoutProps {
   previewText: string;
   email: string;
@@ -9,17 +11,19 @@ export interface BrandedEmailLayoutProps {
   referralUrl?: string;
   ctaLabel: string;
   ctaUrl: string;
+  /** Light body uses light header bake; dark variant for dark templates. */
+  headerVariant?: "light" | "dark";
   children: ReactNode;
 }
 
 const colors = {
   background: "#f3f0e8",
   surface: "#ffffff",
-  ink: "#17251f",
-  muted: "#5f6c66",
-  border: "#dce2dc",
-  brand: "#124c38",
-  accent: "#d8a943",
+  ink: "#1a1a1a",
+  muted: "#737373",
+  border: "#e5e5e5",
+  brand: "#000000",
+  accent: "#9496c0",
 } as const;
 
 const bodyStyle: CSSProperties = {
@@ -46,7 +50,7 @@ const contentStyle: CSSProperties = {
 };
 
 const linkStyle: CSSProperties = {
-  color: colors.brand,
+  color: colors.ink,
   textDecoration: "underline",
 };
 
@@ -59,8 +63,11 @@ export function BrandedEmailLayout({
   referralUrl,
   ctaLabel,
   ctaUrl,
+  headerVariant = "light",
   children,
 }: BrandedEmailLayoutProps) {
+  const headerSrc = emailHeaderUrl(headerVariant);
+
   return (
     <html lang="id">
       {/* Email documents require a native head; this is not a Next.js page. */}
@@ -102,25 +109,21 @@ export function BrandedEmailLayout({
                 >
                   <tbody>
                     <tr>
-                      <td
-                        style={{
-                          padding: "26px 32px",
-                          backgroundColor: colors.brand,
-                          borderBottom: `4px solid ${colors.accent}`,
-                        }}
-                      >
-                        <a
-                          href={siteUrl}
-                          aria-label="Kunjungi situs Bursa Nalar"
-                          style={{
-                            color: "#ffffff",
-                            fontSize: "24px",
-                            fontWeight: 700,
-                            letterSpacing: "-0.02em",
-                            textDecoration: "none",
-                          }}
-                        >
-                          Bursa Nalar
+                      <td style={{ padding: 0, lineHeight: 0 }}>
+                        <a href={siteUrl} aria-label="Kunjungi Bursa">
+                          <img
+                            src={headerSrc}
+                            width={480}
+                            height={120}
+                            alt="bursanalar."
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              maxWidth: "480px",
+                              height: "auto",
+                              border: 0,
+                            }}
+                          />
                         </a>
                       </td>
                     </tr>
@@ -143,9 +146,9 @@ export function BrandedEmailLayout({
                                   style={{
                                     display: "inline-block",
                                     padding: "13px 22px",
-                                    borderRadius: "6px",
+                                    borderRadius: "10px",
                                     backgroundColor: colors.brand,
-                                    color: "#ffffff",
+                                    color: "#f5f5f5",
                                     fontSize: "16px",
                                     fontWeight: 700,
                                     lineHeight: "1.25",
@@ -171,12 +174,12 @@ export function BrandedEmailLayout({
                         }}
                       >
                         <p style={{ margin: "0 0 10px" }}>
-                          Anda menerima email ini karena mendaftar pembaruan
-                          edukasi Bursa Nalar dengan alamat {email}.
+                          Anda menerima email ini karena mendaftar pembaruan edukasi Bursa
+                          dengan alamat {email}.
                         </p>
                         <p style={{ margin: "0 0 10px" }}>
-                          Kami menjaga privasi Anda dan hanya menggunakan data
-                          kontak untuk komunikasi yang Anda pilih.
+                          Kami menjaga privasi Anda dan hanya menggunakan data kontak untuk
+                          komunikasi yang Anda pilih.
                         </p>
                         <p style={{ margin: "0 0 10px" }}>
                           <a href={preferencesUrl} style={linkStyle}>
@@ -184,19 +187,18 @@ export function BrandedEmailLayout({
                           </a>
                           {" · "}
                           <a href={unsubscribeUrl} style={linkStyle}>
-                            Berhenti menerima email Bursa Nalar
+                            Berhenti menerima email Bursa
                           </a>
                         </p>
                         {referralUrl ? (
                           <p style={{ margin: "0 0 10px" }}>
                             <a href={referralUrl} style={linkStyle}>
-                              Bagikan halaman pendaftaran Bursa Nalar
+                              Bagikan halaman pendaftaran Bursa
                             </a>
                           </p>
                         ) : null}
                         <p style={{ margin: 0 }}>
-                          Perlu bantuan? Balas email ini atau hubungi tim
-                          dukungan Bursa Nalar.
+                          Perlu bantuan? Balas email ini atau hubungi support@bursanalar.com.
                         </p>
                       </td>
                     </tr>
@@ -226,14 +228,12 @@ export function plainTextFooter({
 }: PlainTextFooterProps): string {
   return [
     "---",
-    `Email ini dikirim karena Anda mendaftar pembaruan edukasi Bursa Nalar dengan alamat ${email}.`,
+    `Email ini dikirim karena Anda mendaftar pembaruan edukasi Bursa dengan alamat ${email}.`,
     "Privasi: data kontak Anda hanya digunakan untuk komunikasi yang Anda pilih.",
     `Atur topik dan frekuensi email: ${preferencesUrl}`,
-    `Berhenti menerima email Bursa Nalar: ${unsubscribeUrl}`,
-    referralUrl
-      ? `Bagikan halaman pendaftaran Bursa Nalar: ${referralUrl}`
-      : null,
-    "Perlu bantuan? Balas email ini atau hubungi tim dukungan Bursa Nalar.",
+    `Berhenti menerima email Bursa: ${unsubscribeUrl}`,
+    referralUrl ? `Bagikan halaman pendaftaran Bursa: ${referralUrl}` : null,
+    "Perlu bantuan? Balas email ini atau hubungi support@bursanalar.com.",
   ]
     .filter((line): line is string => line !== null)
     .join("\n");
@@ -255,3 +255,13 @@ export const emailTextStyles = {
   } satisfies CSSProperties,
   muted: colors.muted,
 } as const;
+
+export function authEmailHeaderHtml(variant: "light" | "dark" = "light"): string {
+  const src = emailHeaderUrl(variant);
+  return `
+    <p style="margin:0 0 24px;line-height:0">
+      <img src="${src}" width="480" height="120" alt="bursanalar."
+           style="display:block;width:100%;max-width:480px;height:auto;border:0" />
+    </p>
+  `;
+}

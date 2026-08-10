@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { cn } from "@/lib/utils";
 
 const allLinks = [
@@ -49,10 +50,8 @@ export function AdminSidebar() {
   return (
     <aside className="hidden w-60 shrink-0 border-r border-border bg-surface/40 lg:flex lg:flex-col">
       <div className="border-b border-border px-5 py-5">
-        <Link href="/admin" className="block">
-          <p className="font-heading text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase">
-            Bursa
-          </p>
+        <Link href="/admin" className="block" aria-label="Bursa Admin">
+          <BrandLogo variant="product" slot="productAdmin" decorative className="mb-1" />
           <p className="font-heading text-lg font-semibold text-foreground">Admin Panel</p>
         </Link>
       </div>

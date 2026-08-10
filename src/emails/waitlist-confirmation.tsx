@@ -5,13 +5,13 @@ import {
 } from "./branded-email-layout";
 
 export const WAITLIST_CONFIRMATION_SUBJECT_SUGGESTIONS = [
-  "Pendaftaran Bursa Nalar Anda sudah dikonfirmasi",
-  "Selamat datang di pembaruan edukasi Bursa Nalar",
+  "Pendaftaran Bursa Anda sudah dikonfirmasi",
+  "Selamat datang di pembaruan edukasi Bursa",
 ] as const;
 
 export const WAITLIST_CONFIRMATION_PREHEADER_SUGGESTIONS = [
   "Status Anda sudah dikonfirmasi. Atur topik dan frekuensi yang paling relevan.",
-  "Terima materi edukasi pilihan dari Bursa Nalar tanpa janji hasil finansial.",
+  "Terima materi edukasi pilihan dari Bursa tanpa janji hasil finansial.",
 ] as const;
 
 export const WAITLIST_CONFIRMATION_SUBJECT =
@@ -38,7 +38,7 @@ export function WaitlistConfirmationEmail(props: WaitlistConfirmationProps) {
       <h1 style={emailTextStyles.heading}>Pendaftaran Anda sudah dikonfirmasi</h1>
       <p style={emailTextStyles.paragraph}>Halo,</p>
       <p style={emailTextStyles.paragraph}>
-        Terima kasih telah bergabung dengan Bursa Nalar. Status pendaftaran
+        Terima kasih telah bergabung dengan Bursa. Status pendaftaran
         Anda sudah <strong>dikonfirmasi</strong>.
       </p>
       <p style={emailTextStyles.paragraph}>
@@ -63,7 +63,7 @@ export function waitlistConfirmationPlainText(
     "",
     "Halo,",
     "",
-    "Terima kasih telah bergabung dengan Bursa Nalar. Status pendaftaran Anda sudah dikonfirmasi.",
+    "Terima kasih telah bergabung dengan Bursa. Status pendaftaran Anda sudah dikonfirmasi.",
     "",
     "Kami akan mengirim materi edukasi ringkas sekitar satu kali per minggu, ditambah pembaruan produk penting bila diperlukan. Fokus kami adalah membantu Anda memahami proses berpikir, risiko, dan pilihan, bukan menjanjikan hasil finansial.",
     "",

@@ -1,24 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
-import { motion, useReducedMotion, type Variants } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 
+import { brandSlot } from "@/lib/brand/assets";
 import { cn } from "@/lib/utils";
 
-import {
-  WORD_REVEAL_DURATION,
-  WORD_REVEAL_EASE,
-  WORD_REVEAL_STAGGER,
-  WordReveal,
-} from "@/components/motion/word-reveal";
-
-const REVEAL_EASE = WORD_REVEAL_EASE;
+const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 const RADIAL_EXIT_EASE = [0.19, 1, 0.22, 1] as const;
-const LETTER_STAGGER = 0.05;
-const REVEAL_UNIT_DURATION = WORD_REVEAL_DURATION;
-const TITLE_TAGLINE_GAP = 0.18;
 
-/** Timeline (seconds), total ~3.77s after slower text reveal */
+/** Timeline (seconds), total ~3.77s */
 const T_BLANK = 0.45;
 const T = {
   blank: T_BLANK,
@@ -29,90 +21,20 @@ const T = {
   exitRadial: 1.1,
 } as const;
 
-const TITLE_TEXT = "Bursa";
-const TITLE_REVEAL_END =
-  T.blank + (TITLE_TEXT.length - 1) * LETTER_STAGGER + REVEAL_UNIT_DURATION;
-const TAGLINE_DELAY = TITLE_REVEAL_END + TITLE_TAGLINE_GAP;
+const WM_DELAY = T.blank + 0.35;
 
 const LOGO_FADE_LEAD = 0.1;
 const TOTAL_DURATION = T.holdEnd + T.exitLead + T.exitRadial;
 const RADIAL_START = T.holdEnd + T.exitLead;
 const LOGO_FADE_START = RADIAL_START - LOGO_FADE_LEAD;
 
+const productDesktop = brandSlot("productPreloaderDesktop");
+const productMobile = brandSlot("productPreloaderMobile");
+const wordmark = brandSlot("wordmarkPreloader");
+
 type IntroPreloaderProps = {
   onComplete: () => void;
 };
-
-const letterContainerVariants: Variants = {
-  hidden: {},
-  show: (delay: number) => ({
-    transition: {
-      staggerChildren: LETTER_STAGGER,
-      delayChildren: delay,
-    },
-  }),
-};
-
-const titleLetterVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 14,
-    scale: 0.88,
-    filter: "blur(8px)",
-  },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    filter: "blur(0px)",
-    transition: { duration: REVEAL_UNIT_DURATION, ease: REVEAL_EASE },
-  },
-};
-
-function IntroLetterReveal({
-  text,
-  className,
-  delay = 0,
-  "aria-label": ariaLabel,
-}: {
-  text: string;
-  className?: string;
-  delay?: number;
-  "aria-label"?: string;
-}) {
-  const prefersReducedMotion = useReducedMotion();
-  const letters = [...text];
-
-  if (prefersReducedMotion) {
-    return (
-      <span className={className} aria-label={ariaLabel}>
-        {text}
-      </span>
-    );
-  }
-
-  return (
-    <motion.span
-      className={className}
-      aria-label={ariaLabel}
-      initial="hidden"
-      animate="show"
-      custom={delay}
-      variants={letterContainerVariants}
-    >
-      {letters.map((letter, index) => (
-        <motion.span
-          key={`${letter}-${index}`}
-          className="inline-block"
-          variants={titleLetterVariants}
-          aria-hidden
-        >
-          {letter}
-        </motion.span>
-      ))}
-    </motion.span>
-  );
-}
 
 function AmbientDrift() {
   return (
@@ -201,6 +123,40 @@ function ProgressBar() {
   );
 }
 
+function PreloaderLogoAssets({ priority = false }: { priority?: boolean }) {
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <Image
+        src={productMobile.src}
+        alt=""
+        width={productMobile.w}
+        height={productMobile.h}
+        priority={priority}
+        className="h-auto w-auto max-w-none sm:hidden"
+        style={{ width: productMobile.w, height: productMobile.h }}
+      />
+      <Image
+        src={productDesktop.src}
+        alt=""
+        width={productDesktop.w}
+        height={productDesktop.h}
+        priority={priority}
+        className="hidden h-auto w-auto max-w-none sm:block"
+        style={{ width: productDesktop.w, height: productDesktop.h }}
+      />
+      <Image
+        src={wordmark.src}
+        alt=""
+        width={wordmark.w}
+        height={wordmark.h}
+        priority={priority}
+        className="h-auto w-auto max-w-none opacity-90"
+        style={{ width: wordmark.w, height: wordmark.h }}
+      />
+    </div>
+  );
+}
+
 export function IntroPreloader({ onComplete }: IntroPreloaderProps) {
   const prefersReducedMotion = useReducedMotion();
   const duration = prefersReducedMotion ? 0.55 : TOTAL_DURATION;
@@ -228,9 +184,7 @@ export function IntroPreloader({ onComplete }: IntroPreloaderProps) {
         animate={{ opacity: 0 }}
         transition={{ delay: 0.35, duration: 0.2, ease: "easeOut" }}
       >
-        <h1 className="font-heading text-[2rem] font-bold tracking-[0.06em] text-[#F5F5F5] sm:text-5xl">
-          Bursa
-        </h1>
+        <PreloaderLogoAssets priority />
       </motion.div>
     );
   }
@@ -286,57 +240,49 @@ export function IntroPreloader({ onComplete }: IntroPreloaderProps) {
         }}
         style={{ willChange: "transform, opacity, filter" }}
       >
-        <motion.h1
-          className="font-heading text-[2rem] font-bold tracking-[0.06em] text-[#F5F5F5] sm:text-5xl sm:tracking-[0.08em]"
-          animate={{
-            textShadow: [
-              "0 0 0px rgba(123,126,184,0)",
-              "0 0 24px rgba(123,126,184,0.35)",
-              "0 0 18px rgba(123,126,184,0.28)",
-              "0 0 32px rgba(123,126,184,0.45)",
-            ],
-          }}
-          transition={{
-            duration: TOTAL_DURATION * 0.85,
-            times: [0, 0.35, 0.62, 1],
-            ease: "easeInOut",
-          }}
+        <motion.div
+          className="flex flex-col items-center gap-4"
+          initial={{ opacity: 0, y: 12, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: T.blank, duration: 0.55, ease: REVEAL_EASE }}
         >
-          <IntroLetterReveal delay={T.blank} aria-label="Bursa" text={TITLE_TEXT} />
-        </motion.h1>
+          <Image
+            src={productMobile.src}
+            alt=""
+            width={productMobile.w}
+            height={productMobile.h}
+            priority
+            className="h-auto w-auto max-w-none sm:hidden"
+            style={{ width: productMobile.w, height: productMobile.h }}
+          />
+          <Image
+            src={productDesktop.src}
+            alt=""
+            width={productDesktop.w}
+            height={productDesktop.h}
+            priority
+            className="hidden h-auto w-auto max-w-none sm:block"
+            style={{ width: productDesktop.w, height: productDesktop.h }}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: WM_DELAY, duration: 0.45, ease: REVEAL_EASE }}
+          >
+            <Image
+              src={wordmark.src}
+              alt=""
+              width={wordmark.w}
+              height={wordmark.h}
+              priority
+              className="h-auto w-auto max-w-none opacity-90"
+              style={{ width: wordmark.w, height: wordmark.h }}
+            />
+          </motion.div>
+        </motion.div>
 
         <ProgressBar />
       </motion.div>
-
-      <motion.p
-        className="pointer-events-none absolute inset-x-0 bottom-8 flex items-baseline justify-center gap-1.5 text-sm sm:bottom-10 sm:text-base"
-        initial={{ opacity: 1 }}
-        animate={{
-          opacity: [1, 1, 0, 0],
-        }}
-        transition={{
-          duration: TOTAL_DURATION,
-          times: [0, tLogoFade, tRadial, 1],
-          ease: [REVEAL_EASE, RADIAL_EXIT_EASE],
-        }}
-      >
-        <WordReveal
-          delay={TAGLINE_DELAY}
-          stagger={WORD_REVEAL_STAGGER}
-          duration={WORD_REVEAL_DURATION}
-          aria-label="by bursanalar."
-          segments={[
-            {
-              text: "by",
-              className: "font-sans font-normal tracking-wide text-[#F5F5F5]/70",
-            },
-            {
-              text: "bursanalar.",
-              className: "font-brand text-base font-bold tracking-tight text-[#F5F5F5] sm:text-lg",
-            },
-          ]}
-        />
-      </motion.p>
     </motion.div>
   );
 }

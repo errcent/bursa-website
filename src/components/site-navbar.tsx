@@ -9,6 +9,7 @@ import { motion, useReducedMotion } from "motion/react";
 
 import { AccountMenuMobileLinks } from "@/components/account-menu-mobile-links";
 import { useAuth } from "@/components/auth-provider";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { useHeroNav } from "@/components/hero-nav-context";
 import { SiteNavAuth } from "@/components/site-nav-auth";
 import { SiteNavSearch } from "@/components/site-nav-search";
@@ -100,10 +101,8 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
       <div className="flex h-14 min-h-14 items-center justify-between gap-2 px-3 sm:h-[3.75rem] sm:gap-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-4 sm:gap-8">
-            <Link href="/" className="flex shrink-0 items-center gap-2">
-              <span className="font-heading text-lg font-semibold tracking-tight sm:text-xl">
-                Bursa
-              </span>
+            <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Bursa">
+              <BrandLogo variant="product" priority decorative />
             </Link>
             <nav className="hidden items-center gap-6 lg:flex" aria-label="Navigasi utama">
               {navLinks.map((link) => {

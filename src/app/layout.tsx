@@ -14,6 +14,7 @@ import { CookieConsentBanner } from "@/components/trust-portal/cookie-consent-ba
 import { PreviewCatalogBanner } from "@/components/preview-catalog/preview-catalog-banner";
 
 import { SearchSeoJsonLd } from "@/components/search/search-seo-jsonld";
+import { rootSiteMetadata } from "@/lib/site-metadata";
 
 import "./globals.css";
 
@@ -41,14 +42,7 @@ export const viewport: Viewport = {
 /** Runs before first paint so intro-pending CSS hides content until PreloaderGate hydrates. */
 const INTRO_PENDING_SCRIPT = `(function(){try{if(!sessionStorage.getItem("bursa-intro-seen")){document.documentElement.classList.add("intro-pending")}}catch(e){}})();`;
 
-export const metadata: Metadata = {
-  title: {
-    default: "Bursa · Katalog Mentor dan Kelas Trading",
-    template: "%s · Bursa",
-  },
-  description:
-    "Platform edukasi trading dengan katalog mentor dan kelas saham, crypto, serta forex. Fokus pada proses belajar, riset, dan manajemen risiko.",
-};
+export const metadata: Metadata = rootSiteMetadata;
 
 export default function RootLayout({
   children,
