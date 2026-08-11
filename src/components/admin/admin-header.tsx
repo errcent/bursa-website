@@ -9,8 +9,6 @@ const labelMap: Record<string, string> = {
   mentors: "Mentor",
   courses: "Kelas",
   "change-requests": "Usulan Mentor",
-  "branch-change-requests": "Usulan Cabang",
-  "chat-rooms": "Chat Room",
   moderation: "Moderasi",
   users: "Pengguna",
   settings: "Pengaturan",

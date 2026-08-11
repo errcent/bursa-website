@@ -23,6 +23,7 @@ export const KOMUNITAS_API_PREFIXES = [
 export const KOMUNITAS_PAGE_PREFIXES = [
   "/komunitas",
   "/admin/chat-rooms",
+  "/admin/branch-change-requests",
   "/mentor/chat",
 ] as const;
 

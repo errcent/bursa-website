@@ -178,7 +178,7 @@ export async function resolveLastReadMessageId(
 
 /**
  * Advance the member's read cursor to now (or an explicit timestamp).
- * Creates nothing — caller must already be a ChatRoomMember.
+ * Creates nothing, caller must already be a ChatRoomMember.
  */
 export async function markRoomAsRead(input: {
   roomId: string;

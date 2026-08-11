@@ -1,7 +1,6 @@
 import {
   bookmarkId,
   isBookmarkEntry,
-  parseBookmarkId,
   type BookmarkEntry,
   type BookmarkRef,
 } from "@/lib/bookmarks/types";
@@ -186,5 +185,3 @@ export function getBookmarksByType(
 ): BookmarkEntry[] {
   return getBookmarks(scope).filter((entry) => entry.type === type);
 }
-
-export { parseBookmarkId, bookmarkId };

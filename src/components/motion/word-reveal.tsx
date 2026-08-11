@@ -117,30 +117,15 @@ function wordRevealFailsafeMs(
   return (delay + (wordCount - 1) * stagger + duration + 0.5) * 1000;
 }
 
-/** Transparent full text, receives selection/copy while animated words stay visual-only. */
-function CopySelectionLayer({ text }: { text: string }) {
-  return (
-    <span
-      className="absolute inset-0 z-0 select-text whitespace-pre-wrap text-transparent"
-      aria-hidden="true"
-    >
-      {text}
-    </span>
-  );
+/** Transparent full text was causing duplicate innerText + noisy a11y trees.
+ *  Use a single sr-only string; animated words are always visual-only. */
+function AccessibleText({ text }: { text: string }) {
+  return <span className="sr-only">{text}</span>;
 }
 
-function VisualWordLayer({
-  children,
-  hideFromAccessibility,
-}: {
-  children: ReactNode;
-  hideFromAccessibility: boolean;
-}) {
+function VisualWordLayer({ children }: { children: ReactNode }) {
   return (
-    <span
-      className="relative z-[1] inline select-none pointer-events-none"
-      aria-hidden={hideFromAccessibility ? true : undefined}
-    >
+    <span className="relative z-[1] inline select-none pointer-events-none" aria-hidden="true">
       {children}
     </span>
   );
@@ -150,19 +135,10 @@ function WordSpace() {
   return <span className="inline"> </span>;
 }
 
-function renderStaticWords(
-  words: WordSegment[],
-  wordClassName?: string,
-  isSemanticHeading = false
-) {
+function renderStaticWords(words: WordSegment[], wordClassName?: string) {
   return words.map((word, index) => (
     <Fragment key={`${word.text}-${index}`}>
-      <span
-        className={cn("inline-block", wordClassName, word.className)}
-        aria-hidden={isSemanticHeading ? true : undefined}
-      >
-        {word.text}
-      </span>
+      <span className={cn("inline-block", wordClassName, word.className)}>{word.text}</span>
       {index < words.length - 1 ? <WordSpace /> : null}
     </Fragment>
   ));
@@ -172,8 +148,7 @@ function renderAnimatedWords(
   words: WordSegment[],
   wordClassName: string | undefined,
   duration: number,
-  intensity: WordRevealIntensity,
-  isSemanticHeading: boolean
+  intensity: WordRevealIntensity
 ) {
   const variants = wordVariantsForIntensity(intensity);
   return words.map((word, index) => (
@@ -182,7 +157,6 @@ function renderAnimatedWords(
         className={cn("inline-block", wordClassName, word.className)}
         variants={variants}
         custom={duration}
-        aria-hidden={isSemanticHeading ? true : undefined}
       >
         {word.text}
       </motion.span>
@@ -214,10 +188,8 @@ export function WordReveal({
     amount: viewport.amount ?? DEFAULT_VIEWPORT.amount,
   });
   const words = resolveSegments(text, segments);
-  const plainText = text ?? segmentsToPlainText(words);
-  const accessibleLabel = ariaLabel ?? plainText;
+  const accessibleLabel = ariaLabel ?? text ?? segmentsToPlainText(words);
   const MotionComponent = motionComponents[Component];
-  const isSemanticHeading = Component !== "span" && Component !== "p";
   const animationDoneRef = useRef(false);
   const [useFallback, setUseFallback] = useState(false);
 
@@ -248,14 +220,9 @@ export function WordReveal({
 
   if (prefersReducedMotion || useFallback) {
     return (
-      <Component
-        className={cn(className, "relative")}
-        aria-label={accessibleLabel}
-      >
-        <CopySelectionLayer text={plainText} />
-        <VisualWordLayer hideFromAccessibility={isSemanticHeading}>
-          {renderStaticWords(words, wordClassName, isSemanticHeading)}
-        </VisualWordLayer>
+      <Component className={cn(className, "relative")} aria-label={accessibleLabel}>
+        <AccessibleText text={accessibleLabel} />
+        <VisualWordLayer>{renderStaticWords(words, wordClassName)}</VisualWordLayer>
       </Component>
     );
   }
@@ -264,12 +231,12 @@ export function WordReveal({
     <MotionComponent
       ref={containerRef as Ref<HTMLHeadingElement>}
       className={cn(className, "relative")}
-      aria-label={isSemanticHeading ? accessibleLabel : ariaLabel}
+      aria-label={accessibleLabel}
     >
-      <CopySelectionLayer text={plainText} />
+      <AccessibleText text={accessibleLabel} />
       <motion.span
         className="relative z-[1] inline select-none pointer-events-none"
-        aria-hidden={isSemanticHeading ? true : undefined}
+        aria-hidden="true"
         initial="hidden"
         animate={shouldReveal ? "show" : "hidden"}
         custom={{ delay, stagger }}
@@ -278,7 +245,7 @@ export function WordReveal({
           if (definition === "show") animationDoneRef.current = true;
         }}
       >
-        {renderAnimatedWords(words, wordClassName, duration, intensity, isSemanticHeading)}
+        {renderAnimatedWords(words, wordClassName, duration, intensity)}
       </motion.span>
     </MotionComponent>
   );

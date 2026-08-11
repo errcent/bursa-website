@@ -4,25 +4,6 @@ import type { ChangeRequestDto } from "@/lib/mentor/change-requests";
 
 export type { ChangeRequestDto };
 
-export type MentorAdminChatSummary = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  tier: "Internal";
-  isProtected: boolean;
-  memberCount: number;
-  mentorId: string;
-  mentorName: string;
-  lastMessage: {
-    content: string;
-    authorName: string;
-    createdAt: string;
-  } | null;
-  href: string;
-  currentUserId?: string;
-};
-
 function authHeaders(): HeadersInit {
   const session = getSession();
   if (!session) return {};
@@ -79,17 +60,6 @@ export async function createMentorChangeRequest(body: {
   });
 }
 
-export async function fetchMentorCollaborationChat() {
-  return mentorRequest<MentorAdminChatSummary>("/collaboration-chat");
-}
-
-export type ChatBranchChangeRequestDto =
-  import("@/lib/chat/branch-change-requests").ChatBranchChangeRequestDto;
-
-export async function fetchMentorChatRooms() {
-  return mentorRequest<import("@/lib/chat/types").ChatRoom[]>("/chat-rooms");
-}
-
 export type MentorProfileSummary = {
   id: string;
   slug: string;
@@ -103,22 +73,4 @@ export type MentorProfileSummary = {
 
 export async function fetchMentorProfile() {
   return mentorRequest<MentorProfileSummary>("/profile");
-}
-
-export async function fetchMentorBranchChangeRequests(status?: string) {
-  const q = status ? `?status=${encodeURIComponent(status)}` : "";
-  return mentorRequest<ChatBranchChangeRequestDto[]>(`/branch-change-requests${q}`);
-}
-
-export async function createMentorBranchChangeRequest(body: {
-  roomId: string;
-  branchId?: string | null;
-  action: "CREATE" | "UPDATE" | "DELETE";
-  summary: string;
-  proposedData?: Record<string, unknown> | null;
-}) {
-  return mentorRequest<ChatBranchChangeRequestDto>("/branch-change-requests", {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
 }

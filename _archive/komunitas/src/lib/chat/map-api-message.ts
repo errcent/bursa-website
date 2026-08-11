@@ -182,7 +182,7 @@ function mapPoll(
 ): PollData | undefined {
   if (!metadata || typeof metadata.question !== "string") return undefined;
   const rawOptions = Array.isArray(metadata.options) ? metadata.options : [];
-  // Never trust shared metadata.votedOptionId — it is per-viewer and must not
+  // Never trust shared metadata.votedOptionId, it is per-viewer and must not
   // lock out other members when accidentally persisted on the message.
   let votedOptionId: string | undefined;
   const options = rawOptions.map((opt, index) => {

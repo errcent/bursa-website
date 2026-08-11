@@ -138,5 +138,5 @@ for (const [key, cfg] of Object.entries(SOURCES)) {
 }
 
 console.log(
-  "Per-device PNGs processed. For device-insets.json, run: node scripts/process-composite-scene.mjs",
+  "Per-device PNGs processed. For device-insets.json, run: node scripts/process-ipad-scene.mjs",
 );

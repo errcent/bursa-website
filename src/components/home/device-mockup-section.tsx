@@ -137,7 +137,7 @@ export function DeviceMockupSection({
                 <WordReveal
                   as="span"
                   className="inline"
-                  text="Belajar sederhana, dimana saja"
+                  text="Belajar sederhana, di mana saja"
                   trigger="inView"
                   delay={0.04}
                 />

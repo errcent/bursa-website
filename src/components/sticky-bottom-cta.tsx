@@ -104,8 +104,8 @@ export function StickyBottomCta() {
   if (!allowed || !scrolledPastHero || overlayOpen || isLoading) return null;
 
   const isMember = Boolean(session);
-  const ctaHref = isMember ? "/dashboard" : "/katalog";
-  const ctaLabel = isMember ? "Lanjut Belajar" : "Mulai Belajar";
+  const ctaHref = isMember ? "/dashboard" : "/waitlist";
+  const ctaLabel = isMember ? "Lanjut Belajar" : "Gabung Waitlist";
 
   return (
     <div

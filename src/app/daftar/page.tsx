@@ -5,13 +5,21 @@ import { RegisterForm } from "@/components/register-form";
 
 export const metadata = {
   title: "Daftar",
-  description: "Buat akun Bursa Trading Academy.",
+  description: "Buat akun Bursa.",
 };
 
 function RegisterFormFallback() {
   return (
-    <div className="flex h-48 items-center justify-center">
-      <p className="text-sm text-muted-foreground">Memuat form...</p>
+    <div className="space-y-4" aria-busy="true" aria-label="Memuat formulir daftar">
+      <div className="space-y-2">
+        <div className="h-4 w-28 animate-pulse rounded bg-muted" />
+        <div className="h-11 w-full animate-pulse rounded-md border border-border bg-muted/60" />
+      </div>
+      <div className="space-y-2">
+        <div className="h-4 w-20 animate-pulse rounded bg-muted" />
+        <div className="h-11 w-full animate-pulse rounded-md border border-border bg-muted/60" />
+      </div>
+      <div className="h-11 w-full animate-pulse rounded-md bg-muted" />
     </div>
   );
 }

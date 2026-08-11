@@ -4,7 +4,14 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { seedDefaultBranches } from "@/lib/chat/branch-change-requests";
 import { assertMentorRoomSlotAvailable, ensureMentorOwnerMembership } from "@/lib/chat/db-rooms";
-import { mapChatRoom, requireAdmin, slugify, tierFromUi, unauthorized } from "@/lib/admin/server";
+import {
+  mapChatRoom,
+  requireAdmin,
+  requireAdminPanel,
+  slugify,
+  tierFromUi,
+  unauthorized,
+} from "@/lib/admin/server";
 import type { ChatRoomFormInput } from "@/lib/admin/types";
 
 function roomKindFromForm(
@@ -16,7 +23,7 @@ function roomKindFromForm(
 }
 
 export async function GET(request: Request) {
-  const admin = await requireAdmin(request);
+  const admin = await requireAdminPanel(request);
   if (!admin) return unauthorized();
 
   try {

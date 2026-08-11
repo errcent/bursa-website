@@ -1,6 +1,6 @@
 import { CourseLevel } from "@prisma/client";
 
-import { levelToUi } from "@/lib/catalog/enums";
+import { levelFromUi, levelToUi } from "@/lib/catalog/enums";
 import { courseQualityScore } from "@/lib/catalog/ranking";
 import type { LearningGuidanceAnswers } from "@/lib/learning/guidance/types";
 import type { Course, Level, Mentor } from "@/lib/types";
@@ -24,15 +24,6 @@ export interface ProfileAnalysis {
 interface ScoredReason {
   points: number;
   text: string;
-}
-
-function uiLevelToCourseLevel(level: Level): CourseLevel {
-  const map: Record<Level, CourseLevel> = {
-    Pemula: CourseLevel.PEMULA,
-    Menengah: CourseLevel.MENENGAH,
-    Mahir: CourseLevel.MAHIR,
-  };
-  return map[level];
 }
 
 function experienceBaseIndex(experience: LearningGuidanceAnswers["experience"]): number {
@@ -310,7 +301,7 @@ export function scoreCourseForGuidance(
     return { score: 0, reasons: [] };
   }
 
-  const courseLevel = uiLevelToCourseLevel(course.level);
+  const courseLevel = levelFromUi(course.level);
   const buckets: ScoredReason[] = [];
 
   buckets.push({ points: 12, text: `Fokus ${answers.instrument}` });

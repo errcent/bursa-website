@@ -2,24 +2,82 @@ import { ChatRoomKind } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
+import { resolveTrustedEmail } from "@/lib/auth/request-identity";
+import {
+  assertCanAccessChatRoom,
+  listChatRoomsForViewer,
+  resolveChatRoomViewerFromEmail,
+} from "@/lib/chat/db-rooms";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { createTradingPollSchema } from "@/lib/validations/api";
 
 type PollOptionRecord = {
   id: string;
   label: string;
   votes: number;
-  voterIds?: string[];
 };
+
+/** Strip any legacy voter identities from stored options before returning to viewers (QC-20260719-23). */
+function sanitizePollOptions(raw: unknown): PollOptionRecord[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((item, index) => {
+    const opt = item as Partial<PollOptionRecord & { voterIds?: unknown }>;
+    return {
+      id: typeof opt.id === "string" ? opt.id : `opt-${index + 1}`,
+      label: typeof opt.label === "string" ? opt.label : `Opsi ${index + 1}`,
+      votes: typeof opt.votes === "number" ? opt.votes : 0,
+    };
+  });
+}
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl;
     const roomId = searchParams.get("roomId");
 
+    const email = (await resolveTrustedEmail(request)) ?? undefined;
+    const viewer = await resolveChatRoomViewerFromEmail(email, {
+      createIfMissing: true,
+      userId: request.headers.get("x-user-id"),
+      name: request.headers.get("x-user-name"),
+      role: request.headers.get("x-user-role"),
+    });
+    if (!viewer) {
+      return jsonError("Autentikasi diperlukan.", 401);
+    }
+
+    let accessibleRoomIds: string[];
+
+    if (roomId) {
+      const room = await db.chatRoom.findUnique({
+        where: { id: roomId },
+        select: {
+          id: true,
+          roomKind: true,
+          mentorId: true,
+          isActive: true,
+          isStaffCollaboration: true,
+          isProtected: true,
+        },
+      });
+      if (!room || !room.isActive) {
+        return jsonError("Chat room not found", 404);
+      }
+
+      const access = await assertCanAccessChatRoom({ room, viewer });
+      if (!access.ok) {
+        return jsonError(access.error, access.status);
+      }
+
+      accessibleRoomIds = [roomId];
+    } else {
+      const rooms = await listChatRoomsForViewer(viewer);
+      accessibleRoomIds = rooms.map((r) => r.id);
+    }
+
     const polls = await db.tradingPoll.findMany({
       where: {
-        ...(roomId ? { roomId } : {}),
+        roomId: { in: accessibleRoomIds },
       },
       include: {
         room: {
@@ -29,7 +87,12 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
 
-    return jsonOk({ polls });
+    const safePolls = polls.map((poll) => ({
+      ...poll,
+      options: sanitizePollOptions(poll.options),
+    }));
+
+    return jsonOk({ polls: safePolls });
   } catch (error) {
     return handleApiError(error);
   }
@@ -47,23 +110,12 @@ export async function POST(request: NextRequest) {
       return jsonError("Chat room not found", 404);
     }
 
-    // Client auth IDs often differ from Prisma cuids — resolve by email first.
-    const email = request.headers.get("x-user-email")?.trim().toLowerCase();
-    const user = await resolveRequestUser(
-      {
-        userId:
-          body.userId?.trim() ||
-          request.headers.get("x-user-id")?.trim() ||
-          email ||
-          "",
-        email: email || undefined,
-        name: request.headers.get("x-user-name")?.trim() || undefined,
-        role: request.headers.get("x-user-role")?.trim() || undefined,
-      },
-      { createIfMissing: true }
-    );
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: true,
+      claimedUserId: body.userId,
+    });
     if (!user) {
-      return jsonError("User not found", 404);
+      return jsonError("Autentikasi diperlukan.", 401);
     }
 
     const membership = await db.chatRoomMember.findUnique({
@@ -98,7 +150,6 @@ export async function POST(request: NextRequest) {
       id: `opt-${index + 1}`,
       label: label.trim(),
       votes: 0,
-      voterIds: [],
     }));
 
     const expiresAt =

@@ -25,7 +25,6 @@ const STATIC_ROUTES = [
   "/profil",
   "/pengaturan",
   "/artikel",
-  "/komunitas",
   "/wave-lab",
   "/privasi",
   "/kepercayaan",
@@ -82,7 +81,7 @@ async function main() {
 
     try {
       const res = await page.goto(`${BASE}${path}`, {
-        waitUntil: "networkidle",
+        waitUntil: "domcontentloaded",
         timeout: 45_000,
       });
       status = res?.status() ?? 0;

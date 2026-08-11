@@ -1,8 +1,13 @@
 import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { resolveTrustedEmail } from "@/lib/auth/request-identity";
+import {
+  assertCanAccessChatRoom,
+  resolveChatRoomViewerFromEmail,
+} from "@/lib/chat/db-rooms";
 import { db } from "@/lib/db";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
+import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { reactToMessageSchema } from "@/lib/validations/api";
 
 type RouteContext = {
@@ -19,20 +24,48 @@ export async function POST(request: NextRequest, context: RouteContext) {
     const { roomId, messageId } = await context.params;
     const body = reactToMessageSchema.parse(await request.json());
 
-    const email = request.headers.get("x-user-email")?.trim().toLowerCase();
+    const email = (await resolveTrustedEmail(request)) ?? undefined;
     const headerUserId = request.headers.get("x-user-id")?.trim();
     const headerName = request.headers.get("x-user-name")?.trim();
     const headerRole = request.headers.get("x-user-role")?.trim();
 
-    const user = await resolveRequestUser(
-      {
-        userId: body.userId?.trim() || headerUserId || "",
-        email: email || undefined,
-        name: headerName || undefined,
-        role: headerRole || undefined,
+    const viewer = await resolveChatRoomViewerFromEmail(email, {
+      createIfMissing: true,
+      userId: headerUserId,
+      name: headerName,
+      role: headerRole,
+    });
+    if (!viewer) {
+      return jsonError("Autentikasi diperlukan.", 401);
+    }
+
+    const room = await db.chatRoom.findUnique({
+      where: { id: roomId },
+      select: {
+        id: true,
+        roomKind: true,
+        mentorId: true,
+        isActive: true,
+        isStaffCollaboration: true,
+        isProtected: true,
       },
-      { createIfMissing: true }
-    );
+    });
+    if (!room || !room.isActive) {
+      return jsonError("Chat room not found", 404);
+    }
+
+    const access = await assertCanAccessChatRoom({ room, viewer });
+    if (!access.ok) {
+      return jsonError(access.error, access.status);
+    }
+
+    const user = await resolveAuthenticatedUser(request, {
+      createIfMissing: true,
+      claimedUserId: body.userId,
+    });
+    if (!user) {
+      return jsonError("Autentikasi diperlukan.", 401);
+    }
 
     if (!user) {
       return jsonError("Unauthorized", 401);

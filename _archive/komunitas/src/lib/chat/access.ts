@@ -2,7 +2,7 @@ import type { UserRole } from "@/lib/auth/types";
 import type { BranchVisibility, ChatBranchInfo, ChatRoom } from "@/lib/chat/types";
 
 /**
- * Staff collaboration / legacy internal rooms — whole-room privacy.
+ * Staff collaboration / legacy internal rooms, whole-room privacy.
  * Mentor hubs are no longer "private rooms"; privacy is per-branch.
  */
 export function isPrivateMentorRoom(

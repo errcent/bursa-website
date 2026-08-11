@@ -6,7 +6,6 @@ import { verifyWebSessionTokenEdge } from "@/lib/auth/web-session-edge";
 import { WEB_SESSION_COOKIE } from "@/lib/auth/web-session.constants";
 import {
   isKomunitasApiPath,
-  isKomunitasPagePath,
   KOMUNITAS_ENABLED,
 } from "@/lib/features/komunitas";
 
@@ -119,10 +118,7 @@ export async function proxy(request: NextRequest) {
     );
   }
 
-  if (isKomunitasPagePath(pathname)) {
-    return NextResponse.redirect(new URL("/bantuan", request.url));
-  }
-
+  // Page routes render their own coming-soon UI when komunitas is disabled.
   return isApi ? applyMobileCors(NextResponse.next(), origin) : NextResponse.next();
 }
 

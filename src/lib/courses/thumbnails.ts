@@ -5,12 +5,6 @@ import {
   resolveAiThumbnailUrl,
 } from "@/lib/thumbnails/resolve";
 
-/** @deprecated Prefer resolveCourseThumbnailUrl, kept for admin upload paths. */
-export const COURSE_THUMBNAIL_DIR = "/courses";
-
-/** Admin uploads land under public/uploads/courses/ (gitignored). */
-export const COURSE_UPLOAD_DIR = "/uploads/courses";
-
 export function defaultCourseThumbnailPath(slug: string): string {
   return aiThumbnailStaticPath("course", slug);
 }

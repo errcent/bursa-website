@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Mail, MessageCircle, Search } from "lucide-react";
+import { Mail, Search } from "lucide-react";
 
 import { Reveal } from "@/components/motion/reveal";
 import {
@@ -18,16 +18,10 @@ import {
   searchHelpFaqs,
   type HelpCategory,
 } from "@/lib/help-center/content";
-import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { cn } from "@/lib/utils";
 
-const helpCategories = KOMUNITAS_ENABLED
-  ? allHelpCategories
-  : allHelpCategories.filter((c) => c !== "Komunitas");
-
-const helpFaqs = KOMUNITAS_ENABLED
-  ? allHelpFaqs
-  : allHelpFaqs.filter((f) => f.category !== "Komunitas");
+const helpCategories = allHelpCategories.filter((c) => c !== "Komunitas");
+const helpFaqs = allHelpFaqs.filter((f) => f.category !== "Komunitas");
 
 export function HelpCenterContent() {
   const [query, setQuery] = useState("");
@@ -152,16 +146,6 @@ export function HelpCenterContent() {
               <Mail className="size-4" />
               support@bursanalar.com
             </Button>
-            {KOMUNITAS_ENABLED && (
-              <Button
-                variant="outline"
-                className="border-border/70"
-                render={<a href="/komunitas" />}
-              >
-                <MessageCircle className="size-4" />
-                Tanya di komunitas
-              </Button>
-            )}
           </div>
         </div>
       </Reveal>

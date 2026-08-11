@@ -25,7 +25,7 @@ export function RiskDisclaimer({
     return (
       <p
         className={cn(
-          "max-w-[16rem] text-[11px] leading-[1.35] tracking-normal text-muted-foreground/45 sm:max-w-xs md:max-w-sm md:text-right",
+          "max-w-[16rem] text-[11px] leading-[1.35] tracking-normal text-muted-foreground/75 sm:max-w-xs md:max-w-sm md:text-right",
           className
         )}
       >

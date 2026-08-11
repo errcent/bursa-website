@@ -29,7 +29,7 @@ export async function generateMetadata({
   if (!course) return {};
   return {
     title: `Checkout, ${course.title}`,
-    description: `Selesaikan pembelian akses kelas ${course.title} di Bursa Trading Academy.`,
+    description: `Selesaikan pembelian akses kelas ${course.title} di Bursa.`,
   };
 }
 

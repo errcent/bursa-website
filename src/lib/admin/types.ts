@@ -163,31 +163,6 @@ export interface AdminCourse {
   modules: AdminModuleInput[];
 }
 
-export interface AdminChatRoomMember {
-  id: string;
-  userId: string;
-  name: string;
-  email: string;
-  role: string;
-  joinedAt: string;
-}
-
-export interface AdminChatRoom {
-  id: string;
-  name: string;
-  slug: string;
-  mentorId: string;
-  mentorName: string;
-  tier: ChatRoomTierLabel;
-  roomKind?: "public" | "mentor_community" | "mentor_internal";
-  isProtected: boolean;
-  screenshotProtection: boolean;
-  isActive: boolean;
-  memberCount: number;
-  description?: string;
-  branchCount?: number;
-}
-
 export interface ModerationActionHistory {
   id: string;
   action: string;
@@ -313,14 +288,4 @@ export interface CourseFormInput {
   isPublished: boolean;
   thumbnailUrl?: string | null;
   modules: AdminModuleInput[];
-}
-
-export interface ChatRoomFormInput {
-  name: string;
-  mentorId: string;
-  tier: ChatRoomTierLabel;
-  roomKind?: "public" | "mentor_community" | "mentor_internal";
-  screenshotProtection: boolean;
-  isProtected: boolean;
-  description?: string;
 }

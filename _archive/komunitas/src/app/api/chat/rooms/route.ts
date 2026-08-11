@@ -2,6 +2,8 @@ import { ChatRoomKind, UserRole } from "@prisma/client";
 import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { requireAdmin, unauthorized } from "@/lib/admin/server";
+import { resolveTrustedEmail } from "@/lib/auth/request-identity";
 import { seedDefaultBranches } from "@/lib/chat/branch-change-requests";
 import {
   assertMentorRoomSlotAvailable,
@@ -11,6 +13,7 @@ import {
   resolveChatRoomViewerFromEmail,
 } from "@/lib/chat/db-rooms";
 import { db } from "@/lib/db";
+import { requireMentor, unauthorizedMentor } from "@/lib/mentor/server";
 import { createChatRoomSchema } from "@/lib/validations/api";
 
 export async function GET(request: NextRequest) {
@@ -19,7 +22,7 @@ export async function GET(request: NextRequest) {
     const mentorId = searchParams.get("mentorId");
     const tier = searchParams.get("tier");
     const roomKind = searchParams.get("roomKind");
-    const email = request.headers.get("x-user-email");
+    const email = await resolveTrustedEmail(request);
     const viewer = await resolveChatRoomViewerFromEmail(email, {
       createIfMissing: true,
       userId: request.headers.get("x-user-id"),
@@ -108,6 +111,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (roomKind === ChatRoomKind.PUBLIC) {
+      const admin = await requireAdmin(request);
+      if (!admin) return unauthorized();
+
       const existingPublic = await db.chatRoom.findFirst({
         where: { slug: body.slug, roomKind: ChatRoomKind.PUBLIC },
       });
@@ -141,6 +147,12 @@ export async function POST(request: NextRequest) {
 
     if (!body.mentorId) {
       return jsonError("mentorId wajib untuk ruang mentor", 400);
+    }
+
+    const mentorUser = await requireMentor(request);
+    if (!mentorUser?.mentorProfile) return unauthorizedMentor();
+    if (mentorUser.mentorProfile.id !== body.mentorId) {
+      return jsonError("Anda hanya dapat membuat ruang untuk profil mentor Anda sendiri.", 403);
     }
 
     const slot = await assertMentorRoomSlotAvailable(body.mentorId, roomKind);

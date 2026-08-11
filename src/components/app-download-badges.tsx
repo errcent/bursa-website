@@ -1,12 +1,19 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
-const appStoreUrl =
-  process.env.NEXT_PUBLIC_APP_STORE_URL?.trim() || "/waitlist";
-const googlePlayUrl =
-  process.env.NEXT_PUBLIC_GOOGLE_PLAY_URL?.trim() || "/waitlist";
+function resolveStoreUrl(raw: string | undefined): string | null {
+  const value = raw?.trim();
+  if (!value) return null;
+  if (value.startsWith("https://") || value.startsWith("http://")) return value;
+  return null;
+}
+
+const appStoreUrl = resolveStoreUrl(process.env.NEXT_PUBLIC_APP_STORE_URL);
+const googlePlayUrl = resolveStoreUrl(process.env.NEXT_PUBLIC_GOOGLE_PLAY_URL);
+const hasLiveStoreLinks = Boolean(appStoreUrl && googlePlayUrl);
 
 const BADGE_WIDTH = "7.48rem";
 const appleBadgeClass = "h-10 w-[7.48rem] object-contain object-left";
@@ -39,19 +46,32 @@ function StoreBadgeLink({
 }
 
 export function AppDownloadBadges({ className }: { className?: string }) {
-  const appStoreExternal = appStoreUrl.startsWith("http");
-  const googlePlayExternal = googlePlayUrl.startsWith("http");
+  if (!hasLiveStoreLinks) {
+    return (
+      <div className={cn("flex flex-col gap-2.5", className)}>
+        <h4 className="font-heading text-sm font-medium">Aplikasi</h4>
+        <p className="max-w-[14rem] text-xs leading-relaxed text-muted-foreground">
+          App segera hadir di App Store &amp; Google Play.
+        </p>
+        <Link
+          href="/waitlist"
+          className="inline-flex h-10 items-center justify-center rounded-md border border-border/70 bg-white/[0.03] px-3 text-sm font-medium text-foreground transition-colors hover:border-accent/30 hover:bg-white/[0.05]"
+        >
+          Gabung waitlist
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("flex flex-col gap-2.5", className)}>
       <h4 className="font-heading text-sm font-medium">Download</h4>
       <div className="flex flex-col items-start gap-2">
         <StoreBadgeLink
-          href={appStoreUrl}
+          href={appStoreUrl!}
           label="Unduh Bursa di App Store"
-          external={appStoreExternal}
+          external
         >
-          {/* Official Apple App Store badge (Apple Media Services API) */}
           <img
             src="/badges/app-store.svg"
             alt="Unduh di App Store"
@@ -61,11 +81,10 @@ export function AppDownloadBadges({ className }: { className?: string }) {
           />
         </StoreBadgeLink>
         <StoreBadgeLink
-          href={googlePlayUrl}
+          href={googlePlayUrl!}
           label="Unduh Bursa di Google Play"
-          external={googlePlayExternal}
+          external
         >
-          {/* Official Google Play badge asset */}
           <Image
             src="/badges/google-play.png"
             alt="Unduh di Google Play"

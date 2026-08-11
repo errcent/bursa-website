@@ -151,24 +151,24 @@ export function AboutPageContent() {
         <p className="eyebrow mb-3">Mulai sekarang</p>
         <h2 className="section-title sm:text-3xl">Siap membangun fondasi belajar yang solid?</h2>
         <p className="section-copy mx-auto mt-3 max-w-lg">
-          Jelajahi katalog kelas dan mentor, lalu pilih jalur belajar yang sesuai level dan
-          instrumenmu.
+          Gabung waitlist untuk kabar peluncuran, atau jelajahi preview katalog kelas dan mentor
+          sesuai level serta instrumenmu.
         </p>
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button
             size="lg"
             className="btn-primary h-12 rounded-md px-8"
-            render={<Link href="/katalog" />}
+            render={<Link href="/waitlist" />}
           >
-            Lihat Katalog
+            Gabung Waitlist
           </Button>
           <Button
             size="lg"
             variant="outline"
             className="h-12 rounded-md border-border/70 bg-card/40 px-7"
-            render={<Link href="/bantuan" />}
+            render={<Link href="/katalog" />}
           >
-            Pusat Bantuan
+            Lihat Katalog
           </Button>
         </div>
       </Reveal>

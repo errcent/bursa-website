@@ -1,6 +1,5 @@
 import { getSession } from "@/lib/auth/client";
 import {
-  createMockChatRoom,
   createMockCourse,
   createMockLesson,
   createMockMentor,
@@ -9,7 +8,6 @@ import {
   deleteMockLesson,
   deleteMockMentor,
   deleteMockModule,
-  getMockChatRooms,
   getMockCourse,
   getMockCourses,
   getMockMentors,
@@ -19,7 +17,6 @@ import {
   getMockUsers,
   reorderMockCurriculum,
   resolveMockModeration,
-  updateMockChatRoom,
   updateMockCourse,
   updateMockLesson,
   updateMockMentor,
@@ -27,7 +24,6 @@ import {
   updateMockUserRole,
 } from "./mock";
 import type {
-  AdminChatRoom,
   AdminCourse,
   AdminLessonInput,
   AdminMentor,
@@ -40,7 +36,6 @@ import type {
   AvailabilitySlotInput,
   AdminAvailabilitySlot,
   MentorSessionConfig,
-  ChatRoomFormInput,
   CourseFormInput,
   CurriculumReorderInput,
   LessonFormInput,
@@ -92,10 +87,6 @@ async function request<T>(path: string, init?: RequestInit): Promise<ApiResult<T
     if (process.env.NODE_ENV === "production") {
       throw error instanceof Error ? error : new Error("Permintaan admin gagal");
     }
-    // Collaboration chat has no mock, surface the real failure.
-    if (path === "/collaboration-chat") {
-      throw error instanceof Error ? error : new Error("Gagal memuat ruang kolaborasi.");
-    }
     try {
       return { data: await mockFallback<T>(path, init), source: "mock" };
     } catch {
@@ -112,7 +103,6 @@ async function mockFallback<T>(path: string, init?: RequestInit): Promise<T> {
   if (path === "/pendapatan" && method === "GET") return getMockRevenueReport() as T;
   if (path === "/mentors" && method === "GET") return getMockMentors() as T;
   if (path === "/courses" && method === "GET") return getMockCourses() as T;
-  if (path === "/chat-rooms" && method === "GET") return getMockChatRooms() as T;
   if (path === "/moderation" && method === "GET") return getMockModeration() as T;
   if (path === "/users" && method === "GET") return getMockUsers() as T;
 
@@ -207,15 +197,6 @@ async function mockFallback<T>(path: string, init?: RequestInit): Promise<T> {
     return reorderMockCurriculum(courseId, input.modules) as T;
   }
 
-  if (path === "/chat-rooms" && method === "POST") {
-    return createMockChatRoom(body as unknown as ChatRoomFormInput) as T;
-  }
-
-  if (path.startsWith("/chat-rooms/") && method === "PATCH") {
-    const id = path.split("/")[2];
-    return updateMockChatRoom(id, body as Partial<AdminChatRoom>) as T;
-  }
-
   if (path.startsWith("/moderation/") && method === "PATCH") {
     const id = path.split("/")[2];
     const decision = (body as { decision: ModerationDecision }).decision;
@@ -226,14 +207,6 @@ async function mockFallback<T>(path: string, init?: RequestInit): Promise<T> {
     const id = path.split("/")[2];
     const role = (body as { role: AdminUser["role"] }).role;
     return updateMockUserRole(id, role) as T;
-  }
-
-  if (path.startsWith("/branch-change-requests")) {
-    return [] as T;
-  }
-
-  if (path === "/collaboration-chat") {
-    throw new Error("Ruang kolaborasi mentor–admin tidak tersedia (API gagal).");
   }
 
   throw new Error("Mock fallback tidak tersedia untuk endpoint ini.");
@@ -422,30 +395,6 @@ export async function reorderCurriculum(
   });
 }
 
-export async function fetchChatRooms(): Promise<ApiResult<AdminChatRoom[]>> {
-  return request<AdminChatRoom[]>("/chat-rooms");
-}
-
-export async function createChatRoom(input: ChatRoomFormInput): Promise<ApiResult<AdminChatRoom>> {
-  return request<AdminChatRoom>("/chat-rooms", { method: "POST", body: JSON.stringify(input) });
-}
-
-export async function updateChatRoom(
-  id: string,
-  input: Partial<AdminChatRoom>
-): Promise<ApiResult<AdminChatRoom>> {
-  return request<AdminChatRoom>(`/chat-rooms/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(input),
-  });
-}
-
-export async function fetchChatRoomMembers(
-  roomId: string
-): Promise<ApiResult<import("./types").AdminChatRoomMember[]>> {
-  return request(`/chat-rooms/${roomId}/members`);
-}
-
 export async function fetchModerationQueue(): Promise<ApiResult<AdminModerationItem[]>> {
   return request<AdminModerationItem[]>("/moderation");
 }
@@ -476,34 +425,6 @@ export async function updateUserRole(
 
 export type AdminChangeRequest = import("@/lib/mentor/change-requests").ChangeRequestDto;
 
-export type AdminCollaborationChatRoom = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  tier: "Internal";
-  isProtected: boolean;
-  memberCount: number;
-  mentorId: string;
-  mentorName: string;
-  lastMessage: {
-    content: string;
-    authorName: string;
-    createdAt: string;
-  } | null;
-  href: string;
-};
-
-export type AdminCollaborationChatList = {
-  rooms: AdminCollaborationChatRoom[];
-  currentUserId: string;
-};
-
-/** @deprecated Use AdminCollaborationChatRoom / AdminCollaborationChatList */
-export type AdminCollaborationChat = AdminCollaborationChatRoom & {
-  currentUserId?: string;
-};
-
 export async function fetchChangeRequests(
   status?: string
 ): Promise<ApiResult<AdminChangeRequest[]>> {
@@ -520,36 +441,6 @@ export async function reviewChangeRequest(
   }
 ): Promise<ApiResult<AdminChangeRequest>> {
   return request<AdminChangeRequest>(`/change-requests/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(body),
-  });
-}
-
-export async function fetchCollaborationChat(): Promise<
-  ApiResult<AdminCollaborationChatList>
-> {
-  return request<AdminCollaborationChatList>("/collaboration-chat");
-}
-
-export type AdminBranchChangeRequest =
-  import("@/lib/chat/branch-change-requests").ChatBranchChangeRequestDto;
-
-export async function fetchBranchChangeRequests(
-  status?: string
-): Promise<ApiResult<AdminBranchChangeRequest[]>> {
-  const q = status ? `?status=${encodeURIComponent(status)}` : "";
-  return request<AdminBranchChangeRequest[]>(`/branch-change-requests${q}`);
-}
-
-export async function reviewBranchChangeRequest(
-  id: string,
-  body: {
-    decision: "approve" | "reject" | "approved" | "rejected" | "edited";
-    adminNote?: string;
-    editedData?: Record<string, unknown> | null;
-  }
-): Promise<ApiResult<AdminBranchChangeRequest>> {
-  return request<AdminBranchChangeRequest>(`/branch-change-requests/${id}`, {
     method: "PATCH",
     body: JSON.stringify(body),
   });

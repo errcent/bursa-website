@@ -19,14 +19,14 @@ export const termsOfService: LegalDocument = {
   title: "Syarat & Ketentuan",
   eyebrow: "Legal",
   description:
-    "Ketentuan penggunaan platform Bursa Trading Academy. Dengan mengakses, mendaftar, atau menggunakan layanan kami, kamu menyetujui seluruh syarat di bawah ini beserta Kebijakan Privasi kami.",
+    "Ketentuan penggunaan platform Bursa. Dengan mengakses, mendaftar, atau menggunakan layanan kami, kamu menyetujui seluruh syarat di bawah ini beserta Kebijakan Privasi kami.",
   lastUpdated: "22 Juli 2026",
   sections: [
     {
       id: "pengantar",
       title: "Pengantar & Penerimaan Ketentuan",
       paragraphs: [
-        "Selamat datang di Bursa Trading Academy (\"Bursa\", \"Platform\", \"kami\"), platform edukasi trading dan investasi berbasis katalog multi-instruktur yang diakses melalui bursanalar.com. Syarat & Ketentuan ini (\"S&K\") merupakan perjanjian yang mengikat secara hukum antara kamu (\"Pengguna\", \"kamu\") dan Bursa.",
+        "Selamat datang di Bursa (\"Bursa\", \"Platform\", \"kami\"), platform edukasi trading dan investasi berbasis katalog multi-instruktur yang diakses melalui bursanalar.com. Syarat & Ketentuan ini (\"S&K\") merupakan perjanjian yang mengikat secara hukum antara kamu (\"Pengguna\", \"kamu\") dan Bursa.",
         "Dengan membuat akun, mengakses, atau menggunakan layanan Bursa dalam bentuk apa pun, kamu menyatakan telah membaca, memahami, dan menyetujui untuk terikat pada S&K ini serta Kebijakan Privasi kami. Jika kamu tidak menyetujui salah satu ketentuan, mohon untuk tidak menggunakan Platform.",
         "S&K ini tunduk pada dan ditafsirkan berdasarkan hukum Negara Republik Indonesia, termasuk UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP), UU No. 11 Tahun 2008 jo. UU No. 19 Tahun 2016 jo. UU No. 1 Tahun 2024 tentang Informasi dan Transaksi Elektronik (UU ITE), dan UU No. 8 Tahun 1999 tentang Perlindungan Konsumen.",
       ],
@@ -38,7 +38,7 @@ export const termsOfService: LegalDocument = {
         "Untuk kejelasan penafsiran, istilah-istilah berikut memiliki arti sebagaimana dijelaskan di bawah ini.",
       ],
       bullets: [
-        "\"Platform\" adalah situs web, aplikasi, dan seluruh layanan digital yang dioperasikan oleh Bursa Trading Academy.",
+        "\"Platform\" adalah situs web, aplikasi, dan seluruh layanan digital yang dioperasikan oleh Bursa.",
         "\"Pengguna\" adalah setiap pihak yang mengakses Platform, mencakup Pelajar, Mentor, dan pengunjung.",
         "\"Pelajar\" adalah Pengguna yang membuat akun untuk mengakses konten pembelajaran.",
         "\"Mentor\" (atau \"Instruktur\") adalah pihak ketiga independen terverifikasi yang mempublikasikan kelas atau konten edukasi melalui Platform berdasarkan kapasitasnya sendiri.",

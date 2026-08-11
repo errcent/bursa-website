@@ -8,7 +8,7 @@ import { SiteNavbar } from "@/components/site-navbar";
 import { WaitlistForm } from "@/components/waitlist-form";
 
 export const metadata: Metadata = {
-  title: "Gabung Waitlist, Bursa",
+  title: "Gabung Waitlist",
   description:
     "Daftar ke waitlist Bursa dan jadi yang pertama tahu saat platform edukasi trading kami dibuka.",
 };

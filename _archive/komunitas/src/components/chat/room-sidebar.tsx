@@ -32,7 +32,7 @@ const categoryDescriptions: Record<ChannelCategory, string> = {
 interface RoomSidebarProps {
   rooms: ChatRoom[];
   className?: string;
-  /** Mentor profile id — used to hide other mentors' hubs */
+  /** Mentor profile id, used to hide other mentors' hubs */
   mentorProfileId?: string | null;
   /** Hub room ids the mentor may manage (owned or moderated) */
   accessibleHubIds?: string[];
@@ -108,7 +108,7 @@ export function RoomSidebar({
                     </div>
                     <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
                       {locked ? (
-                        <span>Privat — terkunci</span>
+                        <span>Privat, terkunci</span>
                       ) : (
                         <>
                           {room.tier && (

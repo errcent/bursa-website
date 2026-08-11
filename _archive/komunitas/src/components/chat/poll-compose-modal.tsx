@@ -140,7 +140,7 @@ export function PollComposeModal({ open, onOpenChange, onSubmit }: PollComposeMo
                   type="button"
                   onClick={() => setDurationHours(preset.hours)}
                   className={cn(
-                    "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                    "rounded-md border px-3 py-1 text-xs font-medium transition-colors",
                     durationHours === preset.hours
                       ? "border-accent/40 bg-accent/15 text-accent"
                       : "border-border hover:bg-muted/50"

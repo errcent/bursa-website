@@ -12,6 +12,7 @@ import {
 import bcrypt from "bcryptjs";
 
 import { defaultCourseThumbnailPath } from "@/lib/courses/thumbnails";
+import { instrumentFromUi, levelFromUi } from "@/lib/catalog/enums";
 import { courses, mentors } from "@/lib/mock-data";
 import type { Instrument as MockInstrument, Level } from "@/lib/types";
 
@@ -36,21 +37,11 @@ export function previewMentorEmail(slug: string): string {
 }
 
 export function mapInstrument(value: MockInstrument): Instrument {
-  const map: Record<MockInstrument, Instrument> = {
-    Saham: Instrument.SAHAM,
-    Crypto: Instrument.CRYPTO,
-    Forex: Instrument.FOREX,
-  };
-  return map[value];
+  return instrumentFromUi(value);
 }
 
 export function mapLevel(value: Level): CourseLevel {
-  const map: Record<Level, CourseLevel> = {
-    Pemula: CourseLevel.PEMULA,
-    Menengah: CourseLevel.MENENGAH,
-    Mahir: CourseLevel.MAHIR,
-  };
-  return map[value];
+  return levelFromUi(value);
 }
 
 export async function randomPasswordHash(): Promise<string> {

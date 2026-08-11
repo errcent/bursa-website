@@ -23,7 +23,6 @@ import { cn } from "@/lib/utils";
 const mobileLinks = [
   { href: "/mentor", label: "Ringkasan" },
   { href: "/mentor/usulan", label: "Usulan Konten" },
-  { href: "/mentor/chat", label: "Group Chat" },
   { href: "/mentor/profil", label: "Identitas Mentor" },
   { href: "/mentor/pengaturan", label: "Pengaturan" },
 ];

@@ -46,14 +46,6 @@ function getHeroSubcopyDelaySSR() {
   return resolveHeroSubcopyDelaySSR(HERO_HEADLINE_LINE_LIST);
 }
 
-function scrollToPopularClasses() {
-  const el = document.getElementById("kelas-unggulan");
-  if (!el) return;
-  const navOffset = 96;
-  const top = el.getBoundingClientRect().top + window.scrollY - navOffset;
-  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
-}
-
 export function HomeHeroSection() {
   const heroBadgeText = "Solusi Edukasi Trading";
   const subcopyDelay = useSyncExternalStore(
@@ -68,7 +60,7 @@ export function HomeHeroSection() {
 
       <div aria-hidden className="hero-text-scrim pointer-events-none absolute inset-0 z-[1]" />
 
-      <div className="container-page relative z-10 flex flex-1 flex-col justify-center px-5 py-14 pb-8 sm:px-8 sm:py-20 sm:pb-10 lg:py-24 lg:pb-12">
+      <div className="container-page relative z-10 flex flex-1 flex-col justify-end px-5 pb-28 pt-16 sm:justify-center sm:px-8 sm:py-20 sm:pb-10 lg:py-24 lg:pb-12">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
           <span className="badge-pill mb-6 inline-flex items-center gap-2">
             <HeroTyping text={heroBadgeText} />
@@ -101,9 +93,9 @@ export function HomeHeroSection() {
                 size="lg"
                 variant="outline"
                 className="h-12 min-h-12 w-full rounded-md border-border/70 bg-card/40 px-7 text-sm text-foreground no-underline hover:text-foreground visited:text-foreground sm:h-11 sm:w-auto"
-                onClick={scrollToPopularClasses}
+                render={<Link href="/katalog" />}
               >
-                Pelajari Lebih Lanjut
+                Jelajahi Katalog
               </Button>
             </div>
           </RevealText>

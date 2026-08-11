@@ -10,13 +10,13 @@ const MOCK_PREVIEWS: Record<string, Omit<MessageEmbed, "url">> = {
     color: "#1a4d8f",
   },
   "tradingview.com": {
-    title: "TradingView — Chart & Analisis",
+    title: "TradingView, Chart & Analisis",
     description: "Platform charting interaktif untuk saham, crypto, dan forex.",
     siteName: "TradingView",
     color: "#2962ff",
   },
   "investopedia.com": {
-    title: "Investopedia — Edukasi Investasi",
+    title: "Investopedia, Edukasi Investasi",
     description: "Artikel dan definisi istilah keuangan untuk investor pemula hingga mahir.",
     siteName: "Investopedia",
     color: "#2d6a4f",

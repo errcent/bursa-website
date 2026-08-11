@@ -25,7 +25,7 @@ import {
 import type { ChatMember, PendingAttachment } from "@/lib/chat/types";
 
 const MAX_CHARS = 2000;
-/** Narrow phones (≤430px) — short placeholder, hide helper chrome */
+/** Narrow phones (≤430px), short placeholder, hide helper chrome */
 const CHAT_COMPACT_QUERY = "(max-width: 430px)";
 /** Match textarea min-height so action buttons align with the input row */
 const INPUT_ROW_CONTROL = "size-9 shrink-0 sm:size-10";
@@ -46,7 +46,7 @@ interface ChatInputProps {
   placeholder?: string;
   disabled?: boolean;
   readOnly?: boolean;
-  /** Shown when readOnly — defaults to announcement copy if omitted. */
+  /** Shown when readOnly, defaults to announcement copy if omitted. */
   readOnlyMessage?: string;
   slowModeSeconds?: number;
   lastSentAt?: number;
@@ -117,7 +117,7 @@ export function ChatInput({
   const resolvedReadOnlyMessage = compactUi
     ? "Hanya baca"
     : (readOnlyMessage ??
-      "Cabang ini hanya baca — hanya mentor yang dapat mengirim pesan.");
+      "Cabang ini hanya baca, hanya mentor yang dapat mengirim pesan.");
 
   useEffect(() => {
     if (!replyTo && replyFocusKey === 0) return;
@@ -313,7 +313,7 @@ export function ChatInput({
         <div className="mb-2 hidden items-center gap-1.5 text-[11px] text-muted-foreground sm:flex">
           <Clock className="size-3" />
           {isSlowModeBlocked ? (
-            <span>Mode lambat aktif — tunggu {slowModeRemaining} detik</span>
+            <span>Mode lambat aktif, tunggu {slowModeRemaining} detik</span>
           ) : (
             <span>Mode lambat: {slowModeSeconds} detik antar pesan</span>
           )}

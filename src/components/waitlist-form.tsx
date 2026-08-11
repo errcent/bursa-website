@@ -33,6 +33,7 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [honeypot, setHoneypot] = useState("");
+  const [armTurnstile, setArmTurnstile] = useState(false);
 
   const utm = useMemo(
     () => ({
@@ -59,6 +60,7 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
       return;
     }
     if (turnstileRequired && !turnstileToken) {
+      setArmTurnstile(true);
       setError("Selesaikan verifikasi keamanan terlebih dahulu.");
       return;
     }
@@ -144,7 +146,7 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
+    <form onSubmit={handleSubmit} className="relative flex w-full flex-col gap-4">
       <div className="flex w-full flex-col gap-3 sm:flex-row">
         <div className="flex-1">
           <label htmlFor="waitlist-email" className="sr-only">
@@ -160,6 +162,7 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
               setEmail(e.target.value);
               if (error) setError(null);
             }}
+            onFocus={() => setArmTurnstile(true)}
             placeholder="nama@email.com"
             className={authInputClassName}
             aria-invalid={Boolean(error)}
@@ -204,19 +207,24 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
         </span>
       </label>
 
-      <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>
+      {/* Honeypot: not focusable, not in a11y tree */}
+      <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0" inert>
         <label htmlFor="waitlist-website">Website</label>
         <input
           id="waitlist-website"
           type="text"
+          name="website"
           tabIndex={-1}
           autoComplete="off"
           value={honeypot}
           onChange={(e) => setHoneypot(e.target.value)}
+          readOnly={false}
         />
       </div>
 
-      <TurnstileWidget onToken={setTurnstileToken} className="flex justify-center sm:justify-start" />
+      {turnstileRequired && armTurnstile ? (
+        <TurnstileWidget onToken={setTurnstileToken} className="flex justify-center sm:justify-start" />
+      ) : null}
 
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
     </form>

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Inter } from "next/font/google";
+import { Instrument_Serif, Inter, Outfit } from "next/font/google";
 import Script from "next/script";
 
 import { AuthProvider } from "@/components/auth-provider";
@@ -18,7 +18,7 @@ import { rootSiteMetadata } from "@/lib/site-metadata";
 
 import "./globals.css";
 
-/** Body / UI copy, light & regular weights */
+/** Body / UI copy */
 const fontSans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
@@ -26,11 +26,19 @@ const fontSans = Inter({
   display: "swap",
 });
 
-/** Headings, bold text, buttons, brand wordmark */
-const fontHeading = DM_Sans({
+/** UI headings, buttons, nav chrome */
+const fontHeading = Outfit({
   variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["500", "600", "700"],
+  display: "swap",
+});
+
+/** Display / hero / marketing section titles */
+const fontDisplay = Instrument_Serif({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["400"],
   display: "swap",
 });
 
@@ -52,7 +60,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${fontSans.variable} ${fontHeading.variable} dark h-full antialiased`}
+      className={`${fontSans.variable} ${fontHeading.variable} ${fontDisplay.variable} dark h-full antialiased`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

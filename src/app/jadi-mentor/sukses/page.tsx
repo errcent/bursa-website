@@ -16,7 +16,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Aplikasi Mentor Terkirim",
-  description: "Konfirmasi penerimaan aplikasi mentor Bursa Trading Academy.",
+  description: "Konfirmasi penerimaan aplikasi mentor Bursa.",
 };
 
 export default async function MentorApplicationSuccessPage({

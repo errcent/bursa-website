@@ -1,17 +1,16 @@
 import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError } from "@/lib/api-utils";
+import { resolveTrustedEmail } from "@/lib/auth/request-identity";
 import {
   assertCanAccessChatRoom,
   resolveChatRoomViewerFromEmail,
 } from "@/lib/chat/db-rooms";
 import { getRoomMessageRevision } from "@/lib/chat/room-revision";
 import { db } from "@/lib/db";
-import { resolveRequestUser } from "@/lib/lesson-qa/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-/** Vercel streaming limit; client reconnects automatically. */
 export const maxDuration = 60;
 
 const POLL_MS = 1500;
@@ -20,25 +19,6 @@ const HEARTBEAT_MS = 15000;
 type RouteContext = {
   params: Promise<{ roomId: string }>;
 };
-
-async function resolveUser(request: NextRequest) {
-  const email = request.headers.get("x-user-email")?.trim().toLowerCase();
-  const headerUserId = request.headers.get("x-user-id")?.trim();
-  const headerName = request.headers.get("x-user-name")?.trim();
-  const headerRole = request.headers.get("x-user-role")?.trim();
-
-  if (!email && !headerUserId) return null;
-
-  return resolveRequestUser(
-    {
-      userId: headerUserId || "",
-      email: email || undefined,
-      name: headerName || undefined,
-      role: headerRole || undefined,
-    },
-    { createIfMissing: true }
-  );
-}
 
 function sseChunk(event: string, data: string): Uint8Array {
   return new TextEncoder().encode(`event: ${event}\ndata: ${data}\n\n`);
@@ -64,28 +44,17 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return jsonError("Chat room not found", 404);
     }
 
-    const user = await resolveUser(request);
-    const viewer = user
-      ? {
-          id: user.id,
-          role: user.role,
-          mentorProfileId:
-            (
-              await db.mentorProfile.findUnique({
-                where: { userId: user.id },
-                select: { id: true },
-              })
-            )?.id ?? null,
-        }
-      : await resolveChatRoomViewerFromEmail(
-          request.headers.get("x-user-email"),
-          {
-            createIfMissing: true,
-            userId: request.headers.get("x-user-id"),
-            name: request.headers.get("x-user-name"),
-            role: request.headers.get("x-user-role"),
-          }
-        );
+    const email = await resolveTrustedEmail(request);
+    if (!email) {
+      return jsonError("Autentikasi diperlukan.", 401);
+    }
+
+    const viewer = await resolveChatRoomViewerFromEmail(email, {
+      createIfMissing: true,
+      userId: request.headers.get("x-user-id"),
+      name: request.headers.get("x-user-name"),
+      role: request.headers.get("x-user-role"),
+    });
 
     const access = await assertCanAccessChatRoom({ room, viewer });
     if (!access.ok) {

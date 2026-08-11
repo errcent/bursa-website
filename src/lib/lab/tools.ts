@@ -343,11 +343,6 @@ export function getAdvancedLabTools(): LabTool[] {
   return labTools.filter((tool) => tool.tier === "advanced");
 }
 
-/** @deprecated Use getEssentialLabTools */
-export function getFeaturedLabTools(): LabTool[] {
-  return getEssentialLabTools();
-}
-
 export function searchLabTools(query: string): LabTool[] {
   const normalized = query.trim().toLowerCase();
   if (!normalized) return labTools;

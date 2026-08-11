@@ -136,10 +136,3 @@ export async function getReviewEligibility(
     },
   };
 }
-
-/** @deprecated Use recalculateCourseStats from @/lib/stats/server */
-export async function recalculateCourseRating(courseId: string) {
-  const { recalculateCourseStats } = await import("@/lib/stats/server");
-  const stats = await recalculateCourseStats(courseId);
-  return stats.rating;
-}

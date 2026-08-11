@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import { articles } from "@/lib/articles/content";
 import { getCatalogData } from "@/lib/catalog/server";
-import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { searchAll } from "@/lib/search/engine";
 import { DEFAULT_OG, SITE_URL } from "@/lib/site-metadata";
 
@@ -130,9 +129,6 @@ export async function getSitemapEntries() {
   const staticPages = [
     { url: "", priority: 1, changeFrequency: "weekly" as const },
     { url: "/katalog", priority: 0.9, changeFrequency: "daily" as const },
-    ...(KOMUNITAS_ENABLED
-      ? [{ url: "/komunitas", priority: 0.8, changeFrequency: "daily" as const }]
-      : []),
     { url: "/jadi-mentor", priority: 0.7, changeFrequency: "monthly" as const },
     { url: "/waitlist", priority: 0.85, changeFrequency: "weekly" as const },
     { url: "/artikel", priority: 0.6, changeFrequency: "weekly" as const },

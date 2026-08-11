@@ -39,7 +39,7 @@ export function ProtectedContent({
 
       const messages: Record<ScreenshotAttemptMethod, string> = {
         "screen-capture": "Aktivitas capture layar terdeteksi. Tindakan dicatat.",
-        visibility: "Tab disembunyikan — konten dilindungi.",
+        visibility: "Tab disembunyikan, konten dilindungi.",
         devtools: "Developer tools terdeteksi. Konten dilindungi.",
         "context-menu": "Menu konteks diblokir di ruang ini.",
       };

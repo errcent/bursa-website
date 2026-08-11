@@ -63,11 +63,12 @@ export default function DeveloperDocsPage() {
           mobile) untuk melompat ke bagian yang dicari.
         </p>
         <div className="rounded-lg border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
-          <Strong>Komunitas diarsipkan (2026-07-14):</Strong> fitur chat/komunitas dinonaktifkan via{" "}
-          <Code>NEXT_PUBLIC_KOMUNITAS_ENABLED=false</Code>. Mirror kode ada di{" "}
-          <Code>_archive/komunitas/</Code> — lihat <Code>RESTORE-PROMPT.md</Code> untuk mengaktifkan
-          kembali. Bagian &ldquo;Sistem chat&rdquo; di bawah mendokumentasikan arsitektur saat fitur
-          masih aktif.
+          <Strong>Komunitas diarsipkan (2026-07-14):</Strong> fitur chat/komunitas dipindah ke{" "}
+          <Code>_archive/komunitas/</Code> dan dinonaktifkan via{" "}
+          <Code>NEXT_PUBLIC_KOMUNITAS_ENABLED=false</Code>. Kode live di <Code>src/</Code> tidak lagi
+          mengimpor <Code>@/lib/chat</Code>. Lihat <Code>RESTORE-PROMPT.md</Code> untuk restore.
+          Bagian &ldquo;Sistem chat&rdquo; di bawah mendokumentasikan arsitektur saat fitur masih
+          aktif (mirror arsip).
         </div>
       </div>
 
@@ -328,8 +329,9 @@ export default function DeveloperDocsPage() {
       <DocSection id="chat" title="4. Sistem chat (diarsipkan — lihat banner atas)">
         <p>
           <Strong>Status:</Strong> dinonaktifkan 2026-07-14. Saat aktif, chat ada di{" "}
-          <Code>/komunitas</Code> (+ <Code>/komunitas/[roomSlug]</Code>). Logika akses utama:{" "}
-          <Code>lib/chat/access.ts</Code>, <Code>lib/chat/room-kinds.ts</Code>, model Prisma{" "}
+          <Code>/komunitas</Code> (+ <Code>/komunitas/[roomSlug]</Code>). Logika akses utama (arsip):{" "}
+          <Code>_archive/komunitas/src/lib/chat/access.ts</Code>,{" "}
+          <Code>_archive/komunitas/src/lib/chat/room-kinds.ts</Code>, model Prisma{" "}
           <Code>ChatRoom</Code> / <Code>ChatBranch</Code> / <Code>ChatRoomMember</Code>.
         </p>
 
@@ -659,13 +661,13 @@ export default function DeveloperDocsPage() {
               <Code>/api/me/profile</Code>, avatar, learning
             </li>
             <li>
-              <Code>/api/admin/*</Code> — courses, curriculum, mentors, users, chat-rooms,
-              moderation, change-requests, branch-change-requests, pendapatan, stats,
-              collaboration-chat
+              <Code>/api/admin/*</Code> — courses, curriculum, mentors, users, moderation,
+              change-requests, pendapatan, stats (chat-rooms / collaboration-chat /
+              branch-change-requests: diarsipkan)
             </li>
             <li>
-              <Code>/api/mentor/*</Code> — profile, courses, change-requests,
-              branch-change-requests, chat-rooms, collaboration-chat, applications
+              <Code>/api/mentor/*</Code> — profile, courses, change-requests, applications
+              (chat-rooms / collaboration-chat / branch-change-requests: diarsipkan)
             </li>
           </ul>
         </DocSub>
@@ -840,26 +842,22 @@ export default function DeveloperDocsPage() {
               <Code>/api/admin/users</Code> (+ <Code>[id]</Code>) — kelola user &amp; role
             </li>
             <li>
-              <Code>/api/admin/chat-rooms</Code> (+ <Code>[id]</Code>,{" "}
-              <Code>[id]/members</Code>) — kelola room &amp; keanggotaan
+              <Code>/api/admin/chat-rooms</Code>, <Code>/api/admin/branch-change-requests</Code>,{" "}
+              <Code>/api/admin/collaboration-chat</Code> — diarsipkan ke{" "}
+              <Code>_archive/komunitas/</Code> (lihat §4)
             </li>
             <li>
               <Code>/api/admin/moderation</Code> (+ <Code>[id]</Code>) — antrian moderasi konten
               dilaporkan
             </li>
             <li>
-              <Code>/api/admin/change-requests</Code>,{" "}
-              <Code>/api/admin/branch-change-requests</Code> (+ <Code>[id]</Code>) — approve/reject
-              usulan mentor (§5, §4)
+              <Code>/api/admin/change-requests</Code> (+ <Code>[id]</Code>) — approve/reject usulan
+              kurikulum mentor (§5)
             </li>
             <li>
               <Code>GET /api/admin/pendapatan</Code> — laporan revenue (§8);{" "}
               <Code>GET /api/admin/stats</Code> — ringkasan dashboard (total user, mentor, course,
               enrollment, revenue, room aktif, moderasi pending, aktivitas terbaru)
-            </li>
-            <li>
-              <Code>/api/admin/collaboration-chat</Code> — chat kolaborasi staf admin↔mentor
-              (<Code>isStaffCollaboration</Code>)
             </li>
             <li>
               <Code>requireAdminPanel</Code> (admin + developer, read) vs. <Code>requireAdmin</Code>{" "}
@@ -874,12 +872,11 @@ export default function DeveloperDocsPage() {
               <Code>/api/mentor/profile</Code>, <Code>/api/mentor/courses</Code>
             </li>
             <li>
-              <Code>/api/mentor/change-requests</Code>,{" "}
-              <Code>/api/mentor/branch-change-requests</Code> — ajukan usulan (§5, §4)
+              <Code>/api/mentor/change-requests</Code> — ajukan usulan kurikulum (§5)
             </li>
             <li>
-              <Code>/api/mentor/chat-rooms</Code>,{" "}
-              <Code>/api/mentor/collaboration-chat</Code> — hub sendiri + chat staf privat
+              <Code>/api/mentor/chat-rooms</Code>, <Code>/api/mentor/collaboration-chat</Code>,{" "}
+              <Code>/api/mentor/branch-change-requests</Code> — diarsipkan (lihat §4)
             </li>
             <li>
               <Code>POST /api/mentor/applications</Code> — publik; formulir pendaftaran calon

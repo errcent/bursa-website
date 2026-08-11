@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { db } from "@/lib/db";
 import { resolveSignedPlaybackUrl } from "@/lib/video/bunny";
-import { DEMO_VIDEO_URL } from "@/lib/video/demo";
 import { issuePlaybackHeartbeatToken } from "@/lib/video/playback-heartbeat";
 import { generatePlaybackToken } from "@/lib/video/protection";
 
@@ -14,7 +13,7 @@ function resolveLessonVideoUrl(stored: string | null | undefined): string {
   const trimmed = stored?.trim();
   if (trimmed && !trimmed.startsWith("bunny:")) return trimmed;
 
-  return DEMO_VIDEO_URL;
+  return "";
 }
 
 async function getLessonContext(courseSlug: string, lessonId: string) {

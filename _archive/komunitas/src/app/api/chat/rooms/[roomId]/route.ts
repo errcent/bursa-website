@@ -3,8 +3,8 @@ import { NextRequest } from "next/server";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import {
   assertCanAccessChatRoom,
-  resolveChatRoomViewerFromEmail,
 } from "@/lib/chat/db-rooms";
+import { resolveTrustedChatViewer } from "@/lib/chat/resolve-viewer";
 import { db } from "@/lib/db";
 import { updateChatRoomSchema } from "@/lib/validations/api";
 
@@ -37,15 +37,12 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return jsonError("Chat room not found", 404);
     }
 
-    const viewer = await resolveChatRoomViewerFromEmail(
-      request.headers.get("x-user-email"),
-      {
-        createIfMissing: true,
-        userId: request.headers.get("x-user-id"),
-        name: request.headers.get("x-user-name"),
-        role: request.headers.get("x-user-role"),
-      }
-    );
+    const viewer = await resolveTrustedChatViewer(request, {
+      createIfMissing: true,
+      userId: request.headers.get("x-user-id"),
+      name: request.headers.get("x-user-name"),
+      role: request.headers.get("x-user-role"),
+    });
     const access = await assertCanAccessChatRoom({ room, viewer });
     if (!access.ok) {
       return jsonError(access.error, access.status);
@@ -67,15 +64,12 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return jsonError("Chat room not found", 404);
     }
 
-    const viewer = await resolveChatRoomViewerFromEmail(
-      request.headers.get("x-user-email"),
-      {
-        createIfMissing: true,
-        userId: request.headers.get("x-user-id"),
-        name: request.headers.get("x-user-name"),
-        role: request.headers.get("x-user-role"),
-      }
-    );
+    const viewer = await resolveTrustedChatViewer(request, {
+      createIfMissing: true,
+      userId: request.headers.get("x-user-id"),
+      name: request.headers.get("x-user-name"),
+      role: request.headers.get("x-user-role"),
+    });
     const access = await assertCanAccessChatRoom({ room: existing, viewer });
     if (!access.ok) {
       return jsonError(access.error, access.status);

@@ -108,20 +108,6 @@ export function correlation(returnsA: number[], returnsB: number[]): number {
   return den > 0 ? num / den : 0;
 }
 
-/** Correlation matrix for multiple assets. */
-export function correlationMatrix(
-  assetReturns: number[][]
-): { assets: number; matrix: number[][] } {
-  const n = assetReturns.length;
-  const matrix: number[][] = Array.from({ length: n }, () => Array(n).fill(0));
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
-      matrix[i][j] = i === j ? 1 : correlation(assetReturns[i], assetReturns[j]);
-    }
-  }
-  return { assets: n, matrix };
-}
-
 /** Beta of stock vs market. */
 export function beta(stockReturns: number[], marketReturns: number[]): number {
   const n = Math.min(stockReturns.length, marketReturns.length);
@@ -139,12 +125,4 @@ export function beta(stockReturns: number[], marketReturns: number[]): number {
     varM += dm * dm;
   }
   return varM > 0 ? cov / varM : 0;
-}
-
-/** Parse comma-separated return data. */
-export function parseReturns(input: string): number[] {
-  return input
-    .split(/[,;\s]+/)
-    .map((s) => parseFloat(s.trim()))
-    .filter((n) => !isNaN(n));
 }

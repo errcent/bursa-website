@@ -188,7 +188,7 @@ export function canUserViewBranch(input: {
 
   return {
     allowed: false,
-    reason: "Cabang privat — hanya mentor dan moderator yang dapat melihat.",
+    reason: "Cabang privat, hanya mentor dan moderator yang dapat melihat.",
   };
 }
 
@@ -245,7 +245,7 @@ export function canUserSendInBranch(input: {
     return { allowed: true };
   }
 
-  // ONE_WAY — mentor (owner) always; moderators only when policy allows
+  // ONE_WAY, mentor (owner) always; moderators only when policy allows
   if (membership.role === ChatMemberRole.MENTOR || isRoomOwner) {
     return { allowed: true };
   }
@@ -260,8 +260,8 @@ export function canUserSendInBranch(input: {
     allowed: false,
     reason:
       branch.senderPolicy === ChatBranchSenderPolicy.MENTOR_AND_MODERATORS
-        ? "Cabang 1 arah — hanya mentor dan moderator yang dapat mengirim."
-        : "Cabang 1 arah — hanya mentor yang dapat mengirim.",
+        ? "Cabang 1 arah, hanya mentor dan moderator yang dapat mengirim."
+        : "Cabang 1 arah, hanya mentor yang dapat mengirim.",
   };
 }
 

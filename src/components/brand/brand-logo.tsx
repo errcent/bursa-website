@@ -51,6 +51,7 @@ export function BrandLogo({
         width={desktop.w}
         height={desktop.h}
         priority={priority}
+        unoptimized={desktop.src.endsWith(".svg")}
         className={cn("h-auto w-auto max-w-none shrink-0", className)}
         style={{ width: desktop.w, height: desktop.h }}
       />
@@ -65,6 +66,7 @@ export function BrandLogo({
         width={mobile.w}
         height={mobile.h}
         priority={priority}
+        unoptimized={mobile.src.endsWith(".svg")}
         className={cn("h-auto w-auto max-w-none shrink-0 sm:hidden", className)}
         style={{ width: mobile.w, height: mobile.h }}
       />
@@ -74,6 +76,7 @@ export function BrandLogo({
         width={desktop.w}
         height={desktop.h}
         priority={priority}
+        unoptimized={desktop.src.endsWith(".svg")}
         className={cn("hidden h-auto w-auto max-w-none shrink-0 sm:block", className)}
         style={{ width: desktop.w, height: desktop.h }}
       />

@@ -4,9 +4,12 @@ export function isPreviewCatalogActive(): boolean {
   return !isPaidCheckoutEnabled();
 }
 
-/** Layer 1, compact dismissible banner on list/discovery pages. */
+/**
+ * Layer 1 — dismissible banner on discovery surfaces only.
+ * Home keeps a clean fold (no amber “warehouse” sticker above the hero).
+ */
 export function isPreviewBannerPath(pathname: string): boolean {
-  if (pathname === "/" || pathname === "/katalog") return true;
+  if (pathname === "/katalog") return true;
   if (pathname === "/panduan-belajar" || pathname === "/panduan-belajar/quiz") return true;
   if (pathname === "/playlist" || pathname.startsWith("/playlist/")) return true;
   return false;

@@ -78,33 +78,6 @@ export function kellyVariants(winRate: number, riskRewardRatio: number) {
   return { full, half: full / 2, quarter: full / 4 };
 }
 
-/** Optimal F using simplified Ralph Vince approach on trade R-multiples. */
-export function optimalF(tradeResults: number[]): { optimalF: number; twr: number } {
-  if (tradeResults.length === 0) return { optimalF: 0, twr: 1 };
-  const biggestLoss = Math.min(...tradeResults, 0);
-  if (biggestLoss >= 0) return { optimalF: 0, twr: 1 };
-
-  let bestF = 0;
-  let bestTwr = 0;
-  for (let f = 0.01; f <= 1; f += 0.01) {
-    let hpr = 1;
-    for (const r of tradeResults) {
-      hpr *= 1 + f * (-r / biggestLoss);
-      if (hpr <= 0) break;
-    }
-    if (hpr > bestTwr) {
-      bestTwr = hpr;
-      bestF = f;
-    }
-  }
-  return { optimalF: bestF, twr: bestTwr };
-}
-
-/** Fixed fractional position size. */
-export function fixedFractional(accountBalance: number, fraction: number): number {
-  return accountBalance * Math.max(0, Math.min(1, fraction));
-}
-
 /** Simulate max drawdown from random trade sequence. */
 export function simulateMaxDrawdown(params: {
   startingCapital: number;

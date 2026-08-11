@@ -38,19 +38,19 @@ export function PreviewCatalogBanner() {
   return (
     <div
       role="note"
-      className="border-b border-amber-500/25 bg-amber-500/10 px-3 py-2.5 sm:px-5"
+      className="border-b border-border/70 bg-white/[0.02] px-3 py-2 sm:px-5"
     >
       <div className="container-page flex items-center gap-3">
-        <span className="shrink-0 rounded-md bg-amber-500/20 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-200">
+        <span className="shrink-0 rounded-md border border-border/80 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           Preview
         </span>
-        <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+        <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground sm:text-[13px]">
           {PREVIEW_CATALOG_COPY.bannerShort}
         </p>
         <button
           type="button"
           onClick={handleDismiss}
-          className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+          className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground"
           aria-label="Tutup peringatan preview"
         >
           <X className="size-4" aria-hidden />

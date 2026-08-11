@@ -33,7 +33,7 @@ import {
 import { useMobileLayout } from "@/hooks/use-mobile-layout";
 
 import type { Course } from "@/lib/types";
-
+import { isPreviewCatalogActive } from "@/lib/preview-catalog/visibility";
 import { cn } from "@/lib/utils";
 
 import Link from "next/link";
@@ -190,7 +190,7 @@ export function CourseCarousel({
 
   const studentStat =
 
-    totalStudents !== undefined && totalStudents > 0
+    !isPreviewCatalogActive() && totalStudents !== undefined && totalStudents > 0
 
       ? `${totalStudents.toLocaleString("id-ID")}+`
 

@@ -94,6 +94,7 @@ export function MentorApplicationForm() {
   const [uploadingCv, setUploadingCv] = useState(false);
   const [uploadingCertificate, setUploadingCertificate] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [armTurnstile, setArmTurnstile] = useState(false);
   const turnstileRequired = isTurnstileClientConfigured();
 
   async function uploadDocument(
@@ -589,8 +590,16 @@ export function MentorApplicationForm() {
         <p className="-mt-4 text-xs text-destructive">{errors.agreedToTerms}</p>
       )}
 
-      {turnstileRequired ? (
+      {turnstileRequired && armTurnstile ? (
         <TurnstileWidget onToken={setTurnstileToken} className="flex justify-center" />
+      ) : turnstileRequired ? (
+        <button
+          type="button"
+          className="rounded-md border border-border/70 px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-accent/30 hover:text-foreground"
+          onClick={() => setArmTurnstile(true)}
+        >
+          Lanjutkan verifikasi keamanan
+        </button>
       ) : null}
 
       <Button type="submit" className="h-11 w-full btn-primary sm:w-auto sm:px-10" disabled={isSubmitting}>

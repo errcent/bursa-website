@@ -16,7 +16,6 @@ import { SiteNavSearch } from "@/components/site-nav-search";
 import { Button } from "@/components/ui/button";
 import { getRoleNavLinks } from "@/lib/auth/roles";
 import { isSameNavDestination } from "@/lib/nav/route-navbar";
-import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -43,13 +42,10 @@ const baseNavLinks: {
   prefetch?: boolean;
 }[] = [
   { href: "/katalog", label: "Katalog", prefetch: true },
-  { href: "/komunitas", label: "Komunitas" },
   { href: "/lab", label: "Lab" },
 ];
 
-const navLinks = KOMUNITAS_ENABLED
-  ? baseNavLinks
-  : baseNavLinks.filter((link) => link.href !== "/komunitas");
+const navLinks = baseNavLinks;
 
 function isNavLinkActive(pathname: string, href: string, exact = false) {
   if (exact) return pathname === href;
@@ -81,7 +77,7 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
   /** Deferred to mount, sessionStorage differs between SSR and client. */
   const [runIntro, setRunIntro] = useState(false);
   const roleLinks = getRoleNavLinks(session?.role);
-  const primaryCtaHref = session ? "/dashboard" : "/katalog";
+  const primaryCtaHref = session ? "/dashboard" : "/waitlist";
   const showPrimaryCta = !isSameNavDestination(pathname, primaryCtaHref);
   const isKatalogRoute = isSameNavDestination(pathname, "/katalog");
   const showMobileCatalogSearch = isKatalogRoute && mobileCatalogSearchOpen;
@@ -116,8 +112,8 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
                     className={cn(
                       "text-sm font-medium transition-colors",
                       active
-                        ? "text-foreground opacity-100"
-                        : "text-muted-foreground opacity-60 hover:text-foreground hover:opacity-100"
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
                     )}
                   >
                     {link.label}
@@ -129,25 +125,25 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
 
           <Suspense
             fallback={
-              <SearchSkeleton className="hidden h-9 max-w-[13rem] flex-1 animate-pulse rounded-full bg-muted lg:flex xl:max-w-xs" />
+              <SearchSkeleton className="hidden h-9 min-w-[12rem] max-w-xs flex-1 animate-pulse rounded-full bg-muted lg:flex" />
             }
           >
             {isHeroAnchor ? (
               <div
                 data-hero-nav-search
                 className={cn(
-                  "hero-nav-search-slot hidden lg:flex xl:max-w-xs",
+                  "hero-nav-search-slot hidden min-w-[14rem] max-w-sm flex-1 lg:flex",
                   searchVisible && "is-visible",
                   searchReveal && "is-interactive"
                 )}
               >
                 <SiteNavSearch
                   reveal={searchActive}
-                  className="w-full min-w-[8rem] max-w-none xl:max-w-xs"
+                  className="w-full min-w-[12rem] max-w-none"
                 />
               </div>
             ) : (
-              <SiteNavSearch className="hidden max-w-[13rem] flex-1 lg:flex xl:max-w-xs" />
+              <SiteNavSearch className="hidden min-w-[14rem] max-w-sm flex-1 lg:flex" />
             )}
           </Suspense>
 
@@ -178,7 +174,7 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
                 })}
               </nav>
             )}
-            <div className="hidden lg:contents">
+            <div className="hidden items-center gap-2 sm:flex">
               <Suspense fallback={<AuthSkeleton />}>
                 <SiteNavAuth />
               </Suspense>
@@ -270,7 +266,7 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
                           />
                         }
                       >
-                        {session ? "Lanjut Belajar" : "Mulai Belajar"}
+                        {session ? "Lanjut Belajar" : "Gabung Waitlist"}
                       </SheetClose>
                     </div>
                   )}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 28" fill="none" role="img" aria-hidden="true">
+  <g transform="translate(0 1)">
+    <path
+      fill="#8b93a7"
+      d="M2 4.2c0-1.1.9-2 2-2H10c2.9 0 5.2 2.3 5.2 5.2 0 1.7-.8 3.2-2.1 4.2 1.6.9 2.7 2.6 2.7 4.5 0 2.9-2.3 5.2-5.2 5.2H5.1C3.6 21.3 2 20.5 2 19.2V4.2Z"
+      opacity="0.95"
+    />
+    <path
+      fill="#d7dbe5"
+      d="M4.6 6.4h4.1c1.5 0 2.7 1.2 2.7 2.7S10.2 11.8 8.7 11.8H4.6V6.4Zm0 7.4h4.5c1.5 0 2.7 1.2 2.7 2.7s-1.2 2.7-2.7 2.7H4.6v-5.4Z"
+    />
+  </g>
+  <text
+    x="26"
+    y="19.5"
+    fill="#ededed"
+    font-family="DM Sans, Arial, sans-serif"
+    font-size="15"
+    font-weight="650"
+    letter-spacing="-0.02em"
+  >bursa</text>
+</svg>

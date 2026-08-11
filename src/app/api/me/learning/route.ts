@@ -4,7 +4,6 @@ import { computeProgressPercent } from "@/lib/learning/progress";
 import { instrumentToUi } from "@/lib/admin/server";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
-import { healHubMembershipsForUserEnrollments } from "@/lib/chat/db-rooms";
 import { db } from "@/lib/db";
 
 /**
@@ -21,9 +20,6 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return jsonError("Autentikasi diperlukan.", 401);
     }
-
-    // Enrollment without mentor-hub ChatRoomMember → repair on dashboard load.
-    await healHubMembershipsForUserEnrollments(user.id);
 
     const enrollments = await db.enrollment.findMany({
       where: { userId: user.id },

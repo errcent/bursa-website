@@ -5,7 +5,7 @@ import { ForgotPasswordForm } from "@/components/forgot-password-form";
 
 export const metadata = {
   title: "Lupa Kata Sandi",
-  description: "Reset kata sandi akun Bursa Trading Academy.",
+  description: "Reset kata sandi akun Bursa.",
 };
 
 function FormFallback() {

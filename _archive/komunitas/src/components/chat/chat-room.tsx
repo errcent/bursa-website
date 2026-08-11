@@ -47,7 +47,6 @@ import {
   pickDefaultBranchId,
 } from "@/lib/chat/room-kinds";
 import { safeRoomCount } from "@/lib/chat/room-counts";
-import { useChatStream } from "@/lib/chat/use-chat-stream";
 import type {
   ChatBranchInfo,
   ChatMember,
@@ -183,7 +182,7 @@ function canSendInActiveBranch(
     if (!isMentor && !isModerator) {
       return {
         allowed: false,
-        reason: "Cabang privat — hanya mentor dan moderator.",
+        reason: "Cabang privat, hanya mentor dan moderator.",
       };
     }
   }
@@ -197,8 +196,8 @@ function canSendInActiveBranch(
     allowed: false,
     reason:
       branch.senderPolicy === "mentor_and_moderators"
-        ? "Cabang 1 arah — hanya mentor dan moderator yang dapat mengirim."
-        : "Cabang 1 arah — hanya mentor yang dapat mengirim.",
+        ? "Cabang 1 arah, hanya mentor dan moderator yang dapat mengirim."
+        : "Cabang 1 arah, hanya mentor yang dapat mengirim.",
   };
 }
 
@@ -279,7 +278,7 @@ export function ChatRoomView({
   const [lastSentAt, setLastSentAt] = useState<number>(0);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [sendError, setSendError] = useState<string | null>(null);
-  /** Prisma User.id from API — client session.userId is often a different localStorage id. */
+  /** Prisma User.id from API, client session.userId is often a different localStorage id. */
   const [viewerUserId, setViewerUserId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -305,7 +304,7 @@ export function ChatRoomView({
     if (session?.userId) ids.add(session.userId);
     return [...ids];
   }, [viewerUserId, session?.userId]);
-  /** Latest viewer ids for fetches — must not retrigger branch reload when Prisma id arrives. */
+  /** Latest viewer ids for fetches, must not retrigger branch reload when Prisma id arrives. */
   const fetchViewerRef = useRef({ currentUserId, ownUserIds });
   fetchViewerRef.current = { currentUserId, ownUserIds };
   const currentMember = members.find(
@@ -320,7 +319,7 @@ export function ChatRoomView({
       return isMentor || isModerator;
     });
   }, [room.branches, isDeveloper, isMentor, isModerator]);
-  /** Single source of truth — UI tab, fetch, poll, and send must all use this id. */
+  /** Single source of truth, UI tab, fetch, poll, and send must all use this id. */
   const effectiveBranchId = useMemo(() => {
     if (visibleBranches.length === 0) return activeBranchId;
     if (activeBranchId && visibleBranches.some((b) => b.id === activeBranchId)) {
@@ -341,7 +340,7 @@ export function ChatRoomView({
   );
   // Public rooms: anyone can post. Mentor hubs: follow active branch mode
   // (TWO_WAY = members; ONE_WAY = mentor/mod only). Do not gate the whole
-  // composer on isMentor — that would block 2-arah for learners.
+  // composer on isMentor, that would block 2-arah for learners.
   const canPost =
     (!room.isReadOnly || isMentor) &&
     (room.roomKind === "public" || !visibleBranches.length || branchSend.allowed);
@@ -686,23 +685,22 @@ export function ChatRoomView({
     };
   }, [effectiveBranchId, room.id, hasBranches]);
 
-  const { isStreaming } = useChatStream({
-    roomId: room.id,
-    branchId: effectiveBranchId,
-    onUpdate: () => {
-      void pollMessages();
-    },
-  });
-
   useEffect(() => {
     if (branchLoadInFlightRef.current) return;
     const key = pollScopeKey(room.id, effectiveBranchId);
-    branchMessagesCacheRef.current.set(key, messages);
-  }, [messages, room.id, effectiveBranchId]);
+    // Only cache when the active poll scope matches, avoids writing stale
+    // messages from a previous cabang into the new branch key on fast switches.
+    if (activePollScopeRef.current !== key) return;
+    const scoped = filterMessagesForScope(
+      messages,
+      room.id,
+      effectiveBranchId,
+      hasBranches
+    );
+    branchMessagesCacheRef.current.set(key, scoped);
+  }, [messages, room.id, effectiveBranchId, hasBranches]);
 
   useEffect(() => {
-    if (isStreaming) return;
-
     const tick = () => {
       if (document.hidden) return;
       void pollMessages();
@@ -718,7 +716,7 @@ export function ChatRoomView({
       window.clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [pollMessages, isStreaming]);
+  }, [pollMessages]);
 
   useEffect(() => {
     const el = listRef.current;
@@ -760,7 +758,7 @@ export function ChatRoomView({
     const nearBottom = isNearBottom(el);
     const wasNearBottom = stickToBottomRef.current;
     stickToBottomRef.current = nearBottom;
-    // User scrolled to latest messages — clear unread for list badges.
+    // User scrolled to latest messages, clear unread for list badges.
     if (nearBottom && !wasNearBottom) {
       void markCurrentRoomReadRef.current();
     }
@@ -896,7 +894,7 @@ export function ChatRoomView({
     const embeds = generateEmbedsFromText(content);
     const mentions = extractMentionedUserIds(content, members);
 
-    // Keep viewport stable when sending — never force-scroll on send
+    // Keep viewport stable when sending, never force-scroll on send
     skipScrollOnNextLengthChangeRef.current = true;
 
     const branchIdForSend = effectiveBranchId;
@@ -1646,7 +1644,7 @@ export function ChatRoomView({
           <p className="hidden shrink-0 border-t border-border bg-muted/40 px-4 py-2 text-center text-xs text-muted-foreground sm:block">
             {branchSend.reason ??
               (isOneWayMode(activeBranch?.mode)
-                ? "Cabang 1 arah — hanya mentor yang dapat mengirim."
+                ? "Cabang 1 arah, hanya mentor yang dapat mengirim."
                 : "Anda tidak dapat mengirim di cabang ini.")}
           </p>
         )}
@@ -1675,13 +1673,13 @@ export function ChatRoomView({
               !canPost
                 ? branchSend.reason ??
                   (isOneWayMode(activeBranch?.mode)
-                    ? "Cabang 1 arah — hanya mentor yang dapat mengirim."
+                    ? "Cabang 1 arah, hanya mentor yang dapat mengirim."
                     : "Anda tidak dapat mengirim di cabang ini.")
                 : undefined
             }
             placeholder={
               !canPost && isOneWayMode(activeBranch?.mode)
-                ? "Cabang 1 arah — hanya baca"
+                ? "Cabang 1 arah, hanya baca"
                 : isTwoWayMode(activeBranch?.mode)
                   ? "Ketik pesan di cabang 2 arah..."
                   : undefined
@@ -1689,7 +1687,7 @@ export function ChatRoomView({
             slowModeSeconds={room.slowModeSeconds}
             lastSentAt={lastSentAt}
             onTyping={() => {
-              /* local typing state — no broadcast in mock */
+              /* local typing state, no broadcast in mock */
             }}
           />
         </div>

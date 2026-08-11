@@ -9,7 +9,7 @@ import {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence } from "motion/react";
 
-import { CourseCard } from "@/components/course-card";
+import { CatalogCourseRow } from "@/components/catalog-course-row";
 import { LearningGuidanceEntry } from "@/components/learning-guidance/learning-guidance-entry";
 import { MentorCard } from "@/components/mentor-card";
 import { PlaylistCard } from "@/components/playlist/playlist-card";
@@ -22,10 +22,8 @@ import {
 import { SnapPresence } from "@/components/motion/snap";
 import { useMyLearning } from "@/hooks/use-my-learning";
 import { rankCoursesByQuality } from "@/lib/catalog/ranking";
-import { courseEnrollmentFromLearning } from "@/lib/learning/enrollment";
 import type { PlaylistSummary } from "@/lib/playlist/types";
 import type { Course, Instrument, Mentor } from "@/lib/types";
-import type { LearningCourseProgress } from "@/hooks/use-my-learning";
 
 type ViewMode = "kelas" | "instruktur";
 
@@ -51,55 +49,6 @@ function buildCatalogQueryString(view: ViewMode): string {
   const params = new URLSearchParams();
   params.set("view", view);
   return params.toString();
-}
-
-type CatalogCourseRowProps = {
-  title: string;
-  courses: Course[];
-  enrollmentBySlug: Map<string, LearningCourseProgress>;
-  mentorBySlug: Map<string, Mentor>;
-};
-
-function CatalogCourseRow({ title, courses, enrollmentBySlug, mentorBySlug }: CatalogCourseRowProps) {
-  if (courses.length === 0) return null;
-
-  return (
-    <section className="catalog-row" aria-label={title}>
-      <h3 className="catalog-row-title">{title}</h3>
-      <div className="catalog-row-bleed md:hidden">
-        <div className="catalog-row-scroll">
-          {courses.map((course) => (
-            <CourseCard
-              key={course.slug}
-              course={course}
-              className="w-full"
-              variant="catalog"
-              mentor={mentorBySlug.get(course.mentorSlug) ?? null}
-              enrollment={courseEnrollmentFromLearning(enrollmentBySlug.get(course.slug))}
-            />
-          ))}
-        </div>
-      </div>
-      <div className="catalog-row-bleed hidden md:block">
-        <ScrollCarousel
-          ariaLabel={title}
-          getPerView={catalogCourseGetScrollPerView}
-          gap={SCROLL_CAROUSEL_GAP}
-        >
-          {courses.map((course) => (
-            <CourseCard
-              key={course.slug}
-              course={course}
-              className="w-full"
-              variant="catalog"
-              mentor={mentorBySlug.get(course.mentorSlug) ?? null}
-              enrollment={courseEnrollmentFromLearning(enrollmentBySlug.get(course.slug))}
-            />
-          ))}
-        </ScrollCarousel>
-      </div>
-    </section>
-  );
 }
 
 function CatalogPlaylistRow({ title, playlists }: { title: string; playlists: PlaylistSummary[] }) {
@@ -271,12 +220,14 @@ export function CatalogBrowser({
                 courses={continueWatchingCourses}
                 enrollmentBySlug={enrollmentBySlug}
                 mentorBySlug={mentorBySlug}
+                cardVariant="catalog"
               />
               <CatalogCourseRow
                 title="Baru di Bursa"
                 courses={newCourses}
                 enrollmentBySlug={enrollmentBySlug}
                 mentorBySlug={mentorBySlug}
+                cardVariant="catalog"
               />
               <CatalogPlaylistRow title="Playlists" playlists={playlists} />
               {instrumentCourseRows.map((row) => (
@@ -286,6 +237,7 @@ export function CatalogBrowser({
                   courses={row.courses}
                   enrollmentBySlug={enrollmentBySlug}
                   mentorBySlug={mentorBySlug}
+                  cardVariant="catalog"
                 />
               ))}
             </div>

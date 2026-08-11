@@ -66,7 +66,7 @@ interface MessageBubbleProps {
   currentUserId?: string;
   /**
    * Every id that identifies the signed-in user. Client auth often uses
-   * `user-demo-*` while message authors use Prisma cuids — pass both so
+   * `user-demo-*` while message authors use Prisma cuids, pass both so
    * optimistic and server messages resolve as own.
    */
   ownUserIds?: readonly string[];
@@ -385,7 +385,7 @@ export function MessageBubble({
             type="button"
             onClick={() => onReact?.(message.id, r.emoji)}
             className={cn(
-              "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs transition-colors",
+              "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs transition-colors",
               r.userReacted
                 ? "border-accent/40 bg-accent/15"
                 : "border-border/60 bg-muted/30 hover:bg-muted/50"

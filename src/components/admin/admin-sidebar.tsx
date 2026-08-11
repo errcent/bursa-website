@@ -6,11 +6,9 @@ import {
   BookOpen,
   ClipboardList,
   DollarSign,
-  GitBranch,
   LayoutDashboard,
   ListVideo,
   Mail,
-  MessageSquare,
   Settings,
   Shield,
   FileText,
@@ -18,31 +16,22 @@ import {
   UserSquare2,
 } from "lucide-react";
 
-import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { cn } from "@/lib/utils";
 
-const allLinks = [
+const links = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/pendapatan", label: "Pendapatan", icon: DollarSign },
   { href: "/admin/mentors", label: "Mentor", icon: UserSquare2 },
   { href: "/admin/courses", label: "Kelas", icon: BookOpen },
   { href: "/admin/playlists", label: "Playlist", icon: ListVideo },
   { href: "/admin/change-requests", label: "Usulan Mentor", icon: ClipboardList },
-  { href: "/admin/branch-change-requests", label: "Usulan Cabang", icon: GitBranch },
-  { href: "/admin/chat-rooms", label: "Chat Room", icon: MessageSquare },
   { href: "/admin/moderation", label: "Moderasi", icon: Shield },
   { href: "/admin/dokumen-publik", label: "Dokumen Publik", icon: FileText },
   { href: "/admin/waitlist", label: "Waitlist", icon: Mail },
   { href: "/admin/users", label: "Pengguna", icon: Users },
   { href: "/admin/settings", label: "Pengaturan", icon: Settings },
 ];
-
-const komunitasAdminPaths = new Set(["/admin/chat-rooms", "/admin/branch-change-requests"]);
-
-const links = KOMUNITAS_ENABLED
-  ? allLinks
-  : allLinks.filter((link) => !komunitasAdminPaths.has(link.href));
 
 export function AdminSidebar() {
   const pathname = usePathname();

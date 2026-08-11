@@ -3,7 +3,7 @@ import { ChatMemberRole, ChatRoomKind, ChatRoomTier, MessageType, UserRole } fro
 import { db } from "@/lib/db";
 import { slugify } from "@/lib/admin/server";
 
-/** Legacy mega-group slug — deactivated in favor of per-mentor rooms. */
+/** Legacy mega-group slug, deactivated in favor of per-mentor rooms. */
 export const LEGACY_SHARED_COLLAB_SLUG = "mentor-admin-kolaborasi";
 
 /** Prefix for per-mentor admin collab rooms: `mentor-admin-{mentorSlug}`. */
@@ -245,7 +245,7 @@ export async function syncMentorAdminRoomMembers(roomId: string, mentorUserId: s
   }
 }
 
-/** @deprecated Use syncMentorAdminRoomMembers — kept for call-site compatibility during transition. */
+/** @deprecated Use syncMentorAdminRoomMembers, kept for call-site compatibility during transition. */
 export async function syncMentorAdminMembers(roomId: string) {
   const room = await db.chatRoom.findUnique({
     where: { id: roomId },

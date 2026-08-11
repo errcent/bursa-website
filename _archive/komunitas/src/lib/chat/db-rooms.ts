@@ -160,7 +160,7 @@ export async function listPublicChatRooms(): Promise<ChatRoom[]> {
   return rooms.map(mapDbRoomToChatRoom);
 }
 
-/** Mentor hubs the signed-in mentor owns (max 1) — excludes staff collab. */
+/** Mentor hubs the signed-in mentor owns (max 1), excludes staff collab. */
 export async function listMentorOwnedRooms(mentorProfileId: string): Promise<ChatRoom[]> {
   const rooms = await db.chatRoom.findMany({
     where: {
@@ -385,7 +385,7 @@ export async function postSubscriptionJoinSystemMessage(input: {
 
 /**
  * After course enrollment, add the learner to that mentor's community hub (if any).
- * Idempotent — safe to call on every enrollment. Posts a join notice only on first join.
+ * Idempotent, safe to call on every enrollment. Posts a join notice only on first join.
  * Uses upsert so a missed membership is always repaired even if createMany is a no-op.
  */
 export async function ensureHubMembershipForCourseEnrollment(input: {
@@ -429,7 +429,7 @@ export async function ensureHubMembershipForCourseEnrollment(input: {
       },
     });
   } catch {
-    // Concurrent heal/enroll — membership already exists.
+    // Concurrent heal/enroll, membership already exists.
     return { roomId: hub.id, joined: false };
   }
 

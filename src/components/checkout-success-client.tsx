@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, MessageSquare, PlayCircle } from "lucide-react";
+import { CheckCircle2, PlayCircle } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { SiteNavbar } from "@/components/site-navbar";
@@ -16,7 +16,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { getSession } from "@/lib/auth/client";
 import { buildLoginHref } from "@/lib/auth/redirect";
-import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { formatRupiah } from "@/lib/mock-data";
 import { enrollUser } from "@/lib/video/protection";
 import type { Course, Mentor } from "@/lib/types";
@@ -115,8 +114,7 @@ export function CheckoutSuccessClient({
               Pembayaran Berhasil
             </h1>
             <p className="mt-2 max-w-md text-center text-sm text-muted-foreground">
-              Akses kelas kamu sudah aktif
-              {KOMUNITAS_ENABLED ? ", kamu juga bisa bergabung ke komunitas mentor jika tersedia" : ""}.
+              Akses kelas kamu sudah aktif.
             </p>
 
             <Card className="surface-card mt-10 w-full max-w-lg overflow-hidden border-0 bg-transparent shadow-none">
@@ -149,16 +147,6 @@ export function CheckoutSuccessClient({
                     <PlayCircle className="size-4" />
                     Mulai Belajar
                   </Button>
-                  {KOMUNITAS_ENABLED && (
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      render={<Link href="/komunitas" />}
-                    >
-                      <MessageSquare className="size-4" />
-                      Buka komunitas
-                    </Button>
-                  )}
                 </div>
               </CardContent>
             </Card>

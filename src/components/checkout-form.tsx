@@ -20,7 +20,6 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/components/auth-provider";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
 import { buildLoginHref } from "@/lib/auth/redirect";
-import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { formatRupiah } from "@/lib/mock-data";
 import type { Course, Mentor } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -103,11 +102,6 @@ export function CheckoutForm({
           <Button className="flex-1 btn-primary" render={<Link href={learnHref} />}>
             Lanjut Belajar
           </Button>
-          {KOMUNITAS_ENABLED && (
-            <Button variant="outline" className="flex-1" render={<Link href="/komunitas" />}>
-              Buka Komunitas
-            </Button>
-          )}
         </div>
       </div>
     );

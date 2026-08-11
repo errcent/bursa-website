@@ -10,15 +10,15 @@ import { cn } from "@/lib/utils";
 const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 const RADIAL_EXIT_EASE = [0.19, 1, 0.22, 1] as const;
 
-/** Timeline (seconds), total ~3.77s */
-const T_BLANK = 0.45;
+/** Timeline (seconds), total ~1.4s — keep premium but don't block the fold. */
+const T_BLANK = 0.18;
 const T = {
   blank: T_BLANK,
-  barDelay: 0.52,
-  barFill: 1.45,
-  holdEnd: 2.55,
-  exitLead: 0.12,
-  exitRadial: 1.1,
+  barDelay: 0.22,
+  barFill: 0.55,
+  holdEnd: 0.85,
+  exitLead: 0.08,
+  exitRadial: 0.5,
 } as const;
 
 const TAGLINE_DELAY = T.blank + 0.55;
@@ -46,9 +46,9 @@ function AmbientDrift() {
         animate={{
           opacity: [0, 0.85, 0.65],
           background: [
-            "radial-gradient(ellipse 55% 42% at 48% 52%, rgba(123,126,184,0.06), transparent 68%)",
-            "radial-gradient(ellipse 62% 48% at 52% 48%, rgba(123,126,184,0.1), transparent 72%)",
-            "radial-gradient(ellipse 58% 44% at 50% 50%, rgba(123,126,184,0.08), transparent 70%)",
+            "radial-gradient(ellipse 55% 42% at 48% 52%, rgba(139,147,167,0.05), transparent 68%)",
+            "radial-gradient(ellipse 62% 48% at 52% 48%, rgba(139,147,167,0.08), transparent 72%)",
+            "radial-gradient(ellipse 58% 44% at 50% 50%, rgba(139,147,167,0.06), transparent 70%)",
           ],
         }}
         transition={{ duration: 2.4, ease: "easeInOut" }}
@@ -108,9 +108,9 @@ function ProgressBar() {
           scaleX: 1,
           opacity: 1,
           boxShadow: [
-            "0 0 0px rgba(123,126,184,0), 0 0 0px rgba(245,245,245,0)",
-            "0 0 16px rgba(123,126,184,0.6), 0 0 8px rgba(245,245,245,0.8)",
-            "0 0 10px rgba(123,126,184,0.45), 0 0 4px rgba(245,245,245,0.55)",
+            "0 0 0px rgba(139,147,167,0), 0 0 0px rgba(245,245,245,0)",
+            "0 0 16px rgba(139,147,167,0.45), 0 0 8px rgba(245,245,245,0.8)",
+            "0 0 10px rgba(139,147,167,0.32), 0 0 4px rgba(245,245,245,0.55)",
           ],
         }}
         transition={{

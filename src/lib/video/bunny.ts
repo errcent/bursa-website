@@ -1,4 +1,4 @@
-import { createHash, createHmac } from "crypto";
+import { createHmac } from "crypto";
 
 /** Default signed URL lifetime, aligned with playback token TTL (2 h). */
 export const BUNNY_PLAYBACK_TTL_SECONDS = 2 * 60 * 60;
@@ -18,8 +18,6 @@ export interface BunnyPlaybackResult {
   url: string;
   provider: "bunny";
   expiresAt: string;
-  /** Signed iframe URL, for future embed player; not used by native `<video>`. */
-  embedUrl?: string;
 }
 
 function readEnv(name: string): string | undefined {
@@ -79,22 +77,6 @@ export function parseBunnyVideoId(stored: string | null | undefined): string | n
   return null;
 }
 
-/** Embed-view token: SHA256_HEX(tokenKey + videoId + expires). */
-export function signBunnyEmbedUrl(
-  videoId: string,
-  ttlSeconds = BUNNY_PLAYBACK_TTL_SECONDS
-): string | null {
-  const { libraryId, tokenKey } = getBunnyConfig();
-  if (!libraryId || !tokenKey) return null;
-
-  const expires = Math.floor(Date.now() / 1000) + ttlSeconds;
-  const token = createHash("sha256")
-    .update(`${tokenKey}${videoId}${expires}`)
-    .digest("hex");
-
-  return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?token=${token}&expires=${expires}`;
-}
-
 /** CDN file token (query-string style) for direct MP4 playback in native `<video>`. */
 export function signBunnyCdnUrl(
   fileUrl: string,
@@ -132,13 +114,11 @@ export function resolveSignedPlaybackUrl(
   if (!signedUrl) return null;
 
   const expiresAt = new Date(Date.now() + ttlSeconds * 1000).toISOString();
-  const embedUrl = signBunnyEmbedUrl(videoId, ttlSeconds) ?? undefined;
 
   return {
     url: signedUrl,
     provider: "bunny",
     expiresAt,
-    embedUrl,
   };
 }
 

@@ -9,6 +9,9 @@ interface SearchPlaceholderMarqueeProps {
   className?: string;
 }
 
+/** Only marquee when overflow is clearly larger than the slot (avoids clipped partial text). */
+const MARQUEE_OVERFLOW_PX = 24;
+
 export function SearchPlaceholderMarquee({ text, className }: SearchPlaceholderMarqueeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
@@ -20,7 +23,8 @@ export function SearchPlaceholderMarquee({ text, className }: SearchPlaceholderM
     if (!container || !textEl) return;
 
     function checkOverflow() {
-      setShouldAnimate(textEl!.scrollWidth > container!.clientWidth + 2);
+      const overflow = textEl!.scrollWidth - container!.clientWidth;
+      setShouldAnimate(overflow > MARQUEE_OVERFLOW_PX);
     }
 
     checkOverflow();
@@ -36,19 +40,18 @@ export function SearchPlaceholderMarquee({ text, className }: SearchPlaceholderM
       className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}
       aria-hidden
     >
-      <div
-        className={cn(
-          "flex w-max items-center text-sm text-muted-foreground",
-          shouldAnimate && "animate-search-marquee"
-        )}
-      >
-        <span ref={textRef} className="whitespace-nowrap pr-8">
+      {shouldAnimate ? (
+        <div className="flex w-max items-center text-sm text-muted-foreground animate-search-marquee">
+          <span ref={textRef} className="whitespace-nowrap pr-8">
+            {text}
+          </span>
+          <span className="whitespace-nowrap pr-8">{text}</span>
+        </div>
+      ) : (
+        <span ref={textRef} className="block truncate text-sm text-muted-foreground">
           {text}
         </span>
-        {shouldAnimate ? (
-          <span className="whitespace-nowrap pr-8">{text}</span>
-        ) : null}
-      </div>
+      )}
     </div>
   );
 }

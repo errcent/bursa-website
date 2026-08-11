@@ -1,9 +1,10 @@
 "use client";
 
 import { Lock, PlayCircle, Sparkles } from "lucide-react";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
-import { DEMO_VIDEO_URL } from "@/lib/video/demo";
+import { DEMO_VIDEO_POSTER } from "@/lib/video/demo";
 
 const sizeClasses = {
   sm: "aspect-video w-20 shrink-0",
@@ -55,13 +56,12 @@ export function LessonPreviewThumb({
       )}
       aria-hidden
     >
-      <video
-        src={`${DEMO_VIDEO_URL}#t=0.5`}
-        muted
-        playsInline
-        preload="metadata"
-        tabIndex={-1}
-        className="pointer-events-none absolute inset-0 size-full object-cover object-center"
+      <Image
+        src={DEMO_VIDEO_POSTER}
+        alt=""
+        fill
+        sizes="176px"
+        className="pointer-events-none object-cover object-center"
       />
 
       {isLocked ? (

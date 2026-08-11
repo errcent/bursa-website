@@ -1,7 +1,6 @@
 import { courses, mentors } from "@/lib/mock-data";
 import { calculateCheckoutBreakdown, PLATFORM_COMMISSION_RATE } from "@/lib/pricing";
 import type {
-  AdminChatRoom,
   AdminCourse,
   AdminMentor,
   AdminModerationItem,
@@ -63,22 +62,6 @@ let mockCourses: AdminCourse[] = courses.map((c, i) => {
     })),
   };
 });
-
-let mockChatRooms: AdminChatRoom[] = mentors.slice(0, 3).flatMap((m, mi) =>
-  ["Pemula", "Menengah", "Mahir"].map((tier, ti) => ({
-    id: `room-mock-${mi}-${ti}`,
-    name: `Komunitas ${tier}, ${m.initials}`,
-    slug: `${tier.toLowerCase()}-${m.slug}`,
-    mentorId: `mentor-mock-${mi}`,
-    mentorName: m.name,
-    tier: tier as AdminChatRoom["tier"],
-    isProtected: tier === "Mahir",
-    screenshotProtection: tier !== "Pemula",
-    isActive: true,
-    memberCount: 24 + ti * 11,
-    description: `Ruang diskusi ${tier.toLowerCase()} untuk komunitas ${m.name}.`,
-  }))
-);
 
 let mockModeration: AdminModerationItem[] = [
   {
@@ -154,7 +137,7 @@ export function getMockStats(): AdminStats {
     totalCourses: mockCourses.length,
     totalEnrollments: mockCourses.reduce((s, c) => s + c.studentsCount, 0),
     revenue: report.totals.platformFee,
-    activeChatRooms: mockChatRooms.filter((r) => r.isActive).length,
+    activeChatRooms: 0,
     pendingModeration: mockModeration.filter((m) => m.status === "pending").length,
     recentActivity: [
       {
@@ -485,29 +468,6 @@ export function reorderMockCurriculum(
     .sort((a, b) => (a!.sortOrder ?? 0) - (b!.sortOrder ?? 0)) as AdminCourse["modules"];
 
   return course;
-}
-
-export function getMockChatRooms() {
-  return [...mockChatRooms];
-}
-
-export function createMockChatRoom(input: Omit<AdminChatRoom, "id" | "slug" | "mentorName" | "memberCount" | "isActive">) {
-  const mentor = mockMentors.find((m) => m.id === input.mentorId);
-  const room: AdminChatRoom = {
-    ...input,
-    id: `room-mock-${Date.now()}`,
-    slug: input.name.toLowerCase().replace(/\s+/g, "-"),
-    mentorName: mentor?.name ?? "-",
-    memberCount: 0,
-    isActive: true,
-  };
-  mockChatRooms = [room, ...mockChatRooms];
-  return room;
-}
-
-export function updateMockChatRoom(id: string, patch: Partial<AdminChatRoom>) {
-  mockChatRooms = mockChatRooms.map((r) => (r.id === id ? { ...r, ...patch } : r));
-  return mockChatRooms.find((r) => r.id === id);
 }
 
 export function getMockModeration() {

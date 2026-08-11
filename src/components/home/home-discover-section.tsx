@@ -10,6 +10,7 @@ import { MentorCarousel } from "@/components/mentor-carousel";
 import { WordReveal } from "@/components/motion/word-reveal";
 import { Button } from "@/components/ui/button";
 import type { Course, Mentor } from "@/lib/types";
+import { isPreviewCatalogActive } from "@/lib/preview-catalog/visibility";
 import { cn } from "@/lib/utils";
 
 type DiscoverView = "kelas" | "mentor";
@@ -85,7 +86,7 @@ export function HomeDiscoverSection({
   const showTabs = hasKelas && hasMentor;
   const meta = viewMeta[activeView];
   const studentStat =
-    totalStudents !== undefined && totalStudents > 0
+    !isPreviewCatalogActive() && totalStudents !== undefined && totalStudents > 0
       ? `${totalStudents.toLocaleString("id-ID")}+ siswa`
       : null;
 

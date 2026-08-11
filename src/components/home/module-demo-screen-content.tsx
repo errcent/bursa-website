@@ -9,20 +9,15 @@ import {
   type MotionValue,
 } from "motion/react";
 
-import { CourseCard } from "@/components/course-card";
+import { CatalogCourseRow } from "@/components/catalog-course-row";
 import { CourseCurriculumCards } from "@/components/course-curriculum-cards";
 import { CourseDetailHero } from "@/components/course-detail-hero";
 import { CourseInstructorSection } from "@/components/course-instructor-section";
 import { DeviceLearningPreview } from "@/components/home/device-learning-preview";
 import { DEVICE_SCREEN_SCALE } from "@/components/home/device-screen-scale";
 import { LearningGuidanceEntry } from "@/components/learning-guidance/learning-guidance-entry";
-import {
-  SCROLL_CAROUSEL_GAP,
-  ScrollCarousel,
-  catalogCourseGetScrollPerView,
-} from "@/components/scroll-carousel";
 import { rankCoursesByQuality } from "@/lib/catalog/ranking";
-import { cn, hasRating } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type { Course, Lesson, Mentor } from "@/lib/types";
 
 const PHASE = {
@@ -96,53 +91,6 @@ function buildCompletedLessonIds(
   return ids;
 }
 
-type CatalogCourseRowProps = {
-  title: string;
-  courses: Course[];
-  mentorBySlug: Map<string, Mentor>;
-};
-
-/** Same markup as `CatalogCourseRow` in catalog-browser.tsx */
-function DeviceCatalogCourseRow({ title, courses, mentorBySlug }: CatalogCourseRowProps) {
-  if (courses.length === 0) return null;
-
-  return (
-    <section className="catalog-row" aria-label={title}>
-      <h3 className="catalog-row-title">{title}</h3>
-      <div className="catalog-row-bleed md:hidden">
-        <div className="catalog-row-scroll">
-          {courses.map((course) => (
-            <CourseCard
-              key={course.slug}
-              course={course}
-              className="w-full"
-              mentor={mentorBySlug.get(course.mentorSlug) ?? null}
-              hideBookmark
-            />
-          ))}
-        </div>
-      </div>
-      <div className="catalog-row-bleed hidden md:block">
-        <ScrollCarousel
-          ariaLabel={title}
-          getPerView={catalogCourseGetScrollPerView}
-          gap={SCROLL_CAROUSEL_GAP}
-        >
-          {courses.map((course) => (
-            <CourseCard
-              key={course.slug}
-              course={course}
-              className="w-full"
-              mentor={mentorBySlug.get(course.mentorSlug) ?? null}
-              hideBookmark
-            />
-          ))}
-        </ScrollCarousel>
-      </div>
-    </section>
-  );
-}
-
 function DeviceCatalogPhase({
   courses,
   mentorsBySlug,
@@ -186,15 +134,17 @@ function DeviceCatalogPhase({
         <div className="container-page min-w-0 pt-4 sm:pt-6">
           <div className="flex min-w-0 flex-col gap-6 md:gap-10">
             <div className="catalog-section">
-              <DeviceCatalogCourseRow
+              <CatalogCourseRow
                 title="Baru di Bursa"
                 courses={newCourses}
                 mentorBySlug={mentorsBySlug}
+                hideBookmark
               />
-              <DeviceCatalogCourseRow
+              <CatalogCourseRow
                 title="Saham"
                 courses={sahamCourses}
                 mentorBySlug={mentorsBySlug}
+                hideBookmark
               />
             </div>
             <LearningGuidanceEntry />

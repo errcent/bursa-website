@@ -31,7 +31,7 @@ const LEVEL_MOOD: Record<Level, string> = {
 };
 
 const STYLE_SUFFIX =
-  "Premium cinematic 16:10 thumbnail for dark fintech education platform. Photorealistic editorial photography, moody lighting with subtle lavender accent glow, shallow depth of field, no text, no logos, no watermarks, no readable UI labels, no human faces.";
+  "Premium cinematic 16:10 thumbnail for dark fintech education platform. Photorealistic editorial photography, moody cool steel and graphite lighting, soft window light, shallow depth of field, desaturated palette, no purple neon, no magenta glow, no cyberpunk, no text, no logos, no watermarks, no readable UI labels, no human faces.";
 
 export function buildAiThumbnailPrompt(input: ThumbnailPromptInput): string {
   const keywords = input.visualKeywords.filter(Boolean).slice(0, 6).join(", ");

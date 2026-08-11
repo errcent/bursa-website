@@ -3,9 +3,7 @@ import { NextRequest } from "next/server";
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { resolveAuthenticatedUser, resolveTrustedEmail } from "@/lib/auth/request-identity";
 import { isPrototypeMode } from "@/lib/auth/prototype";
-import { ensureHubMembershipForCourseEnrollment } from "@/lib/chat/db-rooms";
 import { db } from "@/lib/db";
-import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
 import { createCommissionRecordForTransaction } from "@/lib/mentor/commission";
 import { recalculateStatsForCourse } from "@/lib/stats/server";
@@ -45,19 +43,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
       select: { id: true },
     });
 
-    let hubRoomId: string | null = null;
-    if (enrollment && KOMUNITAS_ENABLED) {
-      const hub = await ensureHubMembershipForCourseEnrollment({
-        userId: user.id,
-        courseId: course.id,
-      });
-      hubRoomId = hub?.roomId ?? null;
-    }
-
     return jsonOk({
       enrolled: Boolean(enrollment),
       enrollmentId: enrollment?.id ?? null,
-      hubRoomId,
+      hubRoomId: null,
     });
   } catch (error) {
     return handleApiError(error);
@@ -150,13 +139,6 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return enrollmentRow;
     });
 
-    const hub = KOMUNITAS_ENABLED
-      ? await ensureHubMembershipForCourseEnrollment({
-          userId: user.id,
-          courseId: course.id,
-        })
-      : null;
-
     if (!existing) {
       await recalculateStatsForCourse(course.id);
     }
@@ -164,7 +146,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     return jsonOk({
       enrollmentId: enrollment.id,
       courseId: course.id,
-      hubRoomId: hub?.roomId ?? null,
+      hubRoomId: null,
       enrolled: true,
     });
   } catch (error) {

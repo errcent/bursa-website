@@ -121,8 +121,8 @@ export default async function CourseDetailPage({
                   Transparansi & Pengingat Risiko
                 </h3>
                 <p className="mt-2 break-words text-sm leading-relaxed text-muted-foreground">
-                  Kelas ini berfokus pada edukasi konsep dan metodologi analisis{" "}
-                  {course.instrument.toLowerCase()}, bukan rekomendasi/ajakan beli-jual instrumen
+                  Kelas ini berfokus pada edukasi konsep dan metodologi analisis pasar,
+                  bukan rekomendasi/ajakan beli-jual instrumen
                   tertentu. Seluruh keputusan transaksi tetap ada di tangan masing-masing peserta.
                 </p>
               </div>

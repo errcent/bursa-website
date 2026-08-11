@@ -1,63 +1,47 @@
 "use client";
 
 import Link from "next/link";
-import {
-  BookOpen,
-  Eye,
-  Lock,
-  MessageSquare,
-  Shield,
-  UserRound,
-} from "lucide-react";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { mockRooms } from "@/lib/chat/mock-chat-data";
-import { filterRoomsForRole, isPrivateMentorRoom } from "@/lib/chat/access";
-import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
+import { BookOpen, Eye, Shield, UserRound } from "lucide-react";
 
 const qcTargets = [
   {
     href: "/admin",
     title: "Admin Panel",
-    description: "Tinjau CRUD courses, mentors, users, chat rooms, dan moderasi.",
+    description: "Tinjau CRUD courses, mentors, users, dan moderasi.",
     icon: Shield,
     note: "View-only QC — jangan mengubah data produksi tanpa admin.",
   },
   {
     href: "/mentor",
     title: "Mentor Panel",
-    description: "Periksa UX ringkasan, profil, pengaturan, dan daftar group chat.",
+    description: "Periksa UX ringkasan, profil, pengaturan, dan usulan konten.",
     icon: UserRound,
-    note: "Cabang privat mentor & chat staf tetap terkunci.",
+    note: "Komunitas/chat diarsipkan — tidak ada Group Chat di live.",
   },
   {
     href: "/",
     title: "Learner experience",
-    description: "Browse beranda, katalog, dashboard, dan komunitas publik.",
+    description: "Browse beranda, katalog, dashboard, dan alur belajar.",
     icon: Eye,
     note: "Pengalaman member/publik seperti biasa.",
   },
   {
     href: "/developer/docs",
     title: "Developer Docs",
-    description: "Arsitektur, auth/roles, modul kunci, dan aturan privasi chat.",
+    description: "Arsitektur, auth/roles, modul kunci, dan catatan arsip komunitas.",
     icon: BookOpen,
     note: "Wajib dibaca onboarding developer baru.",
   },
 ];
 
 export default function DeveloperQcPage() {
-  const visibleRooms = filterRoomsForRole(mockRooms, "developer");
-  const lockedRooms = mockRooms.filter((r) => isPrivateMentorRoom(r));
-
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
         <h1 className="font-heading text-2xl font-semibold">Quality Control Hub</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Developer dapat membuka semua panel pengguna untuk QA visual dan alur, tanpa akses ke
-          cabang privat mentor atau chat kolaborasi staf.
+          Developer dapat membuka panel pengguna untuk QA visual dan alur. Fitur komunitas/chat
+          diarsipkan di <code className="text-xs">Website/_archive/komunitas/</code>.
         </p>
       </div>
 
@@ -79,59 +63,6 @@ export default function DeveloperQcPage() {
             </Link>
           );
         })}
-      </section>
-
-      {KOMUNITAS_ENABLED && (
-      <section className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="font-heading text-sm font-semibold">Komunitas — ruang yang boleh ditinjau</h2>
-          <Button size="sm" variant="outline" render={<Link href="/komunitas" />}>
-            <MessageSquare className="size-3.5" />
-            Buka komunitas
-          </Button>
-        </div>
-        <ul className="grid gap-2 sm:grid-cols-2">
-          {visibleRooms.map((room) => (
-            <li key={room.id}>
-              <Link
-                href={`/komunitas/${room.slug}`}
-                className="surface-card block p-4 text-sm hover:bg-muted/40"
-              >
-                <span className="font-medium">{room.name}</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{room.channelCategory}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-      )}
-
-      <section className="surface-card space-y-3 border-amber-500/20 p-5">
-        <h2 className="flex items-center gap-2 font-heading text-sm font-semibold text-amber-600 dark:text-amber-400">
-          <Lock className="size-4" />
-          Ruang privat mentor (terkunci untuk developer)
-        </h2>
-        <p className="text-xs text-muted-foreground">
-          Room Internal / protected tidak boleh dibuka oleh role developer. Daftar di bawah hanya
-          metadata untuk awareness QC — tidak ada tautan ke isi chat.
-        </p>
-        <ul className="space-y-2">
-          {lockedRooms.map((room) => (
-            <li
-              key={room.id}
-              className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-sm"
-            >
-              <span className="truncate font-medium">{room.name}</span>
-              <Badge
-                variant="outline"
-                className="shrink-0 gap-1 border-amber-500/30 text-amber-600 dark:text-amber-400"
-              >
-                <Lock className="size-3" />
-                Privat
-              </Badge>
-            </li>
-          ))}
-        </ul>
       </section>
     </div>
   );

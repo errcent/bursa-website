@@ -157,7 +157,7 @@ export interface ChatRoom {
   unreadCount: number;
   /** Unread messages that @mention the current viewer (subset of unread). */
   mentionUnreadCount?: number;
-  /** True when mentionUnreadCount > 0 — drives "@" badge in room lists. */
+  /** True when mentionUnreadCount > 0, drives "@" badge in room lists. */
   hasMention?: boolean;
   onlineCount: number;
   /** Mentor profile id when room is mentor-owned */

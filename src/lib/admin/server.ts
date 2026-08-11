@@ -1,5 +1,4 @@
 import {
-  ChatRoomTier,
   CourseLevel,
   Instrument,
   ModerationStatus,
@@ -10,14 +9,13 @@ import {
 import { NextResponse } from "next/server";
 
 import { resolveTrustedEmail } from "@/lib/auth/request-identity";
-import { instrumentToUi, levelToUi, tierToUi } from "@/lib/catalog/enums";
+import { instrumentToUi, levelToUi } from "@/lib/catalog/enums";
 import { db } from "@/lib/db";
 import {
   PLATFORM_COMMISSION_RATE,
   calculateCheckoutBreakdown,
 } from "@/lib/pricing";
 import type {
-  AdminChatRoom,
   AdminCourse,
   AdminMentor,
   AdminModerationItem,
@@ -27,7 +25,6 @@ import type {
   AdminRevenueReport,
   AdminStats,
   AdminUser,
-  ChatRoomTierLabel,
 } from "./types";
 import type { Instrument as UiInstrument, Level } from "@/lib/types";
 
@@ -147,36 +144,6 @@ export function mapCourse(
             sortOrder: lesson.sortOrder,
           })),
       })),
-  };
-}
-
-export function mapChatRoom(
-  room: Prisma.ChatRoomGetPayload<{
-    include: {
-      mentor: { include: { user: true } };
-      _count: { select: { members: true } };
-    };
-  }> & { branches?: { id: string }[] }
-): AdminChatRoom {
-  return {
-    id: room.id,
-    name: room.name,
-    slug: room.slug,
-    mentorId: room.mentorId ?? "",
-    mentorName: room.mentor?.user.nama ?? "Platform (Publik)",
-    tier: tierToUi(room.tier),
-    roomKind:
-      room.roomKind === "PUBLIC"
-        ? "public"
-        : room.roomKind === "MENTOR_INTERNAL"
-          ? "mentor_internal"
-          : "mentor_community",
-    isProtected: room.isProtected,
-    screenshotProtection: room.screenshotProtection,
-    isActive: room.isActive,
-    memberCount: room._count.members,
-    description: room.description ?? undefined,
-    branchCount: Array.isArray(room.branches) ? room.branches.length : undefined,
   };
 }
 

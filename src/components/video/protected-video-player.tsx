@@ -29,7 +29,7 @@ import {
   type ProtectionViolationType,
   watermarkConfig,
 } from "@/lib/video/protection";
-import { DEMO_VIDEO_URL, resolvePlayableVideoUrl } from "@/lib/video/demo";
+import { resolvePlayableVideoUrl } from "@/lib/video/demo";
 
 function getEffectiveDuration(video: HTMLVideoElement | null, fallback: number): number {
   if (video && Number.isFinite(video.duration) && video.duration > 0) {
@@ -106,12 +106,12 @@ export function ProtectedVideoPlayer({
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [playbackError, setPlaybackError] = useState<string | null>(null);
   const [resolvedSrc, setResolvedSrc] = useState(() =>
-    resolvePlayableVideoUrl(videoSrc, DEMO_VIDEO_URL)
+    resolvePlayableVideoUrl(videoSrc)
   );
 
   const usesDemoPlayback = isPreview || mockupMode;
   const playbackSrc = usesDemoPlayback
-    ? resolvePlayableVideoUrl(videoSrc, DEMO_VIDEO_URL)
+    ? resolvePlayableVideoUrl(videoSrc)
     : resolvedSrc;
   const isPlaybackReady = usesDemoPlayback || tokenReady;
 
@@ -175,7 +175,7 @@ export function ProtectedVideoPlayer({
         if (!res.ok) {
           const data = (await res.json().catch(() => ({}))) as { error?: string };
           if (hasAccess && !cancelled) {
-            setResolvedSrc(resolvePlayableVideoUrl(videoSrc, DEMO_VIDEO_URL));
+            setResolvedSrc(resolvePlayableVideoUrl(videoSrc));
             setTokenReady(true);
             setTokenError(null);
             setPlaybackError(null);
@@ -192,14 +192,14 @@ export function ProtectedVideoPlayer({
         };
         if (!cancelled) {
           heartbeatTokenRef.current = data.heartbeatToken ?? null;
-          setResolvedSrc(resolvePlayableVideoUrl(data.videoUrl, videoSrc, DEMO_VIDEO_URL));
+          setResolvedSrc(resolvePlayableVideoUrl(data.videoUrl, videoSrc));
           setTokenReady(true);
           setTokenError(null);
           setPlaybackError(null);
         }
       } catch {
         if (!cancelled) {
-          setResolvedSrc(resolvePlayableVideoUrl(videoSrc, DEMO_VIDEO_URL));
+          setResolvedSrc(resolvePlayableVideoUrl(videoSrc));
           setTokenReady(true);
           setTokenError(null);
           setPlaybackError(null);
@@ -360,19 +360,12 @@ export function ProtectedVideoPlayer({
     const video = videoRef.current;
     if (!video) return;
 
-    if (playbackSrc !== DEMO_VIDEO_URL) {
-      setPlaybackError(null);
-      setResolvedSrc(DEMO_VIDEO_URL);
-      video.load();
-      return;
-    }
-
     video.pause();
     setIsPlaying(false);
     setPlaybackError(
       "Sumber video tidak tersedia atau format tidak didukung. Silakan muat ulang halaman atau hubungi dukungan."
     );
-  }, [playbackSrc]);
+  }, []);
 
   useEffect(() => {
     if (seekRequestSeconds == null || !Number.isFinite(seekRequestSeconds)) return;
@@ -534,7 +527,7 @@ export function ProtectedVideoPlayer({
           type="button"
           onClick={() => {
             setPlaybackError(null);
-            setResolvedSrc(resolvePlayableVideoUrl(videoSrc, DEMO_VIDEO_URL));
+            setResolvedSrc(resolvePlayableVideoUrl(videoSrc));
           }}
           className="rounded-md border border-border bg-background px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-muted"
         >

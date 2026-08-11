@@ -14,7 +14,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 
 import { SearchDropdown } from "@/components/search/search-dropdown";
-import { SearchPlaceholderMarquee } from "@/components/search/search-placeholder-marquee";
 import {
   buildCatalogSearchUrl,
   clearRecentSearches,
@@ -198,33 +197,31 @@ export function SiteNavSearch({
         role="search"
       >
         <Search className="size-4 shrink-0" aria-hidden />
-        <div className="relative min-w-0 flex-1">
-          {!value && <SearchPlaceholderMarquee text={placeholder} />}
-          <input
-            ref={inputRef}
-            type="search"
-            name="q"
-            value={value}
-            onChange={(event) => {
-              setValue(event.target.value);
-              if (reveal) setOpen(true);
-            }}
-            onFocus={() => reveal && openOnFocus && setOpen(true)}
-            onClick={() => reveal && setOpen(true)}
-            onKeyDown={handleKeyDown}
-            placeholder=""
-            aria-label={placeholder}
-            aria-expanded={open && reveal}
-            aria-controls={listboxId}
-            aria-autocomplete="list"
-            autoComplete="off"
-            tabIndex={reveal ? 0 : -1}
-            className={cn(
-              "w-full min-w-0 bg-transparent text-base text-foreground outline-none sm:text-sm",
-              inputClassName
-            )}
-          />
-        </div>
+        <input
+          ref={inputRef}
+          type="search"
+          name="q"
+          value={value}
+          onChange={(event) => {
+            setValue(event.target.value);
+            if (reveal) setOpen(true);
+          }}
+          onFocus={() => reveal && openOnFocus && setOpen(true)}
+          onClick={() => reveal && setOpen(true)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          title={placeholder}
+          aria-label={placeholder}
+          aria-expanded={open && reveal}
+          aria-controls={listboxId}
+          aria-autocomplete="list"
+          autoComplete="off"
+          tabIndex={reveal ? 0 : -1}
+          className={cn(
+            "min-w-0 flex-1 truncate bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground sm:text-sm",
+            inputClassName
+          )}
+        />
       </form>
 
       <div id={listboxId}>

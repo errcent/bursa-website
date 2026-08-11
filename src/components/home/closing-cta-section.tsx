@@ -65,7 +65,7 @@ export function ClosingCtaSection() {
                   className="h-12 min-h-12 rounded-md border-border/70 bg-card/40 px-7 text-sm text-foreground no-underline hover:text-foreground visited:text-foreground"
                   render={<Link href="/katalog" className="text-foreground no-underline hover:text-foreground visited:text-foreground" />}
                 >
-                  Lihat preview kelas
+                  Lihat Katalog
                 </Button>
               ) : null}
             </div>

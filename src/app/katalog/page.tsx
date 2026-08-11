@@ -37,6 +37,15 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
       <SiteNavbar />
       <main className="catalog-page flex-1 overflow-x-clip pb-6">
         <div className="container-page pt-4 sm:pt-6">
+          <header className="mb-5 sm:mb-6">
+            <p className="eyebrow mb-1.5">Katalog</p>
+            <h1 className="font-display text-2xl tracking-[-0.02em] text-foreground sm:text-3xl">
+              Kelas &amp; mentor trading
+            </h1>
+            <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+              Jelajahi kurikulum terstruktur. Saat siap, gabung waitlist untuk dibuka lebih dulu.
+            </p>
+          </header>
           <Suspense fallback={<CatalogBrowserSkeleton />}>
             <CatalogDataLoader initialView={initialView} />
           </Suspense>

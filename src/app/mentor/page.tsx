@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { BookOpen, ClipboardList, Loader2, MessageSquare, UserRound } from "lucide-react";
+import { BookOpen, ClipboardList, Loader2, UserRound } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { canMutateMentor } from "@/lib/auth/roles";
-import { KOMUNITAS_ENABLED } from "@/lib/features/komunitas";
 import { fetchMentorDashboardProfile } from "@/lib/instruktur-dashboard/api";
 import { fetchMentorChangeRequests, fetchMentorCourses } from "@/lib/mentor/api";
 
@@ -110,21 +109,6 @@ export default function MentorDashboardPage() {
             </span>
           </span>
         </Button>
-        {KOMUNITAS_ENABLED && (
-          <Button
-            className="h-auto flex-col items-start gap-2 p-4"
-            variant="outline"
-            render={<Link href="/mentor/chat" />}
-          >
-            <MessageSquare className="size-4" />
-            <span className="text-left">
-              <span className="block font-medium">Group Chat</span>
-              <span className="block text-xs font-normal text-muted-foreground">
-                Kolaborasi admin & domain
-              </span>
-            </span>
-          </Button>
-        )}
         <Button
           className="h-auto flex-col items-start gap-2 p-4"
           variant="outline"

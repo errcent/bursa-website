@@ -8,9 +8,12 @@ import { useAuth } from "@/components/auth-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { buildLoginHref, buildRegisterHref, POST_AUTH_HOME } from "@/lib/auth/redirect";
+import { buildLoginHref, POST_AUTH_HOME } from "@/lib/auth/redirect";
 import { getRoleNavLinks } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
+
+const GUEST_PRIMARY_HREF = "/waitlist";
+const GUEST_PRIMARY_LABEL = "Gabung Waitlist";
 
 function initials(name: string) {
   return name
@@ -33,7 +36,6 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
     ? `${pathname}?${searchParams.toString()}`
     : pathname;
   const loginHref = buildLoginHref(currentPathWithQuery || POST_AUTH_HOME);
-  const registerHref = buildRegisterHref();
   const roleLinks = getRoleNavLinks(session?.role);
 
   if (isLoading) {
@@ -51,8 +53,8 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
           <Button variant="outline" className="h-11 w-full justify-start" render={<Link href={loginHref} />}>
             Masuk
           </Button>
-          <Button size="sm" className="btn-primary h-11 w-full justify-start" render={<Link href={registerHref} />}>
-            Daftar Gratis
+          <Button size="sm" className="btn-primary h-11 w-full justify-start" render={<Link href={GUEST_PRIMARY_HREF} />}>
+            {GUEST_PRIMARY_LABEL}
           </Button>
         </div>
       );
@@ -63,8 +65,8 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
         <Button variant="outline" size="sm" render={<Link href={loginHref} />}>
           Masuk
         </Button>
-        <Button size="sm" className="btn-primary hidden sm:inline-flex" render={<Link href={registerHref} />}>
-          Daftar Gratis
+        <Button size="sm" className="btn-primary hidden sm:inline-flex" render={<Link href={GUEST_PRIMARY_HREF} />}>
+          {GUEST_PRIMARY_LABEL}
         </Button>
       </>
     );

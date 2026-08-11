@@ -17,7 +17,7 @@ import { PLATFORM_COMMISSION_RATE } from "@/lib/pricing";
 export const metadata: Metadata = {
   title: "Jadi Mentor",
   description:
-    "Daftar sebagai mentor di Bursa Trading Academy. Bagikan keahlian tradingmu, dapatkan pendapatan langsung, dan akses infrastruktur kelas lengkap.",
+    "Daftar sebagai mentor di Bursa. Bagikan keahlian tradingmu, dapatkan pendapatan langsung, dan akses infrastruktur kelas lengkap.",
 };
 
 export default function JadiMentorPage() {
