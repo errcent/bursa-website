@@ -14,19 +14,22 @@ export function MentorProcessSection() {
         </p>
       </Reveal>
 
-      <Stagger className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {mentorProcessSteps.map((step, index) => (
+      <Stagger className="mt-8 space-y-0 divide-y divide-border/60 border-y border-border/60">
+        {mentorProcessSteps.map((step) => (
           <StaggerItem key={step.step}>
-            <div className="surface-card relative flex h-full flex-col gap-3 p-5">
-              {index < mentorProcessSteps.length - 1 && (
-                <span className="absolute -right-2 top-8 hidden size-4 rounded-full border border-border bg-background lg:block" />
-              )}
-              <span className="font-mono text-xs text-muted-foreground">{step.step}</span>
-              <h3 className="font-heading text-sm font-medium">{step.title}</h3>
-              <p className="flex-1 text-sm leading-relaxed text-muted-foreground">
-                {step.description}
-              </p>
-              <span className="badge-muted w-fit text-[11px]">{step.duration}</span>
+            <div className="flex flex-col gap-2 py-5 sm:flex-row sm:items-start sm:gap-8 sm:py-6">
+              <span className="font-mono text-xs font-medium tracking-wide text-muted-foreground">
+                {step.step}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <h3 className="font-heading text-sm font-medium sm:text-base">{step.title}</h3>
+                  <span className="text-[11px] text-muted-foreground">{step.duration}</span>
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {step.description}
+                </p>
+              </div>
             </div>
           </StaggerItem>
         ))}

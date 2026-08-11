@@ -63,16 +63,18 @@ export function LabToolLayout({
               )}
 
               {relatedTools.length > 0 && (
-                <details className="group mt-8 surface-card overflow-hidden">
-                  <summary className="cursor-pointer list-none px-4 py-3 sm:px-5 [&::-webkit-details-marker]:hidden">
+                <details className="group mt-10 border-t border-border/60 pt-6">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
                     <span className="text-sm font-semibold tracking-tight">Tool terkait</span>
+                    <span className="text-xs text-muted-foreground group-open:hidden">Buka</span>
+                    <span className="hidden text-xs text-muted-foreground group-open:inline">Tutup</span>
                   </summary>
-                  <ul className="border-t border-border/45 px-4 py-3 sm:px-5">
+                  <ul className="mt-3 flex flex-col gap-1">
                     {relatedTools.map((tool) => (
                       <li key={tool.id}>
                         <Link
                           href={tool.href}
-                          className="block py-1.5 text-sm text-muted-foreground transition-colors hover:text-accent"
+                          className="block py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                         >
                           {tool.shortTitle ?? tool.title}
                         </Link>

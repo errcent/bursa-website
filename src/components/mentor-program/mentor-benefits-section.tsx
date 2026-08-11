@@ -32,16 +32,16 @@ export function MentorBenefitsSection() {
         </p>
       </Reveal>
 
-      <Stagger className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Stagger className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-10">
         {mentorBenefits.map((benefit) => {
           const Icon = iconMap[benefit.icon as keyof typeof iconMap] ?? ShieldCheck;
           return (
             <StaggerItem key={benefit.title}>
-              <div className="surface-card-hover flex h-full flex-col gap-3 p-5">
-                <div className="flex size-10 items-center justify-center rounded-xl border border-accent/20 bg-accent/10">
-                  <Icon className="size-5 text-accent" />
+              <div className="flex h-full flex-col gap-3">
+                <div className="flex size-9 items-center justify-center rounded-lg border border-border/60 bg-muted/20">
+                  <Icon className="size-4 text-foreground/80" />
                 </div>
-                <h3 className="font-heading text-sm font-medium">{benefit.title}</h3>
+                <h3 className="font-heading text-sm font-medium tracking-tight">{benefit.title}</h3>
                 <p className="text-sm leading-relaxed text-muted-foreground">{benefit.description}</p>
               </div>
             </StaggerItem>

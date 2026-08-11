@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Mail, Search } from "lucide-react";
+import { Mail, Search, X } from "lucide-react";
 
 import { Reveal } from "@/components/motion/reveal";
 import {
@@ -10,7 +10,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   helpCategories as allHelpCategories,
@@ -37,7 +36,12 @@ export function HelpCenterContent() {
 
   const groupedFaqs = useMemo(() => {
     if (activeCategory !== "Semua" || query.trim()) {
-      return [{ category: activeCategory === "Semua" ? "Hasil pencarian" : activeCategory, faqs: filteredFaqs }];
+      return [
+        {
+          category: activeCategory === "Semua" ? "Hasil pencarian" : activeCategory,
+          faqs: filteredFaqs,
+        },
+      ];
     }
     return helpCategories.map((category) => ({
       category,
@@ -49,54 +53,53 @@ export function HelpCenterContent() {
     <div className="flex flex-col gap-10">
       <Reveal>
         <div className="relative max-w-xl">
-          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Search
+            className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/70"
+            aria-hidden
+          />
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Cari pertanyaan, topik, atau kata kunci..."
-            className="h-12 w-full rounded-full border border-border bg-card/60 pl-11 pr-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-accent/40 focus:ring-2 focus:ring-accent/20"
+            placeholder="Cari pertanyaan, topik, atau kata kunci…"
+            className="lab-search"
             aria-label="Cari di pusat bantuan"
           />
+          {query ? (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              className="absolute right-3 top-1/2 inline-flex size-8 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+              aria-label="Hapus pencarian"
+            >
+              <X className="size-4" />
+            </button>
+          ) : null}
         </div>
       </Reveal>
 
       <Reveal delay={0.05}>
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
+          <FilterPill
+            active={activeCategory === "Semua"}
             onClick={() => setActiveCategory("Semua")}
-            className={cn(
-              "rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
-              activeCategory === "Semua"
-                ? "border-accent/40 bg-accent-soft text-accent"
-                : "border-border bg-card/40 text-muted-foreground hover:border-accent/25 hover:text-foreground"
-            )}
-          >
-            Semua
-          </button>
+            label="Semua"
+          />
           {helpCategories.map((category) => (
-            <button
+            <FilterPill
               key={category}
-              type="button"
+              active={activeCategory === category}
               onClick={() => setActiveCategory(category)}
-              className={cn(
-                "rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
-                activeCategory === category
-                  ? "border-accent/40 bg-accent-soft text-accent"
-                  : "border-border bg-card/40 text-muted-foreground hover:border-accent/25 hover:text-foreground"
-              )}
-            >
-              {category}
-            </button>
+              label={category}
+            />
           ))}
         </div>
       </Reveal>
 
       {filteredFaqs.length === 0 ? (
-        <div className="surface-card flex flex-col items-center gap-3 border-dashed py-16 text-center">
+        <div className="border-y border-border/60 py-12 text-center">
           <p className="font-heading text-base font-medium">Tidak ada hasil</p>
-          <p className="section-copy max-w-sm">
+          <p className="section-copy mx-auto mt-2 max-w-sm">
             Coba kata kunci lain atau pilih kategori berbeda. Tim support siap membantu jika
             pertanyaanmu belum tercakup.
           </p>
@@ -106,15 +109,13 @@ export function HelpCenterContent() {
           faqs.length > 0 ? (
             <section key={category}>
               <Reveal>
-                <div className="mb-4 flex items-center gap-2">
-                  {category !== "Hasil pencarian" && (
-                    <Badge variant="outline">{category}</Badge>
-                  )}
-                  <h2 className="section-title">{category === "Hasil pencarian" ? category : `FAQ ${category}`}</h2>
-                </div>
+                <p className="eyebrow mb-2">{category === "Hasil pencarian" ? "Pencarian" : category}</p>
+                <h2 className="section-title">
+                  {category === "Hasil pencarian" ? category : `FAQ ${category}`}
+                </h2>
               </Reveal>
 
-              <Accordion className="mt-2">
+              <Accordion className="mt-4">
                 {faqs.map((faq, index) => (
                   <AccordionItem key={faq.id} value={`${category}-${faq.id}-${index}`}>
                     <AccordionTrigger className="faq-accordion-trigger text-left text-sm font-medium">
@@ -132,23 +133,41 @@ export function HelpCenterContent() {
       )}
 
       <Reveal>
-        <div className="surface-card flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+        <div className="flex flex-col gap-5 border-t border-border/60 pt-8 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-2">
-            <p className="eyebrow">Butuh bantuan lebih lanjut?</p>
+            <p className="eyebrow">Dukungan</p>
             <h2 className="section-title">Hubungi tim support</h2>
             <p className="section-copy max-w-lg">
               Respons dalam 1–2 hari kerja. Sertakan email akun dan screenshot jika terkait
               pembayaran atau akses kelas.
             </p>
           </div>
-          <div className="flex shrink-0 flex-col gap-2 sm:items-end">
-            <Button className="btn-primary" render={<a href="mailto:support@bursanalar.com" />}>
-              <Mail className="size-4" />
-              support@bursanalar.com
-            </Button>
-          </div>
+          <Button className="btn-primary shrink-0" render={<a href="mailto:support@bursanalar.com" />}>
+            <Mail className="size-4" />
+            support@bursanalar.com
+          </Button>
         </div>
       </Reveal>
     </div>
+  );
+}
+
+function FilterPill({
+  active,
+  onClick,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn("lab-pill", active ? "lab-pill--active" : "lab-pill--idle")}
+    >
+      {label}
+    </button>
   );
 }

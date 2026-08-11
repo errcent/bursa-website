@@ -77,7 +77,7 @@ export default function JadiMentorPage() {
               sesuai kriteria.
             </p>
 
-            <div className="surface-card mt-8 p-6 sm:p-8">
+            <div className="surface-card mt-8 border-border/50 p-6 sm:p-8">
               <MentorApplicationForm />
             </div>
           </section>

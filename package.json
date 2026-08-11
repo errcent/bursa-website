@@ -25,6 +25,9 @@
     "db:studio": "prisma studio",
     "thumbnails:generate": "tsx scripts/generate-ai-thumbnails.ts",
     "audit:pages": "tsx scripts/audit-pages-network.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "audit:visual": "playwright test e2e/visual-audit.spec.ts",
     "sync-legal": "tsx scripts/copy-legal-content.ts && tsx scripts/sync-legal-drafts.ts",
     "copy-legal": "tsx scripts/copy-legal-content.ts",
     "sync:brand": "tsx scripts/sync-brand-assets.ts"
@@ -71,6 +74,7 @@
     "@hono/node-server": "^2.0.10"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",

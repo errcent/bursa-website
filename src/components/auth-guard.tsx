@@ -44,8 +44,12 @@ export function AuthGuard({
 
   if (isLoading) {
     return (
-      <div className="flex flex-1 items-center justify-center py-24">
-        <p className="text-sm text-muted-foreground">Memuat sesi...</p>
+      <div className="flex flex-1 items-center justify-center py-24" aria-busy="true">
+        <div className="w-full max-w-sm space-y-3 px-4">
+          <div className="h-3 w-28 animate-pulse rounded bg-muted" />
+          <div className="h-8 w-48 animate-pulse rounded bg-muted" />
+          <div className="h-24 w-full animate-pulse rounded-xl bg-muted/70" />
+        </div>
       </div>
     );
   }

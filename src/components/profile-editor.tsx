@@ -436,8 +436,8 @@ export function ProfileEditor() {
   const roleLabel = getConsumerRoleLabel(session.role);
 
   return (
-    <div className="space-y-6">
-      <div className="surface-card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 border-b border-border/60 pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-3">
           {roleLabel ? (
             <Badge variant={roleBadgeVariant(session.role)} className="rounded-full px-3 py-1 text-xs">
@@ -449,13 +449,13 @@ export function ProfileEditor() {
           )}
           <p className="text-xs text-muted-foreground">{session.email}</p>
         </div>
-        <Button size="sm" variant="outline" render={<Link href="/pengaturan" />}>
+        <Button size="sm" variant="outline" className="border-border/70" render={<Link href="/pengaturan" />}>
           <Settings className="size-3.5" />
           Pengaturan akun
         </Button>
       </div>
 
-      <form onSubmit={handleSave} className="surface-card space-y-5 p-5">
+      <form onSubmit={handleSave} className="space-y-5 border-y border-border/60 py-6">
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
           <div className="relative">
             <Avatar className="!size-20">

@@ -57,26 +57,21 @@ export const snapOutTransition: Transition = {
 
 export const snapRevealVariants: Variants = {
   hidden: {
-    opacity: 0,
-    scale: 0.94,
-    filter: "blur(10px) brightness(1.16)",
-    y: 18,
-    rotate: -0.5,
+    opacity: 1,
+    scale: 1,
+    y: 14,
   },
   show: {
     opacity: 1,
     scale: 1,
-    filter: "blur(0px) brightness(1)",
     y: 0,
-    rotate: 0,
     transition: snapInTransition,
   },
   exit: {
     opacity: 0,
-    scale: 1.08,
-    filter: "blur(20px) brightness(1.55)",
-    y: -42,
-    rotate: 1.8,
+    scale: 1.02,
+    filter: "blur(8px)",
+    y: -24,
     transition: snapOutTransition,
   },
 };
@@ -85,7 +80,7 @@ export const snapStaggerContainer: Variants = {
   hidden: {},
   show: {
     transition: {
-      staggerChildren: 0.06,
+      staggerChildren: 0.05,
       delayChildren: 0.02,
     },
   },
@@ -93,18 +88,12 @@ export const snapStaggerContainer: Variants = {
 
 export const snapStaggerItem: Variants = {
   hidden: {
-    opacity: 0,
-    scale: 0.95,
-    filter: "blur(8px) brightness(1.14)",
-    y: 20,
-    rotate: -0.6,
+    opacity: 1,
+    y: 12,
   },
   show: {
     opacity: 1,
-    scale: 1,
-    filter: "blur(0px) brightness(1)",
     y: 0,
-    rotate: 0,
     transition: snapInTransition,
   },
 };

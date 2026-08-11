@@ -1364,8 +1364,8 @@
     @apply relative flex min-h-screen flex-col items-center justify-center px-4 py-16;
   }
   .auth-card {
-    @apply w-full max-w-md rounded-2xl border border-border bg-card p-6 sm:p-8;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    @apply w-full max-w-md rounded-xl border border-border/70 bg-card/40 p-6 sm:p-8;
+    box-shadow: none;
   }
 
   .link-accent {

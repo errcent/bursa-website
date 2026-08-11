@@ -12,12 +12,12 @@ export function InfoPageHero({
   description: string;
 }) {
   return (
-    <div className="hero-cinematic page-header-strip">
-      <div className="container-page py-10 sm:py-12">
+    <div className="hero-cinematic page-header-strip border-b border-border/40">
+      <div className="container-page py-12 sm:py-16">
         <Reveal>
-          <p className="eyebrow mb-2">{eyebrow}</p>
-          <h1 className="page-hero-title text-gradient">{title}</h1>
-          <p className="section-copy mt-2 max-w-2xl">{description}</p>
+          <p className="eyebrow mb-3">{eyebrow}</p>
+          <h1 className="page-hero-title max-w-3xl text-balance text-gradient">{title}</h1>
+          <p className="section-copy mt-4 max-w-2xl text-pretty">{description}</p>
         </Reveal>
       </div>
     </div>

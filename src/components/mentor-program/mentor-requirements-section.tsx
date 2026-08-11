@@ -16,10 +16,10 @@ export function MentorRequirementsSection() {
         </p>
       </Reveal>
 
-      <Stagger className="mt-8 flex flex-col gap-3">
+      <Stagger className="mt-8 space-y-0 divide-y divide-border/60 border-y border-border/60">
         {mentorRequirements.map((req) => (
           <StaggerItem key={req.title}>
-            <div className="surface-card flex gap-4 p-5">
+            <div className="flex gap-4 py-5 sm:py-6">
               <div
                 className={`mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full ${
                   req.required
@@ -33,20 +33,18 @@ export function MentorRequirementsSection() {
                   <Circle className="size-3 text-muted-foreground" />
                 )}
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-sm font-medium">{req.title}</h3>
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${
-                      req.required
-                        ? "bg-emerald/10 text-emerald"
-                        : "bg-muted text-muted-foreground"
+                    className={`text-[10px] font-medium uppercase tracking-wide ${
+                      req.required ? "text-emerald" : "text-muted-foreground"
                     }`}
                   >
                     {req.required ? "Wajib" : "Opsional"}
                   </span>
                 </div>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                   {req.description}
                 </p>
               </div>

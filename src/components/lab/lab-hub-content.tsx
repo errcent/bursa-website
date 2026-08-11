@@ -103,31 +103,33 @@ export function LabHubContent() {
               title="Skenario"
               description="Rangkaian singkat antar tool esensial."
             />
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <div className="mt-6 space-y-0 divide-y divide-border/60 border-y border-border/60">
               {labScenarios.map((scenario) => (
-                <div key={scenario.id} className="lab-workflow-card">
+                <div key={scenario.id} className="grid gap-4 py-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] sm:gap-8 sm:py-6">
                   <div>
                     <h3 className="font-heading text-sm font-semibold tracking-tight">
                       {scenario.title}
                     </h3>
-                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                       {scenario.description}
                     </p>
                   </div>
-                  <div className="lab-workflow-steps">
+                  <ol className="flex flex-col gap-1.5">
                     {scenario.toolIds.map((toolId, stepIndex) => {
                       const tool = getLabTool(toolId);
                       if (!tool) return null;
                       return (
-                        <Link key={toolId} href={tool.href} className="lab-workflow-step">
-                          <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-md bg-muted/40 font-mono text-[10px] text-muted-foreground">
-                            {stepIndex + 1}
-                          </span>
-                          <span className="min-w-0 truncate">{tool.shortTitle ?? tool.title}</span>
-                        </Link>
+                        <li key={toolId}>
+                          <Link href={tool.href} className="lab-workflow-step">
+                            <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-md bg-muted/40 font-mono text-[10px] text-muted-foreground">
+                              {stepIndex + 1}
+                            </span>
+                            <span className="min-w-0 truncate">{tool.shortTitle ?? tool.title}</span>
+                          </Link>
+                        </li>
                       );
                     })}
-                  </div>
+                  </ol>
                 </div>
               ))}
             </div>
@@ -183,7 +185,7 @@ function FilteredResults({
           ))}
         </ul>
       ) : (
-        <div className="surface-card mt-4 px-5 py-8 text-center">
+        <div className="mt-4 border-y border-border/60 py-8 text-center">
           <p className="text-sm text-muted-foreground">
             Tidak ada hasil. Reset pencarian atau pilih kategori lain.
           </p>

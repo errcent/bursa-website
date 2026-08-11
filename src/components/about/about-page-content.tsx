@@ -5,7 +5,6 @@ import {
   Ban,
   Layers,
   ShieldCheck,
-  Target,
   Users,
   Video,
   Wallet,
@@ -48,17 +47,12 @@ export function AboutPageContent() {
         </Reveal>
 
         <Reveal delay={0.12} className="mt-8">
-          <div className="surface-card border-accent/15 bg-accent-soft/20 p-5 sm:p-6">
-            <div className="flex items-start gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-accent/10">
-                <Target className="size-5 text-accent" />
-              </div>
-              <p className="text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
-                <span className="font-medium text-foreground">Penting:</span> Materi di Bursa
-                bersifat edukasi, bukan rekomendasi investasi. Trading dan investasi mengandung
-                risiko kerugian modal, keputusan sepenuhnya tanggung jawab pengguna.
-              </p>
-            </div>
+          <div className="border-l-2 border-foreground/25 py-1 pl-4 sm:pl-5">
+            <p className="text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
+              <span className="font-medium text-foreground">Penting:</span> Materi di Bursa
+              bersifat edukasi, bukan rekomendasi investasi. Trading dan investasi mengandung
+              risiko kerugian modal, keputusan sepenuhnya tanggung jawab pengguna.
+            </p>
           </div>
         </Reveal>
       </section>
@@ -75,10 +69,10 @@ export function AboutPageContent() {
           </p>
         </Reveal>
 
-        <Stagger className="mt-8 grid gap-4 sm:grid-cols-2">
+        <Stagger className="mt-8 grid gap-8 sm:grid-cols-2 sm:gap-10">
           {[aboutMissionVision.mission, aboutMissionVision.vision].map((item) => (
             <StaggerItem key={item.title}>
-              <div className="surface-card-hover flex h-full flex-col gap-3 p-6">
+              <div className="flex h-full flex-col gap-3 border-t border-border/70 pt-5">
                 <h3 className="font-heading text-lg font-semibold tracking-tight">{item.title}</h3>
                 <p className="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
               </div>
@@ -99,16 +93,16 @@ export function AboutPageContent() {
           </p>
         </Reveal>
 
-        <Stagger className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Stagger className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-10">
           {aboutWhyUse.map((benefit) => {
             const Icon = iconMap[benefit.icon] ?? ShieldCheck;
             return (
               <StaggerItem key={benefit.title}>
-                <div className="surface-card-hover flex h-full flex-col gap-3 p-5">
-                  <div className="flex size-10 items-center justify-center rounded-xl border border-accent/20 bg-accent/10">
-                    <Icon className="size-5 text-accent" />
+                <div className="flex h-full flex-col gap-3">
+                  <div className="flex size-9 items-center justify-center rounded-lg border border-border/60 bg-muted/20">
+                    <Icon className="size-4 text-foreground/80" />
                   </div>
-                  <h3 className="font-heading text-sm font-medium">{benefit.title}</h3>
+                  <h3 className="font-heading text-sm font-medium tracking-tight">{benefit.title}</h3>
                   <p className="text-sm leading-relaxed text-muted-foreground">
                     {benefit.description}
                   </p>
@@ -130,12 +124,14 @@ export function AboutPageContent() {
           </p>
         </Reveal>
 
-        <Stagger className="mt-8 space-y-4">
+        <Stagger className="mt-8 space-y-0 divide-y divide-border/60 border-y border-border/60">
           {aboutPillars.map((pillar) => (
             <StaggerItem key={pillar.step}>
-              <div className="surface-card flex flex-col gap-3 p-5 sm:flex-row sm:items-start sm:gap-6 sm:p-6">
-                <span className="font-mono text-xs font-medium text-accent">{pillar.step}</span>
-                <div>
+              <div className="flex flex-col gap-3 py-5 sm:flex-row sm:items-start sm:gap-8 sm:py-6">
+                <span className="font-mono text-xs font-medium tracking-wide text-muted-foreground">
+                  {pillar.step}
+                </span>
+                <div className="min-w-0 flex-1">
                   <h3 className="font-heading text-sm font-medium sm:text-base">{pillar.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     {pillar.description}

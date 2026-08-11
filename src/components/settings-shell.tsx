@@ -37,12 +37,7 @@ export function SettingsShell() {
   }
 
   if (!session) {
-    return (
-      <div className="grid gap-8 lg:grid-cols-[13.75rem_minmax(0,1fr)] lg:gap-10">
-        <SettingsNav active={activeTab} />
-        <SettingsSignedOut />
-      </div>
-    );
+    return <SettingsSignedOut />;
   }
 
   return (

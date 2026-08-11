@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Settings } from "lucide-react";
 
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
@@ -13,17 +12,23 @@ export function SettingsSignedOut() {
   const common = messages.common;
 
   return (
-    <div className="surface-card mx-auto max-w-md px-6 py-10 text-center">
-      <div className="mx-auto flex size-12 items-center justify-center rounded-2xl border border-border/60 bg-muted/30">
-        <Settings className="size-5 text-muted-foreground" aria-hidden />
-      </div>
-      <h2 className="mt-5 font-heading text-lg font-semibold tracking-tight">{t.title}</h2>
-      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.signedOutDescription}</p>
-      <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
-        <Button className="btn-primary" render={<Link href={buildLoginHref("/pengaturan")} />}>
+    <div className="mx-auto flex max-w-lg flex-col items-start py-6 sm:py-10">
+      <p className="eyebrow mb-2">Akun</p>
+      <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+        {t.title}
+      </h2>
+      <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
+        {t.signedOutDescription}
+      </p>
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <Button className="btn-primary h-11 min-w-[9rem]" render={<Link href={buildLoginHref("/pengaturan")} />}>
           {common.signIn}
         </Button>
-        <Button variant="outline" render={<Link href="/daftar" />}>
+        <Button
+          variant="outline"
+          className="h-11 border-border/70 bg-transparent"
+          render={<Link href="/daftar" />}
+        >
           {common.signUp}
         </Button>
       </div>

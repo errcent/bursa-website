@@ -21,11 +21,15 @@ type RevealProps = HTMLMotionProps<"div"> & {
   once?: boolean;
 };
 
+/**
+ * Premium motion rule: never leave content at opacity 0.
+ * Animate translate/blur only so print, screenshot, and fast scroll stay readable.
+ */
 export function Reveal({
   children,
   className,
   delay = 0,
-  y = 28,
+  y = 16,
   x = 0,
   scale = 1,
   once = true,
@@ -46,29 +50,24 @@ export function Reveal({
     return <div className={cn(className)}>{children}</div>;
   }
 
-  const motionY = isMobile ? Math.min(y, 14) : y;
-  const motionBlur = isMobile ? "blur(4px)" : "blur(10px)";
+  const motionY = isMobile ? Math.min(y, 10) : y;
 
   return (
     <motion.div
       className={cn(className)}
       initial={{
-        opacity: 0,
+        opacity: 1,
         y: motionY,
         x,
-        scale: scale === 1 ? 0.94 : scale,
-        filter: `${motionBlur} brightness(1.14)`,
-        rotate: isMobile ? 0 : -0.4,
+        scale: scale === 1 ? 1 : scale,
       }}
       whileInView={{
         opacity: 1,
         y: 0,
         x: 0,
         scale: 1,
-        filter: "blur(0px) brightness(1)",
-        rotate: 0,
       }}
-      viewport={{ once, margin: "0px 0px -5% 0px", amount: 0.15 }}
+      viewport={{ once, margin: "0px 0px -6% 0px", amount: 0.05 }}
       transition={{ ...snapInTransition, delay }}
       {...props}
     >
@@ -126,7 +125,7 @@ export function Stagger({
       variants={snapStaggerContainer}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "0px 0px -5% 0px", amount: 0.15 }}
+      viewport={{ once: true, margin: "0px 0px -6% 0px", amount: 0.05 }}
       transition={{ delayChildren: delay }}
     >
       {children}

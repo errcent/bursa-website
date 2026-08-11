@@ -21,10 +21,13 @@ function SavedSection({
   empty: string;
   children: React.ReactNode;
 }) {
+  const hasChildren = Boolean(children);
   return (
-    <section className="space-y-4">
-      <h2 className="text-lg font-semibold text-foreground">{title}</h2>
-      {children ?? <p className="text-sm text-muted-foreground">{empty}</p>}
+    <section className="border-b border-border/60 py-8 first:pt-0 last:border-b-0">
+      <h2 className="font-heading text-lg font-semibold tracking-tight">{title}</h2>
+      <div className="mt-4">
+        {hasChildren ? children : <p className="text-sm text-muted-foreground">{empty}</p>}
+      </div>
     </section>
   );
 }
@@ -147,14 +150,19 @@ export default function TersimpanClient() {
     <AuthGuard>
       <div className="min-h-screen bg-background">
         <SiteNavbar />
-        <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Tersimpan</h1>
-            <p className="mt-1 text-muted-foreground">
-              Kelas, video, playlist, dan mentor yang kamu simpan, tersinkron saat masuk.
-            </p>
+        <main className="flex-1">
+          <div className="hero-cinematic page-header-strip border-b border-border/40">
+            <div className="container-page py-12 sm:py-14">
+              <p className="eyebrow mb-3">Dashboard</p>
+              <h1 className="page-hero-title text-gradient">Tersimpan</h1>
+              <p className="section-copy mt-4 max-w-lg text-pretty">
+                Kelas, video, playlist, dan mentor yang kamu simpan — tersinkron saat masuk.
+              </p>
+            </div>
           </div>
-          <SavedContent />
+          <div className="container-page section-tight pb-16 pt-8">
+            <SavedContent />
+          </div>
         </main>
         <SiteFooter />
       </div>

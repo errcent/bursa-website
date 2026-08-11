@@ -1,0 +1,4 @@
+# Playwright visual audit reports (markdown kept; meta/html gitignored)
+*
+!.gitignore
+!*.md

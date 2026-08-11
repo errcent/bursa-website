@@ -69,4 +69,13 @@ _tsc_filtered.txt
 audit-*.png
 playwright-audit-*.png
 
+# Playwright visual audit
+/e2e/screenshots/
+/e2e/test-results/
+/e2e/reports/html/
+/e2e/reports/meta-*.json
+/e2e/.auth/
+/playwright-report/
+/test-results/
+
 .vercel

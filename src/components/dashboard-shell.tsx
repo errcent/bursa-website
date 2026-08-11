@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { BookOpen, Compass, Flame } from "lucide-react";
+import { Compass, Flame } from "lucide-react";
 import { motion } from "motion/react";
 
 import { CourseThumbnail } from "@/components/course-thumbnail";
@@ -193,25 +193,22 @@ function DashboardBody() {
                 </Reveal>
 
                 {loading ? (
-                  <div className="surface-card p-8 text-center text-sm text-muted-foreground">
+                  <div className="border-y border-border/60 py-10 text-center text-sm text-muted-foreground">
                     Memuat progress…
                   </div>
                 ) : !hasProgress ? (
-                  <div className="surface-card flex flex-col items-center gap-4 p-8 text-center">
-                    <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent-soft via-surface-2 to-background">
-                      <BookOpen className="size-5 text-accent" />
-                    </div>
+                  <div className="flex flex-col items-start gap-4 border-y border-border/60 py-8 sm:py-10">
                     <div>
-                      <p className="font-heading text-sm font-medium">Belum ada progress</p>
-                      <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                      <p className="font-heading text-base font-medium tracking-tight">Belum ada progress</p>
+                      <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
                         Quiz singkat untuk rekomendasi kelas dan mentor yang cocok dengan profilmu.
                       </p>
                     </div>
-                    <div className="flex flex-wrap justify-center gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <Button render={<Link href="/panduan-belajar" />} className="btn-primary">
                         Buka Panduan Belajar
                       </Button>
-                      <Button render={<Link href="/katalog" />} variant="outline">
+                      <Button render={<Link href="/katalog" />} variant="outline" className="border-border/70">
                         Jelajahi Katalog
                       </Button>
                     </div>
@@ -285,17 +282,14 @@ function DashboardBody() {
                 </Reveal>
 
                 {guidanceLoading ? (
-                  <div className="surface-card p-8 text-center text-sm text-muted-foreground">
+                  <div className="border-y border-border/60 py-10 text-center text-sm text-muted-foreground">
                     Memuat rekomendasi…
                   </div>
                 ) : !hasGuidanceProfile ? (
-                  <div className="surface-card flex flex-col items-center gap-4 p-8 text-center">
-                    <div className="flex size-12 items-center justify-center rounded-xl border border-accent/25 bg-accent-soft/40">
-                      <Compass className="size-5 text-accent" />
-                    </div>
-                    <div className="max-w-sm">
-                      <p className="font-heading text-sm font-medium">Belum ada profil belajar</p>
-                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  <div className="flex flex-col items-start gap-4 border-y border-border/60 py-8 sm:py-10">
+                    <div className="max-w-md">
+                      <p className="font-heading text-base font-medium tracking-tight">Belum ada profil belajar</p>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                         Ikuti quiz singkat (~2 menit) di Panduan Belajar, kami rekomendasikan kelas
                         yang selaras dengan tujuan dan levelmu.
                       </p>
@@ -305,7 +299,7 @@ function DashboardBody() {
                     </Button>
                   </div>
                 ) : recommendations.length === 0 ? (
-                  <div className="surface-card p-8 text-center text-sm text-muted-foreground">
+                  <div className="border-y border-border/60 py-8 text-sm leading-relaxed text-muted-foreground">
                     Semua kelas rekomendasi sudah kamu ambil, atau belum ada yang cocok.{" "}
                     <Link href="/katalog" className="link-accent">
                       Jelajahi katalog

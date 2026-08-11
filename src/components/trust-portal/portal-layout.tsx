@@ -50,20 +50,23 @@ function HubCard({
   return (
     <Link
       href={href}
-      className="group surface-card flex h-full flex-col gap-4 p-5 transition-all hover:border-primary/35 hover:shadow-md"
+      className="group flex h-full flex-col gap-3 border-t border-border/70 pt-5 transition-colors hover:border-foreground/35"
     >
       <div className="flex items-start gap-3">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
-          <Icon className="size-5" aria-hidden />
-        </div>
+        <Icon
+          className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
+          aria-hidden
+        />
         <div className="min-w-0 flex-1">
-          <h3 className="font-heading text-base font-semibold leading-snug">{title}</h3>
+          <h3 className="font-heading text-base font-semibold leading-snug tracking-tight">
+            {title}
+          </h3>
           {description && (
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{description}</p>
           )}
         </div>
       </div>
-      <span className="mt-auto inline-flex items-center gap-1.5 text-xs font-medium text-primary">
+      <span className="mt-auto inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground">
         Buka dokumen
         <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
       </span>
@@ -94,7 +97,7 @@ export function PortalHubContent({
           <p className="section-copy mt-2">
             Pilih dokumen di bawah untuk detail lengkap kebijakan dan prosedur.
           </p>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <div className="mt-8 grid gap-8 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-8">
             {navItems.map((item) => (
               <HubCard
                 key={item.slug}
@@ -109,7 +112,7 @@ export function PortalHubContent({
       )}
 
       {crossLink && (
-        <div className="rounded-2xl border border-border/60 bg-muted/30 p-5 sm:p-6">
+        <div className="border-t border-border/60 pt-6">
           <p className="text-sm font-medium text-foreground">Portal terkait</p>
           <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
             Lihat juga{" "}
@@ -199,7 +202,7 @@ export function PortalDocShell({
           <DraftBanner visible={isDraft} />
           <MarkdownDocument markdown={doc.markdownBody} />
           {children}
-          <div className="mt-12 rounded-2xl border border-border/60 bg-muted/30 p-5 sm:p-6">
+          <div className="mt-12 border-t border-border/60 pt-6">
             <p className="text-sm font-medium text-foreground">Butuh bantuan?</p>
             <p className="mt-1.5 text-sm text-muted-foreground">
               Hubungi{" "}
