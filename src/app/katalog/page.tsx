@@ -39,11 +39,11 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
         <div className="container-page pt-4 sm:pt-6">
           <header className="mb-5 sm:mb-6">
             <p className="eyebrow mb-1.5">Katalog</p>
-            <h1 className="font-display text-2xl tracking-[-0.02em] text-foreground sm:text-3xl">
+            <h1 className="font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Kelas &amp; mentor trading
             </h1>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-              Jelajahi kurikulum terstruktur. Saat siap, gabung waitlist untuk dibuka lebih dulu.
+              Kurikulum terstruktur dari mentor terverifikasi.
             </p>
           </header>
           <Suspense fallback={<CatalogBrowserSkeleton />}>

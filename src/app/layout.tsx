@@ -1,11 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Inter, Outfit } from "next/font/google";
+import { DM_Sans, Inter } from "next/font/google";
 import Script from "next/script";
 
 import { AuthProvider } from "@/components/auth-provider";
 import { PostHogProvider } from "@/components/analytics/posthog-provider";
 import { NextAuthProvider } from "@/components/next-auth-provider";
-import { LanguageProvider } from "@/components/language-provider";
 import { CursorGlow } from "@/components/cursor-glow";
 import { NavbarRouteTracker } from "@/components/navbar-route-tracker";
 import { PreloaderGate } from "@/components/preloader-gate";
@@ -18,7 +17,7 @@ import { rootSiteMetadata } from "@/lib/site-metadata";
 
 import "./globals.css";
 
-/** Body / UI copy */
+/** Body / UI copy, light & regular weights */
 const fontSans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
@@ -26,19 +25,11 @@ const fontSans = Inter({
   display: "swap",
 });
 
-/** UI headings, buttons, nav chrome */
-const fontHeading = Outfit({
+/** Headings, bold text, buttons, brand wordmark */
+const fontHeading = DM_Sans({
   variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  display: "swap",
-});
-
-/** Display / hero / marketing section titles */
-const fontDisplay = Instrument_Serif({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400"],
+  weight: ["600", "700", "800"],
   display: "swap",
 });
 
@@ -60,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${fontSans.variable} ${fontHeading.variable} ${fontDisplay.variable} dark h-full antialiased`}
+      className={`${fontSans.variable} ${fontHeading.variable} dark h-full antialiased`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
@@ -77,12 +68,10 @@ export default function RootLayout({
           <NavbarRouteTracker />
           <NextAuthProvider>
             <AuthProvider>
-              <LanguageProvider>
-                <PreviewCatalogBanner />
-                {children}
-                <StickyBottomCta />
-                <CookieConsentBanner />
-              </LanguageProvider>
+              <PreviewCatalogBanner />
+              {children}
+              <StickyBottomCta />
+              <CookieConsentBanner />
             </AuthProvider>
           </NextAuthProvider>
         </PreloaderGate>

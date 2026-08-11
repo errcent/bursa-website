@@ -6,7 +6,7 @@
 
 /*
  * Bursa design system — slate-steel + neutral gray accent
- * Display: Instrument Serif · UI headings: Outfit · Body: Inter
+ * Headings / bold / brand: DM Sans · Body / mono / light: Inter
  */
 @theme inline {
   --color-background: var(--background);
@@ -14,7 +14,6 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-sans);
   --font-heading: var(--font-heading);
-  --font-display: var(--font-display);
   --font-brand: var(--font-heading);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -221,14 +220,11 @@
   .font-brand {
     font-family: var(--font-brand), ui-sans-serif, system-ui, sans-serif;
   }
-  .font-display {
-    font-family: var(--font-display), ui-serif, Georgia, serif;
-  }
   .container-page {
     @apply relative z-[1] mx-auto w-full min-w-0 max-w-6xl px-5 sm:px-8 lg:px-10;
   }
   .page-hero-title {
-    @apply font-display text-[2.125rem] font-normal leading-[1.08] tracking-[-0.02em] sm:text-5xl md:text-[3.5rem];
+    @apply font-heading text-[2rem] font-semibold leading-[1.1] tracking-[-0.03em] sm:text-5xl md:text-[3.5rem];
   }
   .text-gradient {
     background: linear-gradient(135deg, #f5f5f5 0%, #e4e4e7 45%, #a1a1aa 100%);
@@ -237,7 +233,7 @@
     color: transparent;
   }
   .section-title {
-    @apply font-display text-[1.35rem] font-normal tracking-[-0.02em] sm:text-2xl md:text-[1.75rem];
+    @apply font-heading text-xl font-semibold tracking-[-0.02em] sm:text-2xl;
   }
   .section-copy {
     @apply font-sans text-sm font-normal leading-relaxed text-muted-foreground sm:text-[0.95rem];

@@ -1,15 +1,12 @@
 /** SSOT brand asset paths and UI slot dimensions (see Brand Asset Checklist). */
 
 export const BRAND_ASSETS = {
-  productNav: "/brand/logo_product_bursa_navbar.svg",
-  productNavPng: "/brand/logo_product_bursa_navbar.png",
-  wordmark: "/brand/logo_wordmark_bursanalar.svg",
-  wordmarkPng: "/brand/logo_wordmark_bursanalar.png",
+  productNav: "/brand/logo_product_bursa_navbar.png",
+  wordmark: "/brand/logo_wordmark_bursanalar.png",
   lockupHorizontal: "/brand/logo_lockup_horizontal.png",
   lockupStacked: "/brand/logo_lockup_stacked.png",
   lockupStackedLight: "/brand/logo_lockup_stacked_light.png",
-  iconMark: "/brand/logo_icon_mark.svg",
-  iconMarkPng: "/brand/logo_icon_mark.png",
+  iconMark: "/brand/logo_icon_mark.png",
   emailHeaderDark: "/brand/web_email_header_dark.png",
   emailHeaderLight: "/brand/web_email_header_light.png",
   ogDefault: "/og/default.png",

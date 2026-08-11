@@ -24,8 +24,7 @@ export default function KomunitasPage() {
             <p className="eyebrow mb-2">Komunitas</p>
             <h1 className="page-hero-title text-gradient">Segera hadir</h1>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-              Ruang diskusi mentor dan komunitas terkurasi sedang disiapkan. Gabung waitlist untuk
-              mendapat kabar saat fitur ini dibuka.
+              Ruang diskusi mentor sedang disiapkan. Gabung waitlist untuk kabar pembukaan.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button

@@ -18,7 +18,7 @@ export default function LabPage() {
       <SiteNavbar />
       <main className="flex-1 overflow-x-clip">
         <div className="container-page lab-hub-header pt-8 sm:pt-10">
-          <h1 className="font-display text-2xl tracking-[-0.02em] sm:text-3xl">
+          <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
             Bursa Lab
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]">

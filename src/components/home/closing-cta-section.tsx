@@ -27,7 +27,7 @@ export function ClosingCtaSection() {
     : "Gabung waitlist Bursa";
   const body = showMemberExperience
     ? "Akses dashboard untuk melanjutkan progres kelas dan materi yang sudah kamu mulai."
-    : "Jadi yang pertama tahu saat Bursa dibuka. Tinggalkan email, kami kabari begitu kelas dan mentor siap.";
+    : "Dapatkan kabar saat kelas dan mentor dibuka.";
 
   return (
     <section className="section-closing relative overflow-hidden py-16 sm:py-20 md:py-24">
