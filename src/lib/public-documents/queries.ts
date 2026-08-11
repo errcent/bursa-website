@@ -31,24 +31,6 @@ function mergeWithBundledWhenStale(
   };
 }
 
-function mapRecord(doc: {
-  id: string;
-  slug: string;
-  portal: DocumentPortal;
-  title: string;
-  eyebrow: string;
-  description: string;
-  markdownBody: string;
-  status: PublicDocumentRecord["status"];
-  version: number;
-  publishedAt: Date | null;
-  sourceVaultPath: string | null;
-  sortOrder: number;
-  updatedAt: Date;
-}): PublicDocumentRecord {
-  return doc;
-}
-
 async function loadVaultFallback(
   portal: DocumentPortal,
   slug?: string
@@ -92,7 +74,7 @@ export async function getPublishedDocument(
   );
   const bundled = (await loadVaultFallback(portal, slug))[0];
 
-  if (doc) return mergeWithBundledWhenStale(mapRecord(doc), bundled);
+  if (doc) return mergeWithBundledWhenStale(doc, bundled);
 
   return bundled ?? null;
 }
@@ -108,7 +90,7 @@ export async function getDocumentForPreview(
   );
   const bundled = (await loadVaultFallback(portal, slug))[0];
 
-  if (doc) return mergeWithBundledWhenStale(mapRecord(doc), bundled);
+  if (doc) return mergeWithBundledWhenStale(doc, bundled);
 
   return bundled ?? null;
 }
@@ -131,7 +113,7 @@ export async function getPortalDocuments(
 
   if (docs && docs.length > 0) {
     return docs.map((doc) =>
-      mergeWithBundledWhenStale(mapRecord(doc), bundledBySlug.get(doc.slug))
+      mergeWithBundledWhenStale(doc, bundledBySlug.get(doc.slug))
     );
   }
 

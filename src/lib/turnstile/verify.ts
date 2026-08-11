@@ -6,9 +6,6 @@ import {
 } from "@/lib/turnstile/config";
 
 export function isTurnstileConfigured(): boolean {
-  if (isTurnstileRequiredInProduction()) {
-    return isTurnstileServerEnabled();
-  }
   return isTurnstileServerEnabled();
 }
 

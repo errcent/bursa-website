@@ -38,22 +38,6 @@ function assertNoSensitiveLeak(text: string): void {
   }
 }
 
-function assertNoSensitiveKeywords(text: string): void {
-  const checkText = text.replace(/\[[^\]]+\]/g, "");
-  if (/\bapi key\b/i.test(checkText)) {
-    throw new Error("Sensitive keyword detected in AI output");
-  }
-  if (/\bsecret\b/i.test(checkText)) {
-    throw new Error("Sensitive keyword detected in AI output");
-  }
-  if (/\btoken\b/i.test(checkText)) {
-    throw new Error("Sensitive keyword detected in AI output");
-  }
-  if (/\benv\b/i.test(checkText)) {
-    throw new Error("Sensitive keyword detected in AI output");
-  }
-}
-
 async function logUsage(
   userId: string,
   inputChars: number,
@@ -137,7 +121,6 @@ export async function callAiGateway(input: {
   }
 
   assertNoSensitiveLeak(fullySanitized);
-  assertNoSensitiveKeywords(fullySanitized);
 
   await logUsage(input.userId, sanitized.length, fullySanitized.length);
 

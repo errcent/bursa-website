@@ -97,6 +97,5 @@ export function lookupFaq(query: string): string | null {
  */
 export function routeIntent(query: string): "faq" | "rag" {
   if (lookupFaq(query)) return "faq";
-  if (/status|pesanan|enrollment|transaksi/i.test(query)) return "rag";
   return "rag";
 }

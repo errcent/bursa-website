@@ -1,19 +1,5 @@
 import { z } from "zod";
 
-export const createChatRoomSchema = z.object({
-  mentorId: z.string().min(1).optional(),
-  name: z.string().min(1).max(120),
-  slug: z.string().min(1).max(80).regex(/^[a-z0-9-]+$/),
-  description: z.string().max(500).optional(),
-  roomKind: z
-    .enum(["PUBLIC", "MENTOR_COMMUNITY", "MENTOR_INTERNAL"])
-    .default("MENTOR_COMMUNITY"),
-  tier: z.enum(["PEMULA", "MENENGAH", "MAHIR", "INTERNAL"]).default("PEMULA"),
-  isProtected: z.boolean().default(false),
-  screenshotProtection: z.boolean().default(false),
-  memberOnly: z.boolean().default(true),
-});
-
 export const updateChatRoomSchema = z.object({
   name: z.string().min(1).max(120).optional(),
   description: z.string().max(500).optional(),
@@ -110,8 +96,6 @@ export const createMentorSchema = z.object({
   licenseLabel: z.string().optional(),
   yearsExperience: z.number().int().nonnegative(),
 });
-
-export const createAdminChatRoomSchema = createChatRoomSchema;
 
 export const moderationReviewSchema = z.object({
   id: z.string().min(1),

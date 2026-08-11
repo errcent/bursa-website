@@ -1,7 +1,5 @@
 import { resolveMentorAvatarUrl } from "@/lib/mentors/avatar";
 import type { Course, Mentor } from "@/lib/types";
-import { hasRating } from "@/lib/utils";
-
 export type SearchCatalogIndex = {
   courses: Course[];
   mentors: Mentor[];
@@ -205,9 +203,10 @@ export function searchAll(
       score,
       matchedField,
       imageUrl: course.thumbnailUrl,
-      meta: hasRating(course.rating)
-        ? `${course.rating}★ · ${course.studentsCount.toLocaleString("id-ID")} siswa`
-        : `${course.studentsCount.toLocaleString("id-ID")} siswa`,
+      meta:
+        course.rating > 0
+          ? `${course.rating}★ · ${course.studentsCount.toLocaleString("id-ID")} siswa`
+          : `${course.studentsCount.toLocaleString("id-ID")} siswa`,
     });
   }
 
@@ -255,7 +254,7 @@ export function getPopularCourses(index: SearchCatalogIndex, limit = 4): SearchR
         badge: course.instrument,
         score: course.studentsCount,
         imageUrl: course.thumbnailUrl,
-        meta: hasRating(course.rating) ? `${course.rating}★` : undefined,
+        meta: course.rating > 0 ? `${course.rating}★` : undefined,
       };
     });
 }

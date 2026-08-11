@@ -11,6 +11,7 @@ import {
   captureSnapshot,
   changeRequestInclude,
   mapChangeRequest,
+  parseChangeRequestStatusParam,
 } from "@/lib/mentor/change-requests";
 import { requireMentor, unauthorizedMentor } from "@/lib/mentor/server";
 
@@ -20,11 +21,7 @@ export async function GET(request: Request) {
 
   try {
     const { searchParams } = new URL(request.url);
-    const statusParam = searchParams.get("status");
-    let status: ChangeRequestStatus | undefined;
-    if (statusParam === "pending") status = ChangeRequestStatus.PENDING;
-    if (statusParam === "approved") status = ChangeRequestStatus.APPROVED;
-    if (statusParam === "rejected") status = ChangeRequestStatus.REJECTED;
+    const status = parseChangeRequestStatusParam(searchParams.get("status"));
 
     const items = await db.courseChangeRequest.findMany({
       where: {

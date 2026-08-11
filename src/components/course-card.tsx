@@ -8,7 +8,7 @@ import { LevelBadge } from "@/components/instrument-badge";
 import { useMyLearning } from "@/hooks/use-my-learning";
 import { courseEnrollmentFromLearning } from "@/lib/learning/enrollment";
 import { useCatalogIndex } from "@/hooks/use-catalog-index";
-import { formatRating, cn, hasRating } from "@/lib/utils";
+import { formatRating, cn } from "@/lib/utils";
 import type { Course, Mentor } from "@/lib/types";
 
 export type CourseCardEnrollment = {
@@ -69,7 +69,7 @@ export function CourseCard({
       : `/kelas/${course.slug}`;
 
   const subtitle = mentor
-    ? hasRating(course.rating)
+    ? course.rating > 0
       ? `${mentor.name} · ${formatRating(course.rating)}★`
       : mentor.name
     : course.instrument;

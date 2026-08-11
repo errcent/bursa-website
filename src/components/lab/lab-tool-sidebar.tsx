@@ -16,7 +16,6 @@ export function LabToolSidebar({
   category: LabToolCategory;
 }) {
   const pathname = usePathname();
-  const categoryMeta = getLabTool(currentToolId);
   const tools = getLabToolsByCategory(category);
 
   return (
@@ -30,9 +29,7 @@ export function LabToolSidebar({
         </Link>
 
         <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/80">
-          {categoryMeta?.category === category
-            ? getCategoryLabel(category)
-            : getCategoryLabel(category)}
+          {getCategoryLabel(category)}
         </p>
         <ul className="flex flex-col gap-0.5 px-1">
           {tools.map((tool) => {

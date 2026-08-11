@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import {
   changeRequestInclude,
   mapChangeRequest,
+  parseChangeRequestStatusParam,
 } from "@/lib/mentor/change-requests";
 
 export async function GET(request: Request) {
@@ -14,13 +15,7 @@ export async function GET(request: Request) {
 
   try {
     const { searchParams } = new URL(request.url);
-    const statusParam = searchParams.get("status");
-
-    let statusFilter: ChangeRequestStatus | undefined;
-    if (statusParam === "pending") statusFilter = ChangeRequestStatus.PENDING;
-    if (statusParam === "approved") statusFilter = ChangeRequestStatus.APPROVED;
-    if (statusParam === "rejected") statusFilter = ChangeRequestStatus.REJECTED;
-    if (statusParam === "edited") statusFilter = ChangeRequestStatus.EDITED;
+    const statusFilter = parseChangeRequestStatusParam(searchParams.get("status"));
 
     const items = await db.courseChangeRequest.findMany({
       where: statusFilter

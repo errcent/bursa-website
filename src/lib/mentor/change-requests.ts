@@ -8,6 +8,17 @@ import {
 
 import { db } from "@/lib/db";
 
+/** Map query `status` string → Prisma enum (undefined if missing/unknown). */
+export function parseChangeRequestStatusParam(
+  statusParam: string | null
+): ChangeRequestStatus | undefined {
+  if (statusParam === "pending") return ChangeRequestStatus.PENDING;
+  if (statusParam === "approved") return ChangeRequestStatus.APPROVED;
+  if (statusParam === "rejected") return ChangeRequestStatus.REJECTED;
+  if (statusParam === "edited") return ChangeRequestStatus.EDITED;
+  return undefined;
+}
+
 export type ProposedCourseData = {
   title?: string;
   shortDescription?: string;

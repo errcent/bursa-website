@@ -3,58 +3,64 @@ import { ChatRoomTier, CourseLevel, Instrument } from "@prisma/client";
 import type { ChatRoomTierLabel } from "@/lib/admin/types";
 import type { Instrument as UiInstrument, Level } from "@/lib/types";
 
+const INSTRUMENT_TO_UI: Record<Instrument, UiInstrument> = {
+  SAHAM: "Saham",
+  CRYPTO: "Crypto",
+  FOREX: "Forex",
+};
+
+const INSTRUMENT_FROM_UI: Record<UiInstrument, Instrument> = {
+  Saham: Instrument.SAHAM,
+  Crypto: Instrument.CRYPTO,
+  Forex: Instrument.FOREX,
+};
+
+const LEVEL_TO_UI: Record<CourseLevel, Level> = {
+  PEMULA: "Pemula",
+  MENENGAH: "Menengah",
+  MAHIR: "Mahir",
+};
+
+const LEVEL_FROM_UI: Record<Level, CourseLevel> = {
+  Pemula: CourseLevel.PEMULA,
+  Menengah: CourseLevel.MENENGAH,
+  Mahir: CourseLevel.MAHIR,
+};
+
+const TIER_TO_UI: Record<ChatRoomTier, ChatRoomTierLabel> = {
+  PEMULA: "Pemula",
+  MENENGAH: "Menengah",
+  MAHIR: "Mahir",
+  INTERNAL: "Internal",
+};
+
+const TIER_FROM_UI: Record<ChatRoomTierLabel, ChatRoomTier> = {
+  Pemula: ChatRoomTier.PEMULA,
+  Menengah: ChatRoomTier.MENENGAH,
+  Mahir: ChatRoomTier.MAHIR,
+  Internal: ChatRoomTier.INTERNAL,
+};
+
 export function instrumentToUi(value: Instrument): UiInstrument {
-  const map: Record<Instrument, UiInstrument> = {
-    SAHAM: "Saham",
-    CRYPTO: "Crypto",
-    FOREX: "Forex",
-  };
-  return map[value];
+  return INSTRUMENT_TO_UI[value];
 }
 
 export function instrumentFromUi(value: UiInstrument): Instrument {
-  const map: Record<UiInstrument, Instrument> = {
-    Saham: Instrument.SAHAM,
-    Crypto: Instrument.CRYPTO,
-    Forex: Instrument.FOREX,
-  };
-  return map[value];
+  return INSTRUMENT_FROM_UI[value];
 }
 
 export function levelToUi(value: CourseLevel): Level {
-  const map: Record<CourseLevel, Level> = {
-    PEMULA: "Pemula",
-    MENENGAH: "Menengah",
-    MAHIR: "Mahir",
-  };
-  return map[value];
+  return LEVEL_TO_UI[value];
 }
 
 export function levelFromUi(value: Level): CourseLevel {
-  const map: Record<Level, CourseLevel> = {
-    Pemula: CourseLevel.PEMULA,
-    Menengah: CourseLevel.MENENGAH,
-    Mahir: CourseLevel.MAHIR,
-  };
-  return map[value];
+  return LEVEL_FROM_UI[value];
 }
 
 export function tierToUi(value: ChatRoomTier): ChatRoomTierLabel {
-  const map: Record<ChatRoomTier, ChatRoomTierLabel> = {
-    PEMULA: "Pemula",
-    MENENGAH: "Menengah",
-    MAHIR: "Mahir",
-    INTERNAL: "Internal",
-  };
-  return map[value];
+  return TIER_TO_UI[value];
 }
 
 export function tierFromUi(value: ChatRoomTierLabel): ChatRoomTier {
-  const map: Record<ChatRoomTierLabel, ChatRoomTier> = {
-    Pemula: ChatRoomTier.PEMULA,
-    Menengah: ChatRoomTier.MENENGAH,
-    Mahir: ChatRoomTier.MAHIR,
-    Internal: ChatRoomTier.INTERNAL,
-  };
-  return map[value];
+  return TIER_FROM_UI[value];
 }

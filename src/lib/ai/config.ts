@@ -8,11 +8,7 @@ export const AI_ENABLED =
 
 export const AI_CONFIG = {
   gatewayUrl: process.env.AI_GATEWAY_URL ?? "",
-  routerModel: process.env.AI_MODEL_ROUTER ?? "gpt-4o-mini",
   agentModel: process.env.AI_MODEL_AGENT ?? "gpt-4o",
-  dailyTokenBudgetPerUser: Number(
-    process.env.AI_DAILY_TOKEN_BUDGET_PER_USER ?? "10000"
-  ),
   ragTopK: 3,
   maxContextTokens: 2500,
 } as const;

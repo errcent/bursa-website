@@ -16,8 +16,8 @@ const googlePlayUrl = resolveStoreUrl(process.env.NEXT_PUBLIC_GOOGLE_PLAY_URL);
 const hasLiveStoreLinks = Boolean(appStoreUrl && googlePlayUrl);
 
 const BADGE_WIDTH = "7.48rem";
-const appleBadgeClass = "h-10 w-[7.48rem] object-contain object-left";
-const googleBadgeClass = "h-10 w-[7.48rem] object-cover object-left";
+const appleBadgeClass = "h-10 object-contain object-left";
+const googleBadgeClass = "h-10 object-cover object-left";
 
 function StoreBadgeLink({
   href,
@@ -37,7 +37,7 @@ function StoreBadgeLink({
         ? { target: "_blank", rel: "noopener noreferrer" }
         : undefined)}
       aria-label={label}
-      className="inline-flex h-10 w-[7.48rem] items-center justify-start transition-opacity hover:opacity-90"
+      className="inline-flex h-10 items-center justify-start transition-opacity hover:opacity-90"
       style={{ width: BADGE_WIDTH }}
     >
       {children}

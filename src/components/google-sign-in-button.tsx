@@ -10,7 +10,6 @@ import { storeOAuthNext, buildOAuthCallbackUrl } from "@/lib/auth/oauth-redirect
 import { clearLogoutFlag } from "@/lib/auth/client";
 import { resolvePostAuthRedirect } from "@/lib/auth/redirect";
 import { Button } from "@/components/ui/button";
-import { useOAuthSync } from "@/hooks/use-oauth-sync";
 
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -121,28 +120,6 @@ export function GoogleSignInButton({ mode }: { mode: "login" | "register" }) {
         </Link>
         .
       </p>
-    </div>
-  );
-}
-
-/** Sync banner, use {@link useOAuthSync} + auth form spinner for full UX. */
-export function OAuthSessionSync() {
-  const { syncing, error } = useOAuthSync();
-
-  if (!syncing && !error) return null;
-
-  if (error) {
-    return (
-      <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-        {error}
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center justify-center gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-3 text-sm text-muted-foreground">
-      <Loader2 className="size-4 animate-spin" />
-      Menyelesaikan login Google...
     </div>
   );
 }

@@ -277,10 +277,6 @@ export function LabDirectionToggle({
   );
 }
 
-export function LabTabsScroll({ children }: { children: React.ReactNode }) {
-  return <div className="lab-tabs-scroll">{children}</div>;
-}
-
 export function LabPresetBar<T extends string>({
   presets,
   activeId,

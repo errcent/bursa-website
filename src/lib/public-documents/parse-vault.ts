@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import matter from "gray-matter";
 import type { DocumentPortal } from "@prisma/client";
 
 import type { ParsedVaultDocument } from "./types";
@@ -12,6 +11,19 @@ const VAULT_ROOT = path.join(
   WORKSPACE_ROOT,
   "Documentation/02 - Legal & Kepatuhan/05 - Halaman Publik Website"
 );
+
+/** Parse YAML-ish `key: value` frontmatter between `---` fences; return body. */
+function parseFrontmatter(raw: string): { data: Record<string, string>; content: string } {
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+  if (!match) return { data: {}, content: raw };
+
+  const data: Record<string, string> = {};
+  for (const line of match[1].split(/\r?\n/)) {
+    const kv = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (kv) data[kv[1]] = kv[2].trim();
+  }
+  return { data, content: match[2] };
+}
 
 function normalizePortal(value: string): DocumentPortal {
   const upper = value.toUpperCase();
@@ -29,10 +41,6 @@ async function resolveContentRoot(): Promise<string> {
   } catch {
     return VAULT_ROOT;
   }
-}
-
-export async function getContentRoot(): Promise<string> {
-  return resolveContentRoot();
 }
 
 export async function collectVaultMarkdownFiles(): Promise<string[]> {
@@ -61,7 +69,7 @@ export async function collectVaultMarkdownFiles(): Promise<string[]> {
 }
 
 export function parseVaultFile(filePath: string, raw: string, contentRoot: string): ParsedVaultDocument | null {
-  const { data, content } = matter(raw);
+  const { data, content } = parseFrontmatter(raw);
   const portalRaw = String(data.portal ?? "").trim();
   if (!portalRaw) return null;
 
