@@ -21,7 +21,6 @@ export default defineConfig({
     baseURL,
     locale: "id-ID",
     colorScheme: "dark",
-    reducedMotion: "reduce",
     screenshot: "only-on-failure",
     trace: "retain-on-failure",
     ignoreHTTPSErrors: true,
