@@ -9,7 +9,7 @@ function CatalogCardSkeleton({ compact = false }: { compact?: boolean }) {
           : "flex w-full flex-col overflow-hidden rounded-xl border border-border/60"
       }
     >
-      <Skeleton className="aspect-[16/10] w-full rounded-none" />
+      <Skeleton className="aspect-video w-full rounded-none" />
     </div>
   );
 }

@@ -353,7 +353,7 @@ export default function AdminMentorsPage() {
               <input
                 value={form.sessionPrice ?? ""}
                 onChange={(e) => setForm({ ...form, sessionPrice: e.target.value })}
-                placeholder="Rp750.000 / 45 menit"
+                placeholder="Contoh demo: Rp750.000 / 45 menit"
                 className="w-full rounded-lg border border-border bg-background px-3 py-2"
               />
             </label>

@@ -1,4 +1,5 @@
 import type { ThumbnailKind } from "./ai-prompt-builder";
+import { THUMBNAIL_PHOTOS_ENABLED } from "./constants";
 
 export const AI_THUMBNAIL_DIR = "/generated/thumbnails";
 
@@ -15,7 +16,8 @@ export function resolveAiThumbnailUrl(
   kind: ThumbnailKind,
   slug: string,
   explicitUrl?: string | null
-): string {
+): string | null {
+  if (!THUMBNAIL_PHOTOS_ENABLED) return null;
   const trimmed = explicitUrl?.trim();
   if (trimmed) return trimmed;
   return aiThumbnailStaticPath(kind, slug);

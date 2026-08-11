@@ -2221,7 +2221,7 @@
 }
 
 /**
- * AI course/playlist thumbnails — native 16:10 (1280×800).
+ * AI course/playlist thumbnails — native 16:9 (1280×720).
  * Unlayered (outside @layer) so these rules beat Tailwind preflight
  * `img { height: auto }`, which breaks object-fit and causes horizontal stretch.
  * The frame owns aspect-ratio; media absolutely fills the frame.
@@ -2231,7 +2231,7 @@
   isolation: isolate;
   overflow: hidden;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   min-width: 0;
   min-height: 0;
   background-color: var(--surface-2);

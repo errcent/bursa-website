@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -19,7 +19,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/components/auth-provider";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
+import { captureAnalyticsEvent } from "@/lib/analytics/posthog";
 import { buildLoginHref } from "@/lib/auth/redirect";
+import { SOFT_LAUNCH } from "@/lib/decision-os/soft-launch";
 import { formatRupiah } from "@/lib/mock-data";
 import type { Course, Mentor } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -48,11 +50,32 @@ export function CheckoutForm({
 
   const learnHref = `/belajar/${course.slug}/l1`;
 
+  useEffect(() => {
+    captureAnalyticsEvent("checkout_start", {
+      course_id: course.slug,
+      price_idr: course.price,
+    });
+  }, [course.slug, course.price]);
+
   async function handleSimulatePayment() {
     if (!acceptedDisclaimer || enrolled) return;
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    router.push(`/checkout/sukses?course=${course.slug}`);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 900));
+      captureAnalyticsEvent("checkout_paid", {
+        course_id: course.slug,
+        price_idr: course.price,
+        gmv_idr: course.price,
+        simulated: true,
+      });
+      router.push(`/checkout/sukses?course=${course.slug}`);
+    } catch {
+      captureAnalyticsEvent("checkout_fail", {
+        course_id: course.slug,
+        reason: "simulate_error",
+      });
+      setIsSubmitting(false);
+    }
   }
 
   if (authLoading || enrollmentLoading) {
@@ -198,7 +221,7 @@ export function CheckoutForm({
         </div>
         <div className="flex flex-col gap-4 p-5 sm:p-6">
           <div className="overflow-hidden rounded-xl border border-border/60 bg-surface/40">
-            <div className="relative aspect-[16/10] w-full overflow-hidden">
+            <div className="relative aspect-video w-full overflow-hidden">
               <CourseThumbnail
                 course={course}
                 fillSlot
@@ -225,6 +248,11 @@ export function CheckoutForm({
               <span className="text-muted-foreground">Harga kelas</span>
               <span className="tabular-nums">{formatRupiah(course.price)}</span>
             </div>
+            {!SOFT_LAUNCH.publicListLocked && (
+              <p className="text-xs text-muted-foreground">
+                {SOFT_LAUNCH.decisionOsNote}
+              </p>
+            )}
           </div>
 
           <Separator />

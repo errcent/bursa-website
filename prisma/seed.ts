@@ -26,6 +26,11 @@ import {
 } from "../src/lib/seed/preview-catalog";
 import type { Level } from "../src/lib/types";
 
+/**
+ * Seed prices/amounts come from mock-data.ts and are DEMO/SEED only —
+ * not a Decision OS calibrated market lock (publicListLocked=false).
+ */
+
 const prisma = new PrismaClient();
 
 const PASSWORD = "password123";

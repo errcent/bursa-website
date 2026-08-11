@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeftRight, ArrowUpRight, Bitcoin, LineChart } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { motion } from "motion/react";
 import { useSyncExternalStore } from "react";
 
@@ -13,7 +13,7 @@ import {
 } from "@/components/motion/hero-intro-timing";
 import { HeroRotatingTitle } from "@/components/motion/hero-rotating-title";
 import { HeroTyping } from "@/components/motion/hero-typing";
-import { Reveal, RevealText } from "@/components/motion/reveal";
+import { RevealText } from "@/components/motion/reveal";
 import {
   WORD_REVEAL_DURATION,
   WORD_REVEAL_STAGGER,
@@ -24,13 +24,7 @@ import { Button } from "@/components/ui/button";
 
 const HERO_HEADLINE_LINES = ["Pelajari trading", "nyaman & terstruktur"] as const;
 const HERO_SUBCOPY =
-  "Pilih kelas yang cocok. Materi runut terkurasi dari mentor terverifikasi.";
-
-const instruments = [
-  { name: "Saham", href: "/katalog", icon: LineChart },
-  { name: "Crypto", href: "/katalog", icon: Bitcoin },
-  { name: "Forex", href: "/katalog", icon: ArrowLeftRight },
-] as const;
+  "Pilih kelas yang cocok. Materi runut terkurasi lewat proses review mentor.";
 
 const HERO_HEADLINE_LINE_LIST = [...HERO_HEADLINE_LINES];
 
@@ -99,24 +93,6 @@ export function HomeHeroSection() {
               </Button>
             </div>
           </RevealText>
-
-          <Reveal delay={subcopyDelay + 0.55} className="mt-10 w-full sm:mt-14">
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-              {instruments.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="logo-strip-item inline-flex items-center gap-2"
-                  >
-                    <Icon className="size-4" strokeWidth={1.5} />
-                    {item.name}
-                  </Link>
-                );
-              })}
-            </div>
-          </Reveal>
         </div>
       </div>
 

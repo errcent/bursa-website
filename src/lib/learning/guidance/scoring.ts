@@ -388,7 +388,7 @@ export function scoreMentorForGuidance(
   }
 
   if (mentor.verified) {
-    buckets.push({ points: 8, text: "Mentor terverifikasi" });
+    buckets.push({ points: 8, text: "Mentor lolos kurasi" });
   }
 
   const score = buckets.reduce((sum, item) => sum + item.points, 0);

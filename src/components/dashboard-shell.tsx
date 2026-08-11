@@ -222,7 +222,7 @@ function DashboardBody() {
                             href={`/belajar/${course.slug}/${course.lastLessonId}`}
                             className="surface-card-hover flex min-w-0 flex-col gap-3 p-5 sm:flex-row sm:items-center"
                           >
-                            <div className="relative size-14 shrink-0 overflow-hidden rounded-xl">
+                            <div className="relative aspect-video w-20 shrink-0 overflow-hidden rounded-xl">
                               <CourseThumbnail
                                 course={{ slug: course.slug, thumbnailUrl: course.thumbnailUrl ?? undefined }}
                                 fillSlot
@@ -324,7 +324,7 @@ function DashboardBody() {
                             }
                             className="surface-card-hover flex h-full flex-col overflow-hidden rounded-xl"
                           >
-                            <div className="relative aspect-[16/10] w-full overflow-hidden">
+                            <div className="relative aspect-video w-full overflow-hidden">
                               <CourseThumbnail
                                 course={course}
                                 fillSlot

@@ -24,7 +24,6 @@ const STATIC_ROUTES = [
   "/dashboard",
   "/profil",
   "/pengaturan",
-  "/artikel",
   "/wave-lab",
   "/privasi",
   "/kepercayaan",

@@ -1,16 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Play } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
-import {
-  AI_THUMBNAIL_HEIGHT,
-  AI_THUMBNAIL_WIDTH,
-} from "@/lib/thumbnails/constants";
-import { resolveCourseThumbnailUrl, courseThumbnailFallbackApiPath } from "@/lib/courses/thumbnails";
 import type { Course, Mentor } from "@/lib/types";
 
 interface CourseDetailHeroProps {
@@ -26,30 +20,12 @@ export function CourseDetailHero({
 }: CourseDetailHeroProps) {
   const { enrolled } = useCourseEnrollment(course.slug);
   const learnHref = `/belajar/${course.slug}/l1`;
-  const posterUrl = resolveCourseThumbnailUrl(course);
-  const [posterSrc, setPosterSrc] = useState(posterUrl);
   const ctaHref = enrolled ? learnHref : previewHref;
   const ctaLabel = enrolled ? "Lanjut Belajar" : "Mulai Preview";
 
   return (
     <section className="relative w-full overflow-hidden bg-black">
-      <div className="relative mx-auto w-full max-w-[1800px] overflow-hidden max-sm:min-h-[34rem] max-sm:aspect-auto sm:aspect-[16/10] sm:max-h-[78vh]">
-        {posterSrc && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={posterSrc}
-            alt=""
-            aria-hidden
-            width={AI_THUMBNAIL_WIDTH}
-            height={AI_THUMBNAIL_HEIGHT}
-            className="absolute inset-0 h-full w-full object-cover object-[center_20%]"
-            onError={() => {
-              const fallback = courseThumbnailFallbackApiPath(course.slug);
-              if (posterSrc !== fallback) setPosterSrc(fallback);
-            }}
-          />
-        )}
-
+      <div className="relative mx-auto w-full max-w-[1800px] overflow-hidden max-sm:min-h-[34rem] max-sm:aspect-auto sm:aspect-video sm:max-h-[78vh]">
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent max-sm:via-black/35"
           aria-hidden

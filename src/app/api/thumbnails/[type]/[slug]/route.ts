@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { THUMBNAIL_PHOTOS_ENABLED } from "@/lib/thumbnails/constants";
 import { getThumbnailManifestEntry } from "@/lib/thumbnails/ai-manifest";
 import type { ThumbnailKind } from "@/lib/thumbnails/ai-prompt-builder";
 
@@ -10,7 +11,7 @@ const VALID_KINDS = new Set<ThumbnailKind>(["course", "playlist"]);
 function pollinationsUrl(prompt: string, seed: number): string {
   const params = new URLSearchParams({
     width: "1280",
-    height: "800",
+    height: "720",
     nologo: "true",
     seed: String(seed),
     model: "flux",
@@ -23,6 +24,10 @@ type RouteContext = {
 };
 
 export async function GET(_request: Request, context: RouteContext) {
+  if (!THUMBNAIL_PHOTOS_ENABLED) {
+    return NextResponse.json({ error: "Thumbnail photos disabled" }, { status: 404 });
+  }
+
   const { type, slug } = await context.params;
 
   if (!VALID_KINDS.has(type as ThumbnailKind)) {

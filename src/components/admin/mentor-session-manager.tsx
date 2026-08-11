@@ -201,7 +201,7 @@ export function MentorSessionManager({ mentorId, mentorName }: Props) {
               <input
                 value={sessionPrice}
                 onChange={(e) => setSessionPrice(e.target.value)}
-                placeholder="Rp750.000 / 45 menit"
+                placeholder="Contoh demo: Rp750.000 / 45 menit"
                 className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
               />
               <Button size="sm" variant="outline" onClick={saveSessionPrice}>

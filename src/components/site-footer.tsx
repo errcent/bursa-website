@@ -283,8 +283,8 @@ export function SiteFooter() {
         <div className="flex flex-col gap-4">
           <BrandLogo variant="product" slot="productFooter" decorative className="self-start" />
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-            Platform edukasi trading untuk saham, crypto, dan forex dengan katalog mentor, kelas,
-            dan proses belajar yang terstruktur.
+            Platform edukasi trading berbagai aset dengan materi runut terkurasi dari mentor
+            terverifikasi.
           </p>
           <SocialLinkButtons />
           <AppDownloadBadges className="pt-1" />

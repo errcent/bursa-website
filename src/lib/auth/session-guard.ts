@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 /**
  * Anti-account-sharing controls (QC-20260719-38).
  *
- * LOCKED constraints untouched: this does NOT change pricing or the lifetime
+ * Working model untouched: this does NOT change pricing or the lifetime
  * one-time-access model. It caps how many distinct devices can stream a single
  * account concurrently, records lightweight device/IP fingerprints for anomaly
  * detection, and exposes a per-user watermark for the player overlay.

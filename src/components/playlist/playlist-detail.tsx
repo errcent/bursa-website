@@ -137,7 +137,7 @@ export function PlaylistDetailView({ slug }: { slug: string }) {
 
   return (
     <div className="space-y-8">
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border/60">
+      <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border/60">
         <PlaylistThumbnail playlist={playlist} fillSlot className="absolute inset-0 rounded-2xl" />
         <div
           aria-hidden

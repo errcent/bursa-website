@@ -43,7 +43,7 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
               Kelas &amp; mentor trading
             </h1>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-              Kurikulum terstruktur dari mentor terverifikasi.
+              Kurikulum terstruktur dari mentor yang melalui proses kurasi.
             </p>
           </header>
           <Suspense fallback={<CatalogBrowserSkeleton />}>

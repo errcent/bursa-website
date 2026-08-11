@@ -2,14 +2,14 @@ export const aboutHero = {
   eyebrow: "Tentang Kami",
   title: "Belajar dari yang terbukti, bukan yang viral",
   description:
-    "Bursa adalah platform edukasi trading untuk saham, crypto, dan forex, dengan mentor terverifikasi, kurikulum terstruktur, dan komunitas yang akuntabel. Bukan broker, bukan penyedia sinyal.",
+    "Bursa adalah platform edukasi trading untuk saham, crypto, dan forex, dengan proses kurasi mentor, kurikulum terstruktur, dan komunitas yang akuntabel. Bukan broker, bukan penyedia sinyal.",
 };
 
 export const aboutIntro = {
   title: "Apa itu Bursa?",
   paragraphs: [
-    "Bursa adalah platform edukasi trading di Indonesia yang menghadirkan banyak mentor dan instruktur terverifikasi dalam satu ekosistem belajar. Kami mengumpulkan kelas berkualitas tinggi untuk saham, crypto, dan forex, dengan video berurutan, progress tracking, dan ruang komunitas per mentor.",
-    "Berbeda dari konten gratis yang tersebar atau kelas dari satu figur tanpa verifikasi independen, Bursa dibangun sebagai infrastruktur kepercayaan: setiap mentor dan kurikulum ditinjau tim sebelum tayang. Kamu bayar per kelas tanpa langganan bulanan, dan platform tidak mengelola dana tradingmu.",
+    "Bursa adalah platform edukasi trading di Indonesia yang menghadirkan banyak mentor dan instruktur dalam satu ekosistem belajar — dengan jalur kurasi kredensial yang sedang dibangun menuju verifikasi penuh. Kami mengumpulkan kelas berkualitas tinggi untuk saham, crypto, dan forex, dengan video berurutan, progress tracking, dan ruang komunitas per mentor.",
+    "Berbeda dari konten gratis yang tersebar atau kelas dari satu figur tanpa review independen, Bursa dibangun sebagai infrastruktur kepercayaan: setiap mentor dan kurikulum ditinjau tim sebelum tayang. Kamu bayar per kelas tanpa langganan bulanan, dan platform tidak mengelola dana tradingmu.",
   ],
 };
 
@@ -17,21 +17,21 @@ export const aboutMissionVision = {
   mission: {
     title: "Misi",
     description:
-      "Memberikan tempat tepercaya bagi masyarakat Indonesia yang serius ingin menguasai skill trading dan investasi, dengan standar kurikulum, produksi konten, dan verifikasi mentor yang dapat dipertanggungjawabkan.",
+      "Memberikan tempat tepercaya bagi masyarakat Indonesia yang serius ingin menguasai skill trading dan investasi, dengan standar kurikulum, produksi konten, dan proses kurasi mentor yang dapat dipertanggungjawabkan.",
   },
   vision: {
     title: "Visi",
     description:
-      "Menjadi platform edukasi trading premium di Indonesia yang menggabungkan kredibilitas terverifikasi, produksi berkualitas, struktur belajar berjenjang, dan komunitas akuntabel dalam satu ekosistem.",
+      "Menjadi platform edukasi trading premium di Indonesia yang menggabungkan kredibilitas lewat kurasi, produksi berkualitas, struktur belajar berjenjang, dan komunitas akuntabel dalam satu ekosistem.",
   },
 };
 
 export const aboutWhyUse = [
   {
     icon: "shield" as const,
-    title: "Mentor terverifikasi",
+    title: "Proses kurasi mentor",
     description:
-      "Setiap instruktur melalui proses kurasi, kredensial, kurikulum, dan aspek kepatuhan diperiksa sebelum kelas tayang.",
+      "Setiap instruktur melalui proses kurasi: kredensial, kurikulum, dan aspek kepatuhan diperiksa sebelum kelas tayang. Verifikasi penuh menyusul seiring supply registry.",
   },
   {
     icon: "layers" as const,

@@ -98,14 +98,14 @@ export const helpFaqs: HelpFaq[] = [
     category: "Mentor",
     question: "Bagaimana cara mendaftar sebagai mentor?",
     answer:
-      "Kunjungi halaman Jadi Mentor, baca persyaratan, lalu isi formulir pendaftaran. Tim kurasi meninjau dalam 3–5 hari kerja. Profil terverifikasi bisa mempublikasikan kelas dan ruang komunitas.",
+      "Kunjungi halaman Jadi Mentor, baca persyaratan, lalu isi formulir pendaftaran. Tim kurasi meninjau dalam 3–5 hari kerja. Setelah lolos kurasi, profil bisa mempublikasikan kelas dan ruang komunitas.",
   },
   {
     id: "mentor-komisi",
     category: "Mentor",
     question: "Berapa komisi platform untuk mentor?",
     answer:
-      "Komisi platform Bursa adalah 25% dari setiap transaksi kelas. Sisanya masuk ke payout mentor sesuai jadwal yang dijelaskan di dashboard mentor. Rincian tampil sebelum murid konfirmasi pembayaran.",
+      "Working model (indikatif): komisi platform ~25% dari setiap transaksi kelas — belum dikunci Decision OS. Sisanya masuk ke payout mentor sesuai jadwal di dashboard. Rincian final tampil sebelum murid konfirmasi pembayaran.",
   },
   {
     id: "mentor-konten",

@@ -49,7 +49,7 @@ export function PlaylistCard({
         className
       )}
     >
-      <div className="relative aspect-[16/10] w-full min-h-0 overflow-hidden rounded-xl bg-surface-2">
+      <div className="relative aspect-video w-full min-h-0 overflow-hidden rounded-xl bg-surface-2">
         <PlaylistThumbnail
           playlist={playlist}
           withScrim={!isCatalog}

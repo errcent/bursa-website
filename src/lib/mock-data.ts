@@ -1,12 +1,13 @@
 import type { Course, Mentor, Review } from "./types";
-import { defaultCourseThumbnailPath } from "./courses/thumbnails";
 
 /**
- * Seluruh data di file ini adalah DATA DUMMY untuk kebutuhan prototype visual.
- * Nama mentor, angka performa, dan testimoni bersifat fiktif, belum ada
- * mentor/emiten sungguhan yang diverifikasi. Lihat dokumentasi produk di
- * folder "01 - Riset & Strategi" dan "04 - Konten & Instruktur" untuk kriteria
- * kurasi mentor sesungguhnya sebelum data ini diganti data real.
+ * Seluruh data di file ini adalah DATA DUMMY / SEED untuk kebutuhan prototype visual.
+ * Nama mentor, angka performa, harga course/sesi, dan testimoni bersifat fiktif —
+ * BUKAN Decision OS lock / calibrated market price. Belum ada mentor/emiten sungguhan
+ * yang diverifikasi di supply registry. Lihat dokumentasi produk di folder
+ * "01 - Riset & Strategi" dan "04 - Konten & Instruktur" untuk kriteria kurasi mentor
+ * sesungguhnya sebelum data ini diganti data real. Authority harga: Decision OS
+ * (research.decision_os) — publicListLocked=false.
  */
 
 export const mentors: Mentor[] = [
@@ -15,8 +16,6 @@ export const mentors: Mentor[] = [
     name: "Andra Wicaksono, CFA",
     title: "Value Investing & Analisis Fundamental",
     initials: "AW",
-    avatarUrl: "/mentors/andra-wicaksono.svg",
-    cutoutUrl: "/mentors/andra-wicaksono.svg",
     instruments: ["Saham"],
     verified: true,
     licenseLabel: "Terdaftar WPPE-OJK No. 09231",
@@ -36,8 +35,6 @@ export const mentors: Mentor[] = [
     name: "Kirana Ayu",
     title: "Analisis On-Chain & Pasar Crypto",
     initials: "KA",
-    avatarUrl: "/mentors/kirana-ayu.svg",
-    cutoutUrl: "/mentors/kirana-ayu.svg",
     instruments: ["Crypto"],
     verified: true,
     licenseLabel: "Sertifikasi Kompetensi Aset Kripto, Bappebti",
@@ -57,8 +54,6 @@ export const mentors: Mentor[] = [
     name: "Fajar Nugroho",
     title: "Analisis Makro Forex & Pasar Global",
     initials: "FN",
-    avatarUrl: "/mentors/fajar-nugroho.svg",
-    cutoutUrl: "/mentors/fajar-nugroho.svg",
     instruments: ["Forex"],
     verified: true,
     licenseLabel: "Eks Institutional Trading Desk 12 Tahun",
@@ -77,8 +72,6 @@ export const mentors: Mentor[] = [
     name: "Melati Putri",
     title: "Swing Trading & Analisis Teknikal",
     initials: "MP",
-    avatarUrl: "/mentors/melati-putri.svg",
-    cutoutUrl: "/mentors/melati-putri.svg",
     instruments: ["Saham"],
     verified: true,
     licenseLabel: "Terdaftar WPPE-OJK No. 11487",
@@ -98,8 +91,6 @@ export const mentors: Mentor[] = [
     name: "Bimo Satrio",
     title: "Manajemen Risiko & Trading Crypto",
     initials: "BS",
-    avatarUrl: "/mentors/bimo-satrio.svg",
-    cutoutUrl: "/mentors/bimo-satrio.svg",
     instruments: ["Crypto"],
     verified: false,
     yearsExperience: 5,
@@ -117,8 +108,6 @@ export const mentors: Mentor[] = [
     name: "Rangga Dewantara",
     title: "Valuasi Saham & Analisis Fundamental Lanjutan",
     initials: "RD",
-    avatarUrl: "/mentors/rangga-dewantara.svg",
-    cutoutUrl: "/mentors/rangga-dewantara.svg",
     instruments: ["Saham"],
     verified: true,
     licenseLabel: "Terdaftar WPPE-OJK No. 07765",
@@ -217,7 +206,6 @@ export const courses: Course[] = [
     mentorSlug: "andra-wicaksono",
     instrument: "Saham",
     level: "Pemula",
-    thumbnailUrl: defaultCourseThumbnailPath("fundamental-saham-untuk-pemula"),
     price: 799000,
     rating: 4.9,
     studentsCount: 3240,
@@ -270,7 +258,6 @@ export const courses: Course[] = [
     mentorSlug: "rangga-dewantara",
     instrument: "Saham",
     level: "Menengah",
-    thumbnailUrl: defaultCourseThumbnailPath("membaca-laporan-keuangan-lanjutan"),
     price: 1450000,
     rating: 4.9,
     studentsCount: 1870,
@@ -314,7 +301,6 @@ export const courses: Course[] = [
     mentorSlug: "melati-putri",
     instrument: "Saham",
     level: "Pemula",
-    thumbnailUrl: defaultCourseThumbnailPath("swing-trading-teknikal-dasar"),
     price: 699000,
     rating: 4.8,
     studentsCount: 4110,
@@ -359,7 +345,6 @@ export const courses: Course[] = [
     mentorSlug: "kirana-ayu",
     instrument: "Crypto",
     level: "Menengah",
-    thumbnailUrl: defaultCourseThumbnailPath("crypto-on-chain-dasar"),
     price: 950000,
     rating: 4.8,
     studentsCount: 2650,
@@ -395,7 +380,6 @@ export const courses: Course[] = [
     mentorSlug: "bimo-satrio",
     instrument: "Crypto",
     level: "Pemula",
-    thumbnailUrl: defaultCourseThumbnailPath("manajemen-risiko-crypto-pemula"),
     price: 499000,
     rating: 4.6,
     studentsCount: 980,
@@ -431,7 +415,6 @@ export const courses: Course[] = [
     mentorSlug: "fajar-nugroho",
     instrument: "Forex",
     level: "Pemula",
-    thumbnailUrl: defaultCourseThumbnailPath("forex-makro-dasar"),
     price: 899000,
     rating: 4.7,
     studentsCount: 1560,
@@ -475,7 +458,6 @@ export const courses: Course[] = [
     mentorSlug: "andra-wicaksono",
     instrument: "Saham",
     level: "Menengah",
-    thumbnailUrl: defaultCourseThumbnailPath("screening-saham-dividen-konsisten"),
     price: 1099000,
     rating: 4.8,
     studentsCount: 1420,
@@ -512,7 +494,6 @@ export const courses: Course[] = [
     mentorSlug: "melati-putri",
     instrument: "Saham",
     level: "Menengah",
-    thumbnailUrl: defaultCourseThumbnailPath("price-action-swing-saham-menengah"),
     price: 899000,
     rating: 4.8,
     studentsCount: 1780,
@@ -555,7 +536,6 @@ export const courses: Course[] = [
     mentorSlug: "kirana-ayu",
     instrument: "Crypto",
     level: "Menengah",
-    thumbnailUrl: defaultCourseThumbnailPath("siklus-bitcoin-halving-dan-makro-kripto"),
     price: 1150000,
     rating: 4.8,
     studentsCount: 1340,
@@ -592,7 +572,6 @@ export const courses: Course[] = [
     mentorSlug: "dian-pratiwi",
     instrument: "Saham",
     level: "Pemula",
-    thumbnailUrl: defaultCourseThumbnailPath("scalping-saham-intraday-jam-perdagangan"),
     price: 749000,
     rating: 4.7,
     studentsCount: 2210,
@@ -635,7 +614,6 @@ export const courses: Course[] = [
     mentorSlug: "dian-pratiwi",
     instrument: "Saham",
     level: "Menengah",
-    thumbnailUrl: defaultCourseThumbnailPath("eksekusi-scalping-order-book-idx"),
     price: 999000,
     rating: 4.7,
     studentsCount: 980,
@@ -671,7 +649,6 @@ export const courses: Course[] = [
     mentorSlug: "hendra-wijaya",
     instrument: "Forex",
     level: "Pemula",
-    thumbnailUrl: defaultCourseThumbnailPath("price-action-forex-tanpa-indikator"),
     price: 849000,
     rating: 4.8,
     studentsCount: 1670,
@@ -714,7 +691,6 @@ export const courses: Course[] = [
     mentorSlug: "hendra-wijaya",
     instrument: "Forex",
     level: "Menengah",
-    thumbnailUrl: defaultCourseThumbnailPath("scalping-forex-sesi-london-ny"),
     price: 1099000,
     rating: 4.8,
     studentsCount: 1120,
@@ -751,7 +727,6 @@ export const courses: Course[] = [
     mentorSlug: "salsa-maharani",
     instrument: "Crypto",
     level: "Pemula",
-    thumbnailUrl: defaultCourseThumbnailPath("defi-dan-tokenomics-pemula"),
     price: 599000,
     rating: 4.7,
     studentsCount: 890,
@@ -787,7 +762,6 @@ export const courses: Course[] = [
     mentorSlug: "salsa-maharani",
     instrument: "Crypto",
     level: "Menengah",
-    thumbnailUrl: defaultCourseThumbnailPath("riset-narrative-kripto-menengah"),
     price: 950000,
     rating: 4.7,
     studentsCount: 720,
@@ -830,7 +804,6 @@ export const courses: Course[] = [
     mentorSlug: "arif-kurniawan",
     instrument: "Saham",
     level: "Pemula",
-    thumbnailUrl: defaultCourseThumbnailPath("psikologi-trading-anti-fomo"),
     price: 549000,
     rating: 4.9,
     studentsCount: 3100,
@@ -873,7 +846,6 @@ export const courses: Course[] = [
     mentorSlug: "arif-kurniawan",
     instrument: "Forex",
     level: "Menengah",
-    thumbnailUrl: defaultCourseThumbnailPath("blueprint-manajemen-risiko-trader"),
     price: 799000,
     rating: 4.9,
     studentsCount: 1890,

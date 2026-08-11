@@ -141,7 +141,7 @@ export function CourseCarousel({
             <p className="eyebrow-tight mb-4">Pilihan Kelas</p>
             <h2 className="section-display-title text-foreground">Kelas Populer</h2>
             <p className="section-copy mt-3 max-w-lg text-base">
-              Kurikulum terkurasi dari mentor terverifikasi
+              Kurikulum terkurasi dari mentor yang melalui proses review
               {studentStat && (
                 <>
                   {" "}

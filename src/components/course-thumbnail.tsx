@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ThumbnailPlaceholder } from "@/components/thumbnail-placeholder";
 import {
   courseThumbnailFallbackApiPath,
   resolveCourseThumbnailUrl,
@@ -20,10 +21,11 @@ import { cn } from "@/lib/utils";
 type AiThumbnailImageProps = {
   kind: "course" | "playlist";
   slug: string;
-  primarySrc: string;
+  primarySrc: string | null;
   alt: string;
   className?: string;
   fallbackApiPath: string;
+  placeholderLabel?: string;
 };
 
 export function AiThumbnailImage({
@@ -32,8 +34,13 @@ export function AiThumbnailImage({
   alt,
   className,
   fallbackApiPath,
+  placeholderLabel,
 }: AiThumbnailImageProps) {
-  const [src, setSrc] = useState(primarySrc);
+  const [src, setSrc] = useState<string | null>(primarySrc);
+
+  if (!src) {
+    return <ThumbnailPlaceholder label={placeholderLabel} />;
+  }
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -48,6 +55,8 @@ export function AiThumbnailImage({
       onError={() => {
         if (src !== fallbackApiPath) {
           setSrc(fallbackApiPath);
+        } else {
+          setSrc(null);
         }
       }}
       data-thumbnail-slug={slug}
@@ -61,9 +70,9 @@ type CourseThumbnailProps = {
   withScrim?: boolean;
   alt?: string;
   progressPercent?: number;
-  /** cover when container matches native 16:10 (default); contain letterboxes in fixed slots */
+  /** cover when container matches native 16:9 (default); contain letterboxes in fixed slots */
   objectFit?: ThumbnailObjectFit;
-  /** Fill a fixed-size parent (e.g. square dashboard icon) without distorting media */
+  /** Fill a fixed-size parent without distorting media */
   fillSlot?: boolean;
 };
 

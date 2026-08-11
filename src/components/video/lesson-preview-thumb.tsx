@@ -1,10 +1,9 @@
 "use client";
 
 import { Lock, PlayCircle, Sparkles } from "lucide-react";
-import Image from "next/image";
 
+import { ThumbnailPlaceholder } from "@/components/thumbnail-placeholder";
 import { cn } from "@/lib/utils";
-import { DEMO_VIDEO_POSTER } from "@/lib/video/demo";
 
 const sizeClasses = {
   sm: "aspect-video w-20 shrink-0",
@@ -56,13 +55,7 @@ export function LessonPreviewThumb({
       )}
       aria-hidden
     >
-      <Image
-        src={DEMO_VIDEO_POSTER}
-        alt=""
-        fill
-        sizes="176px"
-        className="pointer-events-none object-cover object-center"
-      />
+      <ThumbnailPlaceholder />
 
       {isLocked ? (
         <>

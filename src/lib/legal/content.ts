@@ -55,7 +55,7 @@ export const termsOfService: LegalDocument = {
         "Bursa dapat menambah, mengubah, menangguhkan, atau menghentikan fitur tertentu sewaktu-waktu untuk pengembangan produk atau kepatuhan regulasi.",
       ],
       bullets: [
-        "Katalog kelas dan profil Mentor terverifikasi",
+        "Katalog kelas dan profil Mentor yang melalui proses kurasi",
         "Ruang belajar terstruktur dengan video terproteksi dan pelacakan progres",
         "Fitur pendukung belajar: catatan pribadi (Notes), watchlist, dan bookmark",
         "Ruang komunitas diskusi serta sinyal/analisis internal (untuk anggota ruang tertentu)",

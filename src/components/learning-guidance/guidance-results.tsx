@@ -130,7 +130,7 @@ export function GuidanceResults({
               Mentor yang cocok
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Mentor terverifikasi untuk instrumen pilihanmu.
+              Mentor yang dikurasi untuk instrumen pilihanmu.
             </p>
           </div>
           <Link href="/katalog?view=instruktur" className="link-accent shrink-0 text-sm">
@@ -139,7 +139,7 @@ export function GuidanceResults({
         </Reveal>
         {result.mentors.length === 0 ? (
           <div className="surface-card p-6 text-sm text-muted-foreground">
-            Belum ada mentor terverifikasi untuk instrumen ini.
+            Belum ada mentor dikurasi untuk instrumen ini.
           </div>
         ) : (
           <>

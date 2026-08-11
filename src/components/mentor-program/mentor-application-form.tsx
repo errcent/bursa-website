@@ -26,7 +26,7 @@ const formatIdr = (value: number) =>
 /**
  * Non-binding price guidance surfaced in the form (QC-20260719-48/44). Spans Pemula→Mahir per
  * selected instrument so a new mentor sees a reference band. Pricing stays mentor-set, there is
- * NO floor and NO enforcement (LOCKED).
+ * NO floor and NO enforcement (Working model — not Decision OS lock).
  */
 function priceGuidanceFor(instrument: Instrument) {
   const low = getPriceGuidance(instrument, "Pemula");

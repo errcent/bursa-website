@@ -12,10 +12,10 @@ export function defaultCourseThumbnailPath(slug: string): string {
 export function resolveCourseThumbnailUrl(course: {
   slug: string;
   thumbnailUrl?: string | null;
-}): string {
+}): string | null {
   const trimmed = course.thumbnailUrl?.trim();
   if (trimmed && !trimmed.endsWith(".svg")) {
-    return trimmed;
+    return resolveAiThumbnailUrl("course", course.slug, trimmed);
   }
   return resolveAiThumbnailUrl("course", course.slug, trimmed);
 }

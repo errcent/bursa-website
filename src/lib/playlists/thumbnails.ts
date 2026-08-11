@@ -11,7 +11,7 @@ export function defaultPlaylistThumbnailPath(slug: string): string {
 export function resolvePlaylistThumbnailUrl(playlist: {
   slug: string;
   thumbnailUrl?: string | null;
-}): string {
+}): string | null {
   return resolveAiThumbnailUrl("playlist", playlist.slug, playlist.thumbnailUrl);
 }
 

@@ -37,8 +37,8 @@ export function MentorCard({
     >
       <div
         className={cn(
-          "relative w-full overflow-hidden rounded-xl",
-          isDiscover ? "aspect-[16/10] rounded-2xl" : "aspect-[3/4]"
+          "relative w-full overflow-hidden aspect-video",
+          isDiscover ? "rounded-2xl" : "rounded-xl"
         )}
       >
         <MentorPhoto mentor={mentor} className="absolute inset-0" />
@@ -56,7 +56,7 @@ export function MentorCard({
               "absolute inline-flex items-center justify-center rounded-full bg-accent/20 text-accent backdrop-blur-sm",
               isCompact ? "right-1.5 top-1.5 size-4" : "right-2 top-2 size-5"
             )}
-            title="Mentor terverifikasi"
+            title="Mentor lolos kurasi (proses verifikasi)"
           >
             <BadgeCheck className={isCompact ? "size-2.5" : "size-3"} />
           </span>

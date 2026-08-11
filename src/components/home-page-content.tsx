@@ -5,8 +5,11 @@ import { HomeFaqSection } from "@/components/home/home-faq-section";
 import { HomeHeroSection } from "@/components/home/home-hero-section";
 import { HomeProblemSection } from "@/components/home/home-problem-section";
 import { HomeSolutionSection } from "@/components/home/home-solution-section";
+import { LandingViewTracker } from "@/components/analytics/landing-view-tracker";
 import { SiteFooter } from "@/components/site-footer";
+import { capSoftLaunchCourses } from "@/lib/decision-os/soft-launch";
 import type { Course, Mentor } from "@/lib/types";
+import { Suspense } from "react";
 
 export function HomePageContent({
   courses,
@@ -19,14 +22,17 @@ export function HomePageContent({
   curriculumCourse?: Course | null;
   curriculumMentor?: Mentor | null;
 }) {
-  const featuredCourses = [...courses]
-    .sort((a, b) => b.studentsCount - a.studentsCount)
-    .slice(0, 6);
+  const featuredCourses = capSoftLaunchCourses(
+    [...courses].sort((a, b) => b.studentsCount - a.studentsCount)
+  );
 
   const totalStudents = courses.reduce((sum, course) => sum + course.studentsCount, 0);
 
   return (
     <>
+      <Suspense fallback={null}>
+        <LandingViewTracker page="/" />
+      </Suspense>
       <main className="landing-page has-mobile-sticky-cta flex-1 overflow-x-clip">
         <HomeHeroSection />
 

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import { articles } from "@/lib/articles/content";
 import { getCatalogData } from "@/lib/catalog/server";
 import { searchAll } from "@/lib/search/engine";
 import { DEFAULT_OG, SITE_URL } from "@/lib/site-metadata";
@@ -12,13 +11,13 @@ export async function buildSearchMetadata(query?: string): Promise<Metadata> {
     return {
       title: "Katalog Kelas & Mentor Trading",
       description:
-        "Jelajahi katalog kelas trading saham, crypto, dan forex dari mentor terverifikasi. Cari berdasarkan instrumen, level, atau nama mentor.",
+        "Jelajahi katalog kelas trading saham, crypto, dan forex dari mentor yang melalui proses kurasi. Cari berdasarkan instrumen, level, atau nama mentor.",
       keywords: [
         "kelas trading Indonesia",
         "belajar saham",
         "kursus crypto",
         "edukasi forex",
-        "mentor trading terverifikasi",
+        "mentor trading kurasi",
         "fundamental saham",
         "analisis teknikal",
       ],
@@ -43,7 +42,7 @@ export async function buildSearchMetadata(query?: string): Promise<Metadata> {
   const mentorCount = results.filter((r) => r.type === "mentor").length;
 
   const title = `Hasil "${trimmed}", ${courseCount} kelas, ${mentorCount} mentor`;
-  const description = `Temukan ${courseCount} kelas dan ${mentorCount} mentor terkait "${trimmed}" di Bursa. Edukasi trading saham, crypto, dan forex dari instruktur terverifikasi.`;
+  const description = `Temukan ${courseCount} kelas dan ${mentorCount} mentor terkait "${trimmed}" di Bursa. Edukasi trading saham, crypto, dan forex dari instruktur yang dikurasi.`;
 
   return {
     title,
@@ -118,7 +117,7 @@ export function buildOrganizationJsonLd() {
     "@type": "Organization",
     name: "Bursa",
     url: SITE_URL,
-    description: "Platform edukasi trading Indonesia dengan mentor terverifikasi.",
+    description: "Platform edukasi trading Indonesia dengan proses kurasi mentor.",
     sameAs: [],
   };
 }
@@ -131,7 +130,6 @@ export async function getSitemapEntries() {
     { url: "/katalog", priority: 0.9, changeFrequency: "daily" as const },
     { url: "/jadi-mentor", priority: 0.7, changeFrequency: "monthly" as const },
     { url: "/waitlist", priority: 0.85, changeFrequency: "weekly" as const },
-    { url: "/artikel", priority: 0.6, changeFrequency: "weekly" as const },
     { url: "/bantuan", priority: 0.5, changeFrequency: "monthly" as const },
     { url: "/syarat-dan-ketentuan", priority: 0.3, changeFrequency: "monthly" as const },
     { url: "/privasi", priority: 0.4, changeFrequency: "monthly" as const },
@@ -162,12 +160,6 @@ export async function getSitemapEntries() {
     changeFrequency: "weekly" as const,
   }));
 
-  const articlePages = articles.map((a) => ({
-    url: `/artikel/${a.slug}`,
-    priority: 0.5,
-    changeFrequency: "monthly" as const,
-  }));
-
   const searchPages = [
     "fundamental saham",
     "swing trading",
@@ -181,5 +173,5 @@ export async function getSitemapEntries() {
     changeFrequency: "weekly" as const,
   }));
 
-  return [...staticPages, ...coursePages, ...mentorPages, ...articlePages, ...searchPages];
+  return [...staticPages, ...coursePages, ...mentorPages, ...searchPages];
 }

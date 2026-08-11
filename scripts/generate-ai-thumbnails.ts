@@ -12,7 +12,7 @@ import { THUMBNAIL_MANIFEST } from "../src/lib/thumbnails/ai-manifest";
 function pollinationsUrl(prompt: string, seed: number): string {
   const params = new URLSearchParams({
     width: "1280",
-    height: "800",
+    height: "720",
     nologo: "true",
     seed: String(seed),
     model: "flux",

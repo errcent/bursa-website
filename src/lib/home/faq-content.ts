@@ -9,7 +9,7 @@ export const homeFaqs: HomeFaq[] = [
     id: "uniqueness",
     question: "Apa yang membuat Bursa berbeda dari platform edukasi trading lain?",
     answer:
-      "Edukasi terstruktur dengan mentor terverifikasi, bukan konten random atau sinyal tanpa konteks. Bayar per kelas, tanpa langganan bulanan.",
+      "Edukasi terstruktur dengan mentor yang melalui proses kurasi, bukan konten random atau sinyal tanpa konteks. Bayar per kelas, tanpa langganan bulanan.",
   },
   {
     id: "not-broker",

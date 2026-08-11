@@ -11,7 +11,6 @@ import {
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-import { defaultCourseThumbnailPath } from "@/lib/courses/thumbnails";
 import { instrumentFromUi, levelFromUi } from "@/lib/catalog/enums";
 import { courses, mentors } from "@/lib/mock-data";
 import type { Instrument as MockInstrument, Level } from "@/lib/types";
@@ -236,7 +235,7 @@ export async function upsertCoursesFromMockData(
       studentsCount: course.studentsCount,
       durationHours: course.durationHours,
       shortDescription: course.shortDescription,
-      thumbnailUrl: course.thumbnailUrl ?? defaultCourseThumbnailPath(course.slug),
+      thumbnailUrl: course.thumbnailUrl ?? null,
       outcomes: course.outcomes,
       isPublished: true,
     };

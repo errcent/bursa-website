@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 const perks = [
-  "Akses lebih awal ke katalog kelas & mentor terverifikasi",
+  "Akses lebih awal ke katalog kelas & mentor yang dikurasi",
   "Info pertama saat pendaftaran dibuka",
   "Tanpa spam, kami hanya kirim kabar penting",
 ];

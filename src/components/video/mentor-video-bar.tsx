@@ -4,12 +4,13 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { resolveMentorAvatarUrl } from "@/lib/mentors/avatar";
 import type { Mentor } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export type MentorVideoBarMentor = Pick<
   Mentor,
-  "slug" | "name" | "initials" | "avatarUrl"
+  "slug" | "name" | "initials" | "avatarUrl" | "cutoutUrl"
 > &
   Partial<Pick<Mentor, "title">>;
 
@@ -19,6 +20,8 @@ interface MentorVideoBarProps {
 }
 
 export function MentorVideoBar({ mentor, className }: MentorVideoBarProps) {
+  const avatarSrc = resolveMentorAvatarUrl(mentor);
+
   return (
     <Link
       href={`/instruktur/${mentor.slug}`}
@@ -34,9 +37,9 @@ export function MentorVideoBar({ mentor, className }: MentorVideoBarProps) {
         size="sm"
         className="size-9 shrink-0 border border-border/80 bg-surface-2 shadow-[0_0_10px_var(--glow)] sm:size-10"
       >
-        {mentor.avatarUrl ? (
+        {avatarSrc ? (
           <AvatarImage
-            src={mentor.avatarUrl}
+            src={avatarSrc}
             alt={`Foto ${mentor.name}`}
             className="object-cover object-top"
           />

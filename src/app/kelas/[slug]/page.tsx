@@ -6,6 +6,7 @@ import { CourseDetailHero } from "@/components/course-detail-hero";
 import { CourseInstructorSection } from "@/components/course-instructor-section";
 import { CourseCurriculumCards } from "@/components/course-curriculum-cards";
 import { CourseReviewsSection } from "@/components/course-reviews-section";
+import { CourseViewTracker } from "@/components/analytics/course-view-tracker";
 import { PreviewCatalogNotice } from "@/components/preview-catalog/preview-catalog-notice";
 import { PREVIEW_CATALOG_COPY } from "@/lib/preview-catalog/copy";
 import { SiteNavbar } from "@/components/site-navbar";
@@ -70,6 +71,7 @@ export default async function CourseDetailPage({
       <div className="hidden md:block">
         <SiteNavbar />
       </div>
+      <CourseViewTracker courseId={course.slug} priceIdr={course.price} />
       <main className="flex-1 overflow-x-hidden bg-background">
         <CourseDetailHero
           course={course}

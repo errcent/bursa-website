@@ -63,7 +63,6 @@ export const AUDIT_ROUTES: AuditRoute[] = [
   route("/"),
   route("/katalog"),
   route("/katalog?view=instruktur", { slug: "katalog-instruktur" }),
-  route("/artikel"),
   route("/panduan-belajar"),
   route("/panduan-belajar/quiz"),
   route("/playlist"),

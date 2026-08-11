@@ -99,7 +99,7 @@ export default async function MentorProfilePage({
                 </Button>
                 {mentor.availableFor1on1 && (
                   <Button variant="outline" render={<Link href={`/instruktur/${mentor.slug}/sesi`} />}>
-                    Tanya Sesi 1-on-1 · {mentor.sessionPrice}
+                    Tanya Sesi 1-on-1 · {mentor.sessionPrice} (indikatif/demo)
                   </Button>
                 )}
               </div>
@@ -218,7 +218,10 @@ export default async function MentorProfilePage({
             {mentor.availableFor1on1 && (
               <div className="rounded-xl border border-emerald/20 bg-emerald/5 p-5">
                 <h3 className="font-heading text-sm font-medium text-emerald">Sesi 1-on-1</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{mentor.sessionPrice}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {mentor.sessionPrice}{" "}
+                  <span className="text-xs">(indikatif/demo — belum dikunci Decision OS)</span>
+                </p>
                 <p className="mt-2 text-xs text-muted-foreground">
                   Diskusikan portofolio atau strategi tradingmu secara personal. Pembayaran
                   ditahan (escrow) hingga sesi terkonfirmasi selesai.

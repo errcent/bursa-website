@@ -9,14 +9,12 @@ export type MentorPhotoSubject = {
 };
 
 /**
- * Stands in for a real mentor headshot: a distinct per-mentor gradient backdrop
- * (see lib/mentors/theme) with the mentor's cutout artwork bottom-aligned on top.
- * Used by both course thumbnails (mentor-as-course-art) and mentor cards.
+ * Per-mentor gradient backdrop with initials. Cutout photos are disabled until
+ * MENTOR_PHOTOS_ENABLED is turned on in lib/thumbnails/constants.
  */
 export function MentorPhoto({
   mentor,
   className,
-  imageClassName,
 }: {
   mentor: MentorPhotoSubject;
   className?: string;
@@ -36,28 +34,12 @@ export function MentorPhoto({
           background: `radial-gradient(circle at 50% 8%, ${theme.glow}55, transparent 62%)`,
         }}
       />
-      {mentor.cutoutUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={mentor.cutoutUrl}
-          alt=""
-          aria-hidden
-          className={cn(
-            "absolute inset-x-0 bottom-0 h-[92%] w-full object-contain object-bottom transition-transform duration-500 ease-out group-hover:scale-[1.04]",
-            imageClassName
-          )}
-          loading="lazy"
-          decoding="async"
-          draggable={false}
-        />
-      ) : (
-        <span
-          className="absolute inset-0 flex items-center justify-center font-heading text-2xl font-semibold text-white/80"
-          aria-hidden
-        >
-          {mentor.initials}
-        </span>
-      )}
+      <span
+        className="absolute inset-0 flex items-center justify-center font-heading text-2xl font-semibold text-white/80"
+        aria-hidden
+      >
+        {mentor.initials}
+      </span>
     </div>
   );
 }

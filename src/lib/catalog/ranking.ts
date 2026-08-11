@@ -8,7 +8,7 @@ import type { Course, Mentor } from "@/lib/types";
  * digital course ≈ 0 and courses are only weakly differentiated within a niche,
  * a price-based default sort pushes rational mentors to undercut each other.
  * Ranking on quality signals instead removes that trigger while keeping the
- * LOCKED business model intact (mentor-set price, 25% commission, lifetime
+ * Working model intact (mentor-set price, 25% commission indikatif, lifetime
  * access). Price MUST NOT enter this score.
  *
  * Hardening (QC-20260719-17/18/27/37/43):

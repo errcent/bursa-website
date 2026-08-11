@@ -3,7 +3,7 @@ import type { Instrument, Level } from "@/lib/types";
 /**
  * NON-BINDING price guidance for the mentor application (QC-20260719-44).
  *
- * LOCKED constraints preserved: pricing stays mentor-set, there is NO price floor
+ * Working model preserved: pricing stays mentor-set, there is NO price floor
  * and NO enforcement. These reference ranges only reduce bad anchoring for new
  * mentors and are paired with the message that discovery ranking is non-price
  * (QC-20260719-02), so undercutting does NOT buy visibility.

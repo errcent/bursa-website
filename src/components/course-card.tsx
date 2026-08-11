@@ -90,7 +90,7 @@ export function CourseCard({
     >
       <div
         className={cn(
-          "relative aspect-[16/10] w-full min-h-0 overflow-hidden bg-surface-2",
+          "relative aspect-video w-full min-h-0 overflow-hidden bg-surface-2",
           isFeatured ? "rounded-2xl" : "rounded-xl"
         )}
       >
