@@ -1,7 +1,8 @@
 export const PREVIEW_CATALOG_COPY = {
-  bannerShort: "Konten contoh tampilan. Belum data sungguhan.",
+  bannerShort:
+    "Katalog ini masih demo. Nama mentor, statistik, ulasan, dan video bersifat fiktif, bukan data resmi.",
   bannerDetail:
-    "Ini katalog demonstrasi. Nama, statistik, ulasan, dan video bersifat fiktif.",
+    "Ini katalog demonstrasi. Nama mentor, statistik, ulasan, dan video bersifat fiktif, bukan data resmi.",
   reviewsLabel: "Ulasan contoh",
   resultsNote: "Rekomendasi dari katalog demonstrasi.",
   faqPreviewAnswer:

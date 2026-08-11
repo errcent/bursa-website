@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
@@ -46,21 +45,9 @@ function StoreBadgeLink({
 }
 
 export function AppDownloadBadges({ className }: { className?: string }) {
+  // Hide store teaser until App Store / Google Play URLs are live.
   if (!hasLiveStoreLinks) {
-    return (
-      <div className={cn("flex flex-col gap-2.5", className)}>
-        <h4 className="font-heading text-sm font-medium">Aplikasi</h4>
-        <p className="max-w-[14rem] text-xs leading-relaxed text-muted-foreground">
-          App segera hadir di App Store &amp; Google Play.
-        </p>
-        <Link
-          href="/waitlist"
-          className="inline-flex h-10 items-center justify-center rounded-md border border-border/70 bg-white/[0.03] px-3 text-sm font-medium text-foreground transition-colors hover:border-accent/30 hover:bg-white/[0.05]"
-        >
-          Gabung waitlist
-        </Link>
-      </div>
-    );
+    return null;
   }
 
   return (
