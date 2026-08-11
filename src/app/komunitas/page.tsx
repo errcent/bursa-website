@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Komunitas Trading",
   description:
-    "Ruang diskusi mentor dan komunitas terkurasi Bursa — segera hadir. Gabung waitlist untuk kabar peluncuran.",
+    "Ruang diskusi mentor sedang disiapkan. Gabung waitlist untuk kabar pembukaan.",
 };
 
 export default function KomunitasPage() {

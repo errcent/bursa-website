@@ -53,7 +53,7 @@ export async function POST(request: Request) {
   return NextResponse.json(
     {
       reply: null,
-      message: "AI route skeleton — implement RAG + gateway call",
+      message: "AI route skeleton. Implement RAG + gateway call",
       conversationId: parsed.data.conversationId ?? null,
     },
     { status: 501 }

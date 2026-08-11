@@ -1,5 +1,5 @@
 export const PREVIEW_CATALOG_COPY = {
-  bannerShort: "Konten contoh tampilan — belum data sungguhan.",
+  bannerShort: "Konten contoh tampilan. Belum data sungguhan.",
   bannerDetail:
     "Ini katalog demonstrasi. Nama, statistik, ulasan, dan video bersifat fiktif.",
   reviewsLabel: "Ulasan contoh",

@@ -8,14 +8,14 @@ export const DEFAULT_OG = {
   url: BRAND_ASSETS.ogDefault,
   width: 1200,
   height: 630,
-  alt: "Bursa — Katalog mentor dan kelas trading",
+  alt: "Bursa: katalog mentor dan kelas trading",
 } as const;
 
 export const DEFAULT_TWITTER_IMAGE = {
   url: BRAND_ASSETS.ogTwitter,
   width: 1200,
   height: 675,
-  alt: "Bursa — Katalog mentor dan kelas trading",
+  alt: "Bursa: katalog mentor dan kelas trading",
 } as const;
 
 export const rootSiteMetadata: Metadata = {

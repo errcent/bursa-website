@@ -74,7 +74,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       {
         dispute: { id: dispute.id, status: dispute.status },
         message:
-          "Keluhan diterima. Mentor wajib menanggapi & memperbaiki. Tidak ada pengembalian dana — " +
+          "Keluhan diterima. Mentor wajib menanggapi & memperbaiki. Tidak ada pengembalian dana. " +
           "solusi berupa perbaikan konten, kredit untuk kelas lain, atau akses pengganti.",
       },
       201

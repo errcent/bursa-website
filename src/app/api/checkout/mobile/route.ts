@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
         isFree,
         prototypeMode: isPrototypeMode(),
         message: isFree
-          ? "Kelas gratis — lanjutkan enrollment langsung."
-          : "Mode prototype — enrollment langsung tersedia.",
+          ? "Kelas gratis. Lanjutkan enrollment langsung."
+          : "Mode prototype. Enrollment langsung tersedia.",
         courseSlug: course.slug,
       });
     }

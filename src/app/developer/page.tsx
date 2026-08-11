@@ -9,14 +9,14 @@ const qcTargets = [
     title: "Admin Panel",
     description: "Tinjau CRUD courses, mentors, users, dan moderasi.",
     icon: Shield,
-    note: "View-only QC — jangan mengubah data produksi tanpa admin.",
+    note: "View-only QC. Jangan mengubah data produksi tanpa admin.",
   },
   {
     href: "/mentor",
     title: "Mentor Panel",
     description: "Periksa UX ringkasan, profil, pengaturan, dan usulan konten.",
     icon: UserRound,
-    note: "Komunitas/chat diarsipkan — tidak ada Group Chat di live.",
+    note: "Komunitas/chat diarsipkan. Tidak ada Group Chat di live.",
   },
   {
     href: "/",
