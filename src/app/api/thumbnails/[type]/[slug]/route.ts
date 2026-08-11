@@ -14,7 +14,9 @@ function pollinationsUrl(prompt: string, seed: number): string {
     height: "720",
     nologo: "true",
     seed: String(seed),
-    model: "flux",
+    model: "turbo",
+    negative:
+      "person, people, human, face, portrait, woman, man, model, text, logo, watermark, chart, candlestick, trading screen",
   });
   return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params.toString()}`;
 }

@@ -9,13 +9,17 @@ import path from "node:path";
 
 import { THUMBNAIL_MANIFEST } from "../src/lib/thumbnails/ai-manifest";
 
+const NEGATIVE_PROMPT =
+  "person, people, human, face, portrait, woman, man, model, selfie, body, hands, fingers, anime, character, text, typography, logo, watermark, ui, chart, candlestick, trading screen";
+
 function pollinationsUrl(prompt: string, seed: number): string {
   const params = new URLSearchParams({
     width: "1280",
     height: "720",
     nologo: "true",
     seed: String(seed),
-    model: "flux",
+    model: "turbo",
+    negative: NEGATIVE_PROMPT,
   });
   return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params.toString()}`;
 }

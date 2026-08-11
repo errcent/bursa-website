@@ -9,54 +9,94 @@ export type ThumbnailPromptInput = {
   summary: string;
   instrument?: Instrument;
   level?: Level;
-  /** Visual keywords derived from playlist theme or course outcomes. */
   visualKeywords: string[];
-  /** Human-readable hint for where the card links (used in prompt context). */
   destinationLabel: string;
 };
 
-const INSTRUMENT_VISUALS: Record<Instrument, string> = {
-  Saham:
-    "Indonesian stock market, BEI trading screens, candlestick charts on dark monitors, equity research desk",
-  Crypto:
-    "blockchain network glow, digital asset charts, on-chain analytics dashboard, crypto trading workstation",
-  Forex:
-    "major currency pairs, global macro maps, forex terminal with EUR USD GBP JPY, economic calendar mood",
+/**
+ * Style reference: Progress/benchmark (Bursa Nalar social feed).
+ * Dark navy gradients, film grain, surreal editorial still life, soft accent light.
+ */
+const STILL_LIFE_SUFFIX =
+  "Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only";
+
+const INSTRUMENT_ACCENT: Record<Instrument, string> = {
+  Saham: "soft peach and bronze accent light",
+  Crypto: "electric blue and amber rim light on glass forms",
+  Forex: "cool steel and brass accent highlights",
 };
 
-const LEVEL_MOOD: Record<Level, string> = {
-  Pemula: "approachable, foundational, clean and inviting",
-  Menengah: "focused, analytical, intermediate depth",
-  Mahir: "advanced, sophisticated, institutional-grade detail",
+const COURSE_HERO_OBJECTS: Record<string, string> = {
+  "fundamental-saham-untuk-pemula":
+    "open vintage ledger book on dark marble surface",
+  "membaca-laporan-keuangan-lanjutan":
+    "stack of translucent glass sheets on charcoal desk",
+  "swing-trading-teknikal-dasar":
+    "curved brushed steel bow resting on navy velvet",
+  "crypto-on-chain-dasar":
+    "interlocking glass cubes with blue amber edge glow on black",
+  "manajemen-risiko-crypto-pemula":
+    "balanced stone scales with single controlled ember glow",
+  "forex-makro-dasar":
+    "antique brass compass on dark polished globe fragment",
+  "screening-saham-dividen-konsisten":
+    "polished gemstone under magnifying glass on charcoal",
+  "price-action-swing-saham-menengah":
+    "soft pink feather with water droplets floating in dark blue space",
+  "siklus-bitcoin-halving-dan-makro-kripto":
+    "glass orb containing subtle lunar phase spheres",
+  "scalping-saham-intraday-jam-perdagangan":
+    "macro precision watch gears on dark brushed metal",
+  "eksekusi-scalping-order-book-idx":
+    "layered translucent glass panes stacked in depth",
+  "price-action-forex-tanpa-indikator":
+    "minimal abstract bronze wave sculpture on navy gradient",
+  "scalping-forex-sesi-london-ny":
+    "two soft gold horizon lines reflected in dark still water",
+  "defi-dan-tokenomics-pemula":
+    "interconnected frosted glass rings linked on black background",
+  "riset-narrative-kripto-menengah":
+    "telescope lens reflecting distant nebula glow",
+  "psikologi-trading-anti-fomo":
+    "pink flamingo bird head sculpture in soft profile on deep navy",
+  "blueprint-manajemen-risiko-trader":
+    "rolled architectural blueprint with lavender side light",
 };
 
-const STYLE_SUFFIX =
-  "Premium cinematic 16:10 thumbnail for dark fintech education platform. Photorealistic editorial photography, moody cool steel and graphite lighting, soft window light, shallow depth of field, desaturated palette, no purple neon, no magenta glow, no cyberpunk, no text, no logos, no watermarks, no readable UI labels, no human faces.";
+const PLAYLIST_HERO_OBJECTS: Record<string, string> = {
+  "kesehatan-mental-trading":
+    "smooth meditation stone and closed journal on dark linen",
+  "fundasi-analisis-saham":
+    "bronze bull figurine reflection in dark polished sphere",
+  "jalur-crypto-pemula":
+    "small glowing glass seed inside protective glass dome",
+  "teknikal-swing-trading":
+    "bold periwinkle curved geometric pipe shape on grainy navy background",
+  "forex-dari-nol":
+    "brass compass and stacked vintage currency discs on navy velvet",
+  "valuasi-lanjutan":
+    "crystal prism splitting soft white light on dark marble",
+  "screening-saham-berkualitas":
+    "fine mesh sieve holding luminous pearls above charcoal surface",
+};
 
+function resolveHeroObject(input: ThumbnailPromptInput): string {
+  const map = input.kind === "course" ? COURSE_HERO_OBJECTS : PLAYLIST_HERO_OBJECTS;
+  return (
+    map[input.slug] ??
+    `abstract sculptural object symbolizing ${input.visualKeywords.slice(0, 3).join(", ")}`
+  );
+}
+
+/** Short object-only prompt — avoids portrait bias from longer narrative prompts. */
 export function buildAiThumbnailPrompt(input: ThumbnailPromptInput): string {
-  const keywords = input.visualKeywords.filter(Boolean).slice(0, 6).join(", ");
+  const heroObject = resolveHeroObject(input);
+  const accent =
+    input.instrument != null
+      ? INSTRUMENT_ACCENT[input.instrument]
+      : "soft lavender accent light";
 
-  if (input.kind === "course") {
-    const instrument = input.instrument ?? "Saham";
-    const level = input.level ?? "Pemula";
-    return [
-      STYLE_SUFFIX,
-      `Subject: online trading course titled "${input.title}".`,
-      `Learning focus: ${input.summary}`,
-      `Market: ${instrument}. Visual environment: ${INSTRUMENT_VISUALS[instrument]}.`,
-      `Audience level: ${level}, tone should feel ${LEVEL_MOOD[level]}.`,
-      `Key visual motifs: ${keywords}.`,
-      `When clicked, user enters this specific class about ${input.destinationLabel}.`,
-    ].join(" ");
-  }
-
-  return [
-    STYLE_SUFFIX,
-    `Subject: curated video playlist titled "${input.title}".`,
-    `Collection theme: ${input.summary}`,
-    `Key visual motifs: ${keywords}, stacked learning path, curated lesson series mood.`,
-    `When clicked, user opens this playlist journey about ${input.destinationLabel}.`,
-  ].join(" ");
+  return `${heroObject}, ${accent}, ${STILL_LIFE_SUFFIX}`;
 }
 
 export function slugToSeed(slug: string): number {
@@ -64,5 +104,5 @@ export function slugToSeed(slug: string): number {
   for (let i = 0; i < slug.length; i += 1) {
     hash = (hash * 31 + slug.charCodeAt(i)) >>> 0;
   }
-  return hash % 1_000_000;
+  return (hash + 42_024) % 1_000_000;
 }
