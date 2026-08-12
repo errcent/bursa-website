@@ -14,7 +14,7 @@ export const AI_THUMBNAIL_MEDIA_CLASS =
   "ai-thumbnail__media h-full w-full max-w-none object-cover object-center" as const;
 
 /** When false, UI shows gradient placeholders instead of thumbnail photos. */
-export const THUMBNAIL_PHOTOS_ENABLED = true;
+export const THUMBNAIL_PHOTOS_ENABLED = false;
 
 /** When false, mentor cutout/avatar photos are hidden in marketing UI. */
 export const MENTOR_PHOTOS_ENABLED = false;
