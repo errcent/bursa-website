@@ -50,10 +50,10 @@ export function HomeDiscoverSection({
           <Button
             size="lg"
             className="btn-primary h-11 rounded-md px-7"
-            render={<Link href="/playlist" />}
+            render={<Link href="/panduan-belajar" />}
           >
             <span className="inline-flex items-center gap-2">
-              Jelajahi semua playlist
+              Mulai Panduan Belajar
               <ArrowRight className="size-4" />
             </span>
           </Button>
