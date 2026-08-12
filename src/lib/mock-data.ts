@@ -2,12 +2,12 @@ import type { Course, Mentor, Review } from "./types";
 
 /**
  * Seluruh data di file ini adalah DATA DUMMY / SEED untuk kebutuhan prototype visual.
- * Nama mentor, angka performa, harga course/sesi, dan testimoni bersifat fiktif —
+ * Nama mentor, angka performa, harga course/sesi, dan testimoni bersifat fiktif -
  * BUKAN Decision OS lock / calibrated market price. Belum ada mentor/emiten sungguhan
  * yang diverifikasi di supply registry. Lihat dokumentasi produk di folder
  * "01 - Riset & Strategi" dan "04 - Konten & Instruktur" untuk kriteria kurasi mentor
  * sesungguhnya sebelum data ini diganti data real. Authority harga: Decision OS
- * (research.decision_os) — publicListLocked=false.
+ * (research.decision_os) - publicListLocked=false.
  */
 
 export const mentors: Mentor[] = [

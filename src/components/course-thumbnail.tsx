@@ -15,6 +15,7 @@ import {
   AI_THUMBNAIL_WIDTH,
   type ThumbnailObjectFit,
 } from "@/lib/thumbnails/constants";
+import { isMasterclassPortraitCourse } from "@/lib/thumbnails/masterclass-prompts";
 import type { Course } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +25,7 @@ type AiThumbnailImageProps = {
   primarySrc: string | null;
   alt: string;
   className?: string;
-  fallbackApiPath: string;
+  fallbackApiPath?: string | null;
   placeholderLabel?: string;
 };
 
@@ -53,7 +54,7 @@ export function AiThumbnailImage({
       loading="lazy"
       decoding="async"
       onError={() => {
-        if (src !== fallbackApiPath) {
+        if (fallbackApiPath && src !== fallbackApiPath) {
           setSrc(fallbackApiPath);
         } else {
           setSrc(null);
@@ -98,6 +99,7 @@ export function CourseThumbnail({
         !fillSlot && AI_THUMBNAIL_ASPECT_CLASS,
         objectFit === "contain" && "ai-thumbnail--contain",
         fillSlot && "ai-thumbnail--slot",
+        isMasterclassPortraitCourse(course.slug) && "ai-thumbnail--portrait",
         className
       )}
     >
@@ -105,7 +107,11 @@ export function CourseThumbnail({
         kind="course"
         slug={course.slug}
         primarySrc={primarySrc}
-        fallbackApiPath={courseThumbnailFallbackApiPath(course.slug)}
+        fallbackApiPath={
+          isMasterclassPortraitCourse(course.slug)
+            ? null
+            : courseThumbnailFallbackApiPath(course.slug)
+        }
         alt={alt ?? "Thumbnail kelas"}
         className="transition-transform duration-500 ease-out group-hover:scale-[1.03]"
       />

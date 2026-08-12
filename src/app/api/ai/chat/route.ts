@@ -5,7 +5,7 @@ import { resolveTrustedEmail } from "@/lib/auth/request-identity";
 
 /**
  * AI support chat skeleton (P3 blueprint).
- * Feature gated — returns 503 until AI_GATEWAY_URL is configured.
+ * Feature gated - returns 503 until AI_GATEWAY_URL is configured.
  *
  * Target flow: intent router → FAQ cache | RAG top-3 | deterministic tools
  * Context budget: max 2k tokens per LLM call.

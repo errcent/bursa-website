@@ -91,7 +91,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return jsonError("Lesson not found", 404);
     }
 
-    // Progress is only tracked for enrolled learners — completion is a KPI for review
+    // Progress is only tracked for enrolled learners - completion is a KPI for review
     // eligibility/ranking, so it must not be writable without enrollment (QC-20260719-16).
     const courseId = lesson.module.course.id;
     const access = await getEnrollmentAccess(user.id, courseId);
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     }
 
     // Server-side watch verification (QC-20260719-46): completion is gated on watch time the
-    // SERVER accumulated via signed playback heartbeats — NOT the client-reported number, which
+    // SERVER accumulated via signed playback heartbeats - NOT the client-reported number, which
     // is only stored as a resume position. A forged `watchedSeconds` can no longer flip completed.
     const durationSeconds = Math.max(0, lesson.durationMinutes * 60);
     const watchThreshold = Math.floor(durationSeconds * WATCH_COMPLETION_RATIO);

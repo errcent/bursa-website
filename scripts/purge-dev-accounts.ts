@@ -1,7 +1,7 @@
 import { type Prisma, type PrismaClient } from "@prisma/client";
 import { db } from "../src/lib/db";
 
-/** Dev/seed login accounts — NOT public preview catalog mentors (@preview.bursanalar.com). */
+/** Dev/seed login accounts - NOT public preview catalog mentors (@preview.bursanalar.com). */
 const DEV_EMAIL_PATTERNS = [
   "@test.dev",
   "@mentor.bursa.dev",

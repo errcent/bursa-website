@@ -105,7 +105,7 @@ export const helpFaqs: HelpFaq[] = [
     category: "Mentor",
     question: "Berapa komisi platform untuk mentor?",
     answer:
-      "Working model (indikatif): komisi platform ~25% dari setiap transaksi kelas — belum dikunci Decision OS. Sisanya masuk ke payout mentor sesuai jadwal di dashboard. Rincian final tampil sebelum murid konfirmasi pembayaran.",
+      "Working model (indikatif): komisi platform ~25% dari setiap transaksi kelas, belum dikunci Decision OS. Sisanya masuk ke payout mentor sesuai jadwal di dashboard. Rincian final tampil sebelum murid konfirmasi pembayaran.",
   },
   {
     id: "mentor-konten",

@@ -19,32 +19,36 @@ import { ModuleDemoScreenContent } from "@/components/home/module-demo-screen-co
 import { useDeviceSceneScale } from "@/components/home/use-device-scene-scale";
 import { Reveal } from "@/components/motion/reveal";
 import { WordReveal } from "@/components/motion/word-reveal";
+import type { PlaylistDetail, PlaylistSummary } from "@/lib/playlist/types";
 import type { Course, Mentor } from "@/lib/types";
 
 type ScreenContentProps = {
+  playlist: PlaylistDetail;
+  catalogPlaylists: PlaylistSummary[];
   course: Course;
   mentor: Mentor | null;
-  catalogCourses: Course[];
-  mentorsBySlug: Map<string, Mentor>;
+  preferredLessonLegacyId: string | null;
   scrollProgress: MotionValue<number>;
   reducedMotion: boolean | null;
 };
 
 function DeviceScreenContent({
+  playlist,
+  catalogPlaylists,
   course,
   mentor,
-  catalogCourses,
-  mentorsBySlug,
+  preferredLessonLegacyId,
   scrollProgress,
   reducedMotion,
 }: ScreenContentProps) {
   return (
     <div className="device-mockup-screen__content">
       <ModuleDemoScreenContent
+        playlist={playlist}
+        catalogPlaylists={catalogPlaylists}
         course={course}
         mentor={mentor}
-        catalogCourses={catalogCourses}
-        mentorsBySlug={mentorsBySlug}
+        preferredLessonLegacyId={preferredLessonLegacyId}
         scrollProgress={scrollProgress}
         reducedMotion={reducedMotion}
       />
@@ -53,14 +57,18 @@ function DeviceScreenContent({
 }
 
 export function DeviceMockupSection({
+  playlist,
+  catalogPlaylists,
   course,
   mentor,
-  catalogCourses,
+  preferredLessonLegacyId,
   mentors,
 }: {
+  playlist: PlaylistDetail | null;
+  catalogPlaylists: PlaylistSummary[];
   course: Course | null;
   mentor: Mentor | null;
-  catalogCourses: Course[];
+  preferredLessonLegacyId?: string | null;
   mentors: Mentor[];
 }) {
   const scrollTrackRef = useRef<HTMLDivElement>(null);
@@ -72,13 +80,10 @@ export function DeviceMockupSection({
     [mentors],
   );
 
-  const demoCourse = course ?? catalogCourses[0] ?? null;
+  const demoCourse = course;
   const demoMentor =
     mentor ??
-    (demoCourse
-      ? mentorsBySlug.get(demoCourse.mentorSlug) ?? null
-      : null);
-  const demoCatalog = catalogCourses.length > 0 ? catalogCourses : demoCourse ? [demoCourse] : [];
+    (demoCourse ? mentorsBySlug.get(demoCourse.mentorSlug) ?? null : null);
 
   const { scrollYProgress } = useScroll({
     target: scrollTrackRef,
@@ -93,18 +98,19 @@ export function DeviceMockupSection({
     scrollTrackRef.current?.setAttribute("data-scroll-progress", scrollYProgress.get().toFixed(4));
   }, [scrollYProgress]);
 
-  const rotateX = useTransform(scrollYProgress, [0, 1], [34, 0]);
-  const rotateY = useTransform(scrollYProgress, [0, 1], [-10, 0]);
-  const tabletScale = useTransform(scrollYProgress, [0, 1], [0.86, 1]);
-  const translateZ = useTransform(scrollYProgress, [0, 1], [-180, 0]);
+  const rotateX = useTransform(scrollYProgress, [0, 1], [22, 0]);
+  const rotateY = useTransform(scrollYProgress, [0, 1], [-5, 0]);
+  const tabletScale = useTransform(scrollYProgress, [0, 1], [0.9, 1]);
+  const translateZ = useTransform(scrollYProgress, [0, 1], [-120, 0]);
 
-  if (!demoCourse || demoCourse.modules.length === 0) return null;
+  if (!playlist || !demoCourse || demoCourse.modules.length === 0) return null;
 
   const screenProps = {
+    playlist,
+    catalogPlaylists,
     course: demoCourse,
     mentor: demoMentor,
-    catalogCourses: demoCatalog,
-    mentorsBySlug,
+    preferredLessonLegacyId: preferredLessonLegacyId ?? null,
     scrollProgress: scrollYProgress,
     reducedMotion: prefersReducedMotion,
   };
@@ -124,6 +130,7 @@ export function DeviceMockupSection({
       id="belajar-dimana-saja"
       className="section-cinematic-light section-tight scroll-mt-24"
       aria-labelledby="device-mockup-heading"
+      data-playlist-slug={playlist.slug}
       data-course-slug={demoCourse.slug}
     >
       <div ref={scrollTrackRef} className="device-mockup-scroll-track">

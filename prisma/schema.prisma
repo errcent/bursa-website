@@ -20,7 +20,7 @@ model User {
   role                           UserRole                  @default(LEARNER)
   kycStatus                      KycStatus                 @default(NOT_REQUIRED)
   createdAt                      DateTime                  @default(now())
-  /// Login handle — lowercase alphanumeric + underscore; separate from display name.
+  /// Login handle - lowercase alphanumeric + underscore; separate from display name.
   username                       String?                   @unique
   /// E.164 or Indonesian +62... format (encrypted at rest).
   phone                          String?
@@ -71,7 +71,7 @@ model User {
   pollVotes                      PollVote[]
 }
 
-/// Active device/session anchors for lifetime-access excludability — concurrent
+/// Active device/session anchors for lifetime-access excludability - concurrent
 /// session cap, per-user watermark identity, and anomaly detection (QC-20260719-38).
 /// This is NOT a change to price/lifetime (LOCKED); it only limits credential sharing.
 model UserSession {
@@ -134,7 +134,7 @@ model LearningGuidanceProfile {
   @@index([instrument, experienceLevel])
 }
 
-/// Single-use reset token — stores hash only, never plaintext (UU PDP / GDPR-ready).
+/// Single-use reset token - stores hash only, never plaintext (UU PDP / GDPR-ready).
 model PasswordResetToken {
   id        String    @id @default(cuid())
   userId    String
@@ -181,11 +181,11 @@ model MentorProfile {
   rating              Float                    @default(0)
   trackRecord         Json
   availableFor1on1    Boolean                  @default(false)
-  /// Legacy free-form display string. Deprecated — use sessionPriceInt for logic (QC-20260719-22).
+  /// Legacy free-form display string. Deprecated - use sessionPriceInt for logic (QC-20260719-22).
   sessionPrice        String?
   /// Validated numeric 1-on-1 session price (Rupiah). Source of truth for commitment fee & ledger.
   sessionPriceInt     Int?
-  /// Distinct COMPLETED paid buyers across this mentor's courses — the only student
+  /// Distinct COMPLETED paid buyers across this mentor's courses - the only student
   /// metric allowed to drive ranking/discovery (QC-20260719-26/27). Derived, never self-set.
   paidStudentsCount   Int                      @default(0)
   createdAt           DateTime                 @default(now())
@@ -242,16 +242,16 @@ model Course {
   level             CourseLevel
   price             Int
   rating            Float                 @default(0)
-  /// Number of reviews behind `rating` — shown to users and used for min-sample downweight (QC-20260719-17).
+  /// Number of reviews behind `rating` - shown to users and used for min-sample downweight (QC-20260719-17).
   ratingCount       Int                   @default(0)
   /// Bayesian-shrunk rating (prior = platform mean) used for ranking to resist low-n gaming (QC-20260719-17).
   bayesianRating    Float                 @default(0)
-  /// Time-weighted rating with recency decay — surfaces stale 5★ content (QC-20260719-18/01).
+  /// Time-weighted rating with recency decay - surfaces stale 5★ content (QC-20260719-18/01).
   decayedRating     Float                 @default(0)
-  /// When rating aggregates were last recomputed — powers "terakhir diperbarui" staleness badge.
+  /// When rating aggregates were last recomputed - powers "terakhir diperbarui" staleness badge.
   ratingUpdatedAt   DateTime?
   studentsCount     Int                   @default(0)
-  /// Distinct COMPLETED paid buyers — the only popularity signal allowed in ranking (QC-20260719-27).
+  /// Distinct COMPLETED paid buyers - the only popularity signal allowed in ranking (QC-20260719-27).
   paidStudentsCount Int                   @default(0)
   durationHours     Int
   shortDescription  String
@@ -259,7 +259,7 @@ model Course {
   isPublished       Boolean               @default(true)
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @updatedAt
-  /// Last time course content was materially updated — staleness penalty input (QC-20260719-18).
+  /// Last time course content was materially updated - staleness penalty input (QC-20260719-18).
   contentUpdatedAt  DateTime?
   thumbnailUrl      String?
   mentor            MentorProfile         @relation(fields: [mentorId], references: [id])
@@ -345,7 +345,7 @@ model Enrollment {
   id        String   @id @default(cuid())
   userId    String
   courseId  String
-  /// True only when backed by a COMPLETED paid Transaction — separates paid buyers
+  /// True only when backed by a COMPLETED paid Transaction - separates paid buyers
   /// from free/auto-provisioned enrollments for ranking & eligibility (QC-20260719-26/27).
   isPaid    Boolean  @default(false)
   createdAt DateTime @default(now())
@@ -362,14 +362,14 @@ model LessonProgress {
   userId                 String
   lessonId               String
   completed              Boolean   @default(false)
-  /// Client-reported resume position — display only, NOT trusted for completion (QC-20260719-46).
+  /// Client-reported resume position - display only, NOT trusted for completion (QC-20260719-46).
   watchedSeconds         Int       @default(0)
   /// Server-accumulated verified watch time via signed playback heartbeats. Sole gate for
-  /// `completed=true` — client cannot inflate it (QC-20260719-16/46).
+  /// `completed=true` - client cannot inflate it (QC-20260719-16/46).
   verifiedWatchedSeconds Int       @default(0)
-  /// Last heartbeat wall-clock timestamp — bounds per-ping credit against replay/seek cheating.
+  /// Last heartbeat wall-clock timestamp - bounds per-ping credit against replay/seek cheating.
   lastHeartbeatAt        DateTime?
-  /// Last verified playhead position (seconds) — advancement is credited, seeks/rewinds are not.
+  /// Last verified playhead position (seconds) - advancement is credited, seeks/rewinds are not.
   heartbeatPosition      Int       @default(0)
   updatedAt              DateTime  @updatedAt
   lesson                 Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
@@ -502,7 +502,7 @@ model ChatRoom {
   isProtected          Boolean                   @default(false)
   screenshotProtection Boolean                   @default(false)
   memberOnly           Boolean                   @default(true)
-  /// Shared staff room (e.g. mentor–admin kolaborasi) — does not count toward mentor ownership limits.
+  /// Shared staff room (e.g. mentor–admin kolaborasi) - does not count toward mentor ownership limits.
   isStaffCollaboration Boolean                   @default(false)
   isActive             Boolean                   @default(true)
   isLive               Boolean                   @default(false)
@@ -619,7 +619,7 @@ model TradingSignal {
   status            SignalStatus    @default(ACTIVE)
   /// Optional forced-resolution deadline; expiry auto-resolves the signal (QC-20260719-19).
   expiresAt         DateTime?
-  /// Platform-computed outcome — mentors cannot delete losing signals (QC-20260719-19).
+  /// Platform-computed outcome - mentors cannot delete losing signals (QC-20260719-19).
   outcome           SignalOutcome   @default(PENDING)
   /// Platform-computed realized return vs entryPrice at resolution (percent).
   realizedReturnPct Float?
@@ -646,7 +646,7 @@ model TradingPoll {
   votes     PollVote[]
 }
 
-/// Normalized poll vote — one row per (poll,user). Keeps voter identity server-side
+/// Normalized poll vote - one row per (poll,user). Keeps voter identity server-side
 /// (ballot secrecy, QC-20260719-23) and bounds JSON growth (QC-20260719-41).
 model PollVote {
   id        String      @id @default(cuid())
@@ -682,7 +682,7 @@ model ContentModerationQueue {
   status         ModerationStatus      @default(PENDING)
   /// Snapshot of reporter reputation weight at report time (QC-20260719-40).
   reporterWeight Float                 @default(1)
-  /// Outcome vs the reporter — drives reporter reputation (QC-20260719-40).
+  /// Outcome vs the reporter - drives reporter reputation (QC-20260719-40).
   resolution     ModerationResolution?
   reviewedBy     String?
   createdAt      DateTime              @default(now())
@@ -839,7 +839,7 @@ model CommissionRecord {
   payoutPeriod     String?
   /// Published payout SLA target (period cut-off + T+X). Enables ETA & hold-up audit (QC-20260719-14).
   payoutDueAt      DateTime?
-  /// Timestamp when payout actually reached PAID — for SLA reconciliation (QC-20260719-14).
+  /// Timestamp when payout actually reached PAID - for SLA reconciliation (QC-20260719-14).
   paidAt           DateTime?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
@@ -1031,7 +1031,7 @@ enum SessionAttendanceStatus {
   FORFEITED
 }
 
-/// Moderation outcome vs the reporter — feeds reporter reputation (QC-20260719-40).
+/// Moderation outcome vs the reporter - feeds reporter reputation (QC-20260719-40).
 enum ModerationResolution {
   UPHELD
   DISMISSED
@@ -1047,7 +1047,7 @@ enum CourseDisputeCategory {
   OTHER
 }
 
-/// NO-REFUND dispute lifecycle. Resolutions are remediation/credit/replacement —
+/// NO-REFUND dispute lifecycle. Resolutions are remediation/credit/replacement -
 /// there is deliberately NO "REFUNDED" state (founder override, QC-20260719-33).
 enum CourseDisputeStatus {
   OPEN
@@ -1171,7 +1171,7 @@ enum WaitlistEmailEventType {
   SUPPRESSED
 }
 
-/// Public mentor onboarding form — persists across serverless cold starts.
+/// Public mentor onboarding form - persists across serverless cold starts.
 model MentorApplication {
   id                      String                  @id @default(cuid())
   fullName                String
@@ -1265,7 +1265,7 @@ model SystemConfig {
   updatedAt                       DateTime  @updatedAt
 }
 
-/// Public waitlist sign-ups — pre-launch email capture (UU PDP consent required).
+/// Public waitlist sign-ups - pre-launch email capture (UU PDP consent required).
 model WaitlistEntry {
   id                    String                 @id @default(cuid())
   email                 String                 @unique
@@ -1280,7 +1280,7 @@ model WaitlistEntry {
   utmMedium             String?
   utmCampaign           String?
   utmContent            String?
-  /// SHA-256 prefix of client IP for abuse detection — not raw PII.
+  /// SHA-256 prefix of client IP for abuse detection - not raw PII.
   ipHash                String?
   /// Legacy field retained for compatibility. Waitlist consent confirms the entry immediately.
   emailVerifiedAt       DateTime?

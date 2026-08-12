@@ -24,7 +24,7 @@ const rateLimitDelayMs = Number(process.env.RESEND_SETUP_DELAY_MS ?? 150);
 if (!apiKey) throw new Error("RESEND_SETUP_API_KEY full-access sementara wajib di shell lokal.");
 if (!from || from === "[SENSITIVE]") {
   throw new Error(
-    "WAITLIST_EMAIL_FROM wajib diisi dengan sender terverifikasi, mis. `Bursa <belajar@bursanalar.com>`. Jangan load dari `vercel env pull` — nilai sensitif jadi `[SENSITIVE]`."
+    "WAITLIST_EMAIL_FROM wajib diisi dengan sender terverifikasi, mis. `Bursa <belajar@bursanalar.com>`. Jangan load dari `vercel env pull` - nilai sensitif jadi `[SENSITIVE]`."
   );
 }
 if (!replyTo) throw new Error("WAITLIST_REPLY_TO wajib diisi dengan mailbox yang dipantau.");

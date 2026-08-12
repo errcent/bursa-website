@@ -1,0 +1,13 @@
+name: "Bursa Website CodeQL"
+
+paths:
+  - src
+  - prisma
+  - scripts
+
+paths-ignore:
+  - node_modules
+  - .next
+  - coverage
+  - dist
+  - public/generated

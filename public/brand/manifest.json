@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-08-10T16:31:15.917Z",
+  "syncedAt": "2026-08-11T19:01:10.900Z",
   "entries": [
     {
       "source": "logo_product_bursa_navbar.png",
@@ -28,6 +28,10 @@
       "output": "brand/logo_icon_mark.png"
     },
     {
+      "source": "logo_icon_mark_full.png",
+      "output": "brand/logo_icon_mark_full.png"
+    },
+    {
       "source": "web_email_header_dark.png",
       "output": "brand/web_email_header_dark.png"
     },
@@ -46,9 +50,9 @@
       "note": "278KB"
     },
     {
-      "source": "logo_icon_mark.png",
-      "output": "favicon.ico",
-      "note": "derived"
+      "source": "logo_icon_mark_full.png",
+      "output": "favicon.ico + src/app/favicon.ico",
+      "note": "derived full-bleed (paddingRatio 0)"
     },
     {
       "source": "logo_icon_mark.png",

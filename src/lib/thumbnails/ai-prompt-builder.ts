@@ -1,6 +1,13 @@
 import type { Instrument, Level } from "@/lib/types";
 
+import {
+  MASTERCLASS_PORTRAIT_COURSE_SLUGS,
+  MASTERCLASS_PORTRAIT_PROMPTS,
+  MASTERCLASS_PORTRAIT_SEEDS,
+} from "./masterclass-prompts";
+
 export type ThumbnailKind = "course" | "playlist";
+export type ThumbnailStyle = "still-life" | "masterclass-portrait";
 
 export type ThumbnailPromptInput = {
   kind: ThumbnailKind;
@@ -88,8 +95,19 @@ function resolveHeroObject(input: ThumbnailPromptInput): string {
   );
 }
 
-/** Short object-only prompt — avoids portrait bias from longer narrative prompts. */
+/** Short object-only prompt - avoids portrait bias from longer narrative prompts. */
+export function getThumbnailStyle(kind: ThumbnailKind, slug: string): ThumbnailStyle {
+  if (kind === "course" && MASTERCLASS_PORTRAIT_COURSE_SLUGS.has(slug)) {
+    return "masterclass-portrait";
+  }
+  return "still-life";
+}
+
 export function buildAiThumbnailPrompt(input: ThumbnailPromptInput): string {
+  if (input.kind === "course" && MASTERCLASS_PORTRAIT_PROMPTS[input.slug]) {
+    return MASTERCLASS_PORTRAIT_PROMPTS[input.slug];
+  }
+
   const heroObject = resolveHeroObject(input);
   const accent =
     input.instrument != null
@@ -100,6 +118,10 @@ export function buildAiThumbnailPrompt(input: ThumbnailPromptInput): string {
 }
 
 export function slugToSeed(slug: string): number {
+  if (MASTERCLASS_PORTRAIT_SEEDS[slug] !== undefined) {
+    return MASTERCLASS_PORTRAIT_SEEDS[slug];
+  }
+
   let hash = 0;
   for (let i = 0; i < slug.length; i += 1) {
     hash = (hash * 31 + slug.charCodeAt(i)) >>> 0;

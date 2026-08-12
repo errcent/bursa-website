@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 const RADIAL_EXIT_EASE = [0.19, 1, 0.22, 1] as const;
 
-/** Timeline (seconds), total ~1.4s — keep premium but don't block the fold. */
+/** Timeline (seconds), total ~1.4s - keep premium but don't block the fold. */
 const T_BLANK = 0.18;
 const T = {
   blank: T_BLANK,

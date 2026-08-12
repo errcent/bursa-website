@@ -10,7 +10,7 @@ import {
 } from "@/lib/auth/web-session";
 import { loginSchema } from "@/lib/auth/validation";
 
-/** Generic login failure — do not reveal whether identifier exists (OWASP A07). */
+/** Generic login failure - do not reveal whether identifier exists (OWASP A07). */
 const GENERIC_LOGIN_ERROR = "Email, username, atau kata sandi salah.";
 
 export async function POST(request: NextRequest) {

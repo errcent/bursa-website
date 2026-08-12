@@ -16,8 +16,9 @@ import {
 } from "@/lib/video/lesson-access";
 import type { Course, Lesson, Mentor } from "@/lib/types";
 
+/** Notes aligned with "Support & Resistance Praktis" (swing teknikal). */
 const DEMO_NOTE_FULL =
-  "<p><strong>Support area 1.0850</strong>, tunggu konfirmasi volume sebelum entry.</p><p>Risk 1% per posisi, stop di bawah swing low terakhir.</p>";
+  "<p><strong>Level S/R di swing high/low terakhir</strong>. Tunggu konfirmasi candle penutupan sebelum entry.</p><p>Risk 1% per posisi. Stop di bawah swing low yang valid, target di resistance berikutnya.</p>";
 
 type DeviceLearningPreviewProps = {
   course: Course;
@@ -26,24 +27,24 @@ type DeviceLearningPreviewProps = {
   completedLessonIds: string[];
   className?: string;
   scrollProgress: MotionValue<number>;
+  /** Global scroll progress where workspace phase begins (default 0.52). */
+  workspaceStart?: number;
   highlightFullscreenControl?: boolean;
 };
-
-function pickDemoLesson(course: Course): Lesson {
-  const all = course.modules.flatMap((m) => m.lessons);
-  return all[1] ?? all[0]!;
-}
 
 export function DeviceLearningPreview({
   course,
   mentor,
-  lesson: initialLesson,
+  lesson,
   completedLessonIds,
   className,
   scrollProgress,
+  workspaceStart = 0.52,
   highlightFullscreenControl = false,
 }: DeviceLearningPreviewProps) {
-  const lesson = useMemo(() => pickDemoLesson(course) ?? initialLesson, [course, initialLesson]);
+  const listEnd = workspaceStart + 0.12;
+  const notesEnd = workspaceStart + 0.32;
+  const noteWindow = notesEnd - listEnd;
 
   const [sidebarTab, setSidebarTab] = useState<"list" | "notes">("list");
   const [simulatedFullscreen, setSimulatedFullscreen] = useState(false);
@@ -53,33 +54,35 @@ export function DeviceLearningPreview({
   const [pulseFullscreen, setPulseFullscreen] = useState(highlightFullscreenControl);
 
   useMotionValueEvent(scrollProgress, "change", (p) => {
-    if (p < 0.52) {
+    if (p < workspaceStart + 0.08) {
       setSidebarTab("list");
       setSimulatedFullscreen(false);
       setMockupAutoPlay(false);
       setNoteReveal(0);
-      setSidebarScrollY(Math.max(0, Math.round(((p - 0.42) / 0.1) * 88)));
+      setSidebarScrollY(
+        Math.max(0, Math.round(((p - workspaceStart) / 0.12) * 64))
+      );
       setPulseFullscreen(false);
       return;
     }
 
-    if (p < 0.62) {
+    if (p < listEnd) {
       setSidebarTab("list");
       setSimulatedFullscreen(false);
       setMockupAutoPlay(true);
       setNoteReveal(0);
-      setSidebarScrollY(88);
+      setSidebarScrollY(64);
       setPulseFullscreen(false);
       return;
     }
 
-    if (p < 0.78) {
+    if (p < notesEnd) {
       setSidebarTab("notes");
       setSimulatedFullscreen(false);
       setMockupAutoPlay(true);
-      setNoteReveal(Math.min(1, (p - 0.62) / 0.14));
-      setSidebarScrollY(88);
-      setPulseFullscreen(p >= 0.72);
+      setNoteReveal(Math.min(1, (p - listEnd) / noteWindow));
+      setSidebarScrollY(64);
+      setPulseFullscreen(p >= notesEnd - 0.06);
       return;
     }
 
@@ -87,20 +90,30 @@ export function DeviceLearningPreview({
     setSimulatedFullscreen(true);
     setMockupAutoPlay(true);
     setNoteReveal(1);
-    setSidebarScrollY(88);
+    setSidebarScrollY(64);
     setPulseFullscreen(false);
   });
 
   useEffect(() => {
     const p = scrollProgress.get();
-    setSidebarScrollY(p < 0.52 ? Math.max(0, Math.round(((p - 0.42) / 0.1) * 88)) : 88);
-  }, [scrollProgress]);
+    setSidebarScrollY(
+      p < listEnd
+        ? Math.max(0, Math.round(((p - workspaceStart) / 0.12) * 64))
+        : 64
+    );
+  }, [listEnd, scrollProgress, workspaceStart]);
 
-  const completed = new Set(completedLessonIds);
-  const allLessons = course.modules.flatMap((m) => m.lessons);
+  const completed = useMemo(() => new Set(completedLessonIds), [completedLessonIds]);
+  const allLessons = useMemo(
+    () => course.modules.flatMap((m) => m.lessons),
+    [course.modules]
+  );
   const progressPercent = computeProgressPercent(completed.size, allLessons.length);
   const lessonContext = findLessonInCourse(course, lesson.id);
-  const demoNoteHtml = DEMO_NOTE_FULL.slice(0, Math.round(DEMO_NOTE_FULL.length * noteReveal));
+  const demoNoteHtml = DEMO_NOTE_FULL.slice(
+    0,
+    Math.round(DEMO_NOTE_FULL.length * noteReveal)
+  );
 
   const videoPlayer = (
     <ProtectedVideoPlayer

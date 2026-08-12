@@ -1,7 +1,7 @@
 /**
  * Single source of truth for the developer docs sidebar/TOC + client-side search.
  * Keep `id` in sync with the `id` prop on each <DocSection> in
- * src/app/developer/docs/page.tsx — the nav links to `#${id}`.
+ * src/app/developer/docs/page.tsx - the nav links to `#${id}`.
  *
  * `keywords` are extra search terms (route paths, code identifiers, synonyms)
  * that don't appear in the visible label, so the search box can match on

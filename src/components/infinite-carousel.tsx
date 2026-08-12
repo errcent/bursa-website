@@ -19,6 +19,7 @@ import {
   useDragControls,
   useMotionValue,
   useReducedMotion,
+  useTransform,
   type MotionValue,
   type PanInfo,
 } from "motion/react";
@@ -30,6 +31,12 @@ export const DEFAULT_CAROUSEL_PEEK_RATIO = 0.76;
 export const DEFAULT_AUTO_SCROLL_PX_PER_SEC = 30;
 const RESUME_DELAY_MS = 900;
 const RESUME_RAMP_MS = 700;
+
+const COVERFLOW_SCALE_MIN = 0.82;
+/** Stay near full size across a wide center band (in card-widths). */
+const COVERFLOW_PLATEAU = 0.55;
+/** Distance after the plateau over which scale eases down to min. */
+const COVERFLOW_FALLOFF = 1.65;
 
 export function defaultGetPerView(_width: number) {
   return 1;
@@ -50,6 +57,95 @@ export interface InfiniteCarouselSlideProps {
   x: MotionValue<number>;
   reducedMotion: boolean;
   gap: number;
+  centerPadding?: number;
+}
+
+function coverflowDistanceNorm(
+  xValue: number,
+  index: number,
+  itemWidth: number,
+  containerWidth: number,
+  gap: number,
+  centerPadding: number
+) {
+  const stride = itemWidth + gap;
+  const slideCenter = centerPadding + index * stride + itemWidth / 2 + xValue;
+  return (slideCenter - containerWidth / 2) / itemWidth;
+}
+
+/** Ken Perlin smootherstep - C2 continuous, no linear kink. */
+function smootherstep(t: number) {
+  const x = Math.min(1, Math.max(0, t));
+  return x * x * x * (x * (x * 6 - 15) + 10);
+}
+
+/** Wide soft center + silky falloff (not a triangular linear ramp). */
+function coverflowScaleFromDistance(distanceNorm: number) {
+  const abs = Math.abs(distanceNorm);
+  if (abs <= COVERFLOW_PLATEAU) return 1;
+  const t = (abs - COVERFLOW_PLATEAU) / COVERFLOW_FALLOFF;
+  return 1 - smootherstep(t) * (1 - COVERFLOW_SCALE_MIN);
+}
+
+function CoverflowSlide({
+  children,
+  index,
+  itemWidth,
+  containerWidth,
+  x,
+  gap,
+  reducedMotion,
+  centerPadding = 0,
+}: {
+  children: ReactNode;
+  index: number;
+  itemWidth: number;
+  containerWidth: number;
+  x: MotionValue<number>;
+  gap: number;
+  reducedMotion: boolean;
+  centerPadding?: number;
+}) {
+  const scale = useTransform(x, (latest) => {
+    if (reducedMotion || itemWidth <= 0 || containerWidth <= 0) return 1;
+    return coverflowScaleFromDistance(
+      coverflowDistanceNorm(
+        latest,
+        index,
+        itemWidth,
+        containerWidth,
+        gap,
+        centerPadding
+      )
+    );
+  });
+
+  const transform = useTransform(scale, (value) => `scale(${value})`);
+
+  const zIndex = useTransform(x, (latest) => {
+    if (itemWidth <= 0 || containerWidth <= 0) return 1;
+    const distanceNorm = Math.abs(
+      coverflowDistanceNorm(latest, index, itemWidth, containerWidth, gap, centerPadding)
+    );
+    return Math.round(40 - distanceNorm * 12);
+  });
+
+  if (reducedMotion) {
+    return <div className="h-full w-full">{children}</div>;
+  }
+
+  return (
+    <motion.div
+      className="h-full w-full will-change-transform"
+      style={{
+        transform,
+        transformOrigin: "center center",
+        zIndex,
+      }}
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 export type InfiniteCarouselHandle = {
@@ -73,6 +169,8 @@ export interface UseInfiniteCarouselOptions<T> {
   onActiveIndexChange?: (index: number) => void;
   /** Allow horizontal drag starting on slide content (e.g. guidance mentor tiles). */
   allowDragFromSlides?: boolean;
+  /** Treat the card nearest viewport center as active (coverflow). */
+  alignActiveToCenter?: boolean;
 }
 
 export function useInfiniteCarousel<T>({
@@ -86,6 +184,7 @@ export function useInfiniteCarousel<T>({
   externalPaused = false,
   onActiveIndexChange,
   allowDragFromSlides = false,
+  alignActiveToCenter = false,
 }: UseInfiniteCarouselOptions<T>) {
   const prefersReducedMotion = useReducedMotion() ?? false;
   const dragControls = useDragControls();
@@ -193,13 +292,43 @@ export function useInfiniteCarousel<T>({
       const stride = layout.itemWidth + gap;
       if (stride <= 0) return;
 
+      if (alignActiveToCenter && layout.containerWidth > 0 && layout.itemWidth > 0) {
+        const centerX = layout.containerWidth / 2;
+        let bestIdx = 0;
+        let bestDist = Number.POSITIVE_INFINITY;
+
+        for (let i = 0; i < items.length; i++) {
+          for (const setOffset of [0, items.length]) {
+            const slideCenter =
+              (i + setOffset) * stride + layout.itemWidth / 2 + value;
+            const dist = Math.abs(slideCenter - centerX);
+            if (dist < bestDist) {
+              bestDist = dist;
+              bestIdx = i;
+            }
+          }
+        }
+
+        setActiveIndex(bestIdx);
+        onActiveIndexChange?.(bestIdx);
+        return;
+      }
+
       const normalized =
         ((Math.abs(wrapOffset(value, setWidth)) % setWidth) + setWidth) % setWidth;
       const idx = Math.round(normalized / stride) % items.length;
       setActiveIndex(idx);
       onActiveIndexChange?.(idx);
     });
-  }, [gap, items.length, layout.itemWidth, onActiveIndexChange, x]);
+  }, [
+    alignActiveToCenter,
+    gap,
+    items.length,
+    layout.containerWidth,
+    layout.itemWidth,
+    onActiveIndexChange,
+    x,
+  ]);
 
   useAnimationFrame((_time, delta) => {
     if (prefersReducedMotion) return;
@@ -351,6 +480,8 @@ export interface InfiniteCarouselViewportProps<T> {
   centered?: boolean;
   /** Hide edge gradient fades (e.g. inside discover shell). */
   hideEdgeFades?: boolean;
+  /** Center-weighted scale/opacity for a premium coverflow look. */
+  coverflow?: boolean;
 }
 
 export function InfiniteCarouselViewport<T>({
@@ -364,6 +495,7 @@ export function InfiniteCarouselViewport<T>({
   hideDots = false,
   centered = false,
   hideEdgeFades = false,
+  coverflow = false,
 }: InfiniteCarouselViewportProps<T>) {
   const {
     ariaLabel,
@@ -400,7 +532,14 @@ export function InfiniteCarouselViewport<T>({
       : 0;
 
   return (
-    <div className={cn("relative", centered && "discover-infinite-carousel", className)}>
+    <div
+      className={cn(
+        "relative",
+        centered && "discover-infinite-carousel",
+        coverflow && "discover-coverflow",
+        className
+      )}
+    >
       <div
         ref={containerRef}
         className="group/carousel relative touch-pan-y outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -440,7 +579,9 @@ export function InfiniteCarouselViewport<T>({
         ) : null}
 
         <div
-          className="overflow-hidden"
+          className={cn(
+            coverflow ? "discover-coverflow__viewport" : "overflow-hidden"
+          )}
           style={
             centered
               ? {
@@ -452,11 +593,16 @@ export function InfiniteCarouselViewport<T>({
           <motion.div
             className={cn(
               "flex w-max max-w-none",
+              coverflow && "discover-coverflow__track",
               centered && centerPadding === 0 && "mx-auto",
               dragging ? "cursor-grabbing" : "cursor-grab",
               !prefersReducedMotion && !paused && "motion-safe:transition-none"
             )}
-            style={{ x, gap, touchAction: allowDragFromSlides ? "pan-x pinch-zoom" : "pan-y" }}
+            style={{
+              x,
+              gap,
+              touchAction: allowDragFromSlides ? "pan-x pinch-zoom" : "pan-y",
+            }}
             drag={prefersReducedMotion ? false : "x"}
             dragControls={dragControls}
             dragListener={false}
@@ -477,29 +623,49 @@ export function InfiniteCarouselViewport<T>({
             onDragEnd={handleDragEnd}
             whileTap={prefersReducedMotion ? undefined : { cursor: "grabbing" }}
           >
-            {duplicated.map((item, i) => (
-              <div
-                key={getItemKey(item, i)}
-                data-carousel-card
-                className="shrink-0"
-                style={
-                  fixedItemWidth
-                    ? { width: fixedItemWidth }
-                    : layout.itemWidth > 0
-                      ? { width: layout.itemWidth }
-                      : undefined
-                }
-              >
-                {renderSlide(item, {
-                  index: i,
-                  itemWidth: layout.itemWidth,
-                  containerWidth: layout.containerWidth,
-                  x,
-                  reducedMotion: prefersReducedMotion,
-                  gap,
-                })}
-              </div>
-            ))}
+            {duplicated.map((item, i) => {
+              const slideProps: InfiniteCarouselSlideProps = {
+                index: i,
+                itemWidth: layout.itemWidth,
+                containerWidth: layout.containerWidth,
+                x,
+                reducedMotion: prefersReducedMotion,
+                gap,
+                centerPadding,
+              };
+              const content = renderSlide(item, slideProps);
+
+              return (
+                <div
+                  key={getItemKey(item, i)}
+                  data-carousel-card
+                  className={cn("shrink-0", coverflow && "discover-coverflow__slide")}
+                  style={
+                    fixedItemWidth
+                      ? { width: fixedItemWidth }
+                      : layout.itemWidth > 0
+                        ? { width: layout.itemWidth }
+                        : undefined
+                  }
+                >
+                  {coverflow ? (
+                    <CoverflowSlide
+                      index={i}
+                      itemWidth={layout.itemWidth}
+                      containerWidth={layout.containerWidth}
+                      x={x}
+                      gap={gap}
+                      reducedMotion={prefersReducedMotion}
+                      centerPadding={centerPadding}
+                    >
+                      {content}
+                    </CoverflowSlide>
+                  ) : (
+                    content
+                  )}
+                </div>
+              );
+            })}
           </motion.div>
         </div>
 
@@ -554,6 +720,8 @@ export interface DiscoverInfiniteCarouselProps<T> {
   renderItem: (item: T, index: number) => ReactNode;
   className?: string;
   allowDragFromSlides?: boolean;
+  /** Center-weighted flat scale for coverflow emphasis (no 3D rotate). */
+  coverflow?: boolean;
 }
 
 export const DiscoverInfiniteCarousel = forwardRef(function DiscoverInfiniteCarousel<T>(
@@ -569,6 +737,7 @@ export const DiscoverInfiniteCarousel = forwardRef(function DiscoverInfiniteCaro
     renderItem,
     className,
     allowDragFromSlides = false,
+    coverflow = false,
   }: DiscoverInfiniteCarouselProps<T>,
   ref: ForwardedRef<InfiniteCarouselHandle>
 ) {
@@ -581,6 +750,7 @@ export const DiscoverInfiniteCarousel = forwardRef(function DiscoverInfiniteCaro
     externalPaused: autoPlayPaused,
     onActiveIndexChange,
     allowDragFromSlides,
+    alignActiveToCenter: coverflow,
   });
 
   useImperativeHandle(
@@ -603,6 +773,7 @@ export const DiscoverInfiniteCarousel = forwardRef(function DiscoverInfiniteCaro
       className={className}
       hideDots
       centered
+      coverflow={coverflow}
     />
   );
 }) as <T>(

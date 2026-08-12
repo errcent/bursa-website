@@ -1,7 +1,7 @@
 /**
- * RAG indexer — parses vault docs into KnowledgeChunk rows.
+ * RAG indexer - parses vault docs into KnowledgeChunk rows.
  * Scope: Documentation/03 (product) + Documentation/04/03 As-Built only.
- * Run: npm run index-docs (weekly cron or on deploy — not realtime full vault)
+ * Run: npm run index-docs (weekly cron or on deploy - not realtime full vault)
  *
  * Embedding generation is stubbed until AI_GATEWAY_URL is configured.
  */
@@ -171,7 +171,7 @@ async function main() {
 
   console.log(`[index-docs] Upserted ${upserted} chunks`);
   console.log(
-    "[index-docs] Embedding stub — configure AI_GATEWAY_URL for vector generation"
+    "[index-docs] Embedding stub - configure AI_GATEWAY_URL for vector generation"
   );
 }
 

@@ -12,7 +12,7 @@ import {
 /**
  * Accumulate server-verified watch time for a lesson (QC-20260719-46). The client pings this
  * while the video plays; the server credits real elapsed playback (clamped) so completion can
- * only be granted once verified watch time crosses the threshold — never on a forged number.
+ * only be granted once verified watch time crosses the threshold - never on a forged number.
  */
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => ({}))) as {

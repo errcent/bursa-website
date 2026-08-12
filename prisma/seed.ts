@@ -27,7 +27,7 @@ import {
 import type { Level } from "../src/lib/types";
 
 /**
- * Seed prices/amounts come from mock-data.ts and are DEMO/SEED only —
+ * Seed prices/amounts come from mock-data.ts and are DEMO/SEED only -
  * not a Decision OS calibrated market lock (publicListLocked=false).
  */
 
@@ -316,7 +316,7 @@ async function main() {
         userId: learner.id,
         ticker: "BBCA",
         instrument: Instrument.SAHAM,
-        notes: "Watchlist dari seed — emiten perbankan blue chip",
+        notes: "Watchlist dari seed - emiten perbankan blue chip",
       },
       {
         userId: learner.id,
@@ -359,7 +359,7 @@ async function main() {
       slug: "komunitas-publik",
       name: "Komunitas Publik Bursa",
       description:
-        "Ruang publik terbuka untuk semua anggota — diskusi umum pasar dan komunitas trading.",
+        "Ruang publik terbuka untuk semua anggota - diskusi umum pasar dan komunitas trading.",
       roomKind: ChatRoomKind.PUBLIC,
       tier: ChatRoomTier.PEMULA,
       isProtected: false,
@@ -401,7 +401,7 @@ async function main() {
         data: {
           mentorId,
           slug: `${config.slug}-${mentor.slug}`,
-          name: `${config.name} — ${mentor.initials}`,
+          name: `${config.name} - ${mentor.initials}`,
           description: config.description,
           roomKind: config.roomKind,
           tier: config.tier,
@@ -419,7 +419,7 @@ async function main() {
         },
       });
 
-      // Demo learner is enrolled in Andra's first course — only subscribe to that hub.
+      // Demo learner is enrolled in Andra's first course - only subscribe to that hub.
       // Other mentor hubs stay hidden until the learner enrolls / joins.
       if (mentor.slug === "andra-wicaksono") {
         await prisma.chatRoomMember.create({
@@ -441,7 +441,7 @@ async function main() {
             roomId: room.id,
             name: "Pengumuman",
             slug: "pengumuman",
-            description: "Cabang publik 1 arah — hanya mentor yang mengirim.",
+            description: "Cabang publik 1 arah - hanya mentor yang mengirim.",
             mode: ChatBranchMode.ONE_WAY,
             senderPolicy: ChatBranchSenderPolicy.MENTOR_ONLY,
             visibility: ChatBranchVisibility.PUBLIC,
@@ -453,7 +453,7 @@ async function main() {
             roomId: room.id,
             name: "Diskusi",
             slug: "diskusi",
-            description: "Cabang publik 2 arah — anggota dapat berbalas dengan mentor.",
+            description: "Cabang publik 2 arah - anggota dapat berbalas dengan mentor.",
             mode: ChatBranchMode.TWO_WAY,
             senderPolicy: ChatBranchSenderPolicy.MENTOR_ONLY,
             visibility: ChatBranchVisibility.PUBLIC,
@@ -465,7 +465,7 @@ async function main() {
             roomId: room.id,
             name: "Internal",
             slug: "internal",
-            description: "Cabang privat — hanya mentor dan moderator.",
+            description: "Cabang privat - hanya mentor dan moderator.",
             mode: ChatBranchMode.ONE_WAY,
             senderPolicy: ChatBranchSenderPolicy.MENTOR_AND_MODERATORS,
             visibility: ChatBranchVisibility.PRIVATE,
@@ -509,7 +509,7 @@ async function main() {
             roomId: room.id,
             branchId: announcementBranchId,
             userId: mentorUserRecord.id,
-            content: `Sinyal baru: ${signal.ticker} — ${signal.direction}`,
+            content: `Sinyal baru: ${signal.ticker} - ${signal.direction}`,
             messageType: MessageType.SIGNAL,
             metadata: {
               signalId: signal.id,
@@ -667,7 +667,7 @@ async function main() {
           mentorId,
           startAt,
           endAt,
-          notes: i === 0 ? "Via Zoom — link dikirim setelah booking" : null,
+          notes: i === 0 ? "Via Zoom - link dikirim setelah booking" : null,
           createdByAdminId: adminUser?.id ?? null,
         },
       });

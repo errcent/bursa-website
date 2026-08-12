@@ -9,7 +9,7 @@ import {
 
 /**
  * Returns the active NextAuth (Google) session for client-side bridge into
- * localStorage auth — keeps existing prototype APIs working during migration.
+ * localStorage auth - keeps existing prototype APIs working during migration.
  * Requires a valid NextAuth session cookie (set only after OAuth CSRF-validated flow).
  */
 export async function GET() {

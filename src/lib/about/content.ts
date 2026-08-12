@@ -8,7 +8,7 @@ export const aboutHero = {
 export const aboutIntro = {
   title: "Apa itu Bursa?",
   paragraphs: [
-    "Bursa adalah platform edukasi trading di Indonesia yang menghadirkan banyak mentor dan instruktur dalam satu ekosistem belajar — dengan jalur kurasi kredensial yang sedang dibangun menuju verifikasi penuh. Kami mengumpulkan kelas berkualitas tinggi untuk saham, crypto, dan forex, dengan video berurutan, progress tracking, dan ruang komunitas per mentor.",
+    "Bursa adalah platform edukasi trading di Indonesia yang menghadirkan banyak mentor dan instruktur dalam satu ekosistem belajar, dengan jalur kurasi kredensial yang sedang dibangun menuju verifikasi penuh. Kami mengumpulkan kelas berkualitas tinggi untuk saham, crypto, dan forex, dengan video berurutan, progress tracking, dan ruang komunitas per mentor.",
     "Berbeda dari konten gratis yang tersebar atau kelas dari satu figur tanpa review independen, Bursa dibangun sebagai infrastruktur kepercayaan: setiap mentor dan kurikulum ditinjau tim sebelum tayang. Kamu bayar per kelas tanpa langganan bulanan, dan platform tidak mengelola dana tradingmu.",
   ],
 };

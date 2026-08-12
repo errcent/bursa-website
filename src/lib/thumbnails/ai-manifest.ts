@@ -2,8 +2,10 @@ import { courses } from "@/lib/mock-data";
 
 import {
   buildAiThumbnailPrompt,
+  getThumbnailStyle,
   slugToSeed,
   type ThumbnailKind,
+  type ThumbnailStyle,
 } from "./ai-prompt-builder";
 import { CURATED_PLAYLIST_META } from "./curated-playlist-meta";
 
@@ -14,6 +16,7 @@ export type ThumbnailManifestEntry = {
   prompt: string;
   seed: number;
   destinationPath: string;
+  style: ThumbnailStyle;
 };
 
 function courseVisualKeywords(
@@ -47,6 +50,7 @@ export const THUMBNAIL_MANIFEST: ThumbnailManifestEntry[] = [
     }),
     seed: slugToSeed(course.slug),
     destinationPath: `/kelas/${course.slug}`,
+    style: getThumbnailStyle("course", course.slug),
   })),
   ...CURATED_PLAYLIST_META.map((playlist) => ({
     kind: "playlist" as const,
@@ -65,6 +69,7 @@ export const THUMBNAIL_MANIFEST: ThumbnailManifestEntry[] = [
     }),
     seed: slugToSeed(playlist.slug),
     destinationPath: `/playlist/${playlist.slug}`,
+    style: getThumbnailStyle("playlist", playlist.slug),
   })),
 ];
 

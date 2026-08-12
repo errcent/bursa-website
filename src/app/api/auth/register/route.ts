@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     });
 
     const verifyToken = await createEmailVerificationToken(user.id);
-    // after() keeps the send off the response path while still guaranteeing it runs —
+    // after() keeps the send off the response path while still guaranteeing it runs -
     // a bare floating promise can be dropped when the serverless instance freezes.
     after(async () => {
       await Promise.all([

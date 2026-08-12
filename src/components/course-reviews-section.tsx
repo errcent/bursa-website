@@ -7,15 +7,9 @@ import { cn } from "@/lib/utils";
 
 interface CourseReviewsSectionProps {
   reviews: Review[];
-  rating?: number;
-  ratingCount?: number;
 }
 
-export function CourseReviewsSection({
-  reviews,
-  rating,
-  ratingCount,
-}: CourseReviewsSectionProps) {
+export function CourseReviewsSection({ reviews }: CourseReviewsSectionProps) {
   if (reviews.length === 0) return null;
 
   const showPreviewLabel = isPreviewCatalogActive();
@@ -28,15 +22,6 @@ export function CourseReviewsSection({
           {showPreviewLabel ? (
             <p className="mt-1.5 text-xs text-muted-foreground">{PREVIEW_CATALOG_COPY.reviewsLabel}</p>
           ) : null}
-          {rating !== undefined && rating > 0 && (
-            <p className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Star className="size-3.5 fill-foreground text-foreground" />
-              <span className="font-medium text-foreground">{rating.toFixed(1)}</span>
-              {ratingCount !== undefined && ratingCount > 0 && (
-                <span>· {ratingCount.toLocaleString("id-ID")} ulasan</span>
-              )}
-            </p>
-          )}
         </div>
       </div>
 

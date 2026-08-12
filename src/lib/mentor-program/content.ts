@@ -24,7 +24,7 @@ export const mentorBenefits: MentorBenefit[] = [
     icon: "wallet",
     title: "Pendapatan langsung ke kamu",
     description:
-      "Murid membayar per kelas langsung ke akun mentor. Working model (indikatif): komisi platform ~25%, sisanya (~75%) milikmu — rincian final sebelum konfirmasi.",
+      "Murid membayar per kelas langsung ke akun mentor. Working model (indikatif): komisi platform ~25%, sisanya (~75%) milikmu. Rincian final sebelum konfirmasi.",
   },
   {
     icon: "users",
@@ -141,7 +141,7 @@ export const mentorFaqs = [
   {
     question: "Apakah ada biaya untuk mendaftar sebagai mentor?",
     answer:
-      "Tidak ada biaya pendaftaran. Working model (indikatif): komisi platform ~25% dari setiap transaksi kelas yang berhasil, hanya saat kamu mendapatkan murid — belum dikunci Decision OS.",
+      "Tidak ada biaya pendaftaran. Working model (indikatif): komisi platform ~25% dari setiap transaksi kelas yang berhasil, hanya saat kamu mendapatkan murid. Belum dikunci Decision OS.",
   },
   {
     question: "Berapa lama proses verifikasi?",

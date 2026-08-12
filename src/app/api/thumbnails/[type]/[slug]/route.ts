@@ -2,21 +2,21 @@ import { NextResponse } from "next/server";
 
 import { THUMBNAIL_PHOTOS_ENABLED } from "@/lib/thumbnails/constants";
 import { getThumbnailManifestEntry } from "@/lib/thumbnails/ai-manifest";
+import { negativePromptForStyle } from "@/lib/thumbnails/negative-prompts";
 import type { ThumbnailKind } from "@/lib/thumbnails/ai-prompt-builder";
 
 export const runtime = "nodejs";
 
 const VALID_KINDS = new Set<ThumbnailKind>(["course", "playlist"]);
 
-function pollinationsUrl(prompt: string, seed: number): string {
+function pollinationsUrl(prompt: string, seed: number, negative: string): string {
   const params = new URLSearchParams({
     width: "1280",
     height: "720",
     nologo: "true",
     seed: String(seed),
     model: "turbo",
-    negative:
-      "person, people, human, face, portrait, woman, man, model, text, logo, watermark, chart, candlestick, trading screen",
+    negative,
   });
   return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params.toString()}`;
 }
@@ -41,11 +41,29 @@ export async function GET(_request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Thumbnail not found" }, { status: 404 });
   }
 
+  // MasterClass portraits require pre-generated FLUX assets - Pollinations is not realistic enough.
+  if (entry.style === "masterclass-portrait") {
+    return NextResponse.json(
+      {
+        error:
+          "Portrait thumbnail requires static asset at public/generated/thumbnails - generate with FLUX.2 Max",
+      },
+      { status: 404 }
+    );
+  }
+
   try {
-    const upstream = await fetch(pollinationsUrl(entry.prompt, entry.seed), {
-      headers: { Accept: "image/*" },
-      next: { revalidate: 60 * 60 * 24 * 7 },
-    });
+    const upstream = await fetch(
+      pollinationsUrl(
+        entry.prompt,
+        entry.seed,
+        negativePromptForStyle(entry.style)
+      ),
+      {
+        headers: { Accept: "image/*" },
+        next: { revalidate: 60 * 60 * 24 * 7 },
+      }
+    );
 
     if (!upstream.ok) {
       return NextResponse.json({ error: "Image generation failed" }, { status: 502 });

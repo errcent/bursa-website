@@ -7,27 +7,26 @@ import { HomeProblemSection } from "@/components/home/home-problem-section";
 import { HomeSolutionSection } from "@/components/home/home-solution-section";
 import { LandingViewTracker } from "@/components/analytics/landing-view-tracker";
 import { SiteFooter } from "@/components/site-footer";
-import { capSoftLaunchCourses } from "@/lib/decision-os/soft-launch";
+import type { PlaylistDetail, PlaylistSummary } from "@/lib/playlist/types";
 import type { Course, Mentor } from "@/lib/types";
 import { Suspense } from "react";
 
 export function HomePageContent({
-  courses,
   mentors,
+  playlists,
+  demoPlaylist,
   curriculumCourse,
   curriculumMentor,
+  preferredLessonLegacyId,
 }: {
   courses: Course[];
   mentors: Mentor[];
+  playlists: PlaylistSummary[];
+  demoPlaylist: PlaylistDetail | null;
   curriculumCourse?: Course | null;
   curriculumMentor?: Mentor | null;
+  preferredLessonLegacyId?: string | null;
 }) {
-  const featuredCourses = capSoftLaunchCourses(
-    [...courses].sort((a, b) => b.studentsCount - a.studentsCount)
-  );
-
-  const totalStudents = courses.reduce((sum, course) => sum + course.studentsCount, 0);
-
   return (
     <>
       <Suspense fallback={null}>
@@ -42,18 +41,16 @@ export function HomePageContent({
 
         <section id="kelas-unggulan" className="section-loose scroll-mt-24">
           <div className="container-page">
-            <HomeDiscoverSection
-              courses={featuredCourses}
-              mentors={mentors}
-              totalStudents={totalStudents}
-            />
+            <HomeDiscoverSection playlists={playlists} />
           </div>
         </section>
 
         <DeviceMockupSection
+          playlist={demoPlaylist}
+          catalogPlaylists={playlists}
           course={curriculumCourse ?? null}
           mentor={curriculumMentor ?? null}
-          catalogCourses={featuredCourses}
+          preferredLessonLegacyId={preferredLessonLegacyId ?? null}
           mentors={mentors}
         />
 

@@ -78,7 +78,7 @@ const FAQ_CACHE: Record<string, string> = {
   "cara daftar":
     "Buka /daftar, isi email dan kata sandi, atau gunakan Lanjutkan dengan Google di /masuk.",
   komisi:
-    "Working model (asumsi Decision OS, indikatif): komisi platform ~25% per transaksi course. Harga mentor-set = kebijakan asumsi — belum dikunci data/Evidence ID.",
+    "Working model (asumsi Decision OS, indikatif): komisi platform ~25% per transaksi course. Harga mentor-set = kebijakan asumsi, belum dikunci data/Evidence ID.",
   disclaimer:
     "Konten edukasi trading bukan rekomendasi investasi. Trading mengandung risiko kerugian.",
 };

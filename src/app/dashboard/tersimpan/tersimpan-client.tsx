@@ -156,7 +156,7 @@ export default function TersimpanClient() {
               <p className="eyebrow mb-3">Dashboard</p>
               <h1 className="page-hero-title text-gradient">Tersimpan</h1>
               <p className="section-copy mt-4 max-w-lg text-pretty">
-                Kelas, video, playlist, dan mentor yang kamu simpan — tersinkron saat masuk.
+                Kelas, video, playlist, dan mentor yang kamu simpan. Tersinkron saat masuk.
               </p>
             </div>
           </div>

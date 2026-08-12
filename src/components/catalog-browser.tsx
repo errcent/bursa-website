@@ -17,6 +17,7 @@ import {
   SCROLL_CAROUSEL_GAP,
   ScrollCarousel,
   catalogCourseGetScrollPerView,
+  catalogPlaylistGetScrollPerView,
   mentorGetScrollPerView,
 } from "@/components/scroll-carousel";
 import { SnapPresence } from "@/components/motion/snap";
@@ -58,7 +59,7 @@ function CatalogPlaylistRow({ title, playlists }: { title: string; playlists: Pl
     <section className="catalog-row" aria-label={title}>
       <h3 className="catalog-row-title">{title}</h3>
       <div className="catalog-row-bleed md:hidden">
-        <div className="catalog-row-scroll">
+        <div className="catalog-row-scroll catalog-row-scroll--playlist">
           {playlists.map((playlist) => (
             <PlaylistCard key={playlist.id} playlist={playlist} className="w-full" variant="catalog" />
           ))}
@@ -67,7 +68,7 @@ function CatalogPlaylistRow({ title, playlists }: { title: string; playlists: Pl
       <div className="catalog-row-bleed hidden md:block">
         <ScrollCarousel
           ariaLabel={title}
-          getPerView={catalogCourseGetScrollPerView}
+          getPerView={catalogPlaylistGetScrollPerView}
           gap={SCROLL_CAROUSEL_GAP}
         >
           {playlists.map((playlist) => (
@@ -168,18 +169,6 @@ export function CatalogBrowser({
       .filter((c): c is Course => Boolean(c));
   }, [courses, isAuthenticated, learningCourses]);
 
-  const newCourses = useMemo(
-    () =>
-      [...courses]
-        .sort((a, b) => {
-          const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return bTime - aTime;
-        })
-        .slice(0, 10),
-    [courses]
-  );
-
   const instrumentCourseRows = useMemo(() => {
     const byInstrument = (inst: Instrument) =>
       rankCoursesByQuality(
@@ -218,13 +207,6 @@ export function CatalogBrowser({
               <CatalogCourseRow
                 title="Lanjutkan Menonton"
                 courses={continueWatchingCourses}
-                enrollmentBySlug={enrollmentBySlug}
-                mentorBySlug={mentorBySlug}
-                cardVariant="catalog"
-              />
-              <CatalogCourseRow
-                title="Baru di Bursa"
-                courses={newCourses}
                 enrollmentBySlug={enrollmentBySlug}
                 mentorBySlug={mentorBySlug}
                 cardVariant="catalog"

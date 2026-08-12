@@ -10,6 +10,7 @@ import {
   DISCOVER_MOBILE_PEEK_RATIO,
   SCROLL_CAROUSEL_GAP,
   ScrollCarousel,
+  discoverCoverflowGetScrollPerView,
   discoverCourseGetScrollPerView,
   peekGetScrollPerView,
   type ScrollCarouselHandle,
@@ -33,7 +34,7 @@ interface CourseCarouselProps {
   hideHeader?: boolean;
   /** Hide bookmark buttons on cards (landing page). */
   hideBookmark?: boolean;
-  /** Match card sizing with mentor carousel inside HomeDiscoverSection. */
+  /** Landing discover: coverflow sizing inside HomeDiscoverSection. */
   discoverMode?: boolean;
   /** Pause autoplay (e.g. when discover tab is inactive). */
   autoPlayPaused?: boolean;
@@ -109,13 +110,15 @@ export function CourseCarousel({
       ref={discoverCarouselRef}
       items={courses}
       ariaLabel="Ragam kelas di Bursa"
-      getPerView={discoverCourseGetScrollPerView}
+      getPerView={discoverCoverflowGetScrollPerView}
       gap={isMobile ? LANDING_MOBILE_GAP : SCROLL_CAROUSEL_GAP}
       mobilePeekRatio={DISCOVER_MOBILE_PEEK_RATIO}
       autoPlayPaused={autoPlayPaused}
       onActiveIndexChange={setActiveIndex}
       getItemKey={(course) => course.slug}
-      renderItem={(course, index) => (
+      coverflow
+      allowDragFromSlides
+      renderItem={(course) => (
         <CourseCard
           course={course}
           className="w-full"

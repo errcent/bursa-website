@@ -8,18 +8,16 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { THUMBNAIL_MANIFEST } from "../src/lib/thumbnails/ai-manifest";
+import { negativePromptForStyle } from "../src/lib/thumbnails/negative-prompts";
 
-const NEGATIVE_PROMPT =
-  "person, people, human, face, portrait, woman, man, model, selfie, body, hands, fingers, anime, character, text, typography, logo, watermark, ui, chart, candlestick, trading screen";
-
-function pollinationsUrl(prompt: string, seed: number): string {
+function pollinationsUrl(prompt: string, seed: number, negative: string): string {
   const params = new URLSearchParams({
     width: "1280",
     height: "720",
     nologo: "true",
     seed: String(seed),
     model: "turbo",
-    negative: NEGATIVE_PROMPT,
+    negative: negative,
   });
   return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params.toString()}`;
 }
@@ -28,7 +26,8 @@ async function downloadEntry(
   kind: string,
   slug: string,
   prompt: string,
-  seed: number
+  seed: number,
+  negative: string
 ): Promise<void> {
   const dest = path.join(
     process.cwd(),
@@ -41,7 +40,7 @@ async function downloadEntry(
 
   fs.mkdirSync(path.dirname(dest), { recursive: true });
 
-  const res = await fetch(pollinationsUrl(prompt, seed), {
+  const res = await fetch(pollinationsUrl(prompt, seed, negative), {
     headers: { Accept: "image/*" },
   });
 
@@ -58,8 +57,20 @@ async function main() {
   console.log(`Generating ${THUMBNAIL_MANIFEST.length} AI thumbnails…\n`);
 
   for (const entry of THUMBNAIL_MANIFEST) {
+    if (entry.style === "masterclass-portrait") {
+      console.log(
+        `⊘ ${entry.kind}/${entry.slug}: skip - use FLUX.2 Max via /studio or BFL MCP`
+      );
+      continue;
+    }
     try {
-      await downloadEntry(entry.kind, entry.slug, entry.prompt, entry.seed);
+      await downloadEntry(
+        entry.kind,
+        entry.slug,
+        entry.prompt,
+        entry.seed,
+        negativePromptForStyle(entry.style)
+      );
       await new Promise((r) => setTimeout(r, 1500));
     } catch (error) {
       console.error(`✗ ${entry.kind}/${entry.slug}:`, error);
@@ -76,12 +87,13 @@ async function main() {
   fs.writeFileSync(
     promptsPath,
     JSON.stringify(
-      THUMBNAIL_MANIFEST.map(({ kind, slug, title, prompt, destinationPath }) => ({
+      THUMBNAIL_MANIFEST.map(({ kind, slug, title, prompt, destinationPath, style }) => ({
         kind,
         slug,
         title,
         destinationPath,
         prompt,
+        style,
       })),
       null,
       2

@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/** Idempotent toggle — returns `{ saved: boolean }`. */
+/** Idempotent toggle - returns `{ saved: boolean }`. */
 export async function POST(request: NextRequest) {
   try {
     const body = toggleBookmarkSchema.parse(await request.json());

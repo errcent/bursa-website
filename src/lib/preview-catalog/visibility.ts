@@ -5,7 +5,7 @@ export function isPreviewCatalogActive(): boolean {
 }
 
 /**
- * Layer 1 — dismissible banner on discovery surfaces only.
+ * Layer 1 - dismissible banner on discovery surfaces only.
  * Home keeps a clean fold (no amber “warehouse” sticker above the hero).
  */
 export function isPreviewBannerPath(pathname: string): boolean {

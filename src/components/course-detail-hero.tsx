@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Play } from "lucide-react";
 
+import { CourseThumbnail } from "@/components/course-thumbnail";
 import { Button } from "@/components/ui/button";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
 import type { Course, Mentor } from "@/lib/types";
@@ -26,12 +27,18 @@ export function CourseDetailHero({
   return (
     <section className="relative w-full overflow-hidden bg-black">
       <div className="relative mx-auto w-full max-w-[1800px] overflow-hidden max-sm:min-h-[34rem] max-sm:aspect-auto sm:aspect-video sm:max-h-[78vh]">
+        <CourseThumbnail
+          course={course}
+          fillSlot
+          className="absolute inset-0 z-0"
+        />
+
         <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent max-sm:via-black/35"
+          className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black via-black/50 to-transparent max-sm:via-black/35"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.5)_42%,transparent_72%)]"
+          className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(105deg,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.5)_42%,transparent_72%)]"
           aria-hidden
         />
 

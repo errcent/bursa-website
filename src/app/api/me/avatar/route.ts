@@ -34,7 +34,7 @@ function serializeProfile(user: {
 }
 
 /**
- * POST /api/me/avatar — multipart upload for profile photo.
+ * POST /api/me/avatar - multipart upload for profile photo.
  * Form fields: file (required), userId?, email?, name?, role?
  * Also accepts x-user-email / x-user-id headers.
  *
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * DELETE /api/me/avatar — remove the current user's profile photo.
+ * DELETE /api/me/avatar - remove the current user's profile photo.
  * Accepts identity via headers (x-user-email, x-user-id) or query params.
  */
 export async function DELETE(request: NextRequest) {

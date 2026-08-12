@@ -10,6 +10,7 @@ import type {
   LearningTradingStyle,
 } from "@prisma/client";
 
+import type { PlaylistSummary } from "@/lib/playlist/types";
 import type { Course, Instrument as UiInstrument, Level, Mentor } from "@/lib/types";
 
 /** Wire format sent from the quiz UI to the API. */
@@ -50,11 +51,24 @@ export interface ScoredMentor {
   reasons: string[];
 }
 
+export interface ScoredPlaylist {
+  playlist: PlaylistSummary;
+  score: number;
+  reasons: string[];
+}
+
 export interface LearningGuidanceResult {
-  summary: string;
+  /** Short path label, e.g. "Forex · Menengah". */
   pathTitle: string;
+  /** One-line profile read, kept brief for the results card. */
+  summary: string;
+  /** Compact chips for the results UI (style, goal, risk). */
+  profileTags: string[];
+  /** @deprecated Kept empty for older clients; narrative steps removed from UI. */
   pathSteps: string[];
   courses: ScoredCourse[];
+  playlists: ScoredPlaylist[];
+  /** @deprecated Always empty; mentor recommendations removed from guidance. */
   mentors: ScoredMentor[];
   profile?: LearningGuidanceProfileRecord;
 }

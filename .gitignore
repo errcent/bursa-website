@@ -57,6 +57,9 @@ next-env.d.ts
 /prisma/*.db
 /prisma/*.db-journal
 
+# image studio local data (generations + ledger)
+.data/image-studio/
+
 # local scratch / tooling output
 .video-frames/
 _check_out.txt

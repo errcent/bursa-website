@@ -242,7 +242,7 @@ export function getMockRevenueReport(): AdminRevenueReport {
   return {
     commissionRatePercent,
     dataSource: "transaction",
-    note: `Data demo/seed — bukan Decision OS lock. Komisi platform indikatif ${commissionRatePercent}% dari harga kelas.`,
+    note: `Data demo/seed, bukan Decision OS lock. Komisi platform indikatif ${commissionRatePercent}% dari harga kelas.`,
     totals: {
       transactionCount: lines.length,
       gross,

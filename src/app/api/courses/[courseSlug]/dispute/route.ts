@@ -27,7 +27,7 @@ const createDisputeSchema = z.object({
  *
  * There is deliberately NO money-back path. A dispute obligates the mentor to
  * respond/remediate; resolutions are content improvement, non-cash platform credit
- * toward ANOTHER course, or replacement access — handled downstream by mentor/admin.
+ * toward ANOTHER course, or replacement access - handled downstream by mentor/admin.
  */
 export async function POST(request: NextRequest, context: RouteContext) {
   try {

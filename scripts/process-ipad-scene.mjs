@@ -12,7 +12,7 @@ const svgInput = join(__dirname, "../public/mockups/sources/ipad-pro-frame.svg")
 const outDir = join(__dirname, "../public/mockups");
 mkdirSync(outDir, { recursive: true });
 
-/** Screen hole — percent of rendered PNG (matches ipad-pro-frame.svg bezel) */
+/** Screen hole - percent of rendered PNG (matches ipad-pro-frame.svg bezel) */
 const IPAD = {
   screen: { x: 3.56, y: 4.27, w: 92.88, h: 91.46, radius: 1.75 },
 };

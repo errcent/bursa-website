@@ -1,14 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Compass, RefreshCw, UserRound } from "lucide-react";
+import { ArrowRight, RefreshCw } from "lucide-react";
 
 import { CourseCard } from "@/components/course-card";
-import { MentorCard } from "@/components/mentor-card";
-import {
-  GuidanceMentorCarousel,
-  GuidanceReasonTags,
-} from "@/components/learning-guidance/guidance-mentor-carousel";
+import { GuidanceReasonTags } from "@/components/learning-guidance/guidance-mentor-carousel";
+import { PlaylistCard } from "@/components/playlist/playlist-card";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import type { LearningGuidanceResult } from "@/lib/learning/guidance/types";
@@ -20,10 +17,6 @@ const INSTRUMENT_UI: Record<string, Instrument> = {
   CRYPTO: "Crypto",
   FOREX: "Forex",
 };
-
-function ReasonTags({ reasons }: { reasons: string[] }) {
-  return <GuidanceReasonTags reasons={reasons} />;
-}
 
 export function GuidanceResults({
   result,
@@ -43,146 +36,127 @@ export function GuidanceResults({
     ? `/katalog?q=${encodeURIComponent(instrumentUi)}`
     : "/katalog";
   const showPreviewNote = process.env.NEXT_PUBLIC_CHECKOUT_ENABLED !== "true";
+  const playlists = result.playlists ?? [];
+  const profileTags = result.profileTags ?? [];
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 pb-[env(safe-area-inset-bottom,0px)] sm:gap-12">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-12 pb-[env(safe-area-inset-bottom,0px)] sm:gap-14">
       <Reveal>
-        <div className="surface-card flex flex-col gap-5 p-5 sm:gap-6 sm:p-8">
-          <div className="flex items-start gap-4">
-            <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-accent-soft/50">
-              <Compass className="size-5 text-accent" aria-hidden />
-            </div>
-            <div className="min-w-0 flex-1 space-y-2">
-              <p className="eyebrow-tight">Jalur belajar kamu</p>
-              <h2 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
-                {result.pathTitle}
-              </h2>
-              <p className="section-copy">{result.summary}</p>
-              {saved ? (
-                <p className="text-xs font-medium text-accent">Profil belajar tersimpan di akunmu.</p>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  <Link href="/masuk?next=/panduan-belajar/quiz" className="link-accent">
-                    Masuk
-                  </Link>{" "}
-                  untuk menyimpan jawaban dan rekomendasi ini.
-                </p>
-              )}
-            </div>
+        <header className="space-y-4 border-b border-border/50 pb-8">
+          <p className="eyebrow-tight text-muted-foreground">Profil belajar</p>
+          <div className="space-y-3">
+            <h2 className="font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              {result.pathTitle}
+            </h2>
+            {result.summary ? (
+              <p className="max-w-xl text-sm text-muted-foreground sm:text-[0.9375rem]">
+                {result.summary}
+              </p>
+            ) : null}
           </div>
-
-          <ol className="flex flex-col gap-3 border-t border-border/60 pt-5">
-            {result.pathSteps.map((step, index) => (
-              <li key={step} className="flex gap-3 text-sm leading-relaxed text-muted-foreground">
-                <span
-                  className="flex size-6 shrink-0 items-center justify-center rounded-md bg-accent-soft/60 font-mono text-[11px] font-semibold text-accent"
-                  aria-hidden
+          {profileTags.length > 0 ? (
+            <ul className="flex flex-wrap gap-2 pt-1">
+              {profileTags.map((tag) => (
+                <li
+                  key={tag}
+                  className="rounded-md border border-border/70 bg-surface/40 px-2.5 py-1 text-xs font-medium text-foreground/80"
                 >
-                  {index + 1}
-                </span>
-                <span className="pt-0.5">{step}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {!saved && !isLoggedIn ? (
+            <p className="text-xs text-muted-foreground">
+              <Link href="/masuk?next=/panduan-belajar/quiz" className="link-accent">
+                Masuk
+              </Link>{" "}
+              untuk menyimpan profil ini.
+            </p>
+          ) : saved ? (
+            <p className="text-xs font-medium text-accent">Tersimpan di akunmu.</p>
+          ) : null}
+        </header>
       </Reveal>
 
-      <section className="space-y-4">
+      <section className="space-y-5">
         <Reveal className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h3 className="section-title">Kelas yang direkomendasikan</h3>
+            <h3 className="section-title">Kelas</h3>
             {showPreviewNote ? (
               <p className="mt-1 text-xs text-muted-foreground">{PREVIEW_CATALOG_COPY.resultsNote}</p>
             ) : null}
-            <p className="mt-1 text-sm text-muted-foreground">
-              Diurutkan berdasarkan kecocokan profil, bukan harga.
-            </p>
           </div>
           <Link href={katalogHref} className="link-accent shrink-0 text-sm">
-            Lihat di katalog
+            Katalog
           </Link>
         </Reveal>
         {result.courses.length === 0 ? (
-          <div className="surface-card p-6 text-sm leading-relaxed text-muted-foreground">
-            Belum ada kelas yang cocok di katalog untuk kombinasi ini. Coba jelajahi{" "}
+          <div className="border-y border-border/60 py-8 text-sm text-muted-foreground">
+            Belum ada kelas yang cocok. Jelajahi{" "}
             <Link href={katalogHref} className="link-accent">
               katalog
-            </Link>{" "}
-            secara manual.
+            </Link>
+            .
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2">
             {result.courses.map(({ course, reasons }) => (
               <div key={course.slug} className="flex flex-col gap-2.5">
-                <CourseCard course={course} />
-                <ReasonTags reasons={reasons} />
+                <CourseCard course={course} hideBookmark />
+                <GuidanceReasonTags reasons={reasons.slice(0, 2)} />
               </div>
             ))}
           </div>
         )}
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-5">
         <Reveal className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h3 className="section-title flex items-center gap-2">
-              <UserRound className="size-4 text-accent" aria-hidden />
-              Mentor yang cocok
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Mentor yang dikurasi untuk instrumen pilihanmu.
-            </p>
-          </div>
-          <Link href="/katalog?view=instruktur" className="link-accent shrink-0 text-sm">
-            Lihat semua mentor
+          <h3 className="section-title">Playlist</h3>
+          <Link href="/katalog" className="link-accent shrink-0 text-sm">
+            Semua playlist
           </Link>
         </Reveal>
-        {result.mentors.length === 0 ? (
-          <div className="surface-card p-6 text-sm text-muted-foreground">
-            Belum ada mentor dikurasi untuk instrumen ini.
+        {playlists.length === 0 ? (
+          <div className="border-y border-border/60 py-8 text-sm text-muted-foreground">
+            Belum ada playlist yang cocok untuk profil ini.
           </div>
         ) : (
-          <>
-            <div className="md:hidden">
-              <GuidanceMentorCarousel mentors={result.mentors} />
-            </div>
-            <div className="hidden gap-5 md:grid md:grid-cols-2 lg:grid-cols-3">
-              {result.mentors.map(({ mentor, reasons }) => (
-                <div key={mentor.slug} className="flex flex-col gap-2.5">
-                  <MentorCard mentor={mentor} />
-                  <ReasonTags reasons={reasons} />
-                </div>
-              ))}
-            </div>
-          </>
+          <div className="grid gap-5 sm:grid-cols-2">
+            {playlists.map(({ playlist, reasons }) => (
+              <div key={playlist.id} className="flex flex-col gap-2.5">
+                <PlaylistCard playlist={playlist} variant="catalog" hideBookmark />
+                <GuidanceReasonTags reasons={reasons} />
+              </div>
+            ))}
+          </div>
         )}
       </section>
 
-      <Reveal>
-        <div className="rounded-2xl border border-border/60 bg-accent-soft/20 p-5 sm:p-6">
-          <p className="text-sm font-medium text-foreground/90">Catatan edukasi</p>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Rekomendasi ini membantu mempersempit pilihan berdasarkan jawaban kuis, bukan saran
-            investasi, prediksi pasar, atau jaminan hasil trading. Keputusan akhir tetap di tangan
-            kamu; evaluasi ulang profil jika tujuan atau toleransi risikomu berubah.
-          </p>
-        </div>
-      </Reveal>
-
-      <Reveal className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-        <Button render={<Link href={katalogHref} />} className="btn-primary w-full sm:w-auto">
-          Jelajahi kelas di katalog
-          <ArrowRight className="size-4" />
-        </Button>
-        {isLoggedIn ? (
-          <Button render={<Link href="/dashboard" />} variant="outline" className="w-full sm:w-auto">
-            Ke dashboard
+      <Reveal className="flex flex-col gap-4 border-t border-border/50 pt-8">
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          Rekomendasi berdasarkan jawaban kuis. Bukan saran investasi atau jaminan hasil.
+        </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <Button render={<Link href={katalogHref} />} className="btn-primary w-full sm:w-auto">
+            Jelajahi katalog
+            <ArrowRight className="size-4" />
           </Button>
-        ) : null}
-        <Button variant="ghost" onClick={onRetake} className="w-full sm:w-auto">
-          <RefreshCw className="size-4" />
-          Ulangi kuis
-        </Button>
+          {isLoggedIn ? (
+            <Button
+              render={<Link href="/dashboard" />}
+              variant="outline"
+              className="w-full sm:w-auto"
+            >
+              Dashboard
+            </Button>
+          ) : null}
+          <Button variant="ghost" onClick={onRetake} className="w-full sm:w-auto">
+            <RefreshCw className="size-4" />
+            Ulangi kuis
+          </Button>
+        </div>
       </Reveal>
     </div>
   );

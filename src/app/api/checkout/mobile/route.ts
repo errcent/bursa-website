@@ -11,7 +11,7 @@ const checkoutSchema = z.object({
 });
 
 /**
- * Mobile checkout bridge — returns web checkout URL for paid courses,
+ * Mobile checkout bridge - returns web checkout URL for paid courses,
  * or indicates free/prototype direct enroll path.
  */
 export async function POST(request: NextRequest) {

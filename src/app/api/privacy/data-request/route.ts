@@ -24,7 +24,7 @@ const schema = z.object({
   details: z.string().min(10),
 });
 
-/** Destructive request types must never be self-executed — they require a verified
+/** Destructive request types must never be self-executed - they require a verified
  * account + admin action downstream (QC-20260719-24). */
 const IDENTITY_REQUIRED: DataSubjectRequestType[] = [
   "DELETION",

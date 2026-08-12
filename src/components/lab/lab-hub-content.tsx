@@ -162,35 +162,27 @@ function FilteredResults({
   filteredTools: LabTool[];
   query: string;
 }) {
-  return (
-    <section aria-label="Hasil pencarian">
-      <SectionHeader
-        title={
-          filteredTools.length > 0
-            ? `${filteredTools.length} tool ditemukan`
-            : "Tidak ada tool yang cocok"
-        }
-        description={
-          filteredTools.length > 0
-            ? query
-              ? `Hasil untuk “${query}”.`
-              : "Pilih tool di bawah."
-            : "Coba kata kunci lain, misalnya pip, monte carlo, atau breakeven."
-        }
-      />
-      {filteredTools.length > 0 ? (
-        <ul className="mt-4 flex flex-col gap-2">
-          {filteredTools.map((tool) => (
-            <LabToolRow key={tool.id} tool={tool} />
-          ))}
-        </ul>
-      ) : (
-        <div className="mt-4 border-y border-border/60 py-8 text-center">
+  if (filteredTools.length === 0) {
+    return (
+      <section aria-label="Hasil pencarian">
+        <div className="border-y border-border/60 py-8 text-center">
           <p className="text-sm text-muted-foreground">
-            Tidak ada hasil. Reset pencarian atau pilih kategori lain.
+            {query
+              ? `Tidak ada hasil untuk “${query}”. Coba kata kunci lain.`
+              : "Tidak ada hasil. Reset pencarian atau pilih kategori lain."}
           </p>
         </div>
-      )}
+      </section>
+    );
+  }
+
+  return (
+    <section aria-label="Hasil pencarian">
+      <ul className="flex flex-col gap-2">
+        {filteredTools.map((tool) => (
+          <LabToolRow key={tool.id} tool={tool} />
+        ))}
+      </ul>
     </section>
   );
 }

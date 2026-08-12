@@ -18,7 +18,7 @@ const CANCEL_WINDOW_HOURS = 12;
  * non-refundable on-platform payment (LOCKED: not recurring, NO REFUND) and written to the
  * commission ledger atomically: a COMPLETED `Transaction` (kind=SESSION) + a 25%
  * `CommissionRecord` are created in the same `$transaction` as the atomic slot claim, so a
- * session booking can never leave payment without a ledger entry — nor a ledger entry without
+ * session booking can never leave payment without a ledger entry - nor a ledger entry without
  * a claimed slot (QC-20260719-21/22/31/42/47).
  */
 export async function POST(request: Request, context: RouteContext) {
@@ -146,7 +146,7 @@ export async function POST(request: Request, context: RouteContext) {
 
 /**
  * Cancel a booking. The commitment fee is a settled, non-refundable on-platform payment
- * (LOCKED: NO REFUND) — cancelling never returns money. The 12-hour window only sets the
+ * (LOCKED: NO REFUND) - cancelling never returns money. The 12-hour window only sets the
  * attendance signal (CANCELLED vs FORFEITED) for mentor reputation and frees the slot for
  * other learners; the recorded Transaction/CommissionRecord are left intact (QC-20260719-21/47).
  */

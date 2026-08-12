@@ -15,17 +15,17 @@ import { getCatalogCourses, getCatalogMentors } from "@/lib/catalog/server";
 import {
   analyzeProfile,
   scoreCourseForGuidance,
-  scoreMentorForGuidance,
   selectCourseRecommendations,
-  selectMentorRecommendations,
 } from "@/lib/learning/guidance/scoring";
 import type {
   LearningGuidanceAnswers,
   LearningGuidanceProfileRecord,
   LearningGuidanceResult,
   ScoredCourse,
-  ScoredMentor,
+  ScoredPlaylist,
 } from "@/lib/learning/guidance/types";
+import { listCuratedPlaylists, serializePlaylistSummary } from "@/lib/playlist/server";
+import { CURATED_PLAYLIST_META } from "@/lib/thumbnails/curated-playlist-meta";
 
 type LearningFormatAnswer = NonNullable<LearningGuidanceAnswers["learningFormat"]>;
 
@@ -187,68 +187,98 @@ function buildPathNarrative(
 ): {
   summary: string;
   pathTitle: string;
+  profileTags: string[];
   pathSteps: string[];
 } {
-  const levelLabel = profile.idealLevelUi;
   const styleLabel =
     answers.tradingStyle === "scalping"
-      ? "scalping"
+      ? "Scalping"
       : answers.tradingStyle === "day_trading"
-        ? "day trading"
+        ? "Day trading"
         : answers.tradingStyle === "swing"
-          ? "swing trading"
-          : "investasi jangka panjang";
+          ? "Swing"
+          : "Jangka panjang";
 
   const goalLabel =
     answers.goal === "basics"
-      ? "membangun fondasi yang kuat"
+      ? "Fondasi"
       : answers.goal === "side_income"
-        ? "mencari penghasilan tambahan"
+        ? "Side income"
         : answers.goal === "wealth"
-          ? "mengakumulasi kekayaan"
-          : "mempersiapkan portofolio pensiun";
+          ? "Wealth building"
+          : "Pensiun";
 
-  const riskNote =
+  const riskLabel =
     answers.riskTolerance === "conservative"
-      ? answers.instrument === "Forex"
-        ? "Profil konservatif + Forex: mulai tanpa leverage tinggi dan posisi sangat kecil."
-        : "Dengan profil risiko konservatif, mulai dari manajemen risiko dan posisi kecil."
+      ? "Konservatif"
       : answers.riskTolerance === "aggressive"
-        ? "Profil agresif, pastikan disiplin stop-loss dan jangan over-leverage."
-        : "Dengan risiko seimbang, kombinasikan teori dengan latihan terukur.";
+        ? "Agresif"
+        : "Seimbang";
 
-  const capitalNote =
-    answers.capitalRange && answers.capitalRange !== "prefer_not_say"
-      ? answers.capitalRange === "under_5m"
-        ? " Modal kecil, prioritaskan belajar di demo sebelum live."
-        : answers.capitalRange === "above_50m"
-          ? " Modal signifikan, manajemen risiko harus jadi prioritas #1."
-          : ""
-      : "";
-
-  const experienceStep =
-    answers.experience === "never"
-      ? `Mulai dari akun demo dan kelas ${profile.idealLevelUi}, jangan loncat ke live sebelum paham risk management.`
-      : profile.maxLevelIndex < 2
-        ? `Fokus ke kelas level ${levelLabel} di ${answers.instrument}, hindari materi Mahir dulu sampai fondasi kuat.`
-        : `Mulai dari kelas level ${levelLabel} di ${answers.instrument} untuk fondasi yang tepat.`;
+  const timeLabel =
+    answers.timeAvailability === "minimal"
+      ? "Sesi singkat"
+      : answers.timeAvailability === "dedicated"
+        ? "Intensif"
+        : "Part-time";
 
   return {
-    pathTitle: `Jalur ${answers.instrument} · ${levelLabel}`,
-    summary: `Kamu fokus ke ${answers.instrument} dengan gaya ${styleLabel} untuk ${goalLabel}. ${riskNote}${capitalNote}`,
-    pathSteps: [
-      experienceStep,
-      answers.learningFormat === "live"
-        ? "Manfaatkan sesi live mentor untuk validasi strategi secara langsung."
-        : answers.learningFormat === "community"
-          ? "Gabung komunitas mentor untuk belajar dari diskusi dan studi kasus."
-          : "Ikuti video secara berurutan, jangan loncat sebelum paham risk management.",
-      answers.timeAvailability === "minimal"
-        ? "Alokasikan 20–30 menit per hari; konsistensi lebih penting dari durasi."
-        : "Jadwalkan 3–5 sesi belajar per minggu dan catat setiap evaluasi trading.",
-      "Rekomendasi ini berdasarkan jawabanmu, bukan jaminan hasil. Review ulang jika tujuan atau instrumenmu berubah.",
-    ],
+    pathTitle: `${answers.instrument} · ${profile.idealLevelUi}`,
+    summary: `${styleLabel} · fokus ${goalLabel.toLowerCase()}.`,
+    profileTags: [styleLabel, goalLabel, riskLabel, timeLabel],
+    pathSteps: [],
   };
+}
+
+function scorePlaylistForGuidance(
+  playlist: ReturnType<typeof serializePlaylistSummary>,
+  answers: LearningGuidanceAnswers,
+  recommendedCourseSlugs: Set<string>,
+  playlistCourseSlugs: string[]
+): { score: number; reasons: string[] } {
+  const meta = CURATED_PLAYLIST_META.find((entry) => entry.slug === playlist.slug);
+  let score = 0;
+  const reasons: string[] = [];
+
+  if (meta?.instruments.includes(answers.instrument)) {
+    score += 48;
+    reasons.push(`Selaras ${answers.instrument}`);
+  } else if (meta && meta.instruments.length > 1) {
+    score += 12;
+  }
+
+  const overlap = playlistCourseSlugs.filter((slug) => recommendedCourseSlugs.has(slug)).length;
+  if (overlap > 0) {
+    score += Math.min(overlap * 14, 28);
+    reasons.push("Berisi kelas rekomendasi");
+  }
+
+  const haystack = `${playlist.slug} ${playlist.title}`.toLowerCase();
+  if (answers.tradingStyle === "swing" && haystack.includes("swing")) {
+    score += 18;
+    reasons.push("Cocok untuk swing");
+  }
+  if (answers.experience === "never" || answers.experience === "demo") {
+    if (haystack.includes("pemula") || haystack.includes("nol") || haystack.includes("fundasi")) {
+      score += 14;
+      reasons.push("Cocok untuk pemula");
+    }
+  }
+  if (answers.goal === "basics" && (haystack.includes("fundasi") || haystack.includes("dasar"))) {
+    score += 10;
+  }
+
+  return { score, reasons: reasons.slice(0, 2) };
+}
+
+function selectPlaylistRecommendations(
+  scored: ScoredPlaylist[],
+  limit = 4
+): ScoredPlaylist[] {
+  return [...scored]
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score || a.playlist.title.localeCompare(b.playlist.title))
+    .slice(0, limit);
 }
 
 export async function computeLearningGuidance(
@@ -260,7 +290,11 @@ export async function computeLearningGuidance(
     learningFormat: resolveLearningFormat(answers),
   };
 
-  const [courses, mentors] = await Promise.all([getCatalogCourses(), getCatalogMentors()]);
+  const [courses, mentors, curatedPlaylists] = await Promise.all([
+    getCatalogCourses(),
+    getCatalogMentors(),
+    listCuratedPlaylists(),
+  ]);
 
   const mentorsBySlug = new Map(mentors.map((m) => [m.slug, m]));
   const profileAnalysis = analyzeProfile(resolvedAnswers);
@@ -278,20 +312,22 @@ export async function computeLearningGuidance(
     });
 
   const scoredCourses: ScoredCourse[] = selectCourseRecommendations(allScoredCourses);
+  const recommendedCourseSlugs = new Set(scoredCourses.map((entry) => entry.course.slug));
 
-  const topCourseMentorSlugs = new Set(scoredCourses.map((entry) => entry.course.mentorSlug));
-
-  const scoredMentors: ScoredMentor[] = selectMentorRecommendations(
-    mentors
-      .map((mentor) => {
-        const { score, reasons } = scoreMentorForGuidance(
-          mentor,
-          resolvedAnswers,
-          allScoredCourses
-        );
-        return { mentor, score, reasons };
-      }),
-    topCourseMentorSlugs
+  const scoredPlaylists: ScoredPlaylist[] = selectPlaylistRecommendations(
+    curatedPlaylists.map((raw) => {
+      const playlist = serializePlaylistSummary(raw);
+      const courseSlugs = raw.items
+        .map((item) => item.lesson?.module.course.slug ?? item.course?.slug ?? null)
+        .filter((slug): slug is string => Boolean(slug));
+      const { score, reasons } = scorePlaylistForGuidance(
+        playlist,
+        resolvedAnswers,
+        recommendedCourseSlugs,
+        courseSlugs
+      );
+      return { playlist, score, reasons };
+    })
   );
 
   const narrative = buildPathNarrative(resolvedAnswers, profileAnalysis);
@@ -299,7 +335,8 @@ export async function computeLearningGuidance(
   return {
     ...narrative,
     courses: scoredCourses,
-    mentors: scoredMentors,
+    playlists: scoredPlaylists,
+    mentors: [],
     profile:
       profile ??
       serializeProfileRecord({

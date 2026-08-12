@@ -11,7 +11,7 @@ export function LearningGuidanceEntry() {
           <p className="eyebrow mb-1.5 text-[0.6875rem] tracking-[0.14em] text-muted-foreground/70">
             Panduan belajar
           </p>
-          <h3 className="catalog-guidance__title">Temukan kelas & mentor yang cocok</h3>
+          <h3 className="catalog-guidance__title">Temukan kelas & playlist yang cocok</h3>
           <p className="catalog-guidance__meta">Quiz singkat · ~2 menit · rekomendasi personal</p>
         </div>
         <Button

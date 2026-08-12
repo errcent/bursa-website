@@ -71,7 +71,7 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
   {
     id: "tradingStyle",
     title: "Gaya trading apa yang paling cocok untukmu?",
-    subtitle: "Ini membantu kami merekomendasikan durasi kelas dan mentor yang sesuai ritmemu.",
+    subtitle: "Ini membantu kami merekomendasikan durasi kelas yang sesuai ritmemu.",
     options: [
       {
         value: "scalping",
@@ -98,7 +98,7 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
   {
     id: "goal",
     title: "Apa tujuan utama belajarmu?",
-    subtitle: "Tujuan yang jelas membantu memilih mentor yang fokus pada outcome yang kamu inginkan.",
+    subtitle: "Tujuan yang jelas membantu memilih kelas dan playlist yang fokus pada outcome yang kamu inginkan.",
     options: [
       {
         value: "basics",

@@ -203,10 +203,7 @@ export function searchAll(
       score,
       matchedField,
       imageUrl: course.thumbnailUrl,
-      meta:
-        course.rating > 0
-          ? `${course.rating}★ · ${course.studentsCount.toLocaleString("id-ID")} siswa`
-          : `${course.studentsCount.toLocaleString("id-ID")} siswa`,
+      meta: `${course.studentsCount.toLocaleString("id-ID")} siswa`,
     });
   }
 
@@ -225,7 +222,7 @@ export function searchAll(
       matchedField,
       imageUrl: resolveMentorAvatarUrl(mentor),
       initials: mentor.initials,
-      meta: `${mentor.rating}★ · ${mentor.studentsCount.toLocaleString("id-ID")} siswa`,
+      meta: `${mentor.studentsCount.toLocaleString("id-ID")} siswa`,
     });
   }
 
@@ -254,7 +251,7 @@ export function getPopularCourses(index: SearchCatalogIndex, limit = 4): SearchR
         badge: course.instrument,
         score: course.studentsCount,
         imageUrl: course.thumbnailUrl,
-        meta: course.rating > 0 ? `${course.rating}★` : undefined,
+        meta: `${course.studentsCount.toLocaleString("id-ID")} siswa`,
       };
     });
 }
@@ -273,7 +270,7 @@ export function getPopularMentors(index: SearchCatalogIndex, limit = 3): SearchR
       score: mentor.studentsCount,
       imageUrl: resolveMentorAvatarUrl(mentor),
       initials: mentor.initials,
-      meta: `${mentor.rating}★`,
+      meta: `${mentor.studentsCount.toLocaleString("id-ID")} siswa`,
     }));
 }
 

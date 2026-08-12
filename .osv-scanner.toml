@@ -1,0 +1,5 @@
+# OSV-Scanner config — document accepted-risk suppressions in PR when adding entries.
+#
+# [[IgnoredVulns]]
+# id = "CVE-2024-12345"
+# reason = "Transitive dev dependency; no production exposure. Mitigation: ..."

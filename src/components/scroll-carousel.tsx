@@ -48,6 +48,14 @@ export function courseCarouselGetScrollPerView(width: number) {
 export const landingCourseGetScrollPerView = courseCarouselGetScrollPerView;
 export const catalogCourseGetScrollPerView = courseCarouselGetScrollPerView;
 
+/** Catalog playlists: fewer cards/view so thumbnails read larger than courses. */
+export function catalogPlaylistGetScrollPerView(width: number) {
+  if (width >= 1100) return 3.1;
+  if (width >= 900) return 2.5;
+  if (width >= 620) return 1.85;
+  return 1.35;
+}
+
 /** Home discover section, slightly denser than landing/catalog, but still readable. */
 export function discoverCourseGetScrollPerView(width: number) {
   if (width < 768) return 1;
@@ -55,6 +63,15 @@ export function discoverCourseGetScrollPerView(width: number) {
   if (width >= 900) return 3.8;
   if (width >= 620) return 2.8;
   return 2;
+}
+
+/** Fewer, larger cards so coverflow depth reads clearly on landing. */
+export function discoverCoverflowGetScrollPerView(width: number) {
+  if (width < 768) return 1;
+  if (width >= 1100) return 3;
+  if (width >= 900) return 2.6;
+  if (width >= 620) return 2.2;
+  return 1.6;
 }
 
 export function discoverMentorGetScrollPerView(width: number) {

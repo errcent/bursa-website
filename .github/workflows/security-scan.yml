@@ -1,4 +1,4 @@
-name: Security Scan
+name: Security Reviewer + Vulnerability Scanner
 
 on:
   pull_request:
@@ -19,12 +19,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  semgrep:
-    name: Semgrep (SAST)
+  security-reviewer-codeql:
+    name: Security Reviewer (CodeQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@adfda868f108ac4222129de456ea554034a27db7 # v4
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+          config-file: ./.github/codeql/codeql-config.yml
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@adfda868f108ac4222129de456ea554034a27db7 # v4
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@adfda868f108ac4222129de456ea554034a27db7 # v4
+        with:
+          category: security-reviewer-codeql
+
+  security-reviewer-semgrep:
+    name: Security Reviewer (Semgrep)
     runs-on: ubuntu-latest
     container:
       image: semgrep/semgrep
     if: github.actor != 'dependabot[bot]'
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.0
 
@@ -45,7 +68,7 @@ jobs:
         if: always() && hashFiles('semgrep.sarif') != ''
         with:
           sarif_file: semgrep.sarif
-          category: semgrep-sast
+          category: security-reviewer-semgrep
 
       - name: Upload Semgrep artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
@@ -55,9 +78,10 @@ jobs:
           path: semgrep.sarif
           retention-days: 30
 
-  trivy:
-    name: Trivy (SCA + secrets)
+  vulnerability-scanner-trivy:
+    name: Vulnerability Scanner (Trivy)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.0
 
@@ -78,7 +102,7 @@ jobs:
         if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: trivy-results.sarif
-          category: trivy-sca
+          category: vulnerability-scanner-trivy
 
       - name: Upload Trivy artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
@@ -87,3 +111,13 @@ jobs:
           name: trivy-sarif
           path: trivy-results.sarif
           retention-days: 30
+
+  vulnerability-scanner-osv:
+    name: Vulnerability Scanner (OSV)
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.2.2
+    with:
+      scan-args: |-
+        --lockfile=package-lock.json
+      results-file-name: osv-results.sarif
+      upload-sarif: true
+      fail-on-vuln: false

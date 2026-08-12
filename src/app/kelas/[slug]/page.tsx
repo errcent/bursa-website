@@ -108,13 +108,7 @@ export default async function CourseDetailPage({
               </ul>
             </section>
 
-            {reviews.length > 0 && (
-              <CourseReviewsSection
-                reviews={reviews}
-                rating={course.rating}
-                ratingCount={course.ratingCount}
-              />
-            )}
+            {reviews.length > 0 && <CourseReviewsSection reviews={reviews} />}
 
             <section className="flex min-w-0 gap-4 rounded-xl border border-border bg-card p-5 sm:p-6">
               <ShieldCheck className="size-5 shrink-0 text-emerald" />

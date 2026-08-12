@@ -218,6 +218,7 @@ async function main() {
     { src: LOCKUP_S_DARK, dest: "brand/logo_lockup_stacked.png", note: "canonical LOCKUP-S dark UI" },
     { src: LOCKUP_S_LIGHT, dest: "brand/logo_lockup_stacked_light.png", note: "LOCKUP-S light bake" },
     { src: "logo_icon_mark.png", dest: "brand/logo_icon_mark.png" },
+    { src: "logo_icon_mark_full.png", dest: "brand/logo_icon_mark_full.png" },
     { src: "web_email_header_dark.png", dest: "brand/web_email_header_dark.png" },
     { src: "web_email_header_light.png", dest: "brand/web_email_header_light.png" },
   ];
@@ -259,19 +260,26 @@ async function main() {
   }
 
   const iconMark = path.join(SOURCE_DIR, "logo_icon_mark.png");
+  const iconMarkFull = path.join(SOURCE_DIR, "logo_icon_mark_full.png");
   const iconWhiteBlack = path.join(SOURCE_DIR, "logo_icon_white_on_black.png");
+  // Full-bleed mark (no margin) - larger at 16/32px tab size.
+  const faviconSource = fs.existsSync(iconMarkFull) ? iconMarkFull : iconMark;
 
   const fav16 = path.join(WEB_PUBLIC, "favicon-16x16.png");
   const fav32 = path.join(WEB_PUBLIC, "favicon-32x32.png");
-  await iconFromMark(iconMark, 16, fav16);
-  await iconFromMark(iconMark, 32, fav32);
+  const favIcoPublic = path.join(WEB_PUBLIC, "favicon.ico");
+  // Next.js App Router serves src/app/favicon.ico over public/ - keep both in sync.
+  const favIcoApp = path.join(process.cwd(), "src", "app", "favicon.ico");
+  await iconFromMark(faviconSource, 16, fav16, { paddingRatio: 0 });
+  await iconFromMark(faviconSource, 32, fav32, { paddingRatio: 0 });
   await writeFaviconIco(
     [
       { size: 16, file: fav16 },
       { size: 32, file: fav32 },
     ],
-    path.join(WEB_PUBLIC, "favicon.ico")
+    favIcoPublic
   );
+  copyFile(favIcoPublic, favIcoApp);
 
   if (fs.existsSync(iconWhiteBlack)) {
     await sharp(iconWhiteBlack).resize(180, 180, { fit: "cover" }).png().toFile(
@@ -312,7 +320,11 @@ async function main() {
   );
 
   manifest.push(
-    { source: "logo_icon_mark.png", output: "favicon.ico", note: "derived" },
+    {
+      source: path.basename(faviconSource),
+      output: "favicon.ico + src/app/favicon.ico",
+      note: "derived full-bleed (paddingRatio 0)",
+    },
     { source: "logo_icon_mark.png", output: "icon-192.png", note: "derived" },
     { source: "logo_icon_mark.png", output: "icon-512.png", note: "derived" }
   );

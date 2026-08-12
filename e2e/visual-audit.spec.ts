@@ -37,7 +37,7 @@ async function settlePage(page: import("@playwright/test").Page) {
   try {
     await page.waitForLoadState("networkidle", { timeout: 12_000 });
   } catch {
-    // Some pages keep long-polling / analytics — continue after timeout.
+    // Some pages keep long-polling / analytics - continue after timeout.
   }
   await page.evaluate(async () => {
     if (document.fonts?.ready) {
@@ -154,7 +154,7 @@ test.describe("Visual audit capture", () => {
       const metaPath = path.join(META_ROOT, `meta-${project}-${route.slug}.json`);
       fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2));
 
-      // Soft assertions — capture must continue even on soft failures
+      // Soft assertions - capture must continue even on soft failures
       if (status !== null) {
         expect.soft(status, `${route.path} HTTP status`).toBeLessThan(500);
       }

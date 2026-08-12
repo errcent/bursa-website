@@ -201,7 +201,7 @@ function DashboardBody() {
                     <div>
                       <p className="font-heading text-base font-medium tracking-tight">Belum ada progress</p>
                       <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-                        Quiz singkat untuk rekomendasi kelas dan mentor yang cocok dengan profilmu.
+                        Quiz singkat untuk rekomendasi kelas dan playlist yang cocok dengan profilmu.
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-2">

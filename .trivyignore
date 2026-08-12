@@ -1,1 +1,13 @@
-# Add CVE/GHSA IDs here to suppress known accepted risks (with justification in PR).
+# Trivy ignore list — suppress known accepted risks only.
+#
+# Format (one ID per line):
+#   CVE-2024-12345
+#   GHSA-xxxx-yyyy-zzzz
+#
+# Rules:
+# - Every entry MUST include justification in the PR that adds it.
+# - Prefer fixing/upgrading over suppressing.
+# - Review suppressions quarterly in Security → Code scanning alerts.
+#
+# Example:
+# CVE-2024-00000  # accepted: dev-only transitive dep; tracked in QC-YYYYMMDD-NN

@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 
-import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import { Stagger, StaggerItem } from "@/components/motion/reveal";
 import { WordReveal } from "@/components/motion/word-reveal";
 
 const painPoints = [
@@ -31,13 +31,10 @@ export function HomeProblemSection() {
     <section id="hambatan-trader" className="section-cinematic-dark scroll-mt-24">
       <div className="container-page relative z-[2]">
         <div className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
-          <Reveal>
-            <p className="eyebrow-tight mb-4">Hambatan Trader</p>
-          </Reveal>
           <WordReveal
             as="h2"
             className="section-display-title"
-            text="Tiga hal yang diam-diam menggerogoti akunmu"
+            text="Tiga hambatan trader"
             trigger="inView"
             delay={0.04}
           />

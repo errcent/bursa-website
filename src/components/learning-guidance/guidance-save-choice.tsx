@@ -27,7 +27,7 @@ function RecommendationPreview({
         </div>
         <div className="min-w-0 space-y-1">
           <p className="font-heading text-base font-semibold leading-snug">{result.pathTitle}</p>
-          <p className="line-clamp-2 text-sm text-muted-foreground">{result.summary}</p>
+          <p className="line-clamp-1 text-sm text-muted-foreground">{result.summary}</p>
         </div>
       </div>
       {courseNames.length > 0 ? (

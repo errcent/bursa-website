@@ -26,16 +26,35 @@ export function InstrumentBadge({
   );
 }
 
-const levelStyle: Record<Level, string> = {
-  Pemula: "border-emerald/30 bg-emerald/10 text-emerald",
-  Menengah: "border-border bg-secondary text-foreground/90",
-  Mahir: "border-amber/30 bg-amber/10 text-amber",
+const LEVEL_BARS: Record<Level, number> = {
+  Pemula: 1,
+  Menengah: 2,
+  Mahir: 3,
+};
+
+export const LEVEL_TOOLTIP: Record<Level, string> = {
+  Pemula: "Kelas ini cocok untuk pemula",
+  Menengah: "Kelas ini cocok untuk menengah",
+  Mahir: "Kelas ini cocok untuk profesional",
 };
 
 export function LevelBadge({ level, className }: { level: Level; className?: string }) {
+  const count = LEVEL_BARS[level];
+  const label = LEVEL_TOOLTIP[level];
+
   return (
-    <Badge variant="outline" className={cn(levelStyle[level], className)}>
-      {level}
-    </Badge>
+    <span
+      data-level-hotspot
+      className={cn("inline-flex items-center gap-[3px]", className)}
+      aria-label={label}
+    >
+      {Array.from({ length: count }, (_, i) => (
+        <span
+          key={i}
+          aria-hidden
+          className="size-[7px] rounded-[2px] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+        />
+      ))}
+    </span>
   );
 }

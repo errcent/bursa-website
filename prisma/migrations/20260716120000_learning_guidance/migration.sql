@@ -1,4 +1,4 @@
--- Enums (idempotent — safe if a prior deploy attempt partially applied)
+-- Enums (idempotent - safe if a prior deploy attempt partially applied)
 DO $$ BEGIN CREATE TYPE "LearningTradingStyle" AS ENUM ('SCALPING', 'SWING', 'LONG_TERM'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE "LearningGoal" AS ENUM ('SIDE_INCOME', 'WEALTH_BUILDING', 'LEARN_BASICS', 'RETIREMENT'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE "LearningRiskTolerance" AS ENUM ('CONSERVATIVE', 'MODERATE', 'AGGRESSIVE'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;

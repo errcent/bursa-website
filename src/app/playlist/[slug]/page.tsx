@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-
 import { PlaylistDetailView } from "@/components/playlist/playlist-detail";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNavbar } from "@/components/site-navbar";
@@ -31,13 +29,11 @@ export default async function PlaylistDetailPage({ params }: PlaylistDetailPageP
 
   return (
     <>
-      <Suspense fallback={<div className="h-14 border-b border-border" />}>
+      <div className="hidden md:block">
         <SiteNavbar />
-      </Suspense>
-      <main className="flex-1">
-        <div className="container-page section-spacious">
-          <PlaylistDetailView slug={slug} />
-        </div>
+      </div>
+      <main className="flex-1 overflow-x-hidden bg-background">
+        <PlaylistDetailView slug={slug} />
       </main>
       <SiteFooter />
     </>

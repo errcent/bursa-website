@@ -20,8 +20,8 @@ const OVERVIEW_STEPS = [
   },
   {
     step: "03",
-    title: "Jelajahi kelas & mentor",
-    description: "Rekomendasi kelas dan mentor yang selaras, langsung dari katalog Bursa.",
+    title: "Jelajahi kelas & playlist",
+    description: "Rekomendasi kelas dan playlist yang selaras, langsung dari katalog Bursa.",
   },
 ] as const;
 

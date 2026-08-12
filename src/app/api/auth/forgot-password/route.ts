@@ -16,7 +16,7 @@ const GENERIC_MESSAGE =
   "Jika email terdaftar di Bursa, kami akan mengirim tautan reset kata sandi. Periksa kotak masuk dan folder spam.";
 
 /**
- * Request password reset — always returns the same message (no email enumeration).
+ * Request password reset - always returns the same message (no email enumeration).
  */
 export async function POST(request: NextRequest) {
   try {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Calendar, GraduationCap, Star, Users } from "lucide-react";
+import { Calendar, GraduationCap, Users } from "lucide-react";
 
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
@@ -17,7 +17,6 @@ import {
 } from "@/lib/catalog/server";
 import { resolveMentorAvatarUrl } from "@/lib/mentors/avatar";
 import { PreviewCatalogNotice } from "@/components/preview-catalog/preview-catalog-notice";
-import { formatRating } from "@/lib/utils";
 
 export async function generateStaticParams() {
   const slugs = await getCatalogMentorSlugs();
@@ -51,7 +50,6 @@ export default async function MentorProfilePage({
 
   const statCards = [
     { icon: Users, label: "Total Siswa", value: mentor.studentsCount.toLocaleString("id-ID") },
-    { icon: Star, label: "Rating Agregat", value: formatRating(mentor.rating) },
     { icon: GraduationCap, label: "Jumlah Kelas", value: String(mentor.coursesCount) },
     { icon: Calendar, label: "Pengalaman", value: `${mentor.yearsExperience} tahun` },
   ];
@@ -220,7 +218,7 @@ export default async function MentorProfilePage({
                 <h3 className="font-heading text-sm font-medium text-emerald">Sesi 1-on-1</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {mentor.sessionPrice}{" "}
-                  <span className="text-xs">(indikatif/demo — belum dikunci Decision OS)</span>
+                  <span className="text-xs">(indikatif/demo, belum dikunci Decision OS)</span>
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
                   Diskusikan portofolio atau strategi tradingmu secara personal. Pembayaran

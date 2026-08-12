@@ -4,28 +4,32 @@
     "slug": "fundamental-saham-untuk-pemula",
     "title": "Analisis Fundamental Saham: Laporan Keuangan & Rasio Valuasi",
     "destinationPath": "/kelas/fundamental-saham-untuk-pemula",
-    "prompt": "open vintage ledger book on dark marble surface, soft peach and bronze accent light, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "style": "masterclass-portrait",
+    "prompt": "Premium cinematic portrait of a generic Indonesian male finance educator in his early 40s, warm genuine happy smile, direct eye contact, quietly wealthy approachable mentor vibe, wearing a charcoal cashmere turtleneck with no blazer and no suit jacket, centered waist-up with slightly relaxed shoulders, hands loosely clasped casually in front, seated against a rich deep navy seamless studio backdrop with subtle fabric texture, bright softbox beauty lighting evenly illuminating the face, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens"
   },
   {
     "kind": "course",
     "slug": "membaca-laporan-keuangan-lanjutan",
     "title": "Valuasi Saham Lanjutan: DCF & Relative Valuation",
     "destinationPath": "/kelas/membaca-laporan-keuangan-lanjutan",
-    "prompt": "stack of translucent glass sheets on charcoal desk, soft peach and bronze accent light, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian male equity valuation analyst in his early 40s, thoughtful authoritative expression, direct eye contact, slight confident smile, wearing a charcoal tailored blazer over a soft peach collared shirt, centered waist-up seated facing camera in a premium executive office with warm desk lamp glow and soft daylight from a window blurred behind him, bright soft fill balancing warm lamp light evenly illuminating the face, polished dark wood desk edge in foreground, MasterClass business leadership key art not dim moody study, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "course",
     "slug": "swing-trading-teknikal-dasar",
     "title": "Analisis Teknikal Swing Trading: Struktur Chart & Rencana Eksekusi",
     "destinationPath": "/kelas/swing-trading-teknikal-dasar",
-    "prompt": "curved brushed steel bow resting on navy velvet, soft peach and bronze accent light, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "style": "masterclass-portrait",
+    "prompt": "Premium cinematic portrait of a generic Indonesian female swing trading educator in her mid 30s, calm confident expression, direct eye contact, warm professional smile, wearing a navy V-neck sweater over a soft blush pink collared shirt, centered seated against a matte charcoal gray seamless studio backdrop, hands relaxed at sides, bright softbox beauty lighting, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens"
   },
   {
     "kind": "course",
     "slug": "crypto-on-chain-dasar",
     "title": "Analisis On-Chain Crypto: Metrik Blockchain untuk Keputusan Trading",
     "destinationPath": "/kelas/crypto-on-chain-dasar",
-    "prompt": "interlocking glass cubes with blue amber edge glow on black, electric blue and amber rim light on glass forms, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "style": "masterclass-portrait",
+    "prompt": "Premium cinematic portrait of a generic Indonesian female crypto analyst in her early 30s, confident intelligent expression, direct eye contact, approachable smile, wearing a structured black blazer over a white blouse, centered seated against a solid deep navy seamless studio backdrop, clean high-key beauty lighting with soft fill on the face, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens"
   },
   {
     "kind": "course",
@@ -39,84 +43,96 @@
     "slug": "forex-makro-dasar",
     "title": "Analisis Makro Forex: Suku Bunga, Inflasi & Pergerakan Mata Uang",
     "destinationPath": "/kelas/forex-makro-dasar",
-    "prompt": "antique brass compass on dark polished globe fragment, cool steel and brass accent highlights, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian male macro forex strategist in his early 40s, open warm happy smile, direct eye contact, relaxed prosperous ease, wearing a premium soft heather navy long-sleeve cotton tee with no blazer and no dress shirt, centered seated at a polished desk leaning casually toward the camera with one forearm resting naturally on the desk beside an antique brass compass as a soft prop, solid charcoal gray studio backdrop, bright soft beauty fill illuminating the face luminously, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "course",
     "slug": "screening-saham-dividen-konsisten",
     "title": "Strategi Dividen Saham: Screening Emiten & Kebijakan Distribusi",
     "destinationPath": "/kelas/screening-saham-dividen-konsisten",
-    "prompt": "polished gemstone under magnifying glass on charcoal, soft peach and bronze accent light, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian male dividend investing educator in his early 40s, warm genuine happy smile, direct eye contact, quietly wealthy approachable aura, wearing a soft camel cashmere turtleneck with no blazer and no suit jacket, centered waist-up seated with relaxed posture and hands loosely clasped, rich deep navy seamless studio backdrop with subtle fabric texture, bright softbox beauty lighting evenly illuminating the face, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "course",
     "slug": "price-action-swing-saham-menengah",
     "title": "Price Action Swing Trading Saham: Struktur Pasar & Timing Entry",
     "destinationPath": "/kelas/price-action-swing-saham-menengah",
-    "prompt": "soft pink feather with water droplets floating in dark blue space, soft peach and bronze accent light, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian female swing trading educator in her mid 30s, genuine happy smile, easy direct eye contact, relaxed prosperous calm, wearing a soft sage green long-sleeve cotton tee with no blazer, centered seated leaning slightly toward the camera with one forearm resting casually on a polished desk edge, matte charcoal gray studio backdrop, clean high-key beauty lighting with luminous healthy skin, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "course",
     "slug": "siklus-bitcoin-halving-dan-makro-kripto",
     "title": "Siklus Pasar Crypto: Halving Bitcoin & Kerangka Analisis Makro",
     "destinationPath": "/kelas/siklus-bitcoin-halving-dan-makro-kripto",
-    "prompt": "glass orb containing subtle lunar phase spheres, electric blue and amber rim light on glass forms, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian female crypto macro analyst in her early 30s, calm insightful expression, direct eye contact, confident smile, wearing a black tailored blazer over a deep burgundy top, centered seated facing camera in a luxurious private library with floor-to-ceiling dark wood bookshelves filled with books softly blurred behind her, warm ambient library light with even soft beauty fill on the face illuminating skin luminously, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "course",
     "slug": "scalping-saham-intraday-jam-perdagangan",
     "title": "Scalping Saham IDX: Setup Intraday & Disiplin Eksekusi",
     "destinationPath": "/kelas/scalping-saham-intraday-jam-perdagangan",
-    "prompt": "macro precision watch gears on dark brushed metal, soft peach and bronze accent light, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian female IDX scalping educator in her early 30s, genuine happy smile, easy direct eye contact, prosperous calm energy, wearing a soft cream fine-knit turtleneck with no blazer and no suit jacket, centered waist-up with a relaxed three-quarter lean toward the camera, casual seated posture, precision chronograph watch resting softly on a desk edge out of focus, matte charcoal studio background, clean high-key beauty lighting evenly illuminating the face, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "course",
     "slug": "eksekusi-scalping-order-book-idx",
     "title": "Mikrostruktur Pasar IDX: Order Book & Arus Bid-Offer",
     "destinationPath": "/kelas/eksekusi-scalping-order-book-idx",
-    "prompt": "layered translucent glass panes stacked in depth, soft peach and bronze accent light, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian female market microstructure educator in her early 30s, warm genuine happy smile, direct eye contact, prosperous focused ease, wearing a charcoal fine-knit turtleneck with no blazer and no suit jacket, centered waist-up with a relaxed casual lean toward camera, precision chronograph watch resting softly out of focus on a light desk edge, solid deep navy seamless studio backdrop, bright soft beauty fill illuminating the face luminously, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "course",
     "slug": "price-action-forex-tanpa-indikator",
     "title": "Price Action Forex: Struktur Pasar pada Pair Mayor",
     "destinationPath": "/kelas/price-action-forex-tanpa-indikator",
-    "prompt": "minimal abstract bronze wave sculpture on navy gradient, cool steel and brass accent highlights, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian male price action forex educator in his mid 30s, genuine happy smile, easy direct eye contact, calm affluent confidence, wearing a soft heather grey fine-knit turtleneck with no blazer and no suit jacket, centered waist-up with a relaxed three-quarter lean, hands loosely interlaced in front, rich deep navy seamless studio backdrop, bright soft beauty fill illuminating the face, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "course",
     "slug": "scalping-forex-sesi-london-ny",
     "title": "Scalping Forex: Strategi Sesi London & New York",
     "destinationPath": "/kelas/scalping-forex-sesi-london-ny",
-    "prompt": "two soft gold horizon lines reflected in dark still water, cool steel and brass accent highlights, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian male forex scalping educator in his mid 30s, open warm happy smile, direct eye contact, energetic yet relaxed prosperous ease, wearing a premium soft olive green long-sleeve cotton tee with no blazer, centered seated leaning casually toward the camera with forearms resting on a clean dark desk edge, matte charcoal studio backdrop, clean high-key beauty lighting with luminous skin, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "course",
     "slug": "defi-dan-tokenomics-pemula",
     "title": "Dasar DeFi & Tokenomics: Framework Riset Proyek Crypto",
     "destinationPath": "/kelas/defi-dan-tokenomics-pemula",
-    "prompt": "interconnected frosted glass rings linked on black background, electric blue and amber rim light on glass forms, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian female DeFi researcher in her late 20s, bright intelligent expression, direct eye contact, warm smile, wearing a structured black blazer over a white blouse, centered standing portrait facing camera against vertical pale wood slat wall in a refined modern interior, soft natural daylight plus soft beauty fill on the face, background softly blurred, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "course",
     "slug": "riset-narrative-kripto-menengah",
     "title": "Riset Narrative Crypto: Layer 2, RWA & Evaluasi Siklus Pasar",
     "destinationPath": "/kelas/riset-narrative-kripto-menengah",
-    "prompt": "telescope lens reflecting distant nebula glow, electric blue and amber rim light on glass forms, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian female crypto narrative researcher in her late 20s, bright warm happy smile, direct eye contact, prosperous creative ease, wearing a soft cream long-sleeve fine knit top with no blazer, centered standing portrait with relaxed shoulders and one hand lightly touching the opposite forearm, refined modern interior with soft pale wood vertical slats softly blurred behind her, natural daylight plus soft beauty fill on the face, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "course",
     "slug": "psikologi-trading-anti-fomo",
     "title": "Psikologi Trading: Bias Kognitif, Disiplin & Rutinitas Mental",
     "destinationPath": "/kelas/psikologi-trading-anti-fomo",
-    "prompt": "pink flamingo bird head sculpture in soft profile on deep navy, soft peach and bronze accent light, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "style": "masterclass-portrait",
+    "prompt": "Premium cinematic portrait of a generic Indonesian male trading psychology coach in his early 40s, calm grounded expression, direct eye contact, reassuring subtle smile, wearing a charcoal wool sweater over a crisp white collared shirt, centered seated against a solid charcoal gray seamless studio backdrop, bright softbox beauty lighting evenly illuminating the face, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens"
   },
   {
     "kind": "course",
     "slug": "blueprint-manajemen-risiko-trader",
     "title": "Manajemen Risiko Portofolio: Position Sizing Lintas Instrumen",
     "destinationPath": "/kelas/blueprint-manajemen-risiko-trader",
-    "prompt": "rolled architectural blueprint with lavender side light, cool steel and brass accent highlights, Editorial still life product photograph, 16:9, deep navy charcoal gradient background, subtle film grain, soft window light, shallow depth of field, muted desaturated palette, generous negative space, inanimate objects only"
+    "prompt": "Premium cinematic portrait of a generic Indonesian male risk management coach in his early 40s, warm genuine happy smile, direct eye contact, quietly prosperous mentor vibe, wearing a soft navy long-sleeve cotton tee with no blazer and no suit jacket, centered waist-up seated with relaxed shoulders and one hand resting casually on his other forearm, solid charcoal gray seamless studio backdrop, bright softbox beauty lighting evenly illuminating the face, cinematic instructor portrait photography, natural luminous skin texture, 85mm prime lens at f2.8, shallow depth of field with creamy bokeh, clean high-key beauty lighting, radiant luminous healthy skin, bright catchlights in both eyes, polished professional grooming, crisp wardrobe, razor-sharp focus on face, premium commercial color grading, MasterClass documentary key art quality, medium waist-up framing, centered symmetrical composition, subject facing camera directly, warm genuine happy smile with relaxed easy confidence, prosperous effortless luxury aura, natural unforced body language, not stiff robotic corporate pose, no suit jacket no blazer, clean image without text logos watermarks charts or trading screens",
+    "style": "masterclass-portrait"
   },
   {
     "kind": "playlist",
