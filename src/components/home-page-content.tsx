@@ -12,6 +12,7 @@ import type { Course, Mentor } from "@/lib/types";
 import { Suspense } from "react";
 
 export function HomePageContent({
+  courses,
   mentors,
   playlists,
   demoPlaylist,
@@ -27,6 +28,9 @@ export function HomePageContent({
   curriculumMentor?: Mentor | null;
   preferredLessonLegacyId?: string | null;
 }) {
+  /** Dense mockup catalog needs full rows like /katalog, not soft-launch featured cap. */
+  const catalogCourses = [...courses].sort((a, b) => b.studentsCount - a.studentsCount);
+
   return (
     <>
       <Suspense fallback={null}>
@@ -48,6 +52,7 @@ export function HomePageContent({
         <DeviceMockupSection
           playlist={demoPlaylist}
           catalogPlaylists={playlists}
+          catalogCourses={catalogCourses}
           course={curriculumCourse ?? null}
           mentor={curriculumMentor ?? null}
           preferredLessonLegacyId={preferredLessonLegacyId ?? null}

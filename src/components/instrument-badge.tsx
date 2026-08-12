@@ -52,7 +52,7 @@ export function LevelBadge({ level, className }: { level: Level; className?: str
         <span
           key={i}
           aria-hidden
-          className="size-[7px] rounded-[2px] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+          className="size-[7px] rounded-[1px] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
         />
       ))}
     </span>

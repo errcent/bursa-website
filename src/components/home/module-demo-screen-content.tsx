@@ -9,14 +9,17 @@ import {
   type MotionValue,
 } from "motion/react";
 
+import { CourseCard } from "@/components/course-card";
 import { DeviceLearningPreview } from "@/components/home/device-learning-preview";
 import { DEVICE_SCREEN_SCALE } from "@/components/home/device-screen-scale";
 import { PlaylistCard } from "@/components/playlist/playlist-card";
 import { PlaylistCurriculumCards } from "@/components/playlist/playlist-curriculum-cards";
 import { PlaylistDetailHero } from "@/components/playlist/playlist-detail-hero";
+import { rankCoursesByQuality } from "@/lib/catalog/ranking";
+import { PREVIEW_CATALOG_COPY } from "@/lib/preview-catalog/copy";
 import { cn } from "@/lib/utils";
 import type { PlaylistDetail, PlaylistSummary } from "@/lib/playlist/types";
-import type { Course, Lesson, Mentor } from "@/lib/types";
+import type { Course, Instrument, Lesson, Mentor } from "@/lib/types";
 
 const PHASE = {
   catalog: { start: 0, end: 0.24 },
@@ -25,6 +28,12 @@ const PHASE = {
 } as const;
 
 const PHASE_FADE = 0.045;
+
+const INSTRUMENT_ROW_LABELS: Record<Instrument, string> = {
+  Saham: "Saham",
+  Crypto: "Cryptocurrency",
+  Forex: "Foreign Exchange",
+};
 
 function usePhaseOpacity(
   progress: MotionValue<number>,
@@ -108,16 +117,16 @@ function buildCompletedLessonIds(
 
 function DeviceCatalogTrack({
   children,
-  large = false,
+  variant = "course",
 }: {
   children: ReactNode;
-  large?: boolean;
+  variant?: "course" | "playlist";
 }) {
   return (
     <div
       className={cn(
-        "device-catalog-row-scroll device-catalog-row-scroll--playlist",
-        large && "device-catalog-row-scroll--large",
+        "device-catalog-row-scroll",
+        variant === "playlist" && "device-catalog-row-scroll--playlist",
       )}
     >
       {children}
@@ -127,11 +136,15 @@ function DeviceCatalogTrack({
 
 function DeviceCatalogPhase({
   playlists,
+  courses,
+  mentorsBySlug,
   highlightSlug,
   opacity,
   scrollY,
 }: {
   playlists: PlaylistSummary[];
+  courses: Course[];
+  mentorsBySlug: Map<string, Mentor>;
   highlightSlug: string;
   opacity: MotionValue<number>;
   scrollY: MotionValue<number>;
@@ -142,22 +155,17 @@ function DeviceCatalogPhase({
     return highlight ? [highlight, ...rest] : playlists;
   }, [playlists, highlightSlug]);
 
-  const { primaryRow, secondaryRow, useLargeCards } = useMemo(() => {
-    const total = orderedPlaylists.length;
-    if (total <= 4) {
-      return {
-        primaryRow: orderedPlaylists,
-        secondaryRow: [] as PlaylistSummary[],
-        useLargeCards: true,
-      };
-    }
-    const split = Math.ceil(total / 2);
-    return {
-      primaryRow: orderedPlaylists.slice(0, split),
-      secondaryRow: orderedPlaylists.slice(split),
-      useLargeCards: false,
-    };
-  }, [orderedPlaylists]);
+  const instrumentRows = useMemo(() => {
+    return (["Saham", "Crypto", "Forex"] as Instrument[])
+      .map((inst) => ({
+        title: INSTRUMENT_ROW_LABELS[inst],
+        courses: rankCoursesByQuality(
+          courses.filter((c) => c.instrument === inst),
+          mentorsBySlug,
+        ),
+      }))
+      .filter((row) => row.courses.length > 0);
+  }, [courses, mentorsBySlug]);
 
   return (
     <motion.section
@@ -168,10 +176,13 @@ function DeviceCatalogPhase({
     >
       <motion.div className="device-ui-phase__scroll" style={{ y: scrollY }}>
         <div className="device-catalog-stack min-w-0">
+          <p className="device-catalog-demo-banner" role="note">
+            {PREVIEW_CATALOG_COPY.mockupBadge} · konten contoh
+          </p>
           <section className="catalog-row" aria-label="Playlists">
             <h3 className="catalog-row-title">Playlists</h3>
-            <DeviceCatalogTrack large={useLargeCards}>
-              {primaryRow.map((playlist) => (
+            <DeviceCatalogTrack variant="playlist">
+              {orderedPlaylists.map((playlist) => (
                 <PlaylistCard
                   key={playlist.id}
                   playlist={playlist}
@@ -183,22 +194,23 @@ function DeviceCatalogPhase({
             </DeviceCatalogTrack>
           </section>
 
-          {secondaryRow.length > 0 ? (
-            <section className="catalog-row" aria-label="Program Lainnya">
-              <h3 className="catalog-row-title">Program Lainnya</h3>
+          {instrumentRows.map((row) => (
+            <section key={row.title} className="catalog-row" aria-label={row.title}>
+              <h3 className="catalog-row-title">{row.title}</h3>
               <DeviceCatalogTrack>
-                {secondaryRow.map((playlist) => (
-                  <PlaylistCard
-                    key={playlist.id}
-                    playlist={playlist}
-                    variant="catalog"
-                    hideBookmark
+                {row.courses.map((course) => (
+                  <CourseCard
+                    key={course.slug}
+                    course={course}
                     className="w-full"
+                    variant="catalog"
+                    mentor={mentorsBySlug.get(course.mentorSlug) ?? null}
+                    hideBookmark
                   />
                 ))}
               </DeviceCatalogTrack>
             </section>
-          ) : null}
+          ))}
         </div>
       </motion.div>
     </motion.section>
@@ -286,6 +298,8 @@ function DeviceWorkspacePhase({
 export type ModuleDemoScreenContentProps = {
   playlist: PlaylistDetail;
   catalogPlaylists: PlaylistSummary[];
+  catalogCourses: Course[];
+  mentorsBySlug: Map<string, Mentor>;
   course: Course;
   mentor: Mentor | null;
   preferredLessonLegacyId?: string | null;
@@ -297,6 +311,8 @@ export type ModuleDemoScreenContentProps = {
 export function ModuleDemoScreenContent({
   playlist,
   catalogPlaylists,
+  catalogCourses,
+  mentorsBySlug,
   course,
   mentor,
   preferredLessonLegacyId = null,
@@ -311,7 +327,7 @@ export function ModuleDemoScreenContent({
   const detailOpacity = usePhaseOpacity(progress, PHASE.detail.start, PHASE.detail.end);
   const lessonOpacity = usePhaseOpacity(progress, PHASE.workspace.start, PHASE.workspace.end);
 
-  const catalogScrollY = useTransform(progress, [0, 0.18], [0, -56]);
+  const catalogScrollY = useTransform(progress, [0, 0.2], [0, -220]);
   const detailScrollY = useTransform(progress, [0.28, 0.5], [0, -240]);
 
   const [mountVideoPhases, setMountVideoPhases] = useState(Boolean(reducedMotion));
@@ -345,6 +361,8 @@ export function ModuleDemoScreenContent({
       <div className="device-ui-stage" style={stageStyle}>
         <DeviceCatalogPhase
           playlists={catalogSource}
+          courses={catalogCourses}
+          mentorsBySlug={mentorsBySlug}
           highlightSlug={playlist.slug}
           opacity={catalogOpacity}
           scrollY={catalogScrollY}

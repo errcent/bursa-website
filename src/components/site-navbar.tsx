@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { shouldPlayNavbarIntro } from "@/lib/nav/navbar-intro-state";
-import { Code2, GraduationCap, LayoutDashboard, Menu, Search, Shield, X } from "lucide-react";
+import { Code2, GraduationCap, Menu, Search, Shield, X } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
 import { AccountMenuMobileLinks } from "@/components/account-menu-mobile-links";
@@ -59,7 +59,7 @@ function SearchSkeleton({ className }: { className?: string }) {
 }
 
 function RoleLinkIcon({ href }: { href: string }) {
-  if (href.startsWith("/dashboard")) return <LayoutDashboard className="size-3.5 opacity-70" />;
+  if (href.startsWith("/dashboard")) return null;
   if (href.startsWith("/admin")) return <Shield className="size-3.5 opacity-70" />;
   if (href.startsWith("/mentor")) return <GraduationCap className="size-3.5 opacity-70" />;
   return <Code2 className="size-3.5 opacity-70" />;

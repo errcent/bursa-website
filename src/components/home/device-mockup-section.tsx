@@ -19,33 +19,40 @@ import { ModuleDemoScreenContent } from "@/components/home/module-demo-screen-co
 import { useDeviceSceneScale } from "@/components/home/use-device-scene-scale";
 import { Reveal } from "@/components/motion/reveal";
 import { WordReveal } from "@/components/motion/word-reveal";
+import { PREVIEW_CATALOG_COPY } from "@/lib/preview-catalog/copy";
 import type { PlaylistDetail, PlaylistSummary } from "@/lib/playlist/types";
 import type { Course, Mentor } from "@/lib/types";
 
 type ScreenContentProps = {
   playlist: PlaylistDetail;
   catalogPlaylists: PlaylistSummary[];
+  catalogCourses: Course[];
   course: Course;
   mentor: Mentor | null;
   preferredLessonLegacyId: string | null;
   scrollProgress: MotionValue<number>;
   reducedMotion: boolean | null;
+  mentorsBySlug: Map<string, Mentor>;
 };
 
 function DeviceScreenContent({
   playlist,
   catalogPlaylists,
+  catalogCourses,
   course,
   mentor,
   preferredLessonLegacyId,
   scrollProgress,
   reducedMotion,
+  mentorsBySlug,
 }: ScreenContentProps) {
   return (
     <div className="device-mockup-screen__content">
       <ModuleDemoScreenContent
         playlist={playlist}
         catalogPlaylists={catalogPlaylists}
+        catalogCourses={catalogCourses}
+        mentorsBySlug={mentorsBySlug}
         course={course}
         mentor={mentor}
         preferredLessonLegacyId={preferredLessonLegacyId}
@@ -59,6 +66,7 @@ function DeviceScreenContent({
 export function DeviceMockupSection({
   playlist,
   catalogPlaylists,
+  catalogCourses,
   course,
   mentor,
   preferredLessonLegacyId,
@@ -66,6 +74,7 @@ export function DeviceMockupSection({
 }: {
   playlist: PlaylistDetail | null;
   catalogPlaylists: PlaylistSummary[];
+  catalogCourses: Course[];
   course: Course | null;
   mentor: Mentor | null;
   preferredLessonLegacyId?: string | null;
@@ -108,11 +117,13 @@ export function DeviceMockupSection({
   const screenProps = {
     playlist,
     catalogPlaylists,
+    catalogCourses,
     course: demoCourse,
     mentor: demoMentor,
     preferredLessonLegacyId: preferredLessonLegacyId ?? null,
     scrollProgress: scrollYProgress,
     reducedMotion: prefersReducedMotion,
+    mentorsBySlug,
   };
 
   const tabletMotionStyle = prefersReducedMotion
@@ -138,7 +149,9 @@ export function DeviceMockupSection({
           <div className="container-page device-mockup-sticky__inner">
             <div className="device-mockup-header mx-auto mb-4 max-w-3xl text-center md:mb-6">
               <Reveal>
-                <p className="eyebrow-tight mb-4">Belajar fleksibel</p>
+                <p className="device-mockup-demo-badge mx-auto mb-4 inline-flex items-center justify-center rounded-md border border-border/70 bg-surface/80 px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-foreground/85">
+                  {PREVIEW_CATALOG_COPY.mockupBadge}
+                </p>
               </Reveal>
               <h2 id="device-mockup-heading" className="section-display-title text-foreground">
                 <WordReveal
@@ -149,6 +162,11 @@ export function DeviceMockupSection({
                   delay={0.04}
                 />
               </h2>
+              <Reveal delay={0.08}>
+                <p className="section-copy mx-auto mt-3 max-w-xl text-pretty text-muted-foreground">
+                  {PREVIEW_CATALOG_COPY.mockupNote}
+                </p>
+              </Reveal>
             </div>
 
             <div className="device-mockup-stage">
@@ -173,7 +191,13 @@ export function DeviceMockupSection({
                       className="device-mockup-3d-wrapper"
                       style={tabletMotionStyle}
                     >
-                      <div className="device-mockup-composition">
+                      <div className="device-mockup-composition relative">
+                        <p
+                          className="device-mockup-demo-chip pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/25 bg-black/75 px-3 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-white/95 shadow-lg shadow-black/40 backdrop-blur-sm"
+                          aria-hidden
+                        >
+                          Demo
+                        </p>
                         <IpadSceneFrame>
                           <DeviceScreenContent {...screenProps} />
                         </IpadSceneFrame>
