@@ -5,6 +5,7 @@ import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/auth/rate-limit";
 import { notifyAdminOfMentorApplication } from "@/lib/mentor-program/application-notification";
 import { createMentorApplication } from "@/lib/mentor-program/applications";
+import { isMentorApplicationDocumentUrl } from "@/lib/mentor-program/document-storage";
 import {
   isTurnstileBlockingMisconfiguration,
   isTurnstileConfigured,
@@ -15,7 +16,7 @@ import { mentorApplicationSchema } from "@/lib/validations/api";
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const rate = checkRateLimit(`mentor-app:${ip}`, 5, 60 * 60 * 1000);
+    const rate = await checkRateLimit(`mentor-app:${ip}`, 5, 60 * 60 * 1000);
     if (!rate.allowed) {
       return rateLimitResponse(rate.retryAfterSec);
     }
@@ -25,6 +26,14 @@ export async function POST(request: NextRequest) {
 
     if (!parsed.success) {
       return jsonError(parsed.error.issues.map((i) => i.message).join(", "), 422);
+    }
+
+    if (
+      !isMentorApplicationDocumentUrl(parsed.data.cvDocumentUrl) ||
+      (parsed.data.certificateDocumentUrl &&
+        !isMentorApplicationDocumentUrl(parsed.data.certificateDocumentUrl))
+    ) {
+      return jsonError("Dokumen harus diunggah lewat formulir (URL tidak valid).", 422);
     }
 
     if (isTurnstileBlockingMisconfiguration()) {

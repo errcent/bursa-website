@@ -81,7 +81,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (isApi) {
-    const rate = checkApiRateLimit(request);
+    const rate = await checkApiRateLimit(request);
     if (!rate.allowed) {
       return applyMobileCors(rateLimitResponse(rate.retryAfterSec), origin);
     }

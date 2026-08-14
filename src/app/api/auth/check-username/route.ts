@@ -12,7 +12,7 @@ import { db } from "@/lib/db";
 export async function GET(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const rate = checkRateLimit(`check-username:${ip}`, 30, 60 * 1000);
+    const rate = await checkRateLimit(`check-username:${ip}`, 30, 60 * 1000);
     if (!rate.allowed) {
       return jsonError(`Terlalu banyak permintaan. Coba lagi dalam ${rate.retryAfterSec} detik.`, 429);
     }

@@ -21,7 +21,7 @@ const BCRYPT_COST = 12;
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const rate = checkRateLimit(`register:${ip}`, 3, 60 * 60 * 1000);
+    const rate = await checkRateLimit(`register:${ip}`, 3, 60 * 60 * 1000);
     if (!rate.allowed) {
       return jsonError(
         `Terlalu banyak percobaan daftar. Coba lagi dalam ${rate.retryAfterSec} detik.`,

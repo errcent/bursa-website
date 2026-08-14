@@ -35,7 +35,7 @@ const IDENTITY_REQUIRED: DataSubjectRequestType[] = [
 export async function POST(request: Request) {
   try {
     const ip = clientIp(request);
-    const limit = checkRateLimit(`dsar:${ip}`, 5, 60 * 60 * 1000);
+    const limit = await checkRateLimit(`dsar:${ip}`, 5, 60 * 60 * 1000);
     if (!limit.allowed) {
       return rateLimitResponse(limit.retryAfterSec);
     }

@@ -66,16 +66,20 @@ export async function resetPasswordWithToken(token: string, newPassword: string)
   }
 
   const passwordHash = await bcrypt.hash(newPassword, 12);
+  const userId = validation.record.userId;
 
+  // BN-SEC-008: invalidate all web/mobile sessions on password recovery.
   await db.$transaction([
     db.user.update({
-      where: { id: validation.record.userId },
+      where: { id: userId },
       data: { passwordHash },
     }),
     db.passwordResetToken.update({
       where: { id: validation.record.id },
       data: { usedAt: new Date() },
     }),
+    db.refreshToken.deleteMany({ where: { userId } }),
+    db.userSession.deleteMany({ where: { userId } }),
   ]);
 
   return {

@@ -1,26 +1,27 @@
+# Dependabot auto-merge — DISABLED (BN-SEC-002)
+#
+# Auto-merge removed after 2026-08-14 security audit.
+# Dependabot PRs (including security:update) require human review and merge.
+# This workflow is retained as a no-op stub so the path stays documented;
+# delete the file entirely once the team no longer needs the reminder.
+
 name: Dependabot auto-merge
 
-on: pull_request
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: read
 
 jobs:
-  auto-merge:
-    name: Auto-merge safe Dependabot updates
+  auto-merge-disabled:
+    name: Auto-merge disabled (human review required)
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
     steps:
-      - name: Fetch Dependabot metadata
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
-        id: metadata
-
-      - name: Enable auto-merge for patch and security updates
-        if: |
-          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
-          steps.metadata.outputs.update-type == 'security:update'
-        run: gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Skip auto-merge
+        run: |
+          echo "BN-SEC-002: Dependabot auto-merge is disabled."
+          echo "Review and merge Dependabot PRs manually after CI passes."

@@ -5,6 +5,10 @@ import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { validatePassword } from "@/lib/auth/password-policy";
 import { resetPasswordWithToken, validateResetToken } from "@/lib/auth/password-reset";
 import { checkRateLimit, clientIp } from "@/lib/auth/rate-limit";
+import {
+  WEB_SESSION_COOKIE,
+  webSessionCookieOptions,
+} from "@/lib/auth/web-session";
 
 const resetSchema = z.object({
   token: z.string().min(32, "Token tidak valid."),
@@ -36,7 +40,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const rate = checkRateLimit(`reset-password:${ip}`, 5, 60 * 1000);
+    const rate = await checkRateLimit(`reset-password:${ip}`, 5, 60 * 1000);
     if (!rate.allowed) {
       return jsonError(
         `Terlalu banyak percobaan. Coba lagi dalam ${rate.retryAfterSec} detik.`,
@@ -59,11 +63,17 @@ export async function POST(request: NextRequest) {
       return jsonError(message, 400);
     }
 
-    return jsonOk({
+    const response = jsonOk({
       ok: true,
       message: "Kata sandi berhasil diperbarui.",
       email: result.email,
     });
+    // BN-SEC-008: drop any existing web session cookie after recovery.
+    response.cookies.set(WEB_SESSION_COOKIE, "", {
+      ...webSessionCookieOptions(),
+      maxAge: 0,
+    });
+    return response;
   } catch (error) {
     return handleApiError(error);
   }

@@ -1,4 +1,7 @@
+import { createHash } from "crypto";
 import { NextResponse } from "next/server";
+
+import { checkRateLimitUpstash, isUpstashRateLimitConfigured } from "@/lib/auth/rate-limit-upstash";
 
 export interface RateLimitResult {
   allowed: boolean;
@@ -20,8 +23,12 @@ function pruneExpiredBuckets(now: number): void {
   }
 }
 
-/** In-memory fixed-window rate limit (per key). */
-export function checkRateLimit(
+function hashKeyMaterial(value: string): string {
+  return createHash("sha256").update(value).digest("hex").slice(0, 32);
+}
+
+/** In-memory fixed-window rate limit (per key). Local/dev fallback. */
+export function checkRateLimitMemory(
   key: string,
   limit: number,
   windowMs: number
@@ -46,16 +53,38 @@ export function checkRateLimit(
   return { allowed: true };
 }
 
+/**
+ * Fixed-window rate limit (BN-SEC-005).
+ * Uses Upstash Redis when UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN
+ * are set; otherwise process-local memory.
+ */
+export async function checkRateLimit(
+  key: string,
+  limit: number,
+  windowMs: number
+): Promise<RateLimitResult> {
+  if (isUpstashRateLimitConfigured()) {
+    try {
+      return await checkRateLimitUpstash(key, limit, windowMs);
+    } catch (error) {
+      console.error("[rate-limit] Upstash error; falling back to memory:", error);
+      return checkRateLimitMemory(key, limit, windowMs);
+    }
+  }
+  return checkRateLimitMemory(key, limit, windowMs);
+}
+
 export function clientIp(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0]?.trim() || "unknown";
   return request.headers.get("x-real-ip") || "unknown";
 }
 
-export function checkApiRateLimit(request: Request): RateLimitResult {
+export async function checkApiRateLimit(request: Request): Promise<RateLimitResult> {
   const ip = clientIp(request);
   const auth = request.headers.get("authorization")?.trim();
-  const key = auth ? `user:${auth.slice(0, 32)}` : `ip:${ip}`;
+  // BN-SEC-004: hash full Authorization value — never slice(0,32) JWT prefix.
+  const key = auth ? `user:${hashKeyMaterial(auth)}` : `ip:${ip}`;
   const ua = request.headers.get("user-agent") || "";
   let limit = DEFAULT_API_LIMIT;
   if (/bot|crawler|spider/i.test(ua)) {
