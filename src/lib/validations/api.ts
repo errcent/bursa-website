@@ -121,9 +121,26 @@ export const mentorApplicationSchema = z.object({
   agreedToTerms: z
     .boolean()
     .refine((val) => val === true, { message: "Kamu harus menyetujui syarat & ketentuan." }),
-  cvDocumentUrl: z.string().min(1, "CV wajib diunggah."),
+  // BN-SEC-007: only upload-helper URLs (/uploads/mentor-applications/ or data:).
+  cvDocumentUrl: z
+    .string()
+    .min(1, "CV wajib diunggah.")
+    .refine(
+      (url) =>
+        url.startsWith("/uploads/mentor-applications/") || url.startsWith("data:"),
+      { message: "CV harus diunggah lewat formulir (URL tidak valid)." }
+    ),
   cvDocumentName: z.string().min(1, "Nama file CV wajib diisi."),
-  certificateDocumentUrl: z.string().optional(),
+  certificateDocumentUrl: z
+    .string()
+    .optional()
+    .refine(
+      (url) =>
+        !url ||
+        url.startsWith("/uploads/mentor-applications/") ||
+        url.startsWith("data:"),
+      { message: "Sertifikat harus diunggah lewat formulir (URL tidak valid)." }
+    ),
   certificateDocumentName: z.string().optional(),
   turnstileToken: z.string().optional(),
 });

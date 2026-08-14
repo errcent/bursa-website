@@ -13,7 +13,7 @@ import { checkRateLimit, clientIp } from "@/lib/auth/rate-limit";
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const rate = checkRateLimit(`mobile-google:${ip}`, 10, 60 * 1000);
+    const rate = await checkRateLimit(`mobile-google:${ip}`, 10, 60 * 1000);
     if (!rate.allowed) {
       return jsonError(
         `Terlalu banyak percobaan. Coba lagi dalam ${rate.retryAfterSec} detik.`,

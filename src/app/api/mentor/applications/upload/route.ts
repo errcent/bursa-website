@@ -22,7 +22,7 @@ const ALLOWED_TYPES = new Set([
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const rate = checkRateLimit(`mentor-upload:${ip}`, 10, 60 * 60 * 1000);
+    const rate = await checkRateLimit(`mentor-upload:${ip}`, 10, 60 * 60 * 1000);
     if (!rate.allowed) {
       return rateLimitResponse(rate.retryAfterSec);
     }

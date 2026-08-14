@@ -48,8 +48,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      if (url.startsWith(baseUrl)) return url;
+      // BN-SEC-003: exact-origin allowlist (reject prefix hosts like baseUrl.evil.tld).
+      if (url.startsWith("/") && !url.startsWith("//") && !url.startsWith("/\\")) {
+        return `${baseUrl}${url}`;
+      }
+      try {
+        const target = new URL(url);
+        const base = new URL(baseUrl);
+        if (target.origin === base.origin) return target.toString();
+      } catch {
+        /* fall through */
+      }
       return baseUrl;
     },
     async signIn({ user, account }) {

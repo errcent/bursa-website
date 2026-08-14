@@ -21,7 +21,7 @@ const GENERIC_MESSAGE =
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const rate = checkRateLimit(`forgot-password:${ip}`, 3, 60 * 60 * 1000);
+    const rate = await checkRateLimit(`forgot-password:${ip}`, 3, 60 * 60 * 1000);
     if (!rate.allowed) {
       return jsonError(
         `Terlalu banyak permintaan. Coba lagi dalam ${rate.retryAfterSec} detik.`,

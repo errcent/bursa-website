@@ -16,7 +16,7 @@ const GENERIC_LOGIN_ERROR = "Email, username, atau kata sandi salah.";
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const rate = checkRateLimit(`login:${ip}`, 5, 60 * 1000);
+    const rate = await checkRateLimit(`login:${ip}`, 5, 60 * 1000);
     if (!rate.allowed) {
       return jsonError(
         `Terlalu banyak percobaan masuk. Coba lagi dalam ${rate.retryAfterSec} detik.`,

@@ -38,6 +38,30 @@ function mapClientRole(_email: string, roleHint?: string): UserRole {
 }
 
 /**
+ * Wipe attacker control when Google proves mailbox ownership of an unverified
+ * password-backed account (BN-SEC-001).
+ */
+async function reclaimUnverifiedPasswordAccount(
+  userId: string,
+  input: { nama: string; avatarUrl?: string | null }
+) {
+  await db.$transaction([
+    db.refreshToken.deleteMany({ where: { userId } }),
+    db.userSession.deleteMany({ where: { userId } }),
+    db.user.update({
+      where: { id: userId },
+      data: {
+        passwordHash: OAUTH_PASSWORD_MARKER,
+        emailVerifiedAt: new Date(),
+        nama: input.nama,
+        ...(input.avatarUrl ? { avatarUrl: input.avatarUrl } : {}),
+      },
+    }),
+  ]);
+  return db.user.findUniqueOrThrow({ where: { id: userId } });
+}
+
+/**
  * Create or link a Prisma user after Google OAuth.
  * Data minimization: email, display name, avatar URL only, no Gmail read scope.
  */
@@ -52,6 +76,19 @@ export async function upsertGoogleOAuthUser(input: {
   const existing = await db.user.findUnique({ where: { email } });
   if (existing) {
     const isOAuthOnly = existing.passwordHash === OAUTH_PASSWORD_MARKER;
+    const isUnverifiedPassword =
+      !isOAuthOnly && !existing.emailVerifiedAt;
+
+    // BN-SEC-001: Google proves inbox → reclaim squat; do not leave attacker password.
+    if (isUnverifiedPassword) {
+      const user = await reclaimUnverifiedPasswordAccount(existing.id, {
+        nama,
+        avatarUrl: input.avatarUrl,
+      });
+      await markWaitlistConverted(email);
+      return { user, isNew: false };
+    }
+
     const updates: {
       nama?: string;
       avatarUrl?: string | null;
@@ -64,7 +101,7 @@ export async function upsertGoogleOAuthUser(input: {
         updates.avatarUrl = input.avatarUrl;
       }
     }
-    if (!existing.emailVerifiedAt) {
+    if (isOAuthOnly && !existing.emailVerifiedAt) {
       updates.emailVerifiedAt = new Date();
     }
     if (Object.keys(updates).length === 0) {

@@ -22,7 +22,7 @@ function hashIp(ip: string): string {
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const rate = checkRateLimit(`waitlist:${ip}`, 5, 60 * 60 * 1000);
+    const rate = await checkRateLimit(`waitlist:${ip}`, 5, 60 * 60 * 1000);
     if (!rate.allowed) {
       return rateLimitResponse(rate.retryAfterSec);
     }
