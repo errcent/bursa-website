@@ -42,37 +42,35 @@ export function CourseDetailHero({
           aria-hidden
         />
 
-        <div className="absolute inset-0 z-10 flex flex-col px-5 pb-10 sm:px-8 sm:pb-12 lg:px-12 lg:pb-14">
+        <div className="absolute inset-0 z-10 flex flex-col px-5 pb-10 sm:px-8 sm:pb-12 lg:px-10 lg:pb-14">
           <div
             className="min-h-[14rem] shrink-0 sm:min-h-[12rem] lg:min-h-[14rem]"
             aria-hidden
           />
-          <div className="mx-auto w-full max-w-6xl">
-            <div className="max-w-2xl">
-              <h1 className="font-heading text-[clamp(2rem,5.5vw,3.75rem)] font-semibold leading-[1.02] tracking-[-0.04em] text-white">
-                {course.title}
-              </h1>
+          <div className="mr-auto w-full max-w-md sm:max-w-lg">
+            <h1 className="font-heading text-[clamp(1.75rem,4.2vw,2.75rem)] font-semibold leading-[1.08] tracking-[-0.04em] text-white">
+              {course.title}
+            </h1>
 
-              {mentor && (
-                <p className="mt-3 text-sm font-normal tracking-wide text-white/45">
-                  dengan {mentor.name}
-                </p>
-              )}
-
-              <p className="section-copy mt-4 max-w-xl text-[0.9375rem] leading-relaxed text-white/65 sm:text-base">
-                {course.shortDescription}
+            {mentor && (
+              <p className="mt-3 text-sm font-normal tracking-wide text-white/45">
+                dengan {mentor.name}
               </p>
+            )}
 
-              <div className="mt-7">
-                <Button
-                  size="lg"
-                  className="h-12 gap-2.5 rounded-md bg-white px-7 text-sm font-semibold text-black shadow-lg shadow-black/25 hover:bg-white/92"
-                  render={<Link href={ctaHref} />}
-                >
-                  <Play className="size-4 fill-current" />
-                  {ctaLabel}
-                </Button>
-              </div>
+            <p className="section-copy mt-4 max-w-md text-[0.9375rem] leading-relaxed text-white/65 sm:text-base">
+              {course.shortDescription}
+            </p>
+
+            <div className="mt-7">
+              <Button
+                size="lg"
+                className="h-12 gap-2.5 rounded-md bg-white px-7 text-sm font-semibold text-black shadow-lg shadow-black/25 hover:bg-white/92"
+                render={<Link href={ctaHref} />}
+              >
+                <Play className="size-4 fill-current" />
+                {ctaLabel}
+              </Button>
             </div>
           </div>
         </div>
