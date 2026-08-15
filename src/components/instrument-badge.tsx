@@ -26,10 +26,10 @@ export function InstrumentBadge({
   );
 }
 
-const LEVEL_BARS: Record<Level, number> = {
-  Pemula: 1,
-  Menengah: 2,
-  Mahir: 3,
+const LEVEL_SHAPE: Record<Level, "circle" | "square" | "triangle"> = {
+  Pemula: "circle",
+  Menengah: "square",
+  Mahir: "triangle",
 };
 
 export const LEVEL_TOOLTIP: Record<Level, string> = {
@@ -38,23 +38,50 @@ export const LEVEL_TOOLTIP: Record<Level, string> = {
   Mahir: "Kelas ini cocok untuk profesional",
 };
 
+const LEVEL_SHAPE_FILL = "rgba(0, 0, 0, 0.5)";
+
+function LevelShape({ shape }: { shape: "circle" | "square" | "triangle" }) {
+  if (shape === "circle") {
+    return (
+      <span
+        aria-hidden
+        className="block size-3 rounded-full"
+        style={{ backgroundColor: LEVEL_SHAPE_FILL }}
+      />
+    );
+  }
+  if (shape === "square") {
+    return (
+      <span
+        aria-hidden
+        className="block size-3"
+        style={{ backgroundColor: LEVEL_SHAPE_FILL }}
+      />
+    );
+  }
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 12 12"
+      className="block size-3"
+      fill={LEVEL_SHAPE_FILL}
+    >
+      <polygon points="6,1 11.2,11 0.8,11" />
+    </svg>
+  );
+}
+
 export function LevelBadge({ level, className }: { level: Level; className?: string }) {
-  const count = LEVEL_BARS[level];
+  const shape = LEVEL_SHAPE[level];
   const label = LEVEL_TOOLTIP[level];
 
   return (
     <span
       data-level-hotspot
-      className={cn("inline-flex items-center gap-[3px]", className)}
+      className={cn("inline-flex items-center", className)}
       aria-label={label}
     >
-      {Array.from({ length: count }, (_, i) => (
-        <span
-          key={i}
-          aria-hidden
-          className="size-[7px] rounded-[1px] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
-        />
-      ))}
+      <LevelShape shape={shape} />
     </span>
   );
 }

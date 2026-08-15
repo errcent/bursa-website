@@ -968,8 +968,9 @@
 
   @media (max-width: 767px) {
     :root {
-      --catalog-card-width: 10.5rem;
-      --catalog-playlist-card-width: 14rem;
+      /* ~1.2 cards + peek; larger than desktop density on purpose. */
+      --catalog-card-width: min(17.5rem, 78vw);
+      --catalog-playlist-card-width: min(20rem, 86vw);
       --catalog-mentor-card-width: 7.5rem;
     }
 
@@ -1025,7 +1026,6 @@
   }
   @media (max-width: 430px) {
     :root {
-      --catalog-card-width: 9.25rem;
       --catalog-mentor-card-width: 6.75rem;
       --catalog-row-gap: 1rem;
       --catalog-section-gap: 1.25rem;
