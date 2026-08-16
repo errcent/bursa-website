@@ -6,21 +6,34 @@ export function DeviceMockupSection() {
   return (
     <section
       id="belajar-dimana-saja"
-      className="section-cinematic-light section-tight scroll-mt-24"
+      className="section-cinematic-light flex min-h-[100svh] scroll-mt-24 items-center"
       aria-labelledby="device-mockup-heading"
     >
-      <div className="container-page">
-        <div className="mx-auto mb-6 max-w-3xl text-center md:mb-8">
-          <h2 id="device-mockup-heading" className="section-display-title text-foreground">
+      <div className="container-page flex w-full flex-col items-center py-24 sm:py-28 md:py-32">
+        <h2
+          id="device-mockup-heading"
+          className="section-display-title mb-16 max-w-3xl text-center text-foreground sm:mb-20 md:mb-24"
+        >
+          <span className="block md:inline">
             <WordReveal
               as="span"
               className="inline"
-              text="Belajar sederhana, di mana saja"
+              text="Belajar sederhana,"
               trigger="inView"
               delay={0.04}
             />
-          </h2>
-        </div>
+          </span>
+          <span className="hidden md:inline"> </span>
+          <span className="block md:inline">
+            <WordReveal
+              as="span"
+              className="inline"
+              text="di mana saja"
+              trigger="inView"
+              delay={0.22}
+            />
+          </span>
+        </h2>
 
         <div className="mx-auto w-[60%]">
           <Image
