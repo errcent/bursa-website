@@ -1,6 +1,6 @@
 "use client";
 
-import { Lock, PlayCircle, Sparkles } from "lucide-react";
+import { Lock, PlayCircle } from "lucide-react";
 
 import { ThumbnailPlaceholder } from "@/components/thumbnail-placeholder";
 import { cn } from "@/lib/utils";
@@ -66,13 +66,6 @@ export function LessonPreviewThumb({
             </div>
           </div>
         </>
-      ) : isFree ? (
-        <div className="absolute left-2 top-2">
-          <span className="inline-flex items-center gap-0.5 rounded bg-emerald/90 px-1.5 py-0.5 text-[9px] font-medium text-white">
-            <Sparkles className="size-2.5" />
-            Gratis
-          </span>
-        </div>
       ) : null}
 
       {showPlayOverlay && isPlayable && !isLocked ? (

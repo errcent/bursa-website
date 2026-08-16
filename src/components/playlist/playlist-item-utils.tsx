@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, Lock, Sparkles } from "lucide-react";
+import { CheckCircle2, Lock } from "lucide-react";
 
 import { buildLoginHref } from "@/lib/auth/redirect";
 import type { PlaylistItemAccessStatus, PlaylistItemView } from "@/lib/playlist/types";
@@ -46,14 +46,7 @@ export function AccessBadge({ status }: { status: PlaylistItemAccessStatus | und
       </span>
     );
   }
-  if (status === "free") {
-    return (
-      <span className="inline-flex items-center gap-1 rounded-full border border-emerald/25 bg-emerald/10 px-2 py-0.5 text-[10px] font-medium text-emerald">
-        <Sparkles className="size-3" />
-        Gratis
-      </span>
-    );
-  }
+  if (status === "free") return null;
   return (
     <span className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
       <Lock className="size-3" />

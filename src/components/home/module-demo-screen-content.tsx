@@ -240,7 +240,6 @@ function DevicePlaylistDetailPhase({
         <PlaylistDetailHero
           playlist={playlist}
           firstPlayableHref={`/playlist/${playlist.slug}`}
-          accessSummary={null}
           variant="device"
         />
         <div className="device-detail-list min-w-0 bg-background">

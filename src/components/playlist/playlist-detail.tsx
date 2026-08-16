@@ -26,7 +26,7 @@ const playlistFaqs = [
   {
     question: "Apakah semua video dalam playlist bisa langsung ditonton?",
     answer:
-      "Tidak selalu. Video dengan badge Gratis atau Dimiliki bisa diputar langsung. Video Terkunci memerlukan akses ke kelas asalnya.",
+      "Tidak selalu. Video tanpa gembok bisa diputar langsung. Video terkunci memerlukan akses ke kelas asalnya.",
   },
   {
     question: "Kenapa ada beberapa mentor dalam satu playlist?",
@@ -73,15 +73,6 @@ export function PlaylistDetailView({ slug }: { slug: string }) {
     void loadPlaylist();
   }, [authLoading, loadPlaylist]);
 
-  const accessSummary = useMemo(() => {
-    if (!playlist?.items.length) return null;
-    const owned = playlist.items.filter((item) => item.accessStatus === "owned").length;
-    const free = playlist.items.filter((item) => item.accessStatus === "free").length;
-    const unlocked = owned + free;
-    const locked = playlist.items.length - unlocked;
-    return { owned, free, unlocked, locked };
-  }, [playlist?.items]);
-
   const firstPlayableHref = useMemo(() => {
     if (!playlist?.items.length) return null;
     const first = playlist.items.find((item) => isItemPlayable(item.accessStatus));
@@ -118,7 +109,6 @@ export function PlaylistDetailView({ slug }: { slug: string }) {
       <PlaylistDetailHero
         playlist={playlist}
         firstPlayableHref={firstPlayableHref}
-        accessSummary={accessSummary}
         onScrollToList={scrollToVideos}
       />
 
