@@ -66,29 +66,28 @@ export function PlaylistCurriculumCards({
                     className="rounded-md border-border"
                   />
                 </Link>
-              </div>
-
-              <div className="flex min-w-0 flex-col justify-center gap-1.5">
-                <div className="flex items-start justify-between gap-3">
-                  <Link href={href} className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h4 className="break-words font-heading text-sm font-medium leading-snug text-foreground sm:text-lg lg:text-xl">
-                        {item.lessonTitle ?? item.courseTitle ?? "Video"}
-                      </h4>
-                      <AccessBadge status={status} />
-                    </div>
-                  </Link>
-                  {!hideBookmark && item.courseSlug && item.lessonLegacyId ? (
+                {!hideBookmark && item.courseSlug && item.lessonLegacyId ? (
+                  <div className="absolute bottom-2.5 left-2.5 z-20">
                     <BookmarkToggleButton
                       bookmarkRef={{
                         type: "lesson",
                         courseSlug: item.courseSlug,
                         lessonId: item.lessonLegacyId,
                       }}
-                      className="shrink-0 opacity-100"
                     />
-                  ) : null}
-                </div>
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="flex min-w-0 flex-col justify-center gap-1.5">
+                <Link href={href} className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h4 className="break-words font-heading text-sm font-medium leading-snug text-foreground sm:text-lg lg:text-xl">
+                      {item.lessonTitle ?? item.courseTitle ?? "Video"}
+                    </h4>
+                    <AccessBadge status={status} />
+                  </div>
+                </Link>
 
                 {item.courseTitle ? (
                   <Link href={href}>
