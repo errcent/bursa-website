@@ -12,7 +12,6 @@ import {
   resolveHeroSubcopyDelaySSR,
 } from "@/components/motion/hero-intro-timing";
 import { HeroRotatingTitle } from "@/components/motion/hero-rotating-title";
-import { HeroTyping } from "@/components/motion/hero-typing";
 import { RevealText } from "@/components/motion/reveal";
 import {
   WORD_REVEAL_DURATION,
@@ -41,7 +40,6 @@ function getHeroSubcopyDelaySSR() {
 }
 
 export function HomeHeroSection() {
-  const heroBadgeText = "Solusi Edukasi Trading";
   const subcopyDelay = useSyncExternalStore(
     subscribeToHeroSubcopyDelay,
     getHeroSubcopyDelay,
@@ -56,9 +54,6 @@ export function HomeHeroSection() {
 
       <div className="container-page relative z-10 flex flex-1 flex-col justify-end px-5 pb-28 pt-16 sm:justify-center sm:px-8 sm:py-20 sm:pb-10 lg:py-24 lg:pb-12">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <span className="badge-pill mb-6 inline-flex items-center gap-2">
-            <HeroTyping text={heroBadgeText} />
-          </span>
           <HeroRotatingTitle staticLine={HERO_HEADLINE_LINES[1]} className="mx-auto max-w-4xl" />
           <WordReveal
             as="p"
