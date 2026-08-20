@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type Ref } from "react";
 
 import { useAuth } from "@/components/auth-provider";
 import { Reveal } from "@/components/motion/reveal";
@@ -11,7 +11,11 @@ import { WordReveal } from "@/components/motion/word-reveal";
 import { Button } from "@/components/ui/button";
 
 /** The single closing CTA of the landing page, waitlist-focused close. */
-export function ClosingCtaSection() {
+export function ClosingCtaSection({
+  pinRef,
+}: {
+  pinRef?: Ref<HTMLDivElement | null>;
+}) {
   const { session, isLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
 
@@ -30,46 +34,49 @@ export function ClosingCtaSection() {
     : "Dapatkan kabar saat kelas dan mentor dibuka.";
 
   return (
-    <section className="section-closing relative overflow-hidden py-16 sm:py-20 md:py-24">
+    <section className="section-closing relative">
       <div className="section-closing__glow pointer-events-none absolute inset-0" aria-hidden />
-      <div className="container-page relative z-10">
-        <div className="mx-auto max-w-2xl text-center">
-          <Reveal>
-            <p className="eyebrow mb-3">{eyebrow}</p>
-          </Reveal>
-          <WordReveal
-            as="h2"
-            className="section-title sm:text-3xl md:text-4xl"
-            text={headline}
-            trigger="inView"
-            delay={0.04}
-          />
-          <Reveal delay={0.1} className="mt-4">
-            <p className="section-copy mx-auto max-w-lg">{body}</p>
+      <div ref={pinRef} className="section-closing__pin">
+        <div className="container-page relative z-10">
+          <div className="section-closing__copy mx-auto max-w-2xl text-center">
+            <Reveal>
+              <p className="eyebrow mb-3 text-foreground/90">{eyebrow}</p>
+            </Reveal>
+            <WordReveal
+              as="h2"
+              className="section-title text-foreground sm:text-3xl md:text-4xl"
+              text={headline}
+              trigger="inView"
+              delay={0.04}
+            />
+            <Reveal delay={0.1} className="mt-4">
+              <p className="section-copy mx-auto max-w-lg text-foreground/80">{body}</p>
 
-            <div className="mt-8 flex w-full max-w-sm flex-col gap-3 sm:mx-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
-              <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  size="lg"
-                  className="btn-primary h-12 min-h-12 w-full rounded-md px-8 sm:w-auto"
-                  render={<Link href={showMemberExperience ? "/dashboard" : "/waitlist"} />}
-                >
-                  {showMemberExperience ? "Lanjut Belajar" : "Gabung Waitlist"}
-                  <ArrowRight className="size-4" />
-                </Button>
-              </motion.div>
-              {!showMemberExperience ? (
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 min-h-12 rounded-md border-border/70 bg-card/40 px-7 text-sm text-foreground no-underline hover:text-foreground visited:text-foreground"
-                  render={<Link href="/katalog" className="text-foreground no-underline hover:text-foreground visited:text-foreground" />}
-                >
-                  Lihat Katalog
-                </Button>
-              ) : null}
-            </div>
-          </Reveal>
+              <div className="mt-8 flex w-full max-w-sm flex-col gap-3 sm:mx-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
+                <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    size="lg"
+                    variant="inverse"
+                    className="h-12 min-h-12 w-full rounded-md px-8 sm:w-auto"
+                    render={<Link href={showMemberExperience ? "/dashboard" : "/waitlist"} />}
+                  >
+                    {showMemberExperience ? "Lanjut Belajar" : "Gabung Waitlist"}
+                    <ArrowRight className="size-4" />
+                  </Button>
+                </motion.div>
+                {!showMemberExperience ? (
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="h-12 min-h-12 rounded-md border-white/50 bg-white/12 px-7 text-sm text-foreground no-underline hover:border-white/70 hover:bg-white/18 hover:text-foreground visited:text-foreground"
+                    render={<Link href="/katalog" className="text-foreground no-underline hover:text-foreground visited:text-foreground" />}
+                  >
+                    Lihat Katalog
+                  </Button>
+                ) : null}
+              </div>
+            </Reveal>
+          </div>
         </div>
       </div>
     </section>

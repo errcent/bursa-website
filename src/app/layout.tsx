@@ -55,7 +55,10 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
-      <body className="flex min-h-full flex-col overflow-x-hidden bg-background text-foreground">
+      <body
+        className="flex min-h-full flex-col overflow-x-hidden bg-background text-foreground"
+        suppressHydrationWarning
+      >
         <Script
           id="bursa-intro-pending"
           strategy="beforeInteractive"

@@ -5,6 +5,7 @@ import { HomeFaqSection } from "@/components/home/home-faq-section";
 import { HomeHeroSection } from "@/components/home/home-hero-section";
 import { HomeProblemSection } from "@/components/home/home-problem-section";
 import { HomeSolutionSection } from "@/components/home/home-solution-section";
+import { LandingAccentRun } from "@/components/home/landing-accent-run";
 import { LandingViewTracker } from "@/components/analytics/landing-view-tracker";
 import { SiteFooter } from "@/components/site-footer";
 import type { PlaylistSummary } from "@/lib/playlist/types";
@@ -33,11 +34,9 @@ export function HomePageContent({
           </div>
         </section>
 
-        <DeviceMockupSection />
-
-        <HomeFaqSection />
-
-        <ClosingCtaSection />
+        <LandingAccentRun pin={<DeviceMockupSection />} waitlist={<ClosingCtaSection />}>
+          <HomeFaqSection />
+        </LandingAccentRun>
       </main>
       <SiteFooter />
     </>

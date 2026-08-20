@@ -13,8 +13,9 @@ export function HomeFaqSection() {
   return (
     <section
       id="faq"
-      className="section-muted section-spacious scroll-mt-24"
+      className="home-faq-footer-fade section-spacious scroll-mt-24 pb-28 md:pb-36"
     >
+      <div className="home-faq-footer-veil" aria-hidden />
       <div className="container-page">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-16 xl:gap-20">
           <Reveal className="lg:sticky lg:top-28">

@@ -118,6 +118,7 @@
   --hero-horizon-speed: 42s;
   --hero-mesh-speed: 22s;
   --hero-wave-speed: 28s;
+  --hero-accent: #9698c1;
   --grid-opacity: 0.01;
   --nav-glass-rgb: 8 10 18;
   /* Matches `.nav-shell` / `.hero-nav-float--pad` + bar height (h-14 → sm:h-[3.75rem]). */
@@ -440,16 +441,31 @@
     background-image:
       radial-gradient(ellipse 70% 45% at 50% -10%, var(--glow), transparent 72%);
   }
-  .hero-home-viewport {
-    min-height: 100dvh;
-    min-height: 100svh;
+  /* Home-only aurora: medium lavender wash, fades to black at the fold. */
+  .hero-home-aurora {
+    --hero-aurora-grain: 0.055;
+    background-color: #000;
+    background-image:
+      radial-gradient(
+        ellipse 82% 58% at 16% -6%,
+        color-mix(in srgb, var(--hero-accent) 46%, transparent),
+        transparent 62%
+      ),
+      radial-gradient(
+        ellipse 72% 52% at 88% 6%,
+        color-mix(in srgb, var(--hero-accent) 30%, transparent),
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 58% 42% at 48% 38%,
+        color-mix(in srgb, var(--hero-accent) 18%, transparent),
+        transparent 70%
+      ),
+      linear-gradient(180deg, #14151f 0%, #08080c 52%, #000 100%);
   }
-
-  @media (max-width: 639px) {
-    .hero-home-viewport {
-      min-height: min(100dvh, 42rem);
-      min-height: min(100svh, 42rem);
-    }
+  .hero-home-viewport {
+    min-height: 100svh;
+    min-height: 100dvh;
   }
 
   /* Breathing room + safe-area for the hero-docked navbar on the home page. */
@@ -523,6 +539,170 @@
 
   .section-closing__glow {
     background: radial-gradient(ellipse 60% 50% at 50% 100%, var(--glow), transparent 70%);
+  }
+
+  /* One aurora field: mockup pin through waitlist + FAQ. */
+  .landing-accent-run {
+    --waitlist-peek: 24vh;
+    position: relative;
+    background-color: var(--section-canvas);
+  }
+
+  .landing-accent-run__wash {
+    position: sticky;
+    top: 0;
+    z-index: 0;
+    height: 100dvh;
+    margin-bottom: -100dvh;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .landing-accent-run__pin,
+  .landing-accent-run > .section-closing,
+  .landing-accent-run > section {
+    position: relative;
+    z-index: 1;
+    background-color: transparent;
+  }
+
+  .landing-accent-run .section-closing {
+    isolation: auto;
+    background-color: transparent;
+    z-index: 2;
+    margin-top: calc(-1 * var(--waitlist-peek));
+    min-height: 140vh;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: visible;
+  }
+
+  .landing-accent-run .section-closing__pin {
+    position: sticky;
+    top: calc(46dvh - 5rem);
+    z-index: 2;
+    display: flex;
+    height: auto;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: clamp(1.25rem, 3.5vh, 2rem);
+    padding-bottom: clamp(2rem, 6vh, 4rem);
+  }
+
+  .landing-accent-run .section-closing__glow {
+    display: none;
+  }
+
+  .section-closing__copy {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .section-closing__copy > :not(.copy-highlight-oval) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .copy-highlight-oval {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 0;
+    width: min(46rem, 130%);
+    height: min(16rem, 40vh);
+    transform: translate(-50%, -48%);
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(56px);
+    mix-blend-mode: screen;
+    background: radial-gradient(
+      ellipse at 50% 48%,
+      color-mix(in srgb, var(--hero-accent) 58%, white 42%) 0%,
+      color-mix(in srgb, var(--hero-accent) 32%, white 18%) 42%,
+      transparent 74%
+    );
+  }
+
+  .landing-accent-run__rise {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 200%;
+    will-change: transform;
+  }
+
+  .landing-accent-run__rise-fill {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      color-mix(in srgb, var(--hero-accent) 4%, var(--section-canvas)) 18%,
+      color-mix(in srgb, var(--hero-accent) 10%, var(--section-canvas)) 36%,
+      color-mix(in srgb, var(--hero-accent) 18%, var(--section-canvas)) 56%,
+      color-mix(in srgb, var(--hero-accent) 26%, var(--section-canvas)) 76%,
+      color-mix(in srgb, var(--hero-accent) 34%, var(--section-canvas)) 100%
+    );
+  }
+
+  .landing-accent-run__oval {
+    position: absolute;
+    left: 50%;
+    top: 48%;
+    z-index: 1;
+    width: min(120vw, 72rem);
+    height: min(96vw, 58rem);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(80px);
+    opacity: 0.28;
+    mix-blend-mode: screen;
+    background: radial-gradient(
+      ellipse at 50% 48%,
+      color-mix(in srgb, var(--hero-accent) 36%, transparent) 0%,
+      color-mix(in srgb, var(--hero-accent) 16%, transparent) 46%,
+      transparent 74%
+    );
+  }
+
+  .landing-accent-run__wash--static .landing-accent-run__rise-fill {
+    clip-path: none;
+  }
+
+  /* FAQ: footer tint at the bottom, fades out toward the waitlist above. */
+  .home-faq-footer-fade {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .landing-accent-run .home-faq-footer-fade {
+    z-index: 2;
+    margin-top: 0;
+    padding-top: clamp(5rem, 16vh, 8rem);
+  }
+
+  .home-faq-footer-veil {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      var(--section-tint-subtle) 0%,
+      color-mix(in srgb, var(--section-tint-subtle) 70%, transparent) 28%,
+      color-mix(in srgb, var(--section-tint-subtle) 28%, transparent) 58%,
+      transparent 88%
+    );
+  }
+
+  .home-faq-footer-fade > .container-page {
+    position: relative;
+    z-index: 1;
   }
 
   /* Premium landing - editorial sections (MasterClass-inspired) */
@@ -1303,6 +1483,18 @@
       opacity: 0.55;
     }
 
+    .hero-home-aurora .hero-orb {
+      opacity: 0.72;
+    }
+
+    .hero-home-aurora .hero-orb-glow {
+      filter: blur(40px);
+    }
+
+    .hero-orb--d {
+      display: none;
+    }
+
     .hero-horizon-track,
     .hero-horizon-track-slow {
       opacity: 0.65;
@@ -1347,6 +1539,17 @@
       padding-bottom: 0;
     }
   }
+
+  /* Landing: keep sticky-CTA clearance on the footer so no accent strip
+     shows between FAQ and footer-glass. */
+  .landing-page.has-mobile-sticky-cta {
+    padding-bottom: 0;
+  }
+  @media (max-width: 767px) {
+    .landing-page.has-mobile-sticky-cta + .footer-glass {
+      padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+    }
+  }
   .footer-glass {
     background-color: var(--section-tint-subtle);
   }
@@ -1387,6 +1590,75 @@
     animation: hero-mesh-breathe var(--hero-mesh-speed) ease-in-out infinite;
   }
 
+  .hero-orb-field {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .hero-orb {
+    position: absolute;
+    display: block;
+    pointer-events: none;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    contain: layout style;
+  }
+
+  .hero-orb-glow {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    filter: blur(56px);
+    mix-blend-mode: screen;
+    background: radial-gradient(
+      circle at 50% 45%,
+      color-mix(in srgb, var(--hero-accent) 72%, white 8%) 0%,
+      color-mix(in srgb, var(--hero-accent) 32%, transparent) 42%,
+      transparent 70%
+    );
+  }
+
+  .hero-orb--a {
+    width: min(58vw, 42rem);
+    height: min(58vw, 42rem);
+    top: -18%;
+    left: -14%;
+    animation: hero-orb-drift-a 28s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .hero-orb--b {
+    width: min(50vw, 36rem);
+    height: min(50vw, 36rem);
+    top: 4%;
+    right: -18%;
+    animation: hero-orb-drift-b 36s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .hero-orb--c {
+    width: min(38vw, 26rem);
+    height: min(38vw, 26rem);
+    top: 36%;
+    left: 26%;
+    animation: hero-orb-drift-c 22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .hero-orb--d {
+    width: min(28vw, 18rem);
+    height: min(28vw, 18rem);
+    top: 10%;
+    left: 48%;
+    opacity: 0.75;
+    animation: hero-orb-drift-d 32s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .hero-aurora-grain {
+    opacity: var(--hero-aurora-grain, 0.055);
+    mix-blend-mode: overlay;
+  }
+
   /* Softens the light ribbon into a dreamy glow and fades it at all edges so it
      never fights with the hero copy. */
   .hero-wave-soft {
@@ -1403,6 +1675,15 @@
       var(--background) 0%,
       color-mix(in srgb, var(--background) 48%, transparent) 46%,
       transparent 74%
+    );
+  }
+
+  .hero-home-aurora .hero-text-scrim {
+    background: radial-gradient(
+      ellipse 58% 42% at 50% 48%,
+      color-mix(in srgb, #000 36%, transparent) 0%,
+      color-mix(in srgb, #000 16%, transparent) 50%,
+      transparent 76%
     );
   }
 
@@ -1900,48 +2181,91 @@
     }
   }
 
-  /* ── Device mockup section (photorealistic PNG frames + scroll-sync) ── */
+  /* ── Device mockup section (sticky pin + radial wash + title exit) ── */
   .device-mockup-scroll-track {
     position: relative;
-    min-height: clamp(380vh, 440vh, 480vh);
+    min-height: 260vh;
+    background-color: transparent;
   }
 
   .device-mockup-sticky {
     position: sticky;
     top: var(--site-header-offset);
-    z-index: 2;
+    z-index: 1;
     display: flex;
     height: calc(100dvh - var(--site-header-offset));
     max-height: calc(100dvh - var(--site-header-offset));
     align-items: stretch;
     justify-content: flex-start;
-    padding-block: clamp(0.75rem, 2.5vh, 1.5rem);
+    padding-top: 0.35rem;
+    padding-bottom: 0;
     overflow: hidden;
+    background-color: transparent;
+  }
+
+  .device-mockup-wash {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .device-mockup-wash-grain {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    mix-blend-mode: overlay;
+    pointer-events: none;
   }
 
   .device-mockup-sticky__inner {
+    position: relative;
+    z-index: 1;
     width: 100%;
     min-width: 0;
     height: 100%;
     display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
-    align-items: stretch;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "top"
+      "stage"
+      "bottom";
+    align-content: center;
     justify-items: center;
-    gap: clamp(0.5rem, 1.5vh, 1rem);
+    gap: clamp(0.4rem, 1.6vh, 0.9rem);
+    padding-bottom: calc(var(--waitlist-peek, 0vh) * 0.35);
   }
 
-  .device-mockup-header {
-    grid-row: 1;
-    flex-shrink: 0;
+  .device-mockup-heading {
+    display: contents;
+  }
+
+  .device-mockup-line {
     width: 100%;
     min-width: 0;
     max-width: 100%;
+    text-align: center;
+  }
+
+  .device-mockup-line--top {
+    grid-area: top;
     position: relative;
-    z-index: 1;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .device-mockup-line--bottom {
+    grid-area: bottom;
+    z-index: 0;
+    pointer-events: none;
   }
 
   .device-mockup-stage {
-    grid-row: 2;
+    grid-area: stage;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1949,8 +2273,31 @@
     width: 100%;
     min-width: 0;
     max-width: 100%;
+    max-height: 52vh;
     min-height: 0;
-    overflow-x: clip;
+    overflow: visible;
+  }
+
+  .device-mockup-stage__grow {
+    display: flex;
+    justify-content: center;
+    transform-origin: 50% 0%;
+    will-change: transform;
+  }
+
+  .device-mockup-stage__frame {
+    display: flex;
+    max-height: 52vh;
+    width: min(64vw, 30rem);
+    justify-content: center;
+  }
+
+  .device-mockup-stage__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 52vh;
+    object-fit: contain;
   }
 
   .device-mockup-scene-shell {
@@ -2261,29 +2608,17 @@
 
   @media (max-width: 768px) {
     .device-mockup-scroll-track {
-      min-height: 300vh;
-    }
-
-    .device-mockup-header .eyebrow-tight {
-      margin-bottom: 0.75rem;
-    }
-
-    .device-mockup-header .section-copy {
-      font-size: 0.9375rem;
+      min-height: 220vh;
     }
   }
 
   @media (max-width: 520px) {
     .device-mockup-scroll-track {
-      min-height: 280vh;
+      min-height: 200vh;
     }
 
     .device-mockup-sticky {
       padding-block: clamp(0.5rem, 2vh, 1rem);
-    }
-
-    .device-mockup-header {
-      margin-bottom: 0.75rem;
     }
   }
 }
@@ -2401,6 +2736,58 @@ img.ai-thumbnail__media {
   50% {
     opacity: 1;
     transform: scale(1.02);
+  }
+}
+
+@keyframes hero-orb-drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  40% {
+    transform: translate3d(14%, 11%, 0) scale(1.07);
+  }
+  72% {
+    transform: translate3d(5%, 18%, 0) scale(0.96);
+  }
+}
+
+@keyframes hero-orb-drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  35% {
+    transform: translate3d(-16%, 12%, 0) scale(1.05);
+  }
+  68% {
+    transform: translate3d(-6%, 20%, 0) scale(0.97);
+  }
+}
+
+@keyframes hero-orb-drift-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  45% {
+    transform: translate3d(-10%, -14%, 0) scale(1.08);
+  }
+  78% {
+    transform: translate3d(12%, -6%, 0) scale(0.94);
+  }
+}
+
+@keyframes hero-orb-drift-d {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  38% {
+    transform: translate3d(10%, 16%, 0) scale(1.1);
+  }
+  70% {
+    transform: translate3d(-12%, 8%, 0) scale(0.95);
   }
 }
 
@@ -2587,6 +2974,7 @@ img.ai-thumbnail__media {
   .hero-horizon-track-slow,
   .hero-wave-band,
   .grain-overlay,
+  .hero-orb,
   .snap-dust-particle,
   .intro-overlay,
   .orbit-spin,
@@ -2595,6 +2983,35 @@ img.ai-thumbnail__media {
   .orbit-float-fast,
   .animate-search-marquee {
     animation: none !important;
+  }
+
+  .device-mockup-scroll-track {
+    min-height: 0;
+  }
+
+  .device-mockup-sticky {
+    position: relative;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .device-mockup-sticky__inner {
+    gap: clamp(0.4rem, 1.6vh, 0.9rem);
+  }
+
+  .landing-accent-run .section-closing {
+    min-height: 0;
+  }
+
+  .landing-accent-run .section-closing__pin {
+    position: relative;
+    top: auto;
+    height: auto;
+  }
+
+  .landing-accent-run .home-faq-footer-fade {
+    margin-top: 0;
   }
 
   .device-orbit-chip {

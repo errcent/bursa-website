@@ -47,12 +47,12 @@ export function HomeHeroSection() {
   );
 
   return (
-    <section className="hero-cinematic hero-home-viewport relative flex min-h-[100dvh] flex-col">
+    <section className="hero-cinematic hero-home-aurora hero-home-viewport relative flex min-h-[100dvh] flex-col">
       <HeroLivingBackground />
 
       <div aria-hidden className="hero-text-scrim pointer-events-none absolute inset-0 z-[1]" />
 
-      <div className="container-page relative z-10 flex flex-1 flex-col justify-end px-5 pb-28 pt-16 sm:justify-center sm:px-8 sm:py-20 sm:pb-10 lg:py-24 lg:pb-12">
+      <div className="container-page relative z-10 flex flex-1 flex-col justify-center px-5 pb-24 pt-[calc(var(--site-header-offset)+1.25rem)] sm:px-8 sm:py-20 sm:pb-10 lg:py-24 lg:pb-12">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
           <HeroRotatingTitle staticLine={HERO_HEADLINE_LINES[1]} className="mx-auto max-w-4xl" />
           <WordReveal

@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === "production";
+
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -16,9 +18,10 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      // Production Next/Turbopack does not need eval. Keep script/style unsafe-inline
-      // until BN-SEC-009 nonce (Next inline bootstrap + Tailwind). QC-20260819-06 F-06.
-      "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://*.posthog.com",
+      // Production Next/Turbopack does not need eval. Dev: React 19 reconstructs
+      // stacks via eval() — omit this in prod (QC-20260819-06 / BN-SEC-009).
+      // Keep script/style unsafe-inline until BN-SEC-009 nonce.
+      `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://challenges.cloudflare.com https://*.posthog.com`,
       "style-src 'self' 'unsafe-inline'",
       "object-src 'none'",
       "img-src 'self' data: blob: https:",
