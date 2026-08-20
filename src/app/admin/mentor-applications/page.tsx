@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createDirectMentorInvite, fetchMentorApplications } from "@/lib/admin/api";
+import { l1PrimaryPreview } from "@/lib/mentor-program/l1-admin-display";
 import type { MentorApplicationRecord } from "@/lib/mentor-program/types";
 
 const FILTERS = [
@@ -80,6 +81,11 @@ export default function AdminMentorApplicationsPage() {
             {row.fullName}
           </Link>
           <p className="text-xs text-muted-foreground">{row.email}</p>
+          {l1PrimaryPreview(row.l1Answers) ? (
+            <p className="text-xs text-muted-foreground">{l1PrimaryPreview(row.l1Answers)}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">Klik nama untuk baca L1</p>
+          )}
         </div>
       ),
     },
@@ -107,7 +113,10 @@ export default function AdminMentorApplicationsPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-2xl font-semibold">Aplikasi mentor</h1>
-          <p className="text-sm text-muted-foreground">Antrian L1 screening dan L2 review.</p>
+          <p className="text-sm text-muted-foreground">
+            Antrian screening. Jawaban L1 lengkap ada di halaman kandidat — klik nama, bukan menu
+            Mentor (profil live).
+          </p>
         </div>
         <Button onClick={() => setInviteOpen(true)}>Undang L2 langsung</Button>
       </div>

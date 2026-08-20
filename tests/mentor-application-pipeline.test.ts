@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 
 import { hashL2Token } from "@/lib/mentor-program/l2-token";
 import { canTransition } from "@/lib/mentor-program/status-machine";
+import { hasMeaningfulL1Answers, l1AdminRows, l1PrimaryPreview } from "@/lib/mentor-program/l1-admin-display";
 import { mentorL1ApplicationSchema, mentorL2SubmitSchema } from "@/lib/validations/mentor-application";
 
 const l1Base = {
@@ -135,5 +136,24 @@ describe("L2 token hash", () => {
     assert.equal(hash, hashL2Token(token));
     assert.equal(hash.length, 64);
     assert.notEqual(hash, token);
+  });
+});
+
+describe("admin L1 display", () => {
+  it("labels essays and skips empty invite rows", () => {
+    assert.equal(hasMeaningfulL1Answers({}), false);
+    const rows = l1AdminRows({
+      l1_why_bursanalar: "Karena screening perlu waktu.",
+      l1_years_experience: "5_10",
+      l1_primary_expertise: "equities",
+      l1_confirmation: true,
+    });
+    assert.equal(rows.some((row) => row.label === "Mengapa Bursanalar"), true);
+    assert.equal(rows.some((row) => row.value === "5–10 tahun"), true);
+    assert.equal(rows.some((row) => row.id === "l1_confirmation"), false);
+    assert.equal(
+      l1PrimaryPreview({ l1_primary_expertise: "equities", l1_years_experience: "5_10" }),
+      "Saham / ekuitas · 5–10 tahun",
+    );
   });
 });

@@ -8,6 +8,7 @@ import { useAdminToast } from "@/components/admin/admin-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { decideMentorApplication, fetchMentorApplication } from "@/lib/admin/api";
+import { hasMeaningfulL1Answers, l1AdminRows } from "@/lib/mentor-program/l1-admin-display";
 import type { MentorApplicationRecord } from "@/lib/mentor-program/types";
 
 const ACTIONS: Array<{ action: string; label: string }> = [
@@ -35,6 +36,56 @@ function AnswerList({ title, data }: { title: string; data: Record<string, unkno
             <dt className="text-muted-foreground">{key}</dt>
             <dd className="break-words whitespace-pre-wrap">
               {typeof value === "string" ? value : JSON.stringify(value)}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
+function L1AnswerList({ data }: { data: Record<string, unknown> }) {
+  const rows = l1AdminRows(data);
+  if (!hasMeaningfulL1Answers(data) || rows.length === 0) {
+    return (
+      <section className="rounded-xl border border-border p-4">
+        <h2 className="mb-2 font-heading font-semibold">Jawaban L1</h2>
+        <p className="text-sm text-muted-foreground">
+          Tidak ada jawaban tahap 1. Ini undangan L2 langsung, atau baris lama sebelum pipeline L1.
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="rounded-xl border border-border p-4">
+      <h2 className="mb-3 font-heading font-semibold">Jawaban L1</h2>
+      <dl className="grid gap-3 text-sm">
+        {rows.map((row) => (
+          <div key={row.id} className="grid gap-1 sm:grid-cols-[13rem_1fr]">
+            <dt className="text-muted-foreground">{row.label}</dt>
+            <dd className="break-words whitespace-pre-wrap">
+              {row.id.includes("url") || row.id === "l1_extra_links" ? (
+                <span className="flex flex-col gap-1">
+                  {row.value.split("\n").map((href) =>
+                    href.startsWith("http") ? (
+                      <a
+                        key={href}
+                        href={href}
+                        className="text-accent underline-offset-2 hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {href}
+                      </a>
+                    ) : (
+                      <span key={href}>{href}</span>
+                    ),
+                  )}
+                </span>
+              ) : (
+                row.value
+              )}
             </dd>
           </div>
         ))}
@@ -101,8 +152,8 @@ export default function AdminMentorApplicationDetailPage() {
         </p>
       ) : null}
 
-      <AnswerList title="L1" data={item.l1Answers} />
-      <AnswerList title="L2" data={item.l2Answers} />
+      <L1AnswerList data={item.l1Answers} />
+      <AnswerList title="Jawaban L2" data={item.l2Answers} />
 
       <label className="text-sm">
         Catatan internal (ikut email jika tolak / pool / minta info)

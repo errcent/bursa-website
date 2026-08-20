@@ -2,38 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  BookOpen,
-  ClipboardList,
-  DollarSign,
-  LayoutDashboard,
-  ListVideo,
-  Mail,
-  Inbox,
-  Settings,
-  Shield,
-  FileText,
-  Users,
-  UserSquare2,
-} from "lucide-react";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
+import { ADMIN_NAV_LINKS } from "@/lib/admin/nav";
 import { cn } from "@/lib/utils";
-
-const links = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/admin/pendapatan", label: "Pendapatan", icon: DollarSign },
-  { href: "/admin/mentors", label: "Mentor", icon: UserSquare2 },
-  { href: "/admin/mentor-applications", label: "Aplikasi Mentor", icon: Inbox },
-  { href: "/admin/courses", label: "Kelas", icon: BookOpen },
-  { href: "/admin/playlists", label: "Playlist", icon: ListVideo },
-  { href: "/admin/change-requests", label: "Usulan Mentor", icon: ClipboardList },
-  { href: "/admin/moderation", label: "Moderasi", icon: Shield },
-  { href: "/admin/dokumen-publik", label: "Dokumen Publik", icon: FileText },
-  { href: "/admin/waitlist", label: "Waitlist", icon: Mail },
-  { href: "/admin/users", label: "Pengguna", icon: Users },
-  { href: "/admin/settings", label: "Pengaturan", icon: Settings },
-];
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -47,7 +19,7 @@ export function AdminSidebar() {
         </Link>
       </div>
       <nav className="flex flex-1 flex-col gap-1 p-3" aria-label="Navigasi admin">
-        {links.map((link) => {
+        {ADMIN_NAV_LINKS.map((link) => {
           const active = link.exact ? pathname === link.href : pathname.startsWith(link.href);
           const Icon = link.icon;
           return (
