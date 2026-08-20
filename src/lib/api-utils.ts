@@ -26,6 +26,9 @@ function prismaClientMessage(error: Error): string | null {
 
 export function handleApiError(error: unknown) {
   if (error instanceof ZodError) {
+    if (process.env.NODE_ENV === "production") {
+      return jsonError("Permintaan tidak valid.", 422);
+    }
     return jsonError(error.issues.map((i) => i.message).join(", "), 422);
   }
 

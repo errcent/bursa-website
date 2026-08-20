@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 
@@ -35,15 +34,10 @@ export default function JadiMentorPage() {
 
         <div className="container-page section-spacious">
           <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-            <div>
-              <p className="text-sm text-muted-foreground">
-                Sudah punya akun Bursa?{" "}
-                <Link href="/masuk?next=/jadi-mentor" className="link-muted font-medium text-foreground">
-                  Masuk dulu
-                </Link>{" "}
-                agar data profil terisi otomatis di formulir.
-              </p>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Tahap 1 sekitar 3–5 menit. Tanpa CV, tanpa unggahan. Jika lolos screening, kami kirim tautan
+              tahap 2.
+            </p>
             <Button
               className="btn-primary shrink-0"
               render={<a href="#formulir" />}
@@ -70,11 +64,10 @@ export default function JadiMentorPage() {
           <Separator className="my-14 opacity-60" />
 
           <section id="formulir" className="scroll-mt-24">
-            <p className="eyebrow mb-2">Formulir pendaftaran</p>
-            <h2 className="section-title">Ajukan diri sebagai mentor</h2>
+            <p className="eyebrow mb-2">Formulir tahap 1</p>
+            <h2 className="section-title">Siapa kamu, dan mengapa kami perlu peduli?</h2>
             <p className="section-copy mt-2 max-w-2xl">
-              Isi formulir di bawah. Tim kurasi akan menghubungi dalam 3–5 hari kerja jika profilmu
-              sesuai kriteria.
+              Screening awal, bukan vetting penuh. Tidak ada jaminan diterima. Kontak hanya lewat email.
             </p>
 
             <div className="surface-card mt-8 border-border/50 p-6 sm:p-8">

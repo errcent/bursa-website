@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
@@ -11,607 +10,549 @@ import {
   isTurnstileClientConfigured,
   TurnstileWidget,
 } from "@/components/turnstile-widget";
-import { mentorInstruments } from "@/lib/mentor-program/content";
-import { getPriceGuidance } from "@/lib/mentor/price-guidance";
-import type { Instrument } from "@/lib/types";
+import {
+  L1_EXPERTISE_OPTIONS,
+  L1_YEARS_OPTIONS,
+  type L1ExpertiseValue,
+} from "@/lib/mentor-program/fields";
 import { cn } from "@/lib/utils";
-
-const formatIdr = (value: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-
-/**
- * Non-binding price guidance surfaced in the form (QC-20260719-48/44). Spans Pemula→Mahir per
- * selected instrument so a new mentor sees a reference band. Pricing stays mentor-set, there is
- * NO floor and NO enforcement (Working model - not Decision OS lock).
- */
-function priceGuidanceFor(instrument: Instrument) {
-  const low = getPriceGuidance(instrument, "Pemula");
-  const mid = getPriceGuidance(instrument, "Menengah");
-  const high = getPriceGuidance(instrument, "Mahir");
-  return { min: low.min, typical: mid.typical, max: high.max, note: mid.note };
-}
 
 const textareaClassName =
   "w-full resize-y rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm outline-none backdrop-blur-sm transition-[border-color,box-shadow] placeholder:text-muted-foreground focus:border-accent/40 focus:shadow-[0_0_20px_var(--glow)] disabled:opacity-50 min-h-[100px]";
 
 interface FormState {
-  fullName: string;
-  email: string;
-  phone: string;
-  professionalTitle: string;
-  instruments: Instrument[];
-  yearsExperience: string;
-  licenseLabel: string;
-  bio: string;
-  philosophy: string;
-  portfolioUrl: string;
-  hasExistingContent: boolean;
-  estimatedCoursePrice: string;
-  agreedToTerms: boolean;
+  l1_full_name: string;
+  l1_email: string;
+  l1_country: string;
+  l1_city: string;
+  l1_linkedin_url: string;
+  l1_website_url: string;
+  l1_expertise: L1ExpertiseValue[];
+  l1_expertise_other: string;
+  l1_primary_expertise: string;
+  l1_years_experience: string;
+  l1_professional_background: string;
+  l1_why_bursanalar: string;
+  l1_unique_knowledge: string;
+  extra1: string;
+  extra2: string;
+  extra3: string;
+  l1_confirmation: boolean;
 }
-
-interface UploadedDocument {
-  url: string;
-  fileName: string;
-}
-
-const MAX_DOCUMENT_BYTES = 5 * 1024 * 1024;
-const ALLOWED_DOCUMENT_TYPES = new Set([
-  "application/pdf",
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-]);
 
 const initialState: FormState = {
-  fullName: "",
-  email: "",
-  phone: "",
-  professionalTitle: "",
-  instruments: [],
-  yearsExperience: "",
-  licenseLabel: "",
-  bio: "",
-  philosophy: "",
-  portfolioUrl: "",
-  hasExistingContent: false,
-  estimatedCoursePrice: "",
-  agreedToTerms: false,
+  l1_full_name: "",
+  l1_email: "",
+  l1_country: "Indonesia",
+  l1_city: "",
+  l1_linkedin_url: "",
+  l1_website_url: "",
+  l1_expertise: [],
+  l1_expertise_other: "",
+  l1_primary_expertise: "",
+  l1_years_experience: "",
+  l1_professional_background: "",
+  l1_why_bursanalar: "",
+  l1_unique_knowledge: "",
+  extra1: "",
+  extra2: "",
+  extra3: "",
+  l1_confirmation: false,
 };
+
+function CharCount({ value, max, min }: { value: string; max: number; min?: number }) {
+  const over = value.length > max;
+  const under = min != null && value.length > 0 && value.length < min;
+  return (
+    <p className={cn("text-xs", over || under ? "text-destructive" : "text-muted-foreground")}>
+      {value.length}/{max}
+      {min ? ` (min. ${min})` : ""}
+    </p>
+  );
+}
+
+function ReviewItem({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="grid gap-1 border-b border-border/60 py-3 last:border-b-0 sm:grid-cols-[11rem_1fr] sm:gap-4">
+      <dt className="text-sm text-muted-foreground">{label}</dt>
+      <dd className="text-sm whitespace-pre-wrap break-words">{children || "—"}</dd>
+    </div>
+  );
+}
+
+function ReviewLink({ href }: { href: string }) {
+  if (!href) return "—";
+  return (
+    <a
+      href={href}
+      className="text-accent underline-offset-2 hover:underline"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {href}
+    </a>
+  );
+}
+
+function expertiseLabel(value: string, other: string) {
+  if (value === "other") return other.trim() || "Lainnya";
+  return L1_EXPERTISE_OPTIONS.find((item) => item.value === value)?.label ?? value;
+}
 
 export function MentorApplicationForm() {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [step, setStep] = useState<"edit" | "review">("edit");
   const [form, setForm] = useState<FormState>(initialState);
-  const [cvDocument, setCvDocument] = useState<UploadedDocument | null>(null);
-  const [certificateDocument, setCertificateDocument] = useState<UploadedDocument | null>(null);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormState | "cvDocument" | "certificateDocument", string>>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadingCv, setUploadingCv] = useState(false);
-  const [uploadingCertificate, setUploadingCertificate] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [armTurnstile, setArmTurnstile] = useState(false);
   const turnstileRequired = isTurnstileClientConfigured();
 
-  async function uploadDocument(
-    file: File,
-    kind: "cv" | "certificate"
-  ): Promise<UploadedDocument> {
-    if (turnstileRequired && !turnstileToken) {
-      throw new Error("Selesaikan verifikasi keamanan terlebih dahulu.");
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("kind", kind);
-    if (turnstileToken) {
-      formData.append("turnstileToken", turnstileToken);
-    }
-
-    const res = await fetch("/api/mentor/applications/upload", {
-      method: "POST",
-      body: formData,
+  const primaryOptions = useMemo(() => {
+    return form.l1_expertise.flatMap((value) => {
+      if (value === "other") {
+        return form.l1_expertise_other.trim()
+          ? [{ value: form.l1_expertise_other.trim(), label: form.l1_expertise_other.trim() }]
+          : [];
+      }
+      const option = L1_EXPERTISE_OPTIONS.find((item) => item.value === value);
+      return option ? [option] : [];
     });
-    const data = (await res.json()) as { url?: string; fileName?: string; error?: string };
-    if (!res.ok || !data.url || !data.fileName) {
-      throw new Error(data.error ?? "Gagal mengunggah dokumen.");
-    }
-    return { url: data.url, fileName: data.fileName };
-  }
+  }, [form.l1_expertise, form.l1_expertise_other]);
 
-  async function handleDocumentChange(
-    kind: "cv" | "certificate",
-    file: File | null
-  ) {
-    const field = kind === "cv" ? "cvDocument" : "certificateDocument";
-    if (!file) {
-      if (kind === "cv") setCvDocument(null);
-      else setCertificateDocument(null);
-      return;
-    }
+  const extraLinks = [form.extra1, form.extra2, form.extra3].map((item) => item.trim()).filter(Boolean);
+  const yearsLabel =
+    L1_YEARS_OPTIONS.find((item) => item.value === form.l1_years_experience)?.label ??
+    form.l1_years_experience;
+  const expertiseLabels = form.l1_expertise.map((value) =>
+    expertiseLabel(value, form.l1_expertise_other),
+  );
+  const primaryLabel = expertiseLabel(form.l1_primary_expertise, form.l1_expertise_other);
 
-    if (!ALLOWED_DOCUMENT_TYPES.has(file.type)) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: "Format tidak didukung. Gunakan PDF, JPG, PNG, atau WebP.",
-      }));
-      return;
-    }
-
-    if (file.size > MAX_DOCUMENT_BYTES) {
-      setErrors((prev) => ({ ...prev, [field]: "Ukuran file maksimal 5 MB." }));
-      return;
-    }
-
-    setErrors((prev) => ({ ...prev, [field]: undefined }));
-    if (kind === "cv") setUploadingCv(true);
-    else setUploadingCertificate(true);
-
-    try {
-      const uploaded = await uploadDocument(file, kind);
-      if (kind === "cv") setCvDocument(uploaded);
-      else setCertificateDocument(uploaded);
-    } catch (error) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: error instanceof Error ? error.message : "Gagal mengunggah dokumen.",
-      }));
-    } finally {
-      if (kind === "cv") setUploadingCv(false);
-      else setUploadingCertificate(false);
-    }
-  }
-
-  function toggleInstrument(instrument: Instrument) {
+  function toggleExpertise(value: L1ExpertiseValue) {
     setForm((prev) => {
-      const exists = prev.instruments.includes(instrument);
+      const selected = prev.l1_expertise.includes(value)
+        ? prev.l1_expertise.filter((item) => item !== value)
+        : [...prev.l1_expertise, value];
+      const primaryStillValid =
+        selected.includes(prev.l1_primary_expertise as L1ExpertiseValue) ||
+        (selected.includes("other") && prev.l1_primary_expertise === prev.l1_expertise_other.trim());
       return {
         ...prev,
-        instruments: exists
-          ? prev.instruments.filter((i) => i !== instrument)
-          : [...prev.instruments, instrument],
+        l1_expertise: selected,
+        l1_primary_expertise: primaryStillValid ? prev.l1_primary_expertise : "",
       };
     });
-    if (errors.instruments) {
-      setErrors((prev) => ({ ...prev, instruments: undefined }));
-    }
   }
 
-  function validate(): boolean {
-    const next: Partial<Record<keyof FormState | "cvDocument" | "certificateDocument", string>> = {};
-
-    if (!form.fullName.trim()) next.fullName = "Nama lengkap wajib diisi.";
-    if (!form.email.trim()) next.email = "Email wajib diisi.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = "Format email tidak valid.";
-    if (!form.phone.trim()) next.phone = "Nomor telepon/WhatsApp wajib diisi.";
-    if (!form.professionalTitle.trim()) next.professionalTitle = "Judul profesional wajib diisi.";
-    if (form.instruments.length === 0) next.instruments = "Pilih minimal satu instrumen.";
-    if (!form.yearsExperience || Number(form.yearsExperience) < 1) {
-      next.yearsExperience = "Pengalaman minimal 1 tahun.";
-    }
-    if (!form.bio.trim() || form.bio.trim().length < 50) {
-      next.bio = "Bio minimal 50 karakter, jelaskan pengalaman mengajar dan tradingmu.";
-    }
-    if (!form.philosophy.trim() || form.philosophy.trim().length < 30) {
-      next.philosophy = "Filosofi trading minimal 30 karakter.";
-    }
-    if (!cvDocument) next.cvDocument = "CV wajib diunggah.";
-    if (uploadingCv || uploadingCertificate) {
-      next.cvDocument = "Tunggu hingga unggahan dokumen selesai.";
-    }
-    if (!form.agreedToTerms) next.agreedToTerms = "Kamu harus menyetujui syarat & ketentuan.";
-    if (turnstileRequired && !turnstileToken) {
-      setSubmitError("Selesaikan verifikasi keamanan terlebih dahulu.");
-      return false;
-    }
-
-    setErrors(next);
-    return Object.keys(next).length === 0;
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  function goReview() {
     setSubmitError(null);
+    const el = formRef.current;
+    if (!el) return;
+    if (!el.checkValidity()) {
+      el.reportValidity();
+      return;
+    }
+    if (form.l1_expertise.length === 0) {
+      setSubmitError("Pilih minimal satu keahlian.");
+      return;
+    }
+    if (form.l1_professional_background.trim().length < 40) {
+      setSubmitError("Latar belakang minimal 40 karakter.");
+      return;
+    }
+    if (form.l1_why_bursanalar.trim().length < 400) {
+      setSubmitError("Jawaban mengapa Bursanalar minimal 400 karakter.");
+      return;
+    }
+    if (form.l1_unique_knowledge.trim().length < 400) {
+      setSubmitError("Jawaban pengetahuan unik minimal 400 karakter.");
+      return;
+    }
+    setStep("review");
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
-    if (!validate()) return;
+  function goEdit() {
+    setSubmitError(null);
+    setStep("edit");
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function handleFormKeyDown(event: React.KeyboardEvent<HTMLFormElement>) {
+    if (step !== "edit" || event.key !== "Enter") return;
+    const target = event.target as HTMLElement;
+    if (target.tagName === "TEXTAREA" || target.tagName === "BUTTON") return;
+    event.preventDefault();
+  }
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    if (step !== "review") {
+      return;
+    }
+    setSubmitError(null);
+    if (!form.l1_confirmation) {
+      setSubmitError("Centang konfirmasi sebelum mengirim.");
+      return;
+    }
+    if (turnstileRequired && !turnstileToken) {
+      setArmTurnstile(true);
+      setSubmitError("Selesaikan verifikasi keamanan terlebih dahulu.");
+      return;
+    }
 
     setIsSubmitting(true);
-
     try {
       const res = await fetch("/api/mentor/applications", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fullName: form.fullName.trim(),
-          email: form.email.trim(),
-          phone: form.phone.trim(),
-          professionalTitle: form.professionalTitle.trim(),
-          instruments: form.instruments,
-          yearsExperience: Number(form.yearsExperience),
-          licenseLabel: form.licenseLabel.trim() || undefined,
-          bio: form.bio.trim(),
-          philosophy: form.philosophy.trim(),
-          portfolioUrl: form.portfolioUrl.trim() || undefined,
-          hasExistingContent: form.hasExistingContent,
-          estimatedCoursePrice: form.estimatedCoursePrice
-            ? Number(form.estimatedCoursePrice)
+          l1_full_name: form.l1_full_name.trim(),
+          l1_email: form.l1_email.trim(),
+          l1_country: form.l1_country.trim(),
+          l1_city: form.l1_city.trim(),
+          l1_linkedin_url: form.l1_linkedin_url.trim(),
+          l1_website_url: form.l1_website_url.trim() || undefined,
+          l1_expertise: form.l1_expertise,
+          l1_expertise_other: form.l1_expertise.includes("other")
+            ? form.l1_expertise_other.trim()
             : undefined,
-          agreedToTerms: form.agreedToTerms,
-          cvDocumentUrl: cvDocument?.url,
-          cvDocumentName: cvDocument?.fileName,
-          certificateDocumentUrl: certificateDocument?.url,
-          certificateDocumentName: certificateDocument?.fileName,
+          l1_primary_expertise: form.l1_primary_expertise,
+          l1_years_experience: form.l1_years_experience,
+          l1_professional_background: form.l1_professional_background.trim(),
+          l1_why_bursanalar: form.l1_why_bursanalar.trim(),
+          l1_unique_knowledge: form.l1_unique_knowledge.trim(),
+          l1_extra_links: extraLinks,
+          l1_confirmation: form.l1_confirmation,
           turnstileToken: turnstileToken ?? undefined,
         }),
       });
-
-      const data = (await res.json()) as { id?: string; error?: string };
-
+      const data = (await res.json()) as { error?: string };
       if (!res.ok) {
-        setSubmitError(data.error ?? "Gagal mengirim aplikasi. Coba lagi.");
-        setIsSubmitting(false);
-        return;
+        throw new Error(data.error ?? "Gagal mengirim aplikasi.");
       }
-
-      router.push(`/jadi-mentor/sukses?id=${data.id}`);
-    } catch {
-      setSubmitError("Koneksi gagal. Periksa jaringan dan coba lagi.");
+      router.push("/jadi-mentor/sukses");
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Gagal mengirim aplikasi.");
+    } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      {submitError && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {submitError}
-        </div>
-      )}
+    <form
+      ref={formRef}
+      className="flex scroll-mt-24 flex-col gap-8"
+      onSubmit={handleSubmit}
+      onKeyDown={handleFormKeyDown}
+    >
+      <div className={step === "edit" ? "flex flex-col gap-8" : "hidden"}>
+        <section className="flex flex-col gap-4">
+          <h3 className="font-heading text-lg font-semibold">Tentang kamu</h3>
+          <AuthField label="Nama lengkap" id="l1_full_name">
+            <input
+              id="l1_full_name"
+              required
+              className={authInputClassName}
+              placeholder="Nama lengkap"
+              value={form.l1_full_name}
+              onChange={(event) => setForm((prev) => ({ ...prev, l1_full_name: event.target.value }))}
+            />
+          </AuthField>
+          <AuthField label="Email" id="l1_email">
+            <input
+              id="l1_email"
+              type="email"
+              required
+              className={authInputClassName}
+              placeholder="kamu@email.com"
+              value={form.l1_email}
+              onChange={(event) => setForm((prev) => ({ ...prev, l1_email: event.target.value }))}
+            />
+          </AuthField>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AuthField label="Negara" id="l1_country">
+              <input
+                id="l1_country"
+                required
+                className={authInputClassName}
+                placeholder="Indonesia"
+                value={form.l1_country}
+                onChange={(event) => setForm((prev) => ({ ...prev, l1_country: event.target.value }))}
+              />
+            </AuthField>
+            <AuthField label="Kota" id="l1_city">
+              <input
+                id="l1_city"
+                required
+                className={authInputClassName}
+                placeholder="Jakarta"
+                value={form.l1_city}
+                onChange={(event) => setForm((prev) => ({ ...prev, l1_city: event.target.value }))}
+              />
+            </AuthField>
+          </div>
+          <AuthField label="LinkedIn / profil profesional" id="l1_linkedin_url">
+            <input
+              id="l1_linkedin_url"
+              type="url"
+              required
+              className={authInputClassName}
+              placeholder="https://linkedin.com/in/..."
+              value={form.l1_linkedin_url}
+              onChange={(event) => setForm((prev) => ({ ...prev, l1_linkedin_url: event.target.value }))}
+            />
+          </AuthField>
+          <AuthField label="Situs / profil lain (opsional)" id="l1_website_url">
+            <input
+              id="l1_website_url"
+              type="url"
+              className={authInputClassName}
+              placeholder="https://"
+              value={form.l1_website_url}
+              onChange={(event) => setForm((prev) => ({ ...prev, l1_website_url: event.target.value }))}
+            />
+          </AuthField>
+        </section>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <AuthField label="Nama lengkap" id="fullName" error={errors.fullName}>
-          <input
-            id="fullName"
-            type="text"
-            autoComplete="name"
-            value={form.fullName}
-            onChange={(e) => setForm((p) => ({ ...p, fullName: e.target.value }))}
-            placeholder="Contoh: Andra Wicaksono"
-            className={authInputClassName}
-            disabled={isSubmitting}
-          />
-        </AuthField>
+        <section className="flex flex-col gap-4">
+          <h3 className="font-heading text-lg font-semibold">Keahlian</h3>
+          <fieldset>
+            <legend className="mb-2 text-sm font-medium">Keahlian (pilih semua yang relevan)</legend>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {L1_EXPERTISE_OPTIONS.map((option) => (
+                <label key={option.value} className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={form.l1_expertise.includes(option.value)}
+                    onChange={() => toggleExpertise(option.value)}
+                  />
+                  {option.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          {form.l1_expertise.includes("other") ? (
+            <AuthField label="Jelaskan keahlian lainnya" id="l1_expertise_other">
+              <input
+                id="l1_expertise_other"
+                required
+                className={authInputClassName}
+                value={form.l1_expertise_other}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, l1_expertise_other: event.target.value }))
+                }
+              />
+            </AuthField>
+          ) : null}
+          <AuthField label="Keahlian utama" id="l1_primary_expertise">
+            <select
+              id="l1_primary_expertise"
+              required
+              className={authInputClassName}
+              value={form.l1_primary_expertise}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, l1_primary_expertise: event.target.value }))
+              }
+            >
+              <option value="">Pilih dari keahlian yang sudah dipilih</option>
+              {primaryOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </AuthField>
+          <AuthField label="Lama pengalaman relevan" id="l1_years_experience">
+            <select
+              id="l1_years_experience"
+              required
+              className={authInputClassName}
+              value={form.l1_years_experience}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, l1_years_experience: event.target.value }))
+              }
+            >
+              <option value="">Pilih rentang</option>
+              {L1_YEARS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </AuthField>
+          <AuthField
+            label="Latar belakang profesional (singkat)"
+            id="l1_professional_background"
+            helperText="Ceritakan pengalaman yang paling relevan dengan apa yang bisa kamu ajarkan."
+          >
+            <textarea
+              id="l1_professional_background"
+              required
+              minLength={40}
+              maxLength={500}
+              className={textareaClassName}
+              value={form.l1_professional_background}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, l1_professional_background: event.target.value }))
+              }
+            />
+            <CharCount value={form.l1_professional_background} max={500} min={40} />
+          </AuthField>
+        </section>
 
-        <AuthField label="Email" id="email" error={errors.email}>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            value={form.email}
-            onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-            placeholder="nama@email.com"
-            className={authInputClassName}
-            disabled={isSubmitting}
-          />
-        </AuthField>
-      </div>
+        <section className="flex flex-col gap-4">
+          <h3 className="font-heading text-lg font-semibold">Mengapa kamu?</h3>
+          <AuthField
+            label="Mengapa Bursanalar perlu mempertimbangkan kamu sebagai mentor?"
+            id="l1_why_bursanalar"
+          >
+            <textarea
+              id="l1_why_bursanalar"
+              required
+              minLength={400}
+              maxLength={800}
+              className={cn(textareaClassName, "min-h-[140px]")}
+              value={form.l1_why_bursanalar}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, l1_why_bursanalar: event.target.value }))
+              }
+            />
+            <CharCount value={form.l1_why_bursanalar} max={800} min={400} />
+          </AuthField>
+          <AuthField
+            label="Apa yang bisa kamu ajarkan yang jarang didapat dari kursus trading biasa?"
+            id="l1_unique_knowledge"
+          >
+            <textarea
+              id="l1_unique_knowledge"
+              required
+              minLength={400}
+              maxLength={800}
+              className={cn(textareaClassName, "min-h-[140px]")}
+              value={form.l1_unique_knowledge}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, l1_unique_knowledge: event.target.value }))
+              }
+            />
+            <CharCount value={form.l1_unique_knowledge} max={800} min={400} />
+          </AuthField>
+        </section>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <AuthField
-          label="Nomor telepon / WhatsApp"
-          id="phone"
-          error={errors.phone}
-          helperText="Untuk koordinasi wawancara verifikasi."
-        >
-          <input
-            id="phone"
-            type="tel"
-            autoComplete="tel"
-            value={form.phone}
-            onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
-            placeholder="08xx xxxx xxxx"
-            className={authInputClassName}
-            disabled={isSubmitting}
-          />
-        </AuthField>
-
-        <AuthField
-          label="Judul profesional"
-          id="professionalTitle"
-          error={errors.professionalTitle}
-          helperText="Contoh: Swing Trader & Instruktur Teknikal"
-        >
-          <input
-            id="professionalTitle"
-            type="text"
-            value={form.professionalTitle}
-            onChange={(e) => setForm((p) => ({ ...p, professionalTitle: e.target.value }))}
-            placeholder="Spesialisasi dan gelar"
-            className={authInputClassName}
-            disabled={isSubmitting}
-          />
-        </AuthField>
-      </div>
-
-      <AuthField
-        label="Instrumen yang diajarkan"
-        id="instruments"
-        error={errors.instruments}
-        helperText="Pilih satu atau lebih."
-      >
-        <div className="flex flex-wrap gap-2">
-          {mentorInstruments.map((instrument) => {
-            const selected = form.instruments.includes(instrument);
-            return (
-              <button
-                key={instrument}
-                type="button"
-                onClick={() => toggleInstrument(instrument)}
-                disabled={isSubmitting}
-                className={cn(
-                  "rounded-md border px-4 py-2 text-sm font-medium transition-colors",
-                  selected
-                    ? "border-accent/40 bg-accent/15 text-foreground"
-                    : "border-border bg-background/40 text-muted-foreground hover:border-accent/25"
-                )}
-              >
-                {instrument}
-              </button>
-            );
-          })}
-        </div>
-      </AuthField>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <AuthField
-          label="Tahun pengalaman trading"
-          id="yearsExperience"
-          error={errors.yearsExperience}
-        >
-          <input
-            id="yearsExperience"
-            type="number"
-            min={1}
-            max={50}
-            value={form.yearsExperience}
-            onChange={(e) => setForm((p) => ({ ...p, yearsExperience: e.target.value }))}
-            placeholder="Contoh: 5"
-            className={authInputClassName}
-            disabled={isSubmitting}
-          />
-        </AuthField>
-
-        <AuthField
-          label="Sertifikasi / lisensi (opsional)"
-          id="licenseLabel"
-          helperText="CFA, CFP, WPPE, atau lainnya."
-        >
-          <input
-            id="licenseLabel"
-            type="text"
-            value={form.licenseLabel}
-            onChange={(e) => setForm((p) => ({ ...p, licenseLabel: e.target.value }))}
-            placeholder="Contoh: CFA Level II"
-            className={authInputClassName}
-            disabled={isSubmitting}
-          />
-        </AuthField>
-      </div>
-
-      <AuthField
-        label="Bio & pengalaman mengajar"
-        id="bio"
-        error={errors.bio}
-        helperText="Minimal 50 karakter. Ceritakan latar belakang trading dan pengalaman mengajar."
-      >
-        <textarea
-          id="bio"
-          value={form.bio}
-          onChange={(e) => setForm((p) => ({ ...p, bio: e.target.value }))}
-          placeholder="Saya telah trading saham Indonesia sejak 2018 dan mengajar komunitas swing trading sejak 2020..."
-          className={textareaClassName}
-          disabled={isSubmitting}
-          rows={4}
-        />
-      </AuthField>
-
-      <AuthField
-        label="Filosofi trading"
-        id="philosophy"
-        error={errors.philosophy}
-        helperText="Pendekatan dan prinsip yang kamu ajarkan ke murid."
-      >
-        <textarea
-          id="philosophy"
-          value={form.philosophy}
-          onChange={(e) => setForm((p) => ({ ...p, philosophy: e.target.value }))}
-          placeholder="Risk management di atas segalanya. Entry hanya setelah konfirmasi multi-timeframe..."
-          className={textareaClassName}
-          disabled={isSubmitting}
-          rows={3}
-        />
-      </AuthField>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <AuthField
-          label="Link portofolio (opsional)"
-          id="portfolioUrl"
-          helperText="YouTube, LinkedIn, website, atau channel edukasi."
-        >
-          <input
-            id="portfolioUrl"
-            type="url"
-            value={form.portfolioUrl}
-            onChange={(e) => setForm((p) => ({ ...p, portfolioUrl: e.target.value }))}
-            placeholder="https://..."
-            className={authInputClassName}
-            disabled={isSubmitting}
-          />
-        </AuthField>
-
-        <AuthField
-          label="Estimasi harga kelas (opsional)"
-          id="estimatedCoursePrice"
-          helperText="Dalam Rupiah, untuk perencanaan kurikulum."
-        >
-          <input
-            id="estimatedCoursePrice"
-            type="number"
-            min={0}
-            step={50000}
-            value={form.estimatedCoursePrice}
-            onChange={(e) => setForm((p) => ({ ...p, estimatedCoursePrice: e.target.value }))}
-            placeholder="Contoh: 499000"
-            className={authInputClassName}
-            disabled={isSubmitting}
-          />
-        </AuthField>
-      </div>
-
-      <div className="rounded-xl border border-border bg-background/40 p-4 text-sm">
-        <p className="font-medium text-foreground">Panduan harga (referensi, tidak mengikat)</p>
-        {form.instruments.length === 0 ? (
-          <p className="mt-1 text-xs text-muted-foreground">
-            Pilih instrumen di atas untuk melihat rentang harga referensi per level.
+        <section className="flex flex-col gap-4">
+          <h3 className="font-heading text-lg font-semibold">Tautan tambahan (opsional)</h3>
+          <p className="text-sm text-muted-foreground">
+            Maksimal 3 tautan. Jangan mengulang LinkedIn atau situs di atas.
           </p>
-        ) : (
-          <>
-            <ul className="mt-2 flex flex-col gap-1.5">
-              {form.instruments.map((instrument) => {
-                const guide = priceGuidanceFor(instrument);
-                return (
-                  <li
-                    key={instrument}
-                    className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5"
-                  >
-                    <span className="text-muted-foreground">{instrument}</span>
-                    <span className="text-foreground">
-                      {formatIdr(guide.min)} – {formatIdr(guide.max)}
-                      <span className="text-muted-foreground">
-                        {" "}
-                        · umum {formatIdr(guide.typical)}
-                      </span>
-                    </span>
+          {(["extra1", "extra2", "extra3"] as const).map((key, index) => (
+            <AuthField key={key} label={`Tautan ${index + 1}`} id={`l1_extra_links_${index}`}>
+              <input
+                id={`l1_extra_links_${index}`}
+                type="url"
+                className={authInputClassName}
+                placeholder="https://"
+                value={form[key]}
+                onChange={(event) => setForm((prev) => ({ ...prev, [key]: event.target.value }))}
+              />
+            </AuthField>
+          ))}
+        </section>
+
+        {step === "edit" && submitError ? (
+          <p className="text-sm text-destructive">{submitError}</p>
+        ) : null}
+
+        <Button type="button" className="btn-primary" onClick={goReview}>
+          Tinjau dulu
+        </Button>
+      </div>
+
+      <div className={step === "review" ? "flex flex-col gap-8" : "hidden"}>
+        <section className="flex flex-col gap-2">
+          <p className="eyebrow">Tinjau draf</p>
+          <h3 className="font-heading text-lg font-semibold">Cek ulang sebelum kirim</h3>
+          <p className="text-sm text-muted-foreground">
+            Baca ringkasan ini. Kalau ada yang mau diubah, kembali ke formulir. Kirim hanya setelah
+            yakin — tahap 1 tidak bisa diedit setelah terkirim.
+          </p>
+        </section>
+
+        <dl>
+          <ReviewItem label="Nama lengkap">{form.l1_full_name}</ReviewItem>
+          <ReviewItem label="Email">{form.l1_email}</ReviewItem>
+          <ReviewItem label="Lokasi">
+            {form.l1_city}, {form.l1_country}
+          </ReviewItem>
+          <ReviewItem label="LinkedIn">
+            <ReviewLink href={form.l1_linkedin_url.trim()} />
+          </ReviewItem>
+          <ReviewItem label="Situs / profil lain">
+            {form.l1_website_url.trim() ? (
+              <ReviewLink href={form.l1_website_url.trim()} />
+            ) : (
+              "—"
+            )}
+          </ReviewItem>
+          <ReviewItem label="Keahlian">{expertiseLabels.join(", ") || "—"}</ReviewItem>
+          <ReviewItem label="Keahlian utama">{primaryLabel || "—"}</ReviewItem>
+          <ReviewItem label="Pengalaman">{yearsLabel || "—"}</ReviewItem>
+          <ReviewItem label="Latar belakang profesional">
+            {form.l1_professional_background.trim()}
+          </ReviewItem>
+          <ReviewItem label="Mengapa Bursanalar">{form.l1_why_bursanalar.trim()}</ReviewItem>
+          <ReviewItem label="Yang jarang dari kursus biasa">
+            {form.l1_unique_knowledge.trim()}
+          </ReviewItem>
+          <ReviewItem label="Tautan tambahan">
+            {extraLinks.length > 0 ? (
+              <ul className="flex flex-col gap-1">
+                {extraLinks.map((href) => (
+                  <li key={href}>
+                    <ReviewLink href={href} />
                   </li>
-                );
-              })}
-            </ul>
-            <p className="mt-2 text-xs text-muted-foreground">{priceGuidanceFor(form.instruments[0]!).note}</p>
-          </>
-        )}
-      </div>
+                ))}
+              </ul>
+            ) : (
+              "—"
+            )}
+          </ReviewItem>
+        </dl>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <AuthField
-          label="Unggah CV"
-          id="cvDocument"
-          error={errors.cvDocument}
-          helperText="PDF atau gambar (JPG/PNG/WebP), maks 5 MB."
-        >
+        <label className="flex items-start gap-2 text-sm">
           <input
-            id="cvDocument"
-            type="file"
-            accept=".pdf,image/jpeg,image/png,image/webp"
-            onChange={(e) => void handleDocumentChange("cv", e.target.files?.[0] ?? null)}
-            className={authInputClassName}
-            disabled={isSubmitting || uploadingCv}
-          />
-          {cvDocument ? (
-            <p className="mt-1 text-xs text-muted-foreground">Terunggah: {cvDocument.fileName}</p>
-          ) : null}
-        </AuthField>
-
-        <AuthField
-          label="Unggah sertifikat (opsional)"
-          id="certificateDocument"
-          error={errors.certificateDocument}
-          helperText="Sertifikasi trading, lisensi, atau credensial relevan."
-        >
-          <input
-            id="certificateDocument"
-            type="file"
-            accept=".pdf,image/jpeg,image/png,image/webp"
-            onChange={(e) =>
-              void handleDocumentChange("certificate", e.target.files?.[0] ?? null)
+            id="l1_confirmation"
+            type="checkbox"
+            checked={form.l1_confirmation}
+            onChange={(event) =>
+              setForm((prev) => ({ ...prev, l1_confirmation: event.target.checked }))
             }
-            className={authInputClassName}
-            disabled={isSubmitting || uploadingCertificate}
+            required={step === "review"}
           />
-          {certificateDocument ? (
-            <p className="mt-1 text-xs text-muted-foreground">
-              Terunggah: {certificateDocument.fileName}
-            </p>
-          ) : null}
-        </AuthField>
+          <span>
+            Saya menyatakan informasi dalam aplikasi ini akurat dan memahami bahwa mengirim aplikasi
+            tidak menjamin diterima sebagai mentor Bursanalar.
+          </span>
+        </label>
+
+        {(armTurnstile || turnstileRequired) && <TurnstileWidget onToken={setTurnstileToken} />}
+
+        {step === "review" && submitError ? (
+          <p className="text-sm text-destructive">{submitError}</p>
+        ) : null}
+
+        <div className="flex flex-wrap gap-3">
+          <Button type="button" variant="outline" disabled={isSubmitting} onClick={goEdit}>
+            Kembali ubah
+          </Button>
+          <Button type="submit" className="btn-primary" disabled={isSubmitting}>
+            {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : null}
+            Kirim aplikasi
+          </Button>
+        </div>
       </div>
-
-      <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-background/30 p-4">
-        <input
-          type="checkbox"
-          checked={form.hasExistingContent}
-          onChange={(e) => setForm((p) => ({ ...p, hasExistingContent: e.target.checked }))}
-          disabled={isSubmitting}
-          className="mt-1 size-4 rounded border-border accent-accent"
-        />
-        <span className="text-sm leading-relaxed text-muted-foreground">
-          Saya sudah memiliki konten edukasi sebelumnya (video, webinar, artikel, atau kelas di
-          platform lain).
-        </span>
-      </label>
-
-      <label className="flex cursor-pointer items-start gap-3">
-        <input
-          type="checkbox"
-          checked={form.agreedToTerms}
-          onChange={(e) => {
-            setForm((p) => ({ ...p, agreedToTerms: e.target.checked }));
-            if (errors.agreedToTerms) setErrors((p) => ({ ...p, agreedToTerms: undefined }));
-          }}
-          disabled={isSubmitting}
-          className="mt-1 size-4 rounded border-border accent-accent"
-        />
-        <span className="text-sm leading-relaxed text-muted-foreground">
-          Saya menyetujui{" "}
-          <Link href="/syarat-dan-ketentuan" className="font-medium text-foreground underline-offset-4 hover:underline">
-            Syarat & Ketentuan
-          </Link>
-          ,{" "}
-          <Link href="/privasi/kebijakan" className="font-medium text-foreground underline-offset-4 hover:underline">
-            Kebijakan Privasi
-          </Link>
-          , dan memahami bahwa materi edukasi bukan rekomendasi investasi.
-        </span>
-      </label>
-      {errors.agreedToTerms && (
-        <p className="-mt-4 text-xs text-destructive">{errors.agreedToTerms}</p>
-      )}
-
-      {turnstileRequired && armTurnstile ? (
-        <TurnstileWidget onToken={setTurnstileToken} className="flex justify-center" />
-      ) : turnstileRequired ? (
-        <button
-          type="button"
-          className="rounded-md border border-border/70 px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-accent/30 hover:text-foreground"
-          onClick={() => setArmTurnstile(true)}
-        >
-          Lanjutkan verifikasi keamanan
-        </button>
-      ) : null}
-
-      <Button type="submit" className="h-11 w-full btn-primary sm:w-auto sm:px-10" disabled={isSubmitting}>
-        {isSubmitting ? (
-          <>
-            <Loader2 className="size-4 animate-spin" />
-            Mengirim aplikasi...
-          </>
-        ) : (
-          "Kirim Aplikasi Mentor"
-        )}
-      </Button>
     </form>
   );
 }

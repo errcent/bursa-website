@@ -23,66 +23,16 @@ let cachedUsers: StoredUser[] | null = null;
 let cachedSessionRaw: string | null | undefined;
 let cachedSession: AuthSession | null = null;
 
-const DEMO_USER: StoredUser = {
-  id: "user-demo-andi",
-  name: "Andi Rahayu",
-  email: "demo@bursanalar.com",
-  username: "andi_r",
-  phone: "+6281110000002",
-  password: hashPasswordForStorage("demo1234"),
-  role: "learner",
-  createdAt: "2026-01-15T00:00:00.000Z",
-};
-
-const ADMIN_USER: StoredUser = {
-  id: "user-admin-seed",
-  name: "Test Admin",
-  email: "admin@test.dev",
-  username: "test_admin",
-  phone: "+6281110000003",
-  password: hashPasswordForStorage("password123"),
-  role: "admin",
-  createdAt: "2026-01-01T00:00:00.000Z",
-};
-
-const LEARNER_USER: StoredUser = {
-  id: "user-learner-seed",
-  name: "Test Learner",
-  email: "learner@test.dev",
-  username: "test_learner",
-  phone: "+6281110000001",
-  password: hashPasswordForStorage("password123"),
-  role: "learner",
-  createdAt: "2026-01-01T00:00:00.000Z",
-};
-
-const MENTOR_USER: StoredUser = {
-  id: "user-mentor-seed",
-  name: "Test Mentor",
-  email: "mentor@test.dev",
-  username: "test_mentor",
-  phone: "+6281110000004",
-  password: hashPasswordForStorage("password123"),
-  role: "mentor",
-  createdAt: "2026-01-01T00:00:00.000Z",
-};
-
-const DEVELOPER_USER: StoredUser = {
-  id: "user-developer-seed",
-  name: "Test Developer",
-  email: "developer@test.dev",
-  username: "test_developer",
-  phone: "+6281110000005",
-  password: hashPasswordForStorage("password123"),
-  role: "developer",
-  createdAt: "2026-01-01T00:00:00.000Z",
-};
-
 const IS_DEV_CLIENT = process.env.NODE_ENV !== "production";
 
-const SEED_USERS: StoredUser[] = IS_DEV_CLIENT
-  ? [DEMO_USER, ADMIN_USER, LEARNER_USER, MENTOR_USER, DEVELOPER_USER]
-  : [];
+function loadDevSeedUsers(): StoredUser[] {
+  if (process.env.NODE_ENV === "production") return [];
+  // Webpack/Turbopack DCE this require out of production client bundles (QC-20260819-01).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require("./client-dev-seed").DEV_SEED_USERS as StoredUser[];
+}
+
+const SEED_USERS: StoredUser[] = loadDevSeedUsers();
 
 function roleForEmail(email: string): UserRole {
   if (!IS_DEV_CLIENT) return "learner";
@@ -246,6 +196,44 @@ export function getSession(): AuthSession | null {
     cachedSession = null;
     return null;
   }
+}
+
+export type WebSessionBridgeUser = {
+  id: string;
+  email: string;
+  name: string;
+  username?: string | null;
+  phone?: string | null;
+  bio?: string | null;
+  avatarUrl?: string | null;
+  role?: string;
+};
+
+/** True when the httpOnly `bursa_web_session` cookie verifies on the server. */
+export async function fetchWebSessionUser(): Promise<WebSessionBridgeUser | null> {
+  if (!isBrowser()) return null;
+  try {
+    const res = await fetch("/api/auth/web-session-bridge", { credentials: "include" });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { user?: WebSessionBridgeUser };
+    if (!data.user?.id || !data.user.email || !data.user.name) return null;
+    return data.user;
+  } catch {
+    return null;
+  }
+}
+
+export function hydrateSessionFromWebBridge(user: WebSessionBridgeUser) {
+  return loginWithOAuth({
+    userId: user.id,
+    email: user.email,
+    name: user.name,
+    username: user.username,
+    phone: user.phone,
+    bio: user.bio,
+    avatarUrl: user.avatarUrl,
+    role: user.role,
+  });
 }
 
 export function setSession(session: AuthSession | null) {
@@ -688,26 +676,6 @@ export function getStoredUserCreatedAt(email: string): string | null {
   if (!isBrowser()) return null;
   const user = readUsers().find((u) => u.email === email.trim().toLowerCase());
   return user?.createdAt ?? null;
-}
-
-export function getDemoCredentials() {
-  if (!IS_DEV_CLIENT) return null;
-  return { identifier: DEMO_USER.email, password: "demo1234" };
-}
-
-export function getAdminCredentials() {
-  if (!IS_DEV_CLIENT) return null;
-  return { email: ADMIN_USER.email, password: "password123" };
-}
-
-export function getMentorCredentials() {
-  if (!IS_DEV_CLIENT) return null;
-  return { email: MENTOR_USER.email, password: "password123" };
-}
-
-export function getDeveloperCredentials() {
-  if (!IS_DEV_CLIENT) return null;
-  return { email: DEVELOPER_USER.email, password: "password123" };
 }
 
 /** Sync localStorage mock password after server-side bcrypt reset. */

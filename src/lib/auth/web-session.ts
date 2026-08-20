@@ -1,10 +1,11 @@
 import { SignJWT, jwtVerify } from "jose";
 
 import { getAuthSecret } from "@/lib/auth/auth-secret";
+import { isWebSessionJtiRevoked } from "@/lib/auth/revoked-web-session";
 import { WEB_SESSION_COOKIE } from "@/lib/auth/web-session.constants";
 
 export { WEB_SESSION_COOKIE };
-const WEB_SESSION_TTL_SEC = 7 * 24 * 60 * 60;
+export const WEB_SESSION_TTL_SEC = 7 * 24 * 60 * 60;
 
 function secretKey(): Uint8Array {
   return new TextEncoder().encode(getAuthSecret());
@@ -24,31 +25,47 @@ export async function signWebSessionToken(user: {
   id: string;
   email: string;
 }): Promise<string> {
+  const jti = crypto.randomUUID();
   return new SignJWT({
     sub: user.id,
     email: user.email.trim().toLowerCase(),
     typ: "web_session",
   })
     .setProtectedHeader({ alg: "HS256" })
+    .setJti(jti)
     .setIssuedAt()
     .setExpirationTime(`${WEB_SESSION_TTL_SEC}s`)
     .sign(secretKey());
 }
 
-export async function verifyWebSessionToken(
-  token: string
-): Promise<{ userId: string; email: string } | null> {
+export async function readWebSessionPayload(token: string): Promise<{
+  userId: string;
+  email: string;
+  jti: string;
+  exp: number;
+} | null> {
   try {
     const { payload } = await jwtVerify(token, secretKey());
     if (payload.typ !== "web_session") return null;
     const userId = typeof payload.sub === "string" ? payload.sub : null;
     const email =
       typeof payload.email === "string" ? payload.email.trim().toLowerCase() : null;
-    if (!userId || !email) return null;
-    return { userId, email };
+    const jti = typeof payload.jti === "string" ? payload.jti : null;
+    const exp = typeof payload.exp === "number" ? payload.exp : null;
+    if (!userId || !email || !jti || !exp) return null;
+    return { userId, email, jti, exp };
   } catch {
     return null;
   }
+}
+
+export async function verifyWebSessionToken(
+  token: string
+): Promise<{ userId: string; email: string } | null> {
+  const session = await readWebSessionPayload(token);
+  if (!session) return null;
+  if (await isWebSessionJtiRevoked(session.jti)) return null;
+  return { userId: session.userId, email: session.email };
 }
 
 export function readWebSessionToken(request: Request): string | null {

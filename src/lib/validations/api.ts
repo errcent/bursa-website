@@ -103,48 +103,6 @@ export const moderationReviewSchema = z.object({
   reviewedBy: z.string().min(1),
 });
 
-export const mentorApplicationSchema = z.object({
-  fullName: z.string().min(2, "Nama lengkap wajib diisi."),
-  email: z.string().email("Format email tidak valid."),
-  phone: z.string().min(8, "Nomor telepon wajib diisi."),
-  professionalTitle: z.string().min(3, "Judul profesional wajib diisi."),
-  instruments: z
-    .array(z.enum(["Saham", "Crypto", "Forex"]))
-    .min(1, "Pilih minimal satu instrumen."),
-  yearsExperience: z.number().int().min(1).max(50),
-  licenseLabel: z.string().optional(),
-  bio: z.string().min(50, "Bio minimal 50 karakter."),
-  philosophy: z.string().min(30, "Filosofi trading minimal 30 karakter."),
-  portfolioUrl: z.string().url().optional().or(z.literal("")),
-  hasExistingContent: z.boolean(),
-  estimatedCoursePrice: z.number().int().nonnegative().optional(),
-  agreedToTerms: z
-    .boolean()
-    .refine((val) => val === true, { message: "Kamu harus menyetujui syarat & ketentuan." }),
-  // BN-SEC-007: only upload-helper URLs (/uploads/mentor-applications/ or data:).
-  cvDocumentUrl: z
-    .string()
-    .min(1, "CV wajib diunggah.")
-    .refine(
-      (url) =>
-        url.startsWith("/uploads/mentor-applications/") || url.startsWith("data:"),
-      { message: "CV harus diunggah lewat formulir (URL tidak valid)." }
-    ),
-  cvDocumentName: z.string().min(1, "Nama file CV wajib diisi."),
-  certificateDocumentUrl: z
-    .string()
-    .optional()
-    .refine(
-      (url) =>
-        !url ||
-        url.startsWith("/uploads/mentor-applications/") ||
-        url.startsWith("data:"),
-      { message: "Sertifikat harus diunggah lewat formulir (URL tidak valid)." }
-    ),
-  certificateDocumentName: z.string().optional(),
-  turnstileToken: z.string().optional(),
-});
-
 export const createLessonQuestionSchema = z.object({
   userId: z.string().min(1),
   email: z.string().email().optional(),

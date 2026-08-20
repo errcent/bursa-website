@@ -1,17 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
 import { after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/auth/rate-limit";
-import { notifyAdminOfMentorApplication } from "@/lib/mentor-program/application-notification";
-import { createMentorApplication } from "@/lib/mentor-program/applications";
-import { isMentorApplicationDocumentUrl } from "@/lib/mentor-program/document-storage";
+import { createOpenL1Application } from "@/lib/mentor-program/applications";
+import { drainMentorApplicationOutbox } from "@/lib/mentor-program/outbox";
 import {
   isTurnstileBlockingMisconfiguration,
   isTurnstileConfigured,
   verifyTurnstileToken,
 } from "@/lib/turnstile/verify";
-import { mentorApplicationSchema } from "@/lib/validations/api";
+import { mentorL1ApplicationSchema } from "@/lib/validations/mentor-application";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,18 +21,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const parsed = mentorApplicationSchema.safeParse(body);
-
+    const parsed = mentorL1ApplicationSchema.safeParse(body);
     if (!parsed.success) {
-      return jsonError(parsed.error.issues.map((i) => i.message).join(", "), 422);
-    }
-
-    if (
-      !isMentorApplicationDocumentUrl(parsed.data.cvDocumentUrl) ||
-      (parsed.data.certificateDocumentUrl &&
-        !isMentorApplicationDocumentUrl(parsed.data.certificateDocumentUrl))
-    ) {
-      return jsonError("Dokumen harus diunggah lewat formulir (URL tidak valid).", 422);
+      return jsonError(parsed.error.issues.map((issue) => issue.message).join(", "), 422);
     }
 
     if (isTurnstileBlockingMisconfiguration()) {
@@ -51,25 +41,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const {
-      portfolioUrl,
-      certificateDocumentUrl,
-      certificateDocumentName,
-      turnstileToken: _turnstile,
-      ...rest
-    } = parsed.data;
-    const application = await createMentorApplication({
-      ...rest,
-      portfolioUrl: portfolioUrl || undefined,
-      certificateDocumentUrl: certificateDocumentUrl || undefined,
-      certificateDocumentName: certificateDocumentName || undefined,
-    });
+    const application = await createOpenL1Application(parsed.data);
 
     after(async () => {
       try {
-        await notifyAdminOfMentorApplication(application);
+        await drainMentorApplicationOutbox();
       } catch (error) {
-        console.error("[mentor-application] Unhandled email error:", error);
+        console.error("[mentor-application] outbox drain failed:", error);
       }
     });
 

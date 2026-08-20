@@ -16,8 +16,11 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://*.posthog.com",
+      // Production Next/Turbopack does not need eval. Keep script/style unsafe-inline
+      // until BN-SEC-009 nonce (Next inline bootstrap + Tailwind). QC-20260819-06 F-06.
+      "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://*.posthog.com",
       "style-src 'self' 'unsafe-inline'",
+      "object-src 'none'",
       "img-src 'self' data: blob: https:",
       // Native <video> falls back to default-src when media-src is omitted - that
       // blocks Bunny CDN + demo MP4 hosts (MEDIA_ERR_SRC_NOT_SUPPORTED / URL safety).
@@ -33,6 +36,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   async headers() {
     return [
       {

@@ -3,12 +3,13 @@ import test from "node:test";
 
 import { isEmailCategoryAllowed, parseEmailAllowedCategories } from "../src/lib/email/policy";
 
-test("default launch allowlist permits waitlist, verification, and password reset only", () => {
+test("default launch allowlist permits waitlist, verification, password reset, and mentor applicant", () => {
   delete process.env.EMAIL_ALLOWED_CATEGORIES;
   assert.equal(isEmailCategoryAllowed("waitlist_confirmation"), true);
   assert.equal(isEmailCategoryAllowed("auth_verification"), true);
   assert.equal(isEmailCategoryAllowed("auth_password_reset"), true);
   assert.equal(isEmailCategoryAllowed("auth_welcome"), false);
+  assert.equal(isEmailCategoryAllowed("mentor_applicant"), true);
   assert.equal(isEmailCategoryAllowed("mentor_admin"), false);
   assert.equal(isEmailCategoryAllowed("lifecycle"), false);
 });

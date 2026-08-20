@@ -4,6 +4,7 @@ export const EMAIL_CATEGORIES = [
   "auth_password_reset",
   "auth_welcome",
   "mentor_admin",
+  "mentor_applicant",
   "lifecycle",
 ] as const;
 
@@ -13,6 +14,7 @@ const DEFAULT_LAUNCH_ALLOWLIST: EmailCategory[] = [
   "waitlist_confirmation",
   "auth_verification",
   "auth_password_reset",
+  "mentor_applicant",
 ];
 
 export function parseEmailAllowedCategories(): Set<EmailCategory> | null {

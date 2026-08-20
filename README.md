@@ -127,8 +127,8 @@ Semua email transaksional lewat Resend dan **env-gated**: tanpa `RESEND_API_KEY`
 |---|---|
 | `RESEND_API_KEY` | API key dari [Resend](https://resend.com) — cukup **Sending** untuk email transaksional |
 | `RESEND_MANAGEMENT_API_KEY` | Key dengan akses **Contacts/Events** (Full access atau setara) untuk sync waitlist lifecycle; fallback ke `RESEND_API_KEY` jika kosong |
-| `EMAIL_FROM` | From address terverifikasi (default: `Bursa <onboarding@resend.dev>`) |
-| `MENTOR_APPLICATION_ADMIN_EMAIL` | Penerima admin (default: `admin.kitty033@passinbox.com`) |
+| `EMAIL_FROM` | From address terverifikasi (default: `Bursa <onboarding@resend.dev>`) — channel Resend, bukan surat manusia Zoho |
+| `MENTOR_APPLICATION_ADMIN_EMAIL` | Target produksi: `support@bursanalar.com` setelah Path A. Default kode lama: `admin.kitty033@passinbox.com` |
 | `MENTOR_APPLICATION_EMAIL_ENABLED` | Set `false` untuk nonaktifkan tanpa hapus key |
 | `AUTH_EMAIL_ENABLED` | Set `false` untuk nonaktifkan email verifikasi akun |
 | `WAITLIST_EMAIL_ENABLED` | Set `false` untuk nonaktifkan email konfirmasi waitlist |
@@ -138,8 +138,8 @@ Semua email transaksional lewat Resend dan **env-gated**: tanpa `RESEND_API_KEY`
 | `AUTH_WELCOME_EMAIL_ENABLED` | Email selamat datang Google OAuth; default off untuk launch |
 | `WAITLIST_LIFECYCLE_ROLLOUT_PERCENT` | Persentase deterministik `0`, `10`, `50`, atau `100`; default `0` |
 | `WAITLIST_INTERNAL_COHORT` | Daftar email internal dipisah koma yang selalu masuk rollout |
-| `WAITLIST_EMAIL_FROM` | Sender marketing terpisah, mis. `Bursa <belajar@bursanalar.com>` |
-| `WAITLIST_REPLY_TO` | Mailbox balasan yang benar-benar dipantau |
+| `WAITLIST_EMAIL_FROM` | Sender marketing terpisah, mis. `Bursa <belajar@bursanalar.com>` — **bukan** mailbox founder |
+| `WAITLIST_REPLY_TO` | Wajib `support@bursanalar.com` setelah Path A (group Zoho yang dipantau). Jangan alamat yang bounce. Runbook: `Documentation/04 - Engineering/03 - As-Built Reference/deployment/email-webmail-zoho.md` |
 | `WAITLIST_PREFERENCES_SECRET` | Secret HMAC untuk tautan preference/unsubscribe; jangan expose ke client |
 | `RESEND_WEBHOOK_SECRET` | Signing secret endpoint `/api/webhooks/resend` |
 | `RESEND_TOPIC_PRODUCT_ID` | Topic Resend untuk update produk |

@@ -59,13 +59,19 @@ export async function verifyWebSessionTokenEdge(
       email?: string;
       typ?: string;
       exp?: number;
+      jti?: string;
     };
     if (payload.typ !== "web_session") return null;
     if (typeof payload.exp === "number" && payload.exp * 1000 < Date.now()) return null;
     const userId = typeof payload.sub === "string" ? payload.sub : null;
     const email =
       typeof payload.email === "string" ? payload.email.trim().toLowerCase() : null;
-    if (!userId || !email) return null;
+    const jti = typeof payload.jti === "string" ? payload.jti : null;
+    if (!userId || !email || !jti) return null;
+
+    const { isWebSessionJtiRevokedEdge } = await import("@/lib/auth/revoked-web-session-edge");
+    if (await isWebSessionJtiRevokedEdge(jti)) return null;
+
     return { userId, email };
   } catch {
     return null;

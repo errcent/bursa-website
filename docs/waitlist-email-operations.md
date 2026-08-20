@@ -8,6 +8,14 @@
 - Ops memantau reply-to, delivery health, batas kontak, serta eskalasi incident.
 - Dilarang memakai janji profit, scarcity palsu, testimoni yang tidak dapat dibuktikan, atau reward berbasis deposit/volume trading.
 
+## Mailbox manusia vs Resend
+
+- **Resend** = From otomatis (`WAITLIST_EMAIL_FROM`, biasanya `belajar@bursanalar.com`).
+- **Reply-To** produksi = `support@bursanalar.com` (group Zoho Path A), bukan Gmail pribadi dan bukan `esakaisar@` untuk blast.
+- Surat founder = Zoho webmail, From native `esakaisar@` / Send as `support@`.
+- SSOT operator: `Documentation/04 - Engineering/03 - As-Built Reference/deployment/email-webmail-zoho.md`.
+- Jangan set `WAITLIST_REPLY_TO` ke `support@` di Vercel sebelum inbound group itu lulus tes.
+
 ## Cadence
 
 - Email 0: confirmation langsung; transactional lifecycle, tidak dihitung sebagai marketing cap.

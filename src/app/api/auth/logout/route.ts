@@ -1,6 +1,9 @@
 import { jsonOk } from "@/lib/api-utils";
+import { revokeWebSessionJti } from "@/lib/auth/revoked-web-session";
 import {
   WEB_SESSION_COOKIE,
+  readWebSessionPayload,
+  readWebSessionToken,
   webSessionCookieOptions,
 } from "@/lib/auth/web-session";
 
@@ -18,7 +21,19 @@ const AUTH_SESSION_COOKIES = [
   "__Secure-next-auth.callback-url",
 ] as const;
 
-export async function POST() {
+export async function POST(request: Request) {
+  const token = readWebSessionToken(request);
+  if (token) {
+    const payload = await readWebSessionPayload(token);
+    if (payload) {
+      try {
+        await revokeWebSessionJti(payload.jti, new Date(payload.exp * 1000));
+      } catch (error) {
+        console.error("[logout] revoke failed:", error);
+      }
+    }
+  }
+
   const response = jsonOk({ ok: true });
   const cookieOptions = { ...webSessionCookieOptions(), maxAge: 0 };
   for (const name of AUTH_SESSION_COOKIES) {

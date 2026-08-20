@@ -100,38 +100,38 @@ export const mentorRequirements: MentorRequirement[] = [
 export const mentorProcessSteps: MentorProcessStep[] = [
   {
     step: "01",
-    title: "Ajukan aplikasi",
+    title: "Aplikasi singkat (L1)",
     description:
-      "Isi formulir pendaftaran dengan profil profesional, spesialisasi instrumen, dan portofolio mengajar.",
-    duration: "±15 menit",
+      "Nama, keahlian, tautan profesional, dan dua pertanyaan pembeda. Tanpa CV atau unggahan.",
+    duration: "±4 menit",
   },
   {
     step: "02",
-    title: "Review tim Bursa",
+    title: "Screening tim Bursa",
     description:
-      "Tim kurasi meninjau kredensial, sampel konten, dan kesesuaian dengan standar edukasi platform.",
-    duration: "3–5 hari kerja",
+      "Kami memutuskan apakah mengundang tahap 2, menolak, atau menyimpan di talent pool.",
+    duration: "beberapa hari kerja",
   },
   {
     step: "03",
-    title: "Wawancara & verifikasi",
+    title: "Aplikasi penuh (L2)",
     description:
-      "Sesi singkat untuk memahami gaya mengajar, filosofi trading, dan rencana kurikulum kelas pertama.",
-    duration: "30–45 menit",
+      "Portal privat lewat tautan email: bukti, sampel mengajar (URL), usulan kursus, pengungkapan konflik.",
+    duration: "15–30 menit",
   },
   {
     step: "04",
-    title: "Onboarding mentor",
+    title: "Review & assessment",
     description:
-      "Setup profil, upload materi kelas perdana, dan pelatihan penggunaan dashboard serta komunitas.",
-    duration: "1–2 minggu",
+      "Review manusia. Assessment (wawancara/sample) disesuaikan kandidat — bukan formulir otomatis.",
+    duration: "bergantung kandidat",
   },
   {
     step: "05",
-    title: "Go live",
+    title: "Onboarding setelah disetujui",
     description:
-      "Profil dan kelas dipublikasikan di katalog. Kamu mulai menerima murid dan pendapatan.",
-    duration: "Setelah materi disetujui",
+      "Persetujuan aplikasi belum membuat profil live. Agreement, identitas, dan produksi menyusul.",
+    duration: "setelah approved",
   },
 ];
 
@@ -146,7 +146,12 @@ export const mentorFaqs = [
   {
     question: "Berapa lama proses verifikasi?",
     answer:
-      "Rata-rata 1–2 minggu dari pengajuan hingga profil aktif, tergantung kelengkapan dokumen dan jadwal wawancara.",
+      "Tahap 1 ditinjau dalam beberapa hari kerja. Jika diundang, tahap 2 lewat tautan email. Assessment dan onboarding menyusul hanya jika lolos review.",
+  },
+  {
+    question: "Apakah saya harus unggah CV saat daftar?",
+    answer:
+      "Tidak di tahap 1. CV dan sampel mengajar berupa tautan privat diminta di tahap 2, setelah screening.",
   },
   {
     question: "Apakah saya harus punya kelas siap saat mendaftar?",
@@ -156,6 +161,6 @@ export const mentorFaqs = [
   {
     question: "Instrumen apa saja yang didukung?",
     answer:
-      "Saat ini kami menerima mentor untuk Saham, Crypto, dan Forex. Pilih satu atau lebih sesuai keahlianmu.",
+      "Tahap 1 memakai taksonomi keahlian (saham, forex, kripto, makro, kuantitatif, dll.). Katalog live saat ini tetap berfokus Saham, Crypto, dan Forex.",
   },
 ];

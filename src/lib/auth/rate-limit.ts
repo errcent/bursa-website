@@ -74,10 +74,20 @@ export async function checkRateLimit(
   return checkRateLimitMemory(key, limit, windowMs);
 }
 
-export function clientIp(request: Request): string {
+export function clientIp(request: Request, env = process.env.NODE_ENV): string {
+  if (env === "production") {
+    const vercel = request.headers.get("x-vercel-ip")?.trim();
+    if (vercel) return vercel;
+    const cf = request.headers.get("cf-connecting-ip")?.trim();
+    if (cf) return cf;
+    const real = request.headers.get("x-real-ip")?.trim();
+    if (real) return real;
+    return "unknown";
+  }
+
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0]?.trim() || "unknown";
-  return request.headers.get("x-real-ip") || "unknown";
+  return request.headers.get("x-real-ip")?.trim() || "unknown";
 }
 
 export async function checkApiRateLimit(request: Request): Promise<RateLimitResult> {

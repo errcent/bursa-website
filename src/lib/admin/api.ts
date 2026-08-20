@@ -44,6 +44,7 @@ import type {
   ModuleFormInput,
 } from "./types";
 import type { PlaylistDetail, PlaylistSummary } from "@/lib/playlist/types";
+import type { MentorApplicationRecord } from "@/lib/mentor-program/types";
 
 type ApiResult<T> = { data: T; source: "api" | "mock" };
 
@@ -567,4 +568,37 @@ export async function downloadWaitlistCsv(): Promise<void> {
   anchor.download = "bursa-waitlist.csv";
   anchor.click();
   URL.revokeObjectURL(url);
+}
+
+export async function fetchMentorApplications(status?: string): Promise<ApiResult<MentorApplicationRecord[]>> {
+  const query = status ? `?status=${encodeURIComponent(status)}` : "";
+  return request(`/mentor-applications${query}`);
+}
+
+export async function fetchMentorApplication(
+  id: string
+): Promise<ApiResult<MentorApplicationRecord>> {
+  return request(`/mentor-applications/${id}`);
+}
+
+export async function decideMentorApplication(
+  id: string,
+  action: string,
+  note?: string
+): Promise<ApiResult<{ application: MentorApplicationRecord; l2Url?: string; token?: string }>> {
+  return request(`/mentor-applications/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ action, note }),
+  });
+}
+
+export async function createDirectMentorInvite(input: {
+  fullName: string;
+  email: string;
+  note?: string;
+}): Promise<ApiResult<{ application: MentorApplicationRecord; l2Url: string; token: string }>> {
+  return request("/mentor-applications", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
 }
