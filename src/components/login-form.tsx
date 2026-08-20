@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
@@ -10,14 +10,15 @@ import { useAuth } from "@/components/auth-provider";
 import { GoogleSignInButton } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { POST_AUTH_HOME, redirectAfterAuth, resolvePostAuthRedirect } from "@/lib/auth/redirect";
-import { isLogoutPending } from "@/lib/auth/client";
+import { useCookieConfirmedRedirect } from "@/hooks/use-cookie-confirmed-redirect";
 import { useOAuthSync } from "@/hooks/use-oauth-sync";
 
 export function LoginForm() {
-  const { login, session, isLoading } = useAuth();
+  const { login } = useAuth();
   const searchParams = useSearchParams();
   const { syncing: oauthSyncing, error: oauthError } = useOAuthSync();
   const next = resolvePostAuthRedirect(searchParams.get("next"));
+  const { redirecting } = useCookieConfirmedRedirect(next);
   const registerHref =
     next === POST_AUTH_HOME ? "/daftar" : `/daftar?next=${encodeURIComponent(next)}`;
 
@@ -26,12 +27,6 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ identifier?: string; password?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!isLoading && session && !isLogoutPending()) {
-      redirectAfterAuth(next);
-    }
-  }, [isLoading, session, next]);
 
   if (oauthSyncing) {
     return (
@@ -42,7 +37,7 @@ export function LoginForm() {
     );
   }
 
-  if (!isLoading && session && !isLogoutPending()) {
+  if (redirecting) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-10">
         <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />

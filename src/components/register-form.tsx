@@ -10,18 +10,19 @@ import { useAuth } from "@/components/auth-provider";
 import { GoogleSignInButton } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { buildLoginHref, redirectAfterAuth, resolvePostAuthRedirect } from "@/lib/auth/redirect";
-import { isLogoutPending } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
+import { useCookieConfirmedRedirect } from "@/hooks/use-cookie-confirmed-redirect";
 import { useOAuthSync } from "@/hooks/use-oauth-sync";
 
 const USERNAME_PATTERN = /^[a-z0-9_]{3,30}$/;
 
 export function RegisterForm() {
-  const { register, session, isLoading } = useAuth();
+  const { register } = useAuth();
   const searchParams = useSearchParams();
   const { syncing: oauthSyncing, error: oauthError } = useOAuthSync();
   const loginHref = buildLoginHref(searchParams.get("next"));
   const next = resolvePostAuthRedirect(searchParams.get("next"));
+  const { redirecting } = useCookieConfirmedRedirect(next);
 
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
@@ -43,12 +44,6 @@ export function RegisterForm() {
   const usernameTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!isLoading && session && !isLogoutPending()) {
-      redirectAfterAuth(next);
-    }
-  }, [isLoading, session, next]);
-
-  useEffect(() => {
     return () => {
       if (usernameTimer.current) clearTimeout(usernameTimer.current);
     };
@@ -63,7 +58,7 @@ export function RegisterForm() {
     );
   }
 
-  if (!isLoading && session && !isLogoutPending()) {
+  if (redirecting) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-10">
         <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />

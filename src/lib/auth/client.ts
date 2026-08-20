@@ -209,7 +209,7 @@ export type WebSessionBridgeUser = {
   role?: string;
 };
 
-/** True when the httpOnly `bursa_web_session` cookie verifies on the server. */
+/** Resolve the httpOnly `bursa_web_session` cookie via the server bridge. */
 export async function fetchWebSessionUser(): Promise<WebSessionBridgeUser | null> {
   if (!isBrowser()) return null;
   try {
