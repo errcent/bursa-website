@@ -70,7 +70,7 @@ export default function JadiMentorPage() {
               Screening awal, bukan vetting penuh. Tidak ada jaminan diterima. Kontak hanya lewat email.
             </p>
 
-            <div className="surface-card mt-8 border-border/50 p-6 sm:p-8">
+            <div className="surface-card mt-8 min-w-0 overflow-hidden border-border/50 p-6 sm:p-8">
               <MentorApplicationForm />
             </div>
           </section>

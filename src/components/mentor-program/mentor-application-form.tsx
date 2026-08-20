@@ -73,9 +73,11 @@ function CharCount({ value, max, min }: { value: string; max: number; min?: numb
 
 function ReviewItem({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="grid gap-1 border-b border-border/60 py-3 last:border-b-0 sm:grid-cols-[11rem_1fr] sm:gap-4">
+    <div className="grid min-w-0 gap-1 border-b border-border/60 py-3 last:border-b-0 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-4">
       <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd className="text-sm whitespace-pre-wrap break-words">{children || "—"}</dd>
+      <dd className="min-w-0 overflow-x-hidden text-sm whitespace-pre-wrap break-all [overflow-wrap:anywhere]">
+        {children || "—"}
+      </dd>
     </div>
   );
 }
@@ -85,7 +87,7 @@ function ReviewLink({ href }: { href: string }) {
   return (
     <a
       href={href}
-      className="text-accent underline-offset-2 hover:underline"
+      className="break-all text-accent underline-offset-2 hover:underline [overflow-wrap:anywhere]"
       target="_blank"
       rel="noopener noreferrer"
     >
@@ -245,7 +247,7 @@ export function MentorApplicationForm() {
   return (
     <form
       ref={formRef}
-      className="flex scroll-mt-24 flex-col gap-8"
+      className="flex min-w-0 scroll-mt-24 flex-col gap-8"
       onSubmit={handleSubmit}
       onKeyDown={handleFormKeyDown}
     >
@@ -480,7 +482,7 @@ export function MentorApplicationForm() {
           </p>
         </section>
 
-        <dl>
+        <dl className="min-w-0">
           <ReviewItem label="Nama lengkap">{form.l1_full_name}</ReviewItem>
           <ReviewItem label="Email">{form.l1_email}</ReviewItem>
           <ReviewItem label="Lokasi">
