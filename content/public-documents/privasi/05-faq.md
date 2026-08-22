@@ -15,7 +15,7 @@ _Berlaku efektif: 22 Juli 2026_
 
 ## Data apa saja yang dikumpulkan Bursa?
 
-Identitas (nama, email), data transaksi, progress belajar, catatan pribadi (Notes), dan data teknis (IP, perangkat). Mentor additionally mengunggah dokumen KYC. Detail lengkap: [Kebijakan Privasi](/privasi/kebijakan).
+Identitas (nama, email), data transaksi, progress belajar, catatan pribadi (Notes), dan data teknis (IP, perangkat). Mentor juga mengunggah dokumen KYC. Detail lengkap: [Kebijakan Privasi](/privasi/kebijakan).
 
 ## Apakah mentor bisa melihat catatan pribadiku?
 

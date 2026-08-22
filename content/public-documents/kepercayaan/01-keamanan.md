@@ -59,13 +59,13 @@ Pengguna → TLS → Vercel Edge → Next.js App → RBAC API → PostgreSQL (en
 
 | Kontrol | Status |
 |---------|--------|
-| TLS everywhere | ✅ Aktif (Vercel) |
-| Password hashing | ✅ Aktif |
-| RBAC admin | ✅ Aktif |
-| PII masking admin | 🔄 Sebagian |
-| Field encryption KYC | 🔄 Direncanakan |
-| MFA admin | 📋 Roadmap |
-| Penetration test | 📋 Pre-launch |
+| TLS everywhere | ✓ Aktif (Vercel) |
+| Password hashing | ✓ Aktif |
+| RBAC admin | ✓ Aktif |
+| PII masking admin | ~ Sebagian |
+| Field encryption KYC | ~ Direncanakan |
+| MFA admin | — Rencana |
+| Penetration test | — Pra-peluncuran |
 
 ## Insiden & Respons
 

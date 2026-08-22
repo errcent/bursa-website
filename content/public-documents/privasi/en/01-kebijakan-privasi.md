@@ -4,52 +4,162 @@ slug: kebijakan
 locale: en
 title: Privacy Policy
 eyebrow: Privacy Center
-description: How Bursa collects, uses, and protects your personal data under Indonesia’s PDP Law.
+description: How Bursa collects, uses, and protects your personal data under the PDP Law.
 sortOrder: 1
 ---
 
 _Effective: 4 August 2026 · Version 2.1_
 
-**If the Indonesian and English versions conflict, the Indonesian version governs.**
+If the Indonesian and English versions differ, **the Indonesian version governs.**
 
-Bursa Trading Academy (“Bursa”) operates bursanalar.com as **controller** under Law No. 27/2022 (UU PDP). This policy is part of the [Terms of Service](https://bursanalar.com/en/terms).
+**Bursa Trading Academy** (“Bursa”, “Platform”, “we”) — operated through bursanalar.com — is committed to protecting your personal data (“User”, “you”) under Law No. 27 of 2022 on Personal Data Protection (**UU PDP**) and its implementing rules. This policy explains what data we collect, why, how we protect it, and your rights as a data subject.
 
-## 1. Data we collect
+Under UU PDP, Bursa acts as **personal-data controller** and uses third-party **personal-data processors** (hosting, payment gateway, email) as described in Article 4. This policy is an integral part of the [Terms of Service](https://bursanalar.com/en/terms).
 
-Identity (name, email, optional phone), waitlist preferences, professional credentials for mentors (KYC), transaction metadata (not card numbers), learning behaviour (progress, private Notes, watchlist), public communication, and technical logs (IP, device, cookies).
+## Article 1 — Data we collect
 
-Google login (optional): email, display name, public photo URL only — we do not read Gmail, contacts, or calendar.
+| Category | Example data | Source |
+|----------|-------------|--------|
+| **Basic identity** | Name, email, phone (optional), username | Registration |
+| **Waitlist & email preferences** | Email, time/version of consent, campaign source, chosen topics, delivery/click events | Waitlist form and preference centre |
+| **Professional credentials (mentors)** | ID card, tax ID, OJK/Bappebti licences, track-record documents | Mentor application |
+| **Transactions & financial** | Purchase history, payment method (not card numbers), mentor bank accounts | Transactions |
+| **Learning behaviour** | Course progress, private Notes, watchlist | Platform use |
+| **Communications** | Comments, discussion messages, support tickets | User input |
+| **Technical** | IP, device, browser, cookies, activity logs | Automatic |
 
-We do not intentionally collect specific/sensitive personal data. Please do not upload it to community spaces or Notes.
+Google login (optional): email, display name, public profile photo URL — we do not access Gmail, contacts, or calendar.
 
-## 2. Purposes
+**We do not intentionally collect specific personal data** (for example health, biometric, or personal financial data beyond what a transaction requires, or political views). Please do not upload such data to community spaces or Notes.
 
-Account, authentication, transactional email, waitlist onboarding you opted into, mentor KYC (not marketing without separate consent), payments/tax, learning personalisation, security, and moderation.
+## Article 2 — Purposes of collection
 
-## 3. Legal bases
+| Category | Purpose |
+|----------|--------|
+| Basic identity | Account, authentication, transactional communication |
+| Waitlist & email preferences | Registration confirmation, education onboarding, product updates, and launch information according to your choices |
+| Mentor KYC | Mentor eligibility verification — **not for marketing** without separate consent |
+| Transactions | Payment, commission/payout, tax reporting |
+| Learning behaviour | Recommendation personalisation, curriculum improvement |
+| Communications | Moderation, customer support |
+| Technical | Security (anomaly detection), aggregate analytics |
 
-Consent, contract, legal obligation, and legitimate interests as applicable under UU PDP.
+We process data only for the purposes above and do not use it outside those purposes without separate consent.
 
-## 4. Processors
+**Note:** Your Notes/private notes are **private by default** and are not shared with mentors or others without explicit permission.
 
-See [Subprocessors](/en/subprocessors). We do not sell personal data.
+## Article 3 — Legal bases for processing
 
-## 5. Your rights
+Under UU PDP, we process data on one of the following bases:
 
-Access, correction, deletion, withdraw non-essential consent, objection, portability. Use [data requests](/en/requests) or privacy@bursanalar.com. We respond within **14 working days**. Some transaction records may be retained in anonymised form for tax law.
+1. **Explicit consent** — account registration and waitlist lifecycle email (separate checkbox, not pre-checked, withdrawable at any time).
+2. **Performance of a contract** — processing course-purchase transactions.
+3. **Legal obligation** — retaining transaction data for tax reporting.
+4. **Legitimate interests** — fraud detection and system security, balanced against your rights.
 
-## 6. Retention
+## Article 4 — Sharing data with third parties
 
-Identity while the account is active; technical logs 90–180 days; transactions per tax rules. Details in the Indonesian policy.
+We **do not sell** your personal data. Data is shared only as needed with:
 
-## 7. Security
+| Third party | Data | Purpose |
+|--------------|------|--------|
+| Payment gateway (Midtrans/Xendit) | Transaction data | Payment processing |
+| Hosting (Vercel) & cloud database | Encrypted account data | Application infrastructure |
+| Google OAuth | Email, public profile | Optional login |
+| Email provider (Resend) | Email, name (if available), topic preferences, and delivery events | Transactional notices and waitlist lifecycle based on consent |
+| Analytics (PostHog — planned) | Aggregate/pseudonymous data | Product improvement |
+| Competent authorities | As required by lawful request | Regulatory compliance |
 
-TLS in transit, bcrypt passwords, RBAC. Notes are private even from admins. We do not store raw card data.
+Each third-party processor is bound by contractual duties of confidentiality and security equivalent to ours. Full subprocessor detail: [Subprocessors](/en/subprocessors).
 
-## 8. International transfers
+## Article 5 — Data-subject rights
 
-Infrastructure (Vercel, cloud Postgres) may sit outside Indonesia under contractual controls.
+Under UU PDP, you have the right to:
 
-## 9. Contact
+1. **Information** — clarity of identity, legal basis, and purpose of processing.
+2. **Access** — a copy of personal data (JSON/PDF).
+3. **Correction** — fix inaccurate data via your profile.
+4. **Erasure** — delete the account (with exceptions for legally required retention).
+5. **Portability** — receive your data in a readable format and move it.
+6. **Withdraw consent** — for non-essential processing.
+7. **Object** — to certain processing, including automated decisions (for example algorithmic personalisation) that significantly affect you.
+8. **Complain** — to the Platform and to the body that administers personal-data protection under UU PDP.
 
-privacy@bursanalar.com · support@bursanalar.com
+Submit requests via the [Data request form](/en/requests) or email [privacy@bursanalar.com](mailto:privacy@bursanalar.com). Response within **14 working days**.
+
+For waitlist email, every message includes a preference-centre and unsubscribe link. Withdrawal of consent applies immediately to waitlist marketing email and does not stop security, authentication, or necessary account-transaction email.
+
+## Article 6 — Retention
+
+| Category | Retention | After account deletion |
+|----------|---------|-------------------|
+| Basic identity | While the account is active | Deleted/anonymised in 30–90 days |
+| Waitlist & email preferences | While consent is active; reviewed after 24 months without interaction | Deleted/anonymised 30–90 days after withdrawal, except a minimal email on the suppression list to honour opt-out |
+| Mentor KYC | Partnership term + legal duties | Archived as required by law |
+| Transactions | Tax obligation (~10 years) | Anonymised after the period |
+| Notes & progress | While the account is active | Permanently deleted |
+| Technical logs | 90–180 days | Deleted automatically |
+
+## Article 7 — Data security
+
+- Encryption in transit (TLS) and at rest for sensitive data
+- RBAC — role-based access
+- Audit logs for access to sensitive data
+- Passwords hashed with bcrypt (cost ≥ 12)
+- **No card data stored** — delegated to a PCI-DSS payment gateway
+
+Security detail: [Trust Center](https://trust.bursanalar.com/en).
+
+**Data-breach notification:** If personal-data protection fails, we will notify affected data subjects and the competent authority **no later than 3×24 hours** after we become aware of the incident, under UU PDP, including what data was exposed, when and how, and the containment and recovery steps.
+
+## Article 8 — Cookies & tracking
+
+Summary — full detail in the [Cookie Policy](/en/cookies):
+
+| Type | Function | Can be turned off? |
+|-------|--------|---------------------|
+| Essential | Login session, checkout | No |
+| Analytics | Feature usage | Yes |
+| Marketing | Advertising campaigns | Yes |
+
+## Article 9 — Cross-border transfers
+
+Some infrastructure (Vercel, cloud database) may be located outside Indonesia (for example the US or Singapore). Under **Article 56 UU PDP**, we transfer personal data outside Indonesia only if: (a) the destination country has an equivalent or higher level of protection; (b) adequate and binding protection exists through agreements with subprocessors (for example standard contractual clauses); or (c) the data subject has consented.
+
+## Article 10 — Children’s data
+
+The Platform is intended for ages **18+**. Collection and processing of a child’s personal data (if any) requires consent of a lawful parent/guardian under UU PDP. If we learn that a child’s data was collected without guardian consent, it will be deleted promptly.
+
+## Article 11 — Policy changes
+
+Material changes are notified by email/notification before they take effect. Continued use is acceptance.
+
+## Article 12 — Contact & data-protection officer
+
+- **Personal-data controller:** Bursa Trading Academy (bursanalar.com)
+- **Privacy email / data-protection contact:** [privacy@bursanalar.com](mailto:privacy@bursanalar.com)
+- **General support:** [support@bursanalar.com](mailto:support@bursanalar.com)
+
+We will respond to questions or data-subject requests within **14 working days**.
+
+## Article 13 — Community & AI data (if features are active)
+
+If community/chat or an AI assistant is enabled:
+
+| Data | Purpose | Retention |
+|------|--------|---------|
+| Public discussion messages | Moderation, community support | While the account is active + moderation period |
+| AI interaction logs | Improving support-bot quality | 90 days, without raw PII in logs |
+| Room/class metadata | Organising discussion per course | While enrolment is active |
+
+We **do not** use the contents of private Notes or learning data to train external AI models without separate explicit consent.
+
+## Article 14 — Updates & notices
+
+Material changes to this policy will be notified through:
+
+1. Email to the registered address
+2. In-app banner/notification
+3. Updating the “Effective” date on this page
+
+We recommend reviewing this policy periodically. The latest version is always at the [Privacy Center](https://privacy.bursanalar.com/en).

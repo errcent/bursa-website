@@ -4,23 +4,25 @@ slug: hub
 locale: en
 title: Privacy Center
 eyebrow: Privacy
-description: How Bursa collects, uses, and protects personal data — policy, cookies, subprocessors, and data-subject requests.
+description: Bursa’s privacy information centre — data policy, cookies, subprocessors, and how to submit data-subject requests.
 sortOrder: 0
 ---
 
 _Effective: 22 July 2026_
 
-**If the Indonesian and English versions conflict, the Indonesian version governs.**
+If the Indonesian and English versions differ, **the Indonesian version governs.**
 
-Welcome to Bursa’s Privacy Center. Bursa is a **personal-data controller** under Indonesia’s Personal Data Protection Law (Law No. 27/2022).
+Welcome to Bursa’s Privacy Center. Here you can learn how we collect, use, and protect your personal data while you study on our trading-education platform.
 
-## Principles
+Bursa acts as a **personal-data controller** under Law No. 27 of 2022 on Personal Data Protection (UU PDP).
 
-- **Data minimisation** — we collect what education and payment actually need.
-- **No sale of data** — we do not sell personal data for marketing.
-- **Transparency** — you can see what we store and why.
+## Our privacy principles
+
+- **Data minimisation** — we collect only what is needed for education and payment.
+- **No sale of data** — your personal data is never sold to third parties for marketing.
+- **Transparency** — you have the right to know what we store and why.
 - **Security by design** — technical and organisational controls from the start.
 
 ## Contact
 
-privacy@bursanalar.com
+Privacy questions: [privacy@bursanalar.com](mailto:privacy@bursanalar.com)
