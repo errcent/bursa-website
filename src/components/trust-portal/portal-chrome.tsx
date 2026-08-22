@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
-import { LEGAL_HREFS, originFor, type LegalLocale } from "@/lib/hosts/hosts";
+import { legalHrefsFor, originFor, type LegalLocale } from "@/lib/hosts/hosts";
 import { cn } from "@/lib/utils";
 
 export function LocaleToggle({
@@ -44,9 +44,9 @@ export function LocaleToggle({
 }
 
 const NAV = [
-  { href: LEGAL_HREFS.privacy, labelId: "Privasi", labelEn: "Privacy" },
-  { href: LEGAL_HREFS.trust, labelId: "Kepercayaan", labelEn: "Trust" },
-  { href: LEGAL_HREFS.terms, labelId: "Syarat", labelEn: "Terms" },
+  { key: "privacy" as const, labelId: "Privasi", labelEn: "Privacy" },
+  { key: "trust" as const, labelId: "Kepercayaan", labelEn: "Trust" },
+  { key: "terms" as const, labelId: "Syarat", labelEn: "Terms" },
 ] as const;
 
 export function PortalChrome({
@@ -58,6 +58,7 @@ export function PortalChrome({
   idHref: string;
   enHref: string;
 }) {
+  const hrefs = legalHrefsFor(locale);
   return (
     <header className="border-b border-border/70 bg-background/90 backdrop-blur-md">
       <div className="container-page flex h-14 items-center justify-between gap-4">
@@ -67,8 +68,8 @@ export function PortalChrome({
         <nav className="hidden items-center gap-5 text-sm sm:flex" aria-label="Portal legal">
           {NAV.map((item) => (
             <Link
-              key={item.href}
-              href={item.href}
+              key={item.key}
+              href={hrefs[item.key]}
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
               {locale === "en" ? item.labelEn : item.labelId}
@@ -82,6 +83,7 @@ export function PortalChrome({
 }
 
 export function PortalFooter({ locale }: { locale: LegalLocale }) {
+  const hrefs = legalHrefsFor(locale);
   const copy =
     locale === "en"
       ? "Indonesian is the governing language. English is a convenience translation."
@@ -91,16 +93,16 @@ export function PortalFooter({ locale }: { locale: LegalLocale }) {
       <div className="container-page flex flex-col gap-3 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>{copy}</p>
         <div className="flex flex-wrap gap-x-4 gap-y-1">
-          <Link href={LEGAL_HREFS.privacy} className="hover:text-foreground">
+          <Link href={hrefs.privacy} className="hover:text-foreground">
             {locale === "en" ? "Privacy" : "Privasi"}
           </Link>
-          <Link href={LEGAL_HREFS.trust} className="hover:text-foreground">
+          <Link href={hrefs.trust} className="hover:text-foreground">
             {locale === "en" ? "Trust" : "Kepercayaan"}
           </Link>
-          <Link href={LEGAL_HREFS.terms} className="hover:text-foreground">
+          <Link href={hrefs.terms} className="hover:text-foreground">
             {locale === "en" ? "Terms" : "Syarat"}
           </Link>
-          <Link href={LEGAL_HREFS.guidelines} className="hover:text-foreground">
+          <Link href={hrefs.guidelines} className="hover:text-foreground">
             {locale === "en" ? "Learner guidelines" : "Panduan pelajar"}
           </Link>
           <a href="mailto:privacy@bursanalar.com" className="hover:text-foreground">

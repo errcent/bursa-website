@@ -1,9 +1,13 @@
 import type { DocumentPortal } from "@prisma/client";
 
 import {
-  privacyPublicUrl,
-  termsPublicUrl,
-  trustPublicUrl,
+  internalPrivacyPath,
+  internalTermsPath,
+  internalTrustPath,
+  isProductionHostRouting,
+  privacyPublicPath,
+  termsPublicPath,
+  trustPublicPath,
   type LegalLocale,
 } from "@/lib/hosts/hosts";
 import { db } from "@/lib/db";
@@ -106,13 +110,13 @@ export async function getPublishedDocument(
       where: { portal, slug, locale, status: "PUBLISHED" },
     })
   );
-  const bundled = (await loadVaultFallback(portal, slug, locale))[0];
-  if (doc) return mergeWithBundledWhenStale(withLocale(doc), bundled);
 
-  if (locale === "en") {
-    return getPublishedDocument(portal, slug, "id");
+  if (doc && !hasStaleDraftBanner(doc.markdownBody)) {
+    return withLocale(doc);
   }
 
+  const bundled = (await loadVaultFallback(portal, slug, locale))[0];
+  if (doc) return mergeWithBundledWhenStale(withLocale(doc), bundled);
   return bundled ?? null;
 }
 
@@ -126,9 +130,13 @@ export async function getDocumentForPreview(
       where: { portal, slug, locale, status: { not: "ARCHIVED" } },
     })
   );
+
+  if (doc && !hasStaleDraftBanner(doc.markdownBody)) {
+    return withLocale(doc);
+  }
+
   const bundled = (await loadVaultFallback(portal, slug, locale))[0];
   if (doc) return mergeWithBundledWhenStale(withLocale(doc), bundled);
-  if (locale === "en") return getDocumentForPreview(portal, slug, "id");
   return bundled ?? null;
 }
 
@@ -146,15 +154,15 @@ export async function getPortalDocuments(
     })
   );
 
+  const dbDocs = (docs ?? []).map((doc) => withLocale(doc));
+  const needsVault = dbDocs.length === 0 || dbDocs.some((d) => hasStaleDraftBanner(d.markdownBody));
+  if (!needsVault) return dbDocs;
+
   const bundled = await loadVaultFallback(portal, undefined, locale);
   const bundledBySlug = new Map(bundled.map((d) => [d.slug, d]));
 
-  if (docs && docs.length > 0) {
-    return docs.map((doc) => mergeWithBundledWhenStale(withLocale(doc), bundledBySlug.get(doc.slug)));
-  }
-
-  if (locale === "en" && bundled.length === 0) {
-    return getPortalDocuments(portal, publishedOnly, "id");
+  if (dbDocs.length > 0) {
+    return dbDocs.map((doc) => mergeWithBundledWhenStale(doc, bundledBySlug.get(doc.slug)));
   }
 
   return bundled;
@@ -165,9 +173,14 @@ export function publicHrefForDocument(
   slug: string,
   locale: LegalLocale = "id"
 ): string {
-  if (portal === "PRIVACY") return privacyPublicUrl(slug, locale);
-  if (portal === "TRUST") return trustPublicUrl(slug, locale);
-  return termsPublicUrl(slug === "hub" ? "terms" : slug, locale);
+  if (isProductionHostRouting()) {
+    if (portal === "PRIVACY") return privacyPublicPath(slug, locale);
+    if (portal === "TRUST") return trustPublicPath(slug, locale);
+    return termsPublicPath(slug === "hub" ? "terms" : slug, locale);
+  }
+  if (portal === "PRIVACY") return internalPrivacyPath(slug, locale);
+  if (portal === "TRUST") return internalTrustPath(slug, locale);
+  return internalTermsPath(slug === "hub" ? "terms" : slug, locale);
 }
 
 export async function getPortalNav(

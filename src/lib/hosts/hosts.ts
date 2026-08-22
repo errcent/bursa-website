@@ -196,12 +196,39 @@ export function rewriteLegalHref(href: string | undefined | null): string | unde
   return href;
 }
 
-export function internalPrivacyPath(internalSlug: string): string {
-  return internalSlug === "hub" || !internalSlug ? "/privasi" : `/privasi/${internalSlug}`;
+/** Keep `/en` in the rewritten App Router path so ISR does not collide ID vs EN. */
+function withInternalEn(basePath: string, locale: LegalLocale): string {
+  if (locale !== "en") return basePath;
+  const parts = basePath.split("/").filter(Boolean);
+  if (parts.length === 0) return "/en";
+  const rest = parts.slice(1).join("/");
+  return rest ? `/${parts[0]}/en/${rest}` : `/${parts[0]}/en`;
 }
 
-export function internalTrustPath(internalSlug: string): string {
-  return internalSlug === "hub" || !internalSlug ? "/kepercayaan" : `/kepercayaan/${internalSlug}`;
+export function internalPrivacyPath(internalSlug: string, locale: LegalLocale = "id"): string {
+  const base = internalSlug === "hub" || !internalSlug ? "/privasi" : `/privasi/${internalSlug}`;
+  return withInternalEn(base, locale);
+}
+
+export function internalTrustPath(internalSlug: string, locale: LegalLocale = "id"): string {
+  const base = internalSlug === "hub" || !internalSlug ? "/kepercayaan" : `/kepercayaan/${internalSlug}`;
+  return withInternalEn(base, locale);
+}
+
+export function internalTermsPath(internalSlug: string, locale: LegalLocale = "id"): string {
+  const rest =
+    !internalSlug || internalSlug === "hub" || internalSlug === "terms" ? "" : `/${internalSlug}`;
+  return withInternalEn(`/terms${rest}`, locale);
+}
+
+export function legalHrefsFor(locale: LegalLocale) {
+  return {
+    terms: termsPublicUrl("terms", locale),
+    guidelines: termsPublicUrl("learner-guidelines", locale),
+    privacy: privacyPublicUrl("hub", locale),
+    privacyPolicy: privacyPublicUrl("kebijakan", locale),
+    trust: trustPublicUrl("hub", locale),
+  };
 }
 
 export function mapPrivacyPublicToInternal(publicPath: string): string | null {

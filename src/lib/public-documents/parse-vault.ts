@@ -107,7 +107,10 @@ export function parseVaultFile(filePath: string, raw: string, contentRoot: strin
   };
 }
 
-export async function loadAllVaultDocuments(): Promise<ParsedVaultDocument[]> {
+let vaultCache: ParsedVaultDocument[] | null = null;
+let vaultCachePromise: Promise<ParsedVaultDocument[]> | null = null;
+
+async function loadAllVaultDocumentsUncached(): Promise<ParsedVaultDocument[]> {
   const contentRoot = await resolveContentRoot();
   const files = await collectVaultMarkdownFiles();
   const docs: ParsedVaultDocument[] = [];
@@ -119,4 +122,15 @@ export async function loadAllVaultDocuments(): Promise<ParsedVaultDocument[]> {
   }
 
   return docs.sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+export async function loadAllVaultDocuments(): Promise<ParsedVaultDocument[]> {
+  if (vaultCache) return vaultCache;
+  if (!vaultCachePromise) {
+    vaultCachePromise = loadAllVaultDocumentsUncached().then((docs) => {
+      vaultCache = docs;
+      return docs;
+    });
+  }
+  return vaultCachePromise;
 }

@@ -24,11 +24,13 @@ export async function syncLegalDrafts(
   client: PrismaClient = db
 ): Promise<SyncLegalDraftsResult> {
   const { force = false, publishAll = false } = options;
+  const publishVault = force || publishAll;
   const docs = await loadAllVaultDocuments();
 
   let created = 0;
   let updated = 0;
   let skipped = 0;
+  let published = 0;
 
   for (const doc of docs) {
     const existing = await client.publicDocument.findUnique({
@@ -42,6 +44,9 @@ export async function syncLegalDrafts(
       continue;
     }
 
+    const nextStatus = publishVault ? "PUBLISHED" : existing?.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT";
+    const willPublish = nextStatus === "PUBLISHED" && existing?.status !== "PUBLISHED";
+
     if (existing) {
       await client.publicDocument.update({
         where: { id: existing.id },
@@ -53,9 +58,8 @@ export async function syncLegalDrafts(
           sortOrder: doc.sortOrder,
           sourceVaultPath: doc.sourceVaultPath,
           locale: doc.locale,
-          ...(existing.status === "PUBLISHED" && force
-            ? {}
-            : { status: existing.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT" }),
+          status: nextStatus,
+          ...(willPublish ? { publishedAt: new Date() } : {}),
         },
       });
       updated++;
@@ -71,20 +75,22 @@ export async function syncLegalDrafts(
           markdownBody: doc.markdownBody,
           sortOrder: doc.sortOrder,
           sourceVaultPath: doc.sourceVaultPath,
-          status: "DRAFT",
+          status: nextStatus,
+          publishedAt: publishVault ? new Date() : null,
         },
       });
       created++;
     }
+
+    if (willPublish || (!existing && publishVault)) published++;
   }
 
-  let published = 0;
-  if (publishAll) {
+  if (publishAll && !force) {
     const result = await client.publicDocument.updateMany({
       where: { status: "DRAFT" },
       data: { status: "PUBLISHED", publishedAt: new Date() },
     });
-    published = result.count;
+    published += result.count;
   }
 
   return { created, updated, skipped, published };

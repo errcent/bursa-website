@@ -15,7 +15,11 @@ import {
 import {
   GOVERNING_LANGUAGE_EN,
   GOVERNING_LANGUAGE_ID,
-  LEGAL_HREFS,
+  internalPrivacyPath,
+  internalTermsPath,
+  internalTrustPath,
+  isProductionHostRouting,
+  legalHrefsFor,
   privacyPublicPath,
   privacyPublicUrl,
   termsPublicPath,
@@ -78,6 +82,11 @@ const PORTAL_META: Record<
 };
 
 function publicPathFor(portalSlug: PortalSlug, internalSlug: string, locale: LegalLocale): string {
+  if (!isProductionHostRouting()) {
+    if (portalSlug === "privasi") return internalPrivacyPath(internalSlug, locale);
+    if (portalSlug === "kepercayaan") return internalTrustPath(internalSlug, locale);
+    return internalTermsPath(internalSlug, locale);
+  }
   if (portalSlug === "privasi") return privacyPublicPath(internalSlug, locale);
   if (portalSlug === "kepercayaan") return trustPublicPath(internalSlug, locale);
   return termsPublicPath(internalSlug, locale);
@@ -93,20 +102,21 @@ function crossLink(
   portalSlug: PortalSlug,
   locale: LegalLocale
 ): { href: string; label: string } {
+  const hrefs = legalHrefsFor(locale);
   if (portalSlug === "privasi") {
     return {
-      href: LEGAL_HREFS.trust,
+      href: hrefs.trust,
       label: locale === "en" ? "Trust Center" : "Pusat Kepercayaan",
     };
   }
   if (portalSlug === "kepercayaan") {
     return {
-      href: LEGAL_HREFS.privacy,
+      href: hrefs.privacy,
       label: locale === "en" ? "Privacy Center" : "Pusat Privasi",
     };
   }
   return {
-    href: LEGAL_HREFS.privacy,
+    href: hrefs.privacyPolicy,
     label: locale === "en" ? "Privacy Policy" : "Kebijakan Privasi",
   };
 }
@@ -196,6 +206,7 @@ export async function renderPortalPage(
                 navItems={navItems}
                 hubHref={publicHrefForDocument(portal, "terms", locale)}
                 portalLabel={meta.label}
+                locale={locale}
               />
             ) : (
               <PortalHubContent
@@ -242,8 +253,9 @@ export async function renderPortalPage(
             navItems={navItems}
             hubHref={hubHref}
             portalLabel={meta.label}
+            locale={locale}
           >
-            {showDsar && <DsarRequestForm />}
+            {showDsar && <DsarRequestForm locale={locale} />}
           </PortalDocShell>
         </div>
       </main>

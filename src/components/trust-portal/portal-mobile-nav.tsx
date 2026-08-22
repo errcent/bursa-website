@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import type { PortalNavItem } from "@/lib/public-documents/types";
+import type { LegalLocale } from "@/lib/hosts/hosts";
 
 export function PortalMobileNav({
   hubHref,
@@ -21,12 +22,14 @@ export function PortalMobileNav({
   portalLabel,
   navItems,
   activeSlug,
+  locale = "id",
 }: {
   hubHref?: string;
   portalBase?: string;
   portalLabel: string;
   navItems: PortalNavItem[];
   activeSlug?: string;
+  locale?: LegalLocale;
 }) {
   const [open, setOpen] = useState(false);
   const homeHref = hubHref ?? (portalBase ? `/${portalBase}` : "/");
@@ -61,7 +64,7 @@ export function PortalMobileNav({
                   : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
               )}
             >
-              Beranda
+              {locale === "en" ? "Overview" : "Ikhtisar"}
             </Link>
             {navItems.map((item) => (
               <Link

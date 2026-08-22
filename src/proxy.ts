@@ -17,6 +17,7 @@ import {
   apexTrustRedirectTarget,
   hostRole,
   internalPrivacyPath,
+  internalTermsPath,
   internalTrustPath,
   isAdminAuthedPath,
   isAdminHostAllowedPath,
@@ -96,8 +97,12 @@ function canonicalUnknownHost(request: NextRequest): NextResponse | null {
 
 function apexEnglishTermsRewrite(request: NextRequest): NextResponse | null {
   const { pathname } = request.nextUrl;
-  if (pathname === "/en/terms" || pathname.startsWith("/en/terms/")) {
-    return rewriteWithLocale(request, pathname.slice("/en".length) || "/terms", "en");
+  if (pathname === "/en/terms") {
+    return rewriteWithLocale(request, internalTermsPath("terms", "en"), "en");
+  }
+  if (pathname.startsWith("/en/terms/")) {
+    const rest = pathname.slice("/en/terms/".length);
+    return rewriteWithLocale(request, internalTermsPath(rest || "terms", "en"), "en");
   }
   return null;
 }
@@ -160,7 +165,7 @@ function productionHostRouter(request: NextRequest): NextResponse | null {
     }
     const internalSlug = mapPrivacyPublicToInternal(pathWithoutLocale);
     if (internalSlug) {
-      return rewriteWithLocale(request, internalPrivacyPath(internalSlug), locale);
+      return rewriteWithLocale(request, internalPrivacyPath(internalSlug, locale), locale);
     }
     return null;
   }
@@ -177,7 +182,7 @@ function productionHostRouter(request: NextRequest): NextResponse | null {
     }
     const internalSlug = mapTrustPublicToInternal(pathWithoutLocale);
     if (internalSlug) {
-      return rewriteWithLocale(request, internalTrustPath(internalSlug), locale);
+      return rewriteWithLocale(request, internalTrustPath(internalSlug, locale), locale);
     }
     return null;
   }

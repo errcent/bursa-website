@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import type { PortalNavItem, PublicDocumentRecord } from "@/lib/public-documents/types";
+import type { LegalLocale } from "@/lib/hosts/hosts";
 import { cn } from "@/lib/utils";
 
 import { MarkdownDocument } from "./markdown-document";
@@ -163,6 +164,7 @@ export function PortalDocShell({
   portalLabel,
   children,
   isDraft,
+  locale = "id",
 }: {
   doc: PublicDocumentRecord;
   navItems: PortalNavItem[];
@@ -170,7 +172,12 @@ export function PortalDocShell({
   portalLabel: string;
   children?: React.ReactNode;
   isDraft?: boolean;
+  locale?: LegalLocale;
 }) {
+  const overviewLabel = locale === "en" ? "Overview" : "Ikhtisar";
+  const contactTitle = locale === "en" ? "Contact" : "Kontak";
+  const contactLead =
+    locale === "en" ? "Reach" : "Hubungi";
   return (
     <div className="flex flex-col gap-6 pb-8 lg:gap-8">
       <PortalMobileNav
@@ -178,6 +185,7 @@ export function PortalDocShell({
         portalLabel={portalLabel}
         navItems={navItems}
         activeSlug={doc.slug}
+        locale={locale}
       />
       <div className="gap-8 lg:flex">
         <aside className="hidden w-56 shrink-0 lg:block">
@@ -190,7 +198,7 @@ export function PortalDocShell({
                 "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
               )}
             >
-              Beranda
+              {overviewLabel}
             </Link>
             {navItems.map((item) => (
               <Link
@@ -215,13 +223,13 @@ export function PortalDocShell({
           <MarkdownDocument markdown={doc.markdownBody} />
           {children}
           <div className="mt-12 border-t border-border/60 pt-6">
-            <p className="text-sm font-medium text-foreground">Butuh bantuan?</p>
+            <p className="text-sm font-medium text-foreground">{contactTitle}</p>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Hubungi{" "}
+              {contactLead}{" "}
               <a href="mailto:privacy@bursanalar.com" className="link-muted font-medium text-foreground">
                 privacy@bursanalar.com
               </a>{" "}
-              atau{" "}
+              {locale === "en" ? "or" : "atau"}{" "}
               <a href="mailto:security@bursanalar.com" className="link-muted font-medium text-foreground">
                 security@bursanalar.com
               </a>
