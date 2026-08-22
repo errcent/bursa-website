@@ -179,8 +179,8 @@ function DeviceCatalogPhase({
           <p className="device-catalog-demo-banner" role="note">
             {PREVIEW_CATALOG_COPY.mockupBadge} · konten contoh
           </p>
-          <section className="catalog-row" aria-label="Playlists">
-            <h3 className="catalog-row-title">Playlists</h3>
+          <section className="catalog-row" aria-label="Playlist">
+            <h3 className="catalog-row-title">Playlist</h3>
             <DeviceCatalogTrack variant="playlist">
               {orderedPlaylists.map((playlist) => (
                 <PlaylistCard

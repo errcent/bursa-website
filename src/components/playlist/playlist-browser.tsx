@@ -38,7 +38,7 @@ export function PlaylistBrowser() {
       <div>
         <p className="text-xs font-medium uppercase tracking-widest text-accent">Kurasi Bursa</p>
         <h1 className="mt-1 font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
-          Playlists
+          Playlist
         </h1>
       </div>
 

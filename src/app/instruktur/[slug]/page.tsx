@@ -218,7 +218,7 @@ export default async function MentorProfilePage({
                 <h3 className="font-heading text-sm font-medium text-emerald">Sesi 1-on-1</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {mentor.sessionPrice}{" "}
-                  <span className="text-xs">(indikatif/demo, belum dikunci Decision OS)</span>
+                  <span className="text-xs">(indikatif/demo)</span>
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
                   Diskusikan portofolio atau strategi tradingmu secara personal. Pembayaran

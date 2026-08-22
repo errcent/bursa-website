@@ -129,7 +129,7 @@ export function HeroRotatingTitle({
           </span>
         )}
       </span>
-
+      {" "}
       {showInitialWordReveal ? (
         <WordReveal
           as="span"

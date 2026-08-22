@@ -16,6 +16,14 @@ export default function LabPage() {
       <SiteNavbar />
       <main className="flex-1 overflow-x-clip">
         <div className="container-page section-tight pb-16 pt-6 sm:pt-8">
+          <header className="mb-8">
+            <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+              Bursa Lab
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Kalkulator dan simulator trading untuk risiko, biaya, dan probabilitas.
+            </p>
+          </header>
           <LabHubContent />
 
           <p className="lab-disclaimer mt-12">

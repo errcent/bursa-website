@@ -111,9 +111,6 @@ const footerColumns = [
     links: [
       { label: "Tentang Kami", href: "/tentang-kami" },
       { label: "Pusat Bantuan", href: "/bantuan" },
-      { label: "Dashboard", href: "/dashboard" },
-      { label: "Profil", href: "/profil" },
-      { label: "Pengaturan", href: "/pengaturan" },
       { label: "Jadi Mentor", href: "/jadi-mentor" },
     ],
   },

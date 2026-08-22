@@ -74,6 +74,7 @@ const nextConfig: NextConfig = {
         destination: "/terms",
         permanent: true,
       },
+      { source: "/wave-lab", destination: "/", permanent: true },
       { source: "/lab/backtester", destination: "/lab", permanent: true },
       { source: "/lab/portfolio-var", destination: "/lab", permanent: true },
       { source: "/lab/volatility", destination: "/lab", permanent: true },

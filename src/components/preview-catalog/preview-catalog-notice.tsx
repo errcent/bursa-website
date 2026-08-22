@@ -7,9 +7,9 @@ export function PreviewCatalogNotice() {
   return (
     <div
       role="note"
-      className="flex items-start gap-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-muted-foreground"
+      className="flex items-start gap-3 rounded-xl border border-border/70 bg-white/[0.02] px-4 py-3 text-sm text-muted-foreground"
     >
-      <span className="mt-0.5 shrink-0 rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-200">
+      <span className="mt-0.5 shrink-0 rounded-md border border-border/80 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
         Preview
       </span>
       <p className="leading-relaxed">{PREVIEW_CATALOG_COPY.bannerDetail}</p>

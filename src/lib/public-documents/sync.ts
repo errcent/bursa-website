@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
 
 import { db } from "@/lib/db";
-import { loadAllVaultDocuments } from "./parse-vault";
+import { isBlockedLegalSource, loadAllVaultDocuments } from "./parse-vault";
 
 export interface SyncLegalDraftsResult {
   created: number;
@@ -33,6 +33,11 @@ export async function syncLegalDrafts(
   let published = 0;
 
   for (const doc of docs) {
+    if (isBlockedLegalSource(doc.sourceVaultPath)) {
+      skipped++;
+      continue;
+    }
+
     const existing = await client.publicDocument.findUnique({
       where: {
         portal_slug_locale: { portal: doc.portal, slug: doc.slug, locale: doc.locale },

@@ -211,7 +211,7 @@ export function CatalogBrowser({
                 mentorBySlug={mentorBySlug}
                 cardVariant="catalog"
               />
-              <CatalogPlaylistRow title="Playlists" playlists={playlists} />
+              <CatalogPlaylistRow title="Playlist" playlists={playlists} />
               {instrumentCourseRows.map((row) => (
                 <CatalogCourseRow
                   key={row.title}

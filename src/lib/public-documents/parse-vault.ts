@@ -35,6 +35,12 @@ function normalizePortal(value: string): DocumentPortal {
   throw new Error(`Portal tidak valid: ${value}`);
 }
 
+/** QC-20260822-10: never ingest the advocate subscription draft. */
+export function isBlockedLegalSource(sourcePath: string): boolean {
+  const n = sourcePath.replace(/\\/g, "/");
+  return n.includes("/Kontrak/") || n.includes("Kontrak/") || /Terms of Service \(Draft\)/i.test(n);
+}
+
 /** Primary: bundled content (Vercel). Fallback: Obsidian vault (local monorepo). */
 async function resolveContentRoot(): Promise<string> {
   try {
@@ -90,6 +96,7 @@ export function parseVaultFile(filePath: string, raw: string, contentRoot: strin
   if (!slug) return null;
 
   const relPath = path.relative(contentRoot, filePath).replace(/\\/g, "/");
+  if (isBlockedLegalSource(filePath) || isBlockedLegalSource(relPath)) return null;
   const localeRaw = String(data.locale ?? "").trim().toLowerCase();
   const localeFromPath = /(?:^|\/)en\//.test(relPath) ? "en" : "id";
   const locale: LegalLocale = localeRaw === "en" || localeRaw === "id" ? localeRaw : localeFromPath;
