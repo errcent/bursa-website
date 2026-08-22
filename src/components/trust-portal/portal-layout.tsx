@@ -176,8 +176,8 @@ export function PortalDocShell({
 }) {
   const overviewLabel = locale === "en" ? "Overview" : "Ikhtisar";
   const contactTitle = locale === "en" ? "Contact" : "Kontak";
-  const contactLead =
-    locale === "en" ? "Reach" : "Hubungi";
+  const contactLead = locale === "en" ? "Reach" : "Hubungi";
+  const navAria = locale === "en" ? `Navigation ${portalLabel}` : `Navigasi ${portalLabel}`;
   return (
     <div className="flex flex-col gap-6 pb-8 lg:gap-8">
       <PortalMobileNav
@@ -190,7 +190,7 @@ export function PortalDocShell({
       <div className="gap-8 lg:flex">
         <aside className="hidden w-56 shrink-0 lg:block">
           <p className="eyebrow mb-3">{portalLabel}</p>
-          <nav className="flex flex-col gap-0.5" aria-label={`Navigasi ${portalLabel}`}>
+          <nav className="flex flex-col gap-0.5" aria-label={navAria}>
             <Link
               href={hubHref}
               className={cn(
@@ -220,7 +220,7 @@ export function PortalDocShell({
 
         <div className="min-w-0 flex-1">
           <DraftBanner visible={isDraft} />
-          <MarkdownDocument markdown={doc.markdownBody} />
+          <MarkdownDocument markdown={doc.markdownBody} locale={locale} />
           {children}
           <div className="mt-12 border-t border-border/60 pt-6">
             <p className="text-sm font-medium text-foreground">{contactTitle}</p>

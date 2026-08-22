@@ -227,8 +227,16 @@ export function legalHrefsFor(locale: LegalLocale) {
     guidelines: termsPublicUrl("learner-guidelines", locale),
     privacy: privacyPublicUrl("hub", locale),
     privacyPolicy: privacyPublicUrl("kebijakan", locale),
+    cookies: privacyPublicUrl("cookie", locale),
     trust: trustPublicUrl("hub", locale),
   };
+}
+
+/** Public `/en` prefix or internal portal paths (`/privasi/en`, `/terms/en`). */
+export function localeFromPathname(pathname: string): LegalLocale {
+  if (stripLocalePrefix(pathname).locale === "en") return "en";
+  if (/(^|\/)en(\/|$)/.test(pathname)) return "en";
+  return "id";
 }
 
 export function mapPrivacyPublicToInternal(publicPath: string): string | null {

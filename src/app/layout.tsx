@@ -39,7 +39,7 @@ export const viewport: Viewport = {
 };
 
 /** Runs before first paint so intro-pending CSS hides content until PreloaderGate hydrates. */
-const INTRO_PENDING_SCRIPT = `(function(){try{if(!sessionStorage.getItem("bursa-intro-seen")){document.documentElement.classList.add("intro-pending")}}catch(e){}})();`;
+const INTRO_PENDING_SCRIPT = `(function(){try{if(!sessionStorage.getItem("bursa-intro-seen")){document.documentElement.classList.add("intro-pending")}if(/(^|\\/)en(\\/|$)/.test(location.pathname)){document.documentElement.lang="en"}}catch(e){}})();`;
 
 export const metadata: Metadata = rootSiteMetadata;
 

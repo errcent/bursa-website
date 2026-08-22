@@ -33,6 +33,7 @@ export function PortalMobileNav({
 }) {
   const [open, setOpen] = useState(false);
   const homeHref = hubHref ?? (portalBase ? `/${portalBase}` : "/");
+  const navWord = locale === "en" ? "Navigation" : "Navigasi";
 
   useEffect(() => {
     setOpen(false);
@@ -45,7 +46,7 @@ export function PortalMobileNav({
           render={
             <Button variant="outline" size="sm" className="w-full justify-center sm:w-auto">
               <Menu className="size-4" />
-              Navigasi {portalLabel}
+              {navWord} {portalLabel}
             </Button>
           }
         />
@@ -53,7 +54,7 @@ export function PortalMobileNav({
           <SheetHeader>
             <SheetTitle>{portalLabel}</SheetTitle>
           </SheetHeader>
-          <nav className="mt-4 flex flex-col gap-0.5" aria-label={`Navigasi mobile ${portalLabel}`}>
+          <nav className="mt-4 flex flex-col gap-0.5" aria-label={`${navWord} ${portalLabel}`}>
             <Link
               href={homeHref}
               aria-current={!activeSlug || activeSlug === "hub" || activeSlug === "terms" ? "page" : undefined}

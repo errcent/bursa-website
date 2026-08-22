@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect } from "react";
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
@@ -59,13 +60,25 @@ export function PortalChrome({
   enHref: string;
 }) {
   const hrefs = legalHrefsFor(locale);
+
+  useLayoutEffect(() => {
+    const previous = document.documentElement.lang;
+    document.documentElement.lang = locale === "en" ? "en" : "id";
+    return () => {
+      document.documentElement.lang = previous || "id";
+    };
+  }, [locale]);
+
   return (
     <header className="border-b border-border/70 bg-background/90 backdrop-blur-md">
       <div className="container-page flex h-14 items-center justify-between gap-4">
         <Link href={originFor("apex")} className="flex items-center gap-2" aria-label="Bursa">
           <BrandLogo variant="product" decorative className="h-6 w-auto" />
         </Link>
-        <nav className="hidden items-center gap-5 text-sm sm:flex" aria-label="Portal legal">
+        <nav
+          className="hidden items-center gap-5 text-sm sm:flex"
+          aria-label={locale === "en" ? "Legal portal" : "Portal legal"}
+        >
           {NAV.map((item) => (
             <Link
               key={item.key}

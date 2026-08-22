@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
 
-import { rewriteLegalHref } from "@/lib/hosts/hosts";
+import { rewriteLegalHref, type LegalLocale } from "@/lib/hosts/hosts";
 import { cn } from "@/lib/utils";
 
 function extractHeadings(markdown: string): { id: string; text: string; level: number }[] {
@@ -36,19 +36,22 @@ export function MarkdownDocument({
   showToc = true,
   compact = false,
   className,
+  locale = "id",
 }: {
   markdown: string;
   showToc?: boolean;
   compact?: boolean;
   className?: string;
+  locale?: LegalLocale;
 }) {
   const headings = showToc ? extractHeadings(markdown) : [];
+  const tocLabel = locale === "en" ? "Contents" : "Daftar isi";
 
   return (
     <article className={cn("max-w-3xl", className)}>
       {headings.length > 0 && (
-        <nav className="rounded-2xl border border-border bg-card/50 p-5 backdrop-blur-sm">
-          <p className="text-sm font-medium">Daftar isi</p>
+        <nav className="rounded-2xl border border-border bg-card/50 p-5 backdrop-blur-sm" aria-label={tocLabel}>
+          <p className="text-sm font-medium">{tocLabel}</p>
           <ol className="mt-3 flex flex-col gap-2">
             {headings.map((h) => (
               <li key={h.id} className={h.level === 3 ? "pl-4" : undefined}>
