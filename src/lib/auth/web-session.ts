@@ -18,6 +18,8 @@ export function webSessionCookieOptions() {
     sameSite: "lax" as const,
     path: "/",
     maxAge: WEB_SESSION_TTL_SEC,
+    // Host-only on purpose. Never set Domain=.bursanalar.com — that would share
+    // admin.bursanalar.com sessions with the public site (XSS blast radius).
   };
 }
 

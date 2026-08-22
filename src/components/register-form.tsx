@@ -281,7 +281,7 @@ export function RegisterForm() {
           <span>
             Saya setuju{" "}
             <Link
-              href="/syarat-dan-ketentuan"
+              href="/terms"
               className="font-medium underline-offset-4 hover:underline"
             >
               Syarat &amp; Ketentuan

@@ -3,6 +3,7 @@ import {
   portalStaticParams,
   renderPortalPage,
 } from "@/lib/public-documents/portal-page";
+import { resolvePortalLocale } from "@/lib/public-documents/locale";
 
 export const revalidate = 3600;
 
@@ -12,8 +13,8 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  const docSlug = slug?.[0];
-  return generatePortalMetadata("kepercayaan", docSlug);
+  const { locale, docSlug } = await resolvePortalLocale(slug);
+  return generatePortalMetadata("kepercayaan", docSlug, locale);
 }
 
 export function generateStaticParams() {
@@ -22,5 +23,6 @@ export function generateStaticParams() {
 
 export default async function KepercayaanPage({ params }: PageProps) {
   const { slug } = await params;
-  return renderPortalPage("kepercayaan", slug?.[0]);
+  const { locale, docSlug } = await resolvePortalLocale(slug);
+  return renderPortalPage("kepercayaan", docSlug, locale);
 }

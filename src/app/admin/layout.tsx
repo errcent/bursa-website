@@ -3,6 +3,7 @@ import { requireServerSession } from "@/lib/auth/server-page-guard";
 
 export const metadata = {
   title: "Admin Panel",
+  robots: { index: false, follow: false },
 };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

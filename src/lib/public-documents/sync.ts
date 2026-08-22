@@ -32,7 +32,9 @@ export async function syncLegalDrafts(
 
   for (const doc of docs) {
     const existing = await client.publicDocument.findUnique({
-      where: { portal_slug: { portal: doc.portal, slug: doc.slug } },
+      where: {
+        portal_slug_locale: { portal: doc.portal, slug: doc.slug, locale: doc.locale },
+      },
     });
 
     if (existing?.status === "PUBLISHED" && !force) {
@@ -50,6 +52,7 @@ export async function syncLegalDrafts(
           markdownBody: doc.markdownBody,
           sortOrder: doc.sortOrder,
           sourceVaultPath: doc.sourceVaultPath,
+          locale: doc.locale,
           ...(existing.status === "PUBLISHED" && force
             ? {}
             : { status: existing.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT" }),
@@ -61,6 +64,7 @@ export async function syncLegalDrafts(
         data: {
           portal: doc.portal,
           slug: doc.slug,
+          locale: doc.locale,
           title: doc.title,
           eyebrow: doc.eyebrow,
           description: doc.description,

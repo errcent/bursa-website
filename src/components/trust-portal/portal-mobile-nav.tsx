@@ -16,17 +16,20 @@ import { cn } from "@/lib/utils";
 import type { PortalNavItem } from "@/lib/public-documents/types";
 
 export function PortalMobileNav({
+  hubHref,
   portalBase,
   portalLabel,
   navItems,
   activeSlug,
 }: {
-  portalBase: string;
+  hubHref?: string;
+  portalBase?: string;
   portalLabel: string;
   navItems: PortalNavItem[];
   activeSlug?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const homeHref = hubHref ?? (portalBase ? `/${portalBase}` : "/");
 
   useEffect(() => {
     setOpen(false);
@@ -49,11 +52,11 @@ export function PortalMobileNav({
           </SheetHeader>
           <nav className="mt-4 flex flex-col gap-0.5" aria-label={`Navigasi mobile ${portalLabel}`}>
             <Link
-              href={`/${portalBase}`}
-              aria-current={!activeSlug || activeSlug === "hub" ? "page" : undefined}
+              href={homeHref}
+              aria-current={!activeSlug || activeSlug === "hub" || activeSlug === "terms" ? "page" : undefined}
               className={cn(
                 "rounded-lg px-3 py-2.5 text-sm transition-colors",
-                !activeSlug || activeSlug === "hub"
+                !activeSlug || activeSlug === "hub" || activeSlug === "terms"
                   ? "bg-primary/15 font-medium text-primary"
                   : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
               )}

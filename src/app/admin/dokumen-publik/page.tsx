@@ -10,12 +10,13 @@ import { FormModal } from "@/components/admin/form-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PORTAL_ROUTE } from "@/lib/public-documents/types";
+import { privacyPublicUrl, termsPublicUrl, trustPublicUrl } from "@/lib/hosts/hosts";
 
 type PublicDoc = {
   id: string;
   portal: "PRIVACY" | "TRUST" | "LEGAL";
   slug: string;
+  locale?: string;
   title: string;
   eyebrow: string;
   description: string;
@@ -113,9 +114,10 @@ export default function AdminPublicDocumentsPage() {
   }
 
   function previewHref(doc: PublicDoc) {
-    const base = PORTAL_ROUTE[doc.portal];
-    const path = doc.slug === "hub" ? `/${base}` : `/${base}/${doc.slug}`;
-    return path;
+    const locale = doc.locale === "en" ? "en" : "id";
+    if (doc.portal === "PRIVACY") return privacyPublicUrl(doc.slug, locale);
+    if (doc.portal === "TRUST") return trustPublicUrl(doc.slug, locale);
+    return termsPublicUrl(doc.slug === "hub" ? "terms" : doc.slug, locale);
   }
 
   const columns: DataTableColumn<PublicDoc>[] = [
@@ -123,7 +125,10 @@ export default function AdminPublicDocumentsPage() {
       key: "portal",
       header: "Portal",
       render: (row) => (
-        <Badge variant="outline">{row.portal === "PRIVACY" ? "Privasi" : "Kepercayaan"}</Badge>
+        <Badge variant="outline">
+          {row.portal === "PRIVACY" ? "Privasi" : row.portal === "TRUST" ? "Trust" : "Legal"}
+          {row.locale === "en" ? " · EN" : ""}
+        </Badge>
       ),
     },
     { key: "slug", header: "Slug", render: (row) => <code className="text-xs">{row.slug}</code> },
@@ -163,7 +168,7 @@ export default function AdminPublicDocumentsPage() {
         <div>
           <h1 className="font-heading text-2xl font-semibold">Dokumen Publik</h1>
           <p className="text-sm text-muted-foreground">
-            Kelola Privacy Center & Trust Center, sync dari vault, edit, publish.
+            Kelola Privacy, Trust, dan Terms — sync dari vault, edit, publish.
           </p>
         </div>
         <div className="flex gap-2">

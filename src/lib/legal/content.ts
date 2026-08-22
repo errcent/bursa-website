@@ -1,3 +1,5 @@
+/** Live ToS is vault `Documentation/Legal/Publik/syarat/` via PublicDocument. */
+
 export interface LegalSection {
   id: string;
   title: string;

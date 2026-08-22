@@ -2,8 +2,8 @@
 
 > **Status: PROTOTYPE LANJUTAN (P0+ selesai, P1/P2 parsial).** Frontend premium + backend parsial (Prisma, API routes, admin, chat, search). Bukan production-ready ? payment real, video hosting belum. **Google OAuth (NextAuth)** tersedia untuk login/daftar; sesi client localStorage masih dipakai sebagai bridge prototype.
 
-?? **Dokumentasi lengkap:** [`../Documentation/00 - Overview & Peta Dokumentasi.md`](../Documentation/00%20-%20Overview%20%26%20Peta%20Dokumentasi.md)  
-?? **Status implementasi terkini:** [`../Documentation/16 - Engineer Onboarding Guide/15 - Status Implementasi Kode (Living Doc).md`](../Documentation/16%20-%20Engineer%20Onboarding%20Guide/15%20-%20Status%20Implementasi%20Kode%20(Living%20Doc).md)
+**Dokumentasi lengkap:** [`../00 - START HERE.md`](../00%20-%20START%20HERE.md)  
+**Status implementasi terkini:** [`../Documentation/Engineering/Onboarding/15 - Status Implementasi Kode (Living Doc).md`](../Documentation/Engineering/Onboarding/15%20-%20Status%20Implementasi%20Kode%20(Living%20Doc).md)
 
 ---
 
@@ -109,7 +109,7 @@ Build **tetap jalan** tanpa variabel Google ? tombol menampilkan petunjuk konfig
 3. Redirect ke `/masuk?oauth=sync` ? bridge ke localStorage session (kompatibel API existing)
 4. Kebijakan privasi: link di form + consent screen Google
 
-Privasi & keamanan: lihat `Documentation/18 - Cybersecurity, Privasi Data & Kepatuhan IT/`.
+Privasi & keamanan: lihat `Documentation/Legal/Keamanan/`.
 
 ---
 
@@ -139,7 +139,7 @@ Semua email transaksional lewat Resend dan **env-gated**: tanpa `RESEND_API_KEY`
 | `WAITLIST_LIFECYCLE_ROLLOUT_PERCENT` | Persentase deterministik `0`, `10`, `50`, atau `100`; default `0` |
 | `WAITLIST_INTERNAL_COHORT` | Daftar email internal dipisah koma yang selalu masuk rollout |
 | `WAITLIST_EMAIL_FROM` | Sender marketing terpisah, mis. `Bursa <belajar@bursanalar.com>` — **bukan** mailbox founder |
-| `WAITLIST_REPLY_TO` | Wajib `support@bursanalar.com` setelah Path A (group Zoho yang dipantau). Jangan alamat yang bounce. Runbook: `Documentation/04 - Engineering/03 - As-Built Reference/deployment/email-webmail-zoho.md` |
+| `WAITLIST_REPLY_TO` | Wajib `support@bursanalar.com` setelah Path A (group Zoho yang dipantau). Jangan alamat yang bounce. Runbook: `Documentation/Engineering/As-Built/deployment/email-webmail-zoho.md` |
 | `WAITLIST_PREFERENCES_SECRET` | Secret HMAC untuk tautan preference/unsubscribe; jangan expose ke client |
 | `RESEND_WEBHOOK_SECRET` | Signing secret endpoint `/api/webhooks/resend` |
 | `RESEND_TOPIC_PRODUCT_ID` | Topic Resend untuk update produk |

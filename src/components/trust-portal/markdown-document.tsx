@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
 
+import { rewriteLegalHref } from "@/lib/hosts/hosts";
 import { cn } from "@/lib/utils";
 
 function extractHeadings(markdown: string): { id: string; text: string; level: number }[] {
@@ -97,20 +98,21 @@ export function MarkdownDocument({
               <li className="text-sm leading-relaxed text-muted-foreground">{children}</li>
             ),
             a: ({ href, children }) => {
-              const isInternal = href?.startsWith("/");
-              if (isInternal && href) {
+              const resolved = rewriteLegalHref(href);
+              const isInternal = resolved?.startsWith("/") && !resolved.startsWith("//");
+              if (isInternal && resolved) {
                 return (
-                  <Link href={href} className="link-muted font-medium text-foreground">
+                  <Link href={resolved} className="link-muted font-medium text-foreground">
                     {children}
                   </Link>
                 );
               }
               return (
                 <a
-                  href={href}
+                  href={resolved}
                   className="link-muted font-medium text-foreground"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target={resolved?.startsWith("mailto:") ? undefined : "_blank"}
+                  rel={resolved?.startsWith("mailto:") ? undefined : "noopener noreferrer"}
                 >
                   {children}
                 </a>

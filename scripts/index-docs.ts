@@ -1,6 +1,6 @@
 /**
  * RAG indexer - parses vault docs into KnowledgeChunk rows.
- * Scope: Documentation/03 (product) + Documentation/04/03 As-Built only.
+ * Scope: Documentation/Produk + Documentation/Engineering/As-Built only.
  * Run: npm run index-docs (weekly cron or on deploy - not realtime full vault)
  *
  * Embedding generation is stubbed until AI_GATEWAY_URL is configured.
@@ -14,8 +14,8 @@ const prisma = new PrismaClient();
 
 const WORKSPACE_ROOT = path.resolve(__dirname, "../..");
 const DOC_ROOTS = [
-  path.join(WORKSPACE_ROOT, "Documentation/03 - Produk & Spesifikasi"),
-  path.join(WORKSPACE_ROOT, "Documentation/04 - Engineering/03 - As-Built Reference"),
+  path.join(WORKSPACE_ROOT, "Documentation/Produk"),
+  path.join(WORKSPACE_ROOT, "Documentation/Engineering/As-Built"),
 ];
 
 const MAX_CHUNK_CHARS = 2000;
@@ -37,7 +37,7 @@ function shouldExcludeSourceDoc(sourceDoc: string): boolean {
 
 function sensitivityForDoc(sourceDoc: string): KnowledgeChunkSensitivity {
   const normalized = sourceDoc.replace(/\\/g, "/");
-  if (normalized.startsWith("Documentation/03")) return "PUBLIC";
+  if (normalized.startsWith("Documentation/Produk")) return "PUBLIC";
   return "INTERNAL";
 }
 

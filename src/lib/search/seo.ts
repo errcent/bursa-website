@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { getCatalogData } from "@/lib/catalog/server";
 import { searchAll } from "@/lib/search/engine";
+import { LEGAL_HREFS, privacyPublicUrl, termsPublicUrl, trustPublicUrl } from "@/lib/hosts/hosts";
 import { DEFAULT_OG, SITE_URL } from "@/lib/site-metadata";
 
 export async function buildSearchMetadata(query?: string): Promise<Metadata> {
@@ -125,25 +126,66 @@ export function buildOrganizationJsonLd() {
 export async function getSitemapEntries() {
   const { courses, mentors } = await getCatalogData();
 
+  const legalPages = [
+    {
+      url: LEGAL_HREFS.privacy,
+      priority: 0.4,
+      changeFrequency: "monthly" as const,
+      languages: { id: privacyPublicUrl("hub", "id"), en: privacyPublicUrl("hub", "en") },
+    },
+    {
+      url: LEGAL_HREFS.privacyPolicy,
+      priority: 0.4,
+      changeFrequency: "monthly" as const,
+      languages: { id: privacyPublicUrl("kebijakan", "id"), en: privacyPublicUrl("kebijakan", "en") },
+    },
+    {
+      url: LEGAL_HREFS.cookies,
+      priority: 0.2,
+      changeFrequency: "monthly" as const,
+      languages: { id: privacyPublicUrl("cookie", "id"), en: privacyPublicUrl("cookie", "en") },
+    },
+    {
+      url: LEGAL_HREFS.subprocessors,
+      priority: 0.2,
+      changeFrequency: "monthly" as const,
+      languages: { id: privacyPublicUrl("sub-prosesor", "id"), en: privacyPublicUrl("sub-prosesor", "en") },
+    },
+    {
+      url: LEGAL_HREFS.dsar,
+      priority: 0.3,
+      changeFrequency: "monthly" as const,
+      languages: { id: privacyPublicUrl("permintaan-data", "id"), en: privacyPublicUrl("permintaan-data", "en") },
+    },
+    {
+      url: LEGAL_HREFS.trust,
+      priority: 0.4,
+      changeFrequency: "monthly" as const,
+      languages: { id: trustPublicUrl("hub", "id"), en: trustPublicUrl("hub", "en") },
+    },
+    {
+      url: termsPublicUrl("terms"),
+      priority: 0.4,
+      changeFrequency: "monthly" as const,
+      languages: { id: termsPublicUrl("terms", "id"), en: termsPublicUrl("terms", "en") },
+    },
+    {
+      url: LEGAL_HREFS.guidelines,
+      priority: 0.3,
+      changeFrequency: "monthly" as const,
+      languages: {
+        id: termsPublicUrl("learner-guidelines", "id"),
+        en: termsPublicUrl("learner-guidelines", "en"),
+      },
+    },
+  ];
+
   const staticPages = [
     { url: "", priority: 1, changeFrequency: "weekly" as const },
     { url: "/katalog", priority: 0.9, changeFrequency: "daily" as const },
     { url: "/jadi-mentor", priority: 0.7, changeFrequency: "monthly" as const },
     { url: "/waitlist", priority: 0.85, changeFrequency: "weekly" as const },
     { url: "/bantuan", priority: 0.5, changeFrequency: "monthly" as const },
-    { url: "/syarat-dan-ketentuan", priority: 0.3, changeFrequency: "monthly" as const },
-    { url: "/privasi", priority: 0.4, changeFrequency: "monthly" as const },
-    { url: "/privasi/kebijakan", priority: 0.3, changeFrequency: "monthly" as const },
-    { url: "/privasi/cookie", priority: 0.2, changeFrequency: "monthly" as const },
-    { url: "/privasi/sub-prosesor", priority: 0.2, changeFrequency: "monthly" as const },
-    { url: "/privasi/permintaan-data", priority: 0.3, changeFrequency: "monthly" as const },
-    { url: "/privasi/faq", priority: 0.2, changeFrequency: "monthly" as const },
-    { url: "/kepercayaan", priority: 0.4, changeFrequency: "monthly" as const },
-    { url: "/kepercayaan/keamanan", priority: 0.3, changeFrequency: "monthly" as const },
-    { url: "/kepercayaan/kontrol", priority: 0.2, changeFrequency: "monthly" as const },
-    { url: "/kepercayaan/kepatuhan", priority: 0.2, changeFrequency: "monthly" as const },
-    { url: "/kepercayaan/pelaporan", priority: 0.2, changeFrequency: "monthly" as const },
-    { url: "/kebijakan-privasi", priority: 0.2, changeFrequency: "monthly" as const },
     { url: "/masuk", priority: 0.3, changeFrequency: "monthly" as const },
     { url: "/daftar", priority: 0.4, changeFrequency: "monthly" as const },
   ];
@@ -173,5 +215,5 @@ export async function getSitemapEntries() {
     changeFrequency: "weekly" as const,
   }));
 
-  return [...staticPages, ...coursePages, ...mentorPages, ...searchPages];
+  return [...staticPages, ...legalPages, ...coursePages, ...mentorPages, ...searchPages];
 }

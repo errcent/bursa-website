@@ -55,7 +55,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       try {
         const target = new URL(url);
         const base = new URL(baseUrl);
-        if (target.origin === base.origin) return target.toString();
+        const allowed = new Set([
+          base.origin,
+          "https://admin.bursanalar.com",
+          "https://bursanalar.com",
+        ]);
+        if (allowed.has(target.origin)) return target.toString();
       } catch {
         /* fall through */
       }

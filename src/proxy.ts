@@ -8,8 +8,30 @@ import {
   isKomunitasApiPath,
   KOMUNITAS_ENABLED,
 } from "@/lib/features/komunitas";
-
-const CANONICAL_HOST = "bursanalar.com";
+import {
+  APEX_HOST,
+  ADMIN_HOST,
+  LOCALE_HEADER,
+  PRODUCTION_APP_HOSTS,
+  apexPrivacyRedirectTarget,
+  apexTrustRedirectTarget,
+  hostRole,
+  internalPrivacyPath,
+  internalTrustPath,
+  isAdminAuthedPath,
+  isAdminHostAllowedPath,
+  isPrivacyHostAllowedPath,
+  isProductionHostRouting,
+  isTrustHostAllowedPath,
+  mapPrivacyPublicToInternal,
+  mapTrustPublicToInternal,
+  normalizeHost,
+  originFor,
+  privacyPublicPath,
+  stripLocalePrefix,
+  termsPublicPath,
+  type LegalLocale,
+} from "@/lib/hosts/hosts";
 
 const MOBILE_DEV_ORIGINS = new Set([
   "http://localhost:8081",
@@ -18,7 +40,6 @@ const MOBILE_DEV_ORIGINS = new Set([
   "http://127.0.0.1:19006",
 ]);
 
-/** Paths that need auth / rate-limit / komunitas guards (not just host redirect). */
 function needsRequestGuard(pathname: string): boolean {
   return (
     pathname.startsWith("/api/") ||
@@ -50,34 +71,149 @@ async function hasValidSession(request: NextRequest): Promise<boolean> {
   return Boolean(session);
 }
 
-/** Production-only: force all non-canonical hosts onto bursanalar.com. */
-function canonicalHostRedirect(request: NextRequest): NextResponse | null {
-  if (process.env.VERCEL_ENV !== "production") return null;
+function hostRedirect(hostname: string, pathname: string, search: string): NextResponse {
+  return NextResponse.redirect(new URL(`https://${hostname}${pathname}${search}`), 308);
+}
 
-  const host = request.headers.get("host")?.split(":")[0]?.toLowerCase();
-  if (!host || host === CANONICAL_HOST) return null;
-
+function rewriteWithLocale(
+  request: NextRequest,
+  pathname: string,
+  locale: LegalLocale
+): NextResponse {
   const url = request.nextUrl.clone();
-  url.protocol = "https:";
-  url.hostname = CANONICAL_HOST;
-  url.port = "";
-  return NextResponse.redirect(url, 308);
+  url.pathname = pathname;
+  const headers = new Headers(request.headers);
+  headers.set(LOCALE_HEADER, locale);
+  return NextResponse.rewrite(url, { request: { headers } });
+}
+
+function canonicalUnknownHost(request: NextRequest): NextResponse | null {
+  if (!isProductionHostRouting()) return null;
+  const host = normalizeHost(request.headers.get("host"));
+  if (!host || PRODUCTION_APP_HOSTS.has(host)) return null;
+  return hostRedirect(APEX_HOST, request.nextUrl.pathname, request.nextUrl.search);
+}
+
+function apexEnglishTermsRewrite(request: NextRequest): NextResponse | null {
+  const { pathname } = request.nextUrl;
+  if (pathname === "/en/terms" || pathname.startsWith("/en/terms/")) {
+    return rewriteWithLocale(request, pathname.slice("/en".length) || "/terms", "en");
+  }
+  return null;
+}
+
+function productionHostRouter(request: NextRequest): NextResponse | null {
+  if (!isProductionHostRouting()) return null;
+
+  const host = normalizeHost(request.headers.get("host"));
+  const role = hostRole(host);
+  const { pathname, search } = request.nextUrl;
+  const { locale, pathname: pathWithoutLocale } = stripLocalePrefix(pathname);
+
+  if (role === "apex") {
+    if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+      const destPath = pathname === "/admin" || pathname === "/admin/" ? "/" : pathname;
+      return hostRedirect(ADMIN_HOST, destPath, search);
+    }
+    if (pathname.startsWith("/api/admin")) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    if (pathname === "/syarat-dan-ketentuan" || pathname.startsWith("/syarat-dan-ketentuan/")) {
+      return hostRedirect(APEX_HOST, termsPublicPath("terms", "id"), search);
+    }
+    if (pathname === "/kebijakan-privasi") {
+      return NextResponse.redirect(
+        `${originFor("privacy")}${privacyPublicPath("kebijakan")}${search}`,
+        308
+      );
+    }
+    const privacyTarget = apexPrivacyRedirectTarget(pathname);
+    if (privacyTarget) {
+      return NextResponse.redirect(`${privacyTarget}${search}`, 308);
+    }
+    const trustTarget = apexTrustRedirectTarget(pathname);
+    if (trustTarget) {
+      return NextResponse.redirect(`${trustTarget}${search}`, 308);
+    }
+    return null;
+  }
+
+  if (role === "admin") {
+    if (!isAdminHostAllowedPath(pathname)) {
+      return hostRedirect(APEX_HOST, pathname, search);
+    }
+    if (pathname === "/") {
+      return rewriteWithLocale(request, "/admin", "id");
+    }
+    return null;
+  }
+
+  if (role === "privacy") {
+    if (pathname === "/privasi" || pathname.startsWith("/privasi/")) {
+      const target = apexPrivacyRedirectTarget(pathname);
+      if (target) {
+        return NextResponse.redirect(new URL(`${new URL(target).pathname}${search}`, request.url), 308);
+      }
+    }
+    if (!isPrivacyHostAllowedPath(pathname)) {
+      return hostRedirect(APEX_HOST, pathname, search);
+    }
+    const internalSlug = mapPrivacyPublicToInternal(pathWithoutLocale);
+    if (internalSlug) {
+      return rewriteWithLocale(request, internalPrivacyPath(internalSlug), locale);
+    }
+    return null;
+  }
+
+  if (role === "trust") {
+    if (pathname === "/kepercayaan" || pathname.startsWith("/kepercayaan/")) {
+      const target = apexTrustRedirectTarget(pathname);
+      if (target) {
+        return NextResponse.redirect(new URL(`${new URL(target).pathname}${search}`, request.url), 308);
+      }
+    }
+    if (!isTrustHostAllowedPath(pathname)) {
+      return hostRedirect(APEX_HOST, pathname, search);
+    }
+    const internalSlug = mapTrustPublicToInternal(pathWithoutLocale);
+    if (internalSlug) {
+      return rewriteWithLocale(request, internalTrustPath(internalSlug), locale);
+    }
+    return null;
+  }
+
+  return null;
+}
+
+function needsLoginRedirect(pathname: string, role: ReturnType<typeof hostRole>): boolean {
+  if (pathname.startsWith("/admin") || pathname.startsWith("/developer") || pathname.startsWith("/mentor")) {
+    return true;
+  }
+  return role === "admin" && isAdminAuthedPath(pathname);
 }
 
 export async function proxy(request: NextRequest) {
-  const hostRedirect = canonicalHostRedirect(request);
-  if (hostRedirect) return hostRedirect;
+  const unknownHost = canonicalUnknownHost(request);
+  if (unknownHost) return unknownHost;
+
+  const hostRouted = productionHostRouter(request);
+  if (hostRouted) return hostRouted;
+
+  const enTerms = apexEnglishTermsRewrite(request);
+  if (enTerms) return enTerms;
 
   const { pathname } = request.nextUrl;
-  if (!needsRequestGuard(pathname)) {
-    return NextResponse.next();
-  }
-
+  const host = normalizeHost(request.headers.get("host"));
+  const role = hostRole(host);
   const origin = request.headers.get("origin");
   const isApi = pathname.startsWith("/api/");
 
   if (isApi && request.method === "OPTIONS") {
     return applyMobileCors(new NextResponse(null, { status: 204 }), origin);
+  }
+
+  if (!needsRequestGuard(pathname) && !(role === "admin" && isAdminAuthedPath(pathname))) {
+    return NextResponse.next();
   }
 
   if (isApi) {
@@ -96,14 +232,9 @@ export async function proxy(request: NextRequest) {
     );
   }
 
-  if (
-    (pathname.startsWith("/admin") ||
-      pathname.startsWith("/developer") ||
-      pathname.startsWith("/mentor")) &&
-    !sessionOk
-  ) {
+  if (needsLoginRedirect(pathname, role) && !sessionOk) {
     const login = new URL("/masuk", request.url);
-    login.searchParams.set("next", pathname);
+    login.searchParams.set("next", role === "admin" && pathname === "/" ? "/admin" : pathname);
     return NextResponse.redirect(login);
   }
 
@@ -118,16 +249,11 @@ export async function proxy(request: NextRequest) {
     );
   }
 
-  // Page routes render their own coming-soon UI when komunitas is disabled.
   return isApi ? applyMobileCors(NextResponse.next(), origin) : NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    /*
-     * Broad match so production host redirect covers all pages.
-     * Skip Next internals and common static assets.
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|webmanifest)$).*)",
   ],
 };

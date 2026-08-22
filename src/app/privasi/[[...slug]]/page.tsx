@@ -3,6 +3,7 @@ import {
   portalStaticParams,
   renderPortalPage,
 } from "@/lib/public-documents/portal-page";
+import { resolvePortalLocale } from "@/lib/public-documents/locale";
 
 export const revalidate = 3600;
 
@@ -12,8 +13,8 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  const docSlug = slug?.[0];
-  return generatePortalMetadata("privasi", docSlug);
+  const { locale, docSlug } = await resolvePortalLocale(slug);
+  return generatePortalMetadata("privasi", docSlug, locale);
 }
 
 export function generateStaticParams() {
@@ -22,5 +23,6 @@ export function generateStaticParams() {
 
 export default async function PrivasiPage({ params }: PageProps) {
   const { slug } = await params;
-  return renderPortalPage("privasi", slug?.[0]);
+  const { locale, docSlug } = await resolvePortalLocale(slug);
+  return renderPortalPage("privasi", docSlug, locale);
 }

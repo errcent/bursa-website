@@ -9,6 +9,8 @@ sortOrder: 0
 
 _Berlaku efektif: 22 Juli 2026_
 
+Jika versi Bahasa Indonesia dan Inggris berbeda, **versi Bahasa Indonesia yang berlaku**.
+
 Selamat datang di Pusat Privasi Bursa. Di sini kamu bisa mempelajari bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadimu saat belajar di platform edukasi trading kami.
 
 Bursa bertindak sebagai **Pengendali Data Pribadi** sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP).

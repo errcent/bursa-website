@@ -1290,6 +1290,7 @@ model PublicDocument {
   id              String         @id @default(cuid())
   slug            String
   portal          DocumentPortal
+  locale          String         @default("id")
   title           String
   eyebrow         String
   description     String
@@ -1302,8 +1303,8 @@ model PublicDocument {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 
-  @@unique([portal, slug])
-  @@index([portal, status])
+  @@unique([portal, slug, locale])
+  @@index([portal, status, locale])
 }
 
 model DataSubjectRequest {

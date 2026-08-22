@@ -30,6 +30,7 @@ const HIDDEN_PATH_PREFIXES = [
   "/privasi",
   "/kepercayaan",
   "/syarat-dan-ketentuan",
+  "/terms",
 ] as const;
 
 function isHiddenPath(pathname: string) {

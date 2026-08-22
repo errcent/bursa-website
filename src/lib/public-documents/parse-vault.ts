@@ -3,13 +3,15 @@ import path from "node:path";
 
 import type { DocumentPortal } from "@prisma/client";
 
+import type { LegalLocale } from "@/lib/hosts/hosts";
+
 import type { ParsedVaultDocument } from "./types";
 
 const WORKSPACE_ROOT = path.resolve(process.cwd(), "..");
 const BUNDLED_ROOT = path.join(process.cwd(), "content/public-documents");
 const VAULT_ROOT = path.join(
   WORKSPACE_ROOT,
-  "Documentation/02 - Legal & Kepatuhan/05 - Halaman Publik Website"
+  "Documentation/Legal/Publik"
 );
 
 /** Parse YAML-ish `key: value` frontmatter between `---` fences; return body. */
@@ -58,7 +60,11 @@ export async function collectVaultMarkdownFiles(): Promise<string[]> {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         await walk(full);
-      } else if (entry.name.endsWith(".md") && !entry.name.startsWith("00 -")) {
+      } else if (
+        entry.name.endsWith(".md") &&
+        !entry.name.startsWith("00 -") &&
+        entry.name !== "README.md"
+      ) {
         files.push(full);
       }
     }
@@ -84,10 +90,14 @@ export function parseVaultFile(filePath: string, raw: string, contentRoot: strin
   if (!slug) return null;
 
   const relPath = path.relative(contentRoot, filePath).replace(/\\/g, "/");
+  const localeRaw = String(data.locale ?? "").trim().toLowerCase();
+  const localeFromPath = /(?:^|\/)en\//.test(relPath) ? "en" : "id";
+  const locale: LegalLocale = localeRaw === "en" || localeRaw === "id" ? localeRaw : localeFromPath;
 
   return {
     portal,
     slug,
+    locale,
     title: String(data.title ?? slug),
     eyebrow: String(data.eyebrow ?? ""),
     description: String(data.description ?? ""),

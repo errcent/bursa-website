@@ -34,6 +34,7 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {
       portal: DocumentPortal;
+      locale?: string;
       slug: string;
       title: string;
       eyebrow: string;
@@ -45,6 +46,7 @@ export async function POST(request: Request) {
     const doc = await db.publicDocument.create({
       data: {
         portal: body.portal,
+        locale: body.locale === "en" ? "en" : "id",
         slug: body.slug,
         title: body.title,
         eyebrow: body.eyebrow,

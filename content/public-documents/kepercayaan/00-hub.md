@@ -9,6 +9,8 @@ sortOrder: 0
 
 _Berlaku efektif: 22 Juli 2026_
 
+Jika versi Bahasa Indonesia dan Inggris berbeda, **versi Bahasa Indonesia yang berlaku**. Kami **tidak** mengklaim sertifikasi yang belum dimiliki.
+
 Selamat datang di Pusat Kepercayaan Bursa. Kami percaya transparansi adalah fondasi kepercayaan — terutama di platform edukasi trading yang diawasi regulasi.
 
 ## Komitmen Kami

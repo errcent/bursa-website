@@ -1,20 +1,28 @@
 import type { PortalSlug } from "@/lib/public-documents/types";
+import type { LegalLocale } from "@/lib/hosts/hosts";
 
 import { JsonLdScript } from "@/components/json-ld-script";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bursanalar.com";
 
 export function PortalJsonLd({
   portalSlug,
   title,
   description,
-  path,
+  url,
+  locale = "id",
 }: {
   portalSlug: PortalSlug;
   title: string;
   description: string;
-  path: string;
+  url: string;
+  locale?: LegalLocale;
 }) {
+  const about =
+    portalSlug === "privasi"
+      ? "Privacy Policy"
+      : portalSlug === "kepercayaan"
+        ? "Security & Trust"
+        : "Terms of Service";
+
   const json = {
     "@context": "https://schema.org",
     "@graph": [
@@ -22,33 +30,34 @@ export function PortalJsonLd({
         "@type": "WebPage",
         name: title,
         description,
-        url: `${SITE_URL}${path}`,
+        url,
+        inLanguage: locale === "en" ? "en" : "id",
         isPartOf: {
           "@type": "WebSite",
           name: "Bursa",
-          url: SITE_URL,
+          url: "https://bursanalar.com",
         },
         about: {
           "@type": "Thing",
-          name: portalSlug === "privasi" ? "Privacy Policy" : "Security & Trust",
+          name: about,
         },
       },
       {
         "@type": "Organization",
         name: "Bursa",
-        url: SITE_URL,
+        url: "https://bursanalar.com",
         contactPoint: [
           {
             "@type": "ContactPoint",
             contactType: "privacy",
             email: "privacy@bursanalar.com",
-            availableLanguage: "Indonesian",
+            availableLanguage: ["Indonesian", "English"],
           },
           {
             "@type": "ContactPoint",
             contactType: "security",
             email: "security@bursanalar.com",
-            availableLanguage: "Indonesian",
+            availableLanguage: ["Indonesian", "English"],
           },
         ],
       },

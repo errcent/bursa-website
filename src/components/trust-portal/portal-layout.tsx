@@ -33,6 +33,8 @@ const PORTAL_ICONS: Record<string, LucideIcon> = {
   kepatuhan: Scale,
   pelaporan: Bug,
   "sumber-daya": BookOpen,
+  terms: FileText,
+  "learner-guidelines": BookOpen,
 };
 
 function HubCard({
@@ -40,11 +42,13 @@ function HubCard({
   title,
   description,
   slug,
+  openLabel,
 }: {
   href: string;
   title: string;
   description?: string;
   slug: string;
+  openLabel: string;
 }) {
   const Icon = PORTAL_ICONS[slug] ?? Shield;
   return (
@@ -67,7 +71,7 @@ function HubCard({
         </div>
       </div>
       <span className="mt-auto inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground">
-        Buka dokumen
+        {openLabel}
         <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
       </span>
     </Link>
@@ -79,12 +83,23 @@ export function PortalHubContent({
   navItems,
   portalBase,
   crossLink,
+  locale = "id",
 }: {
   hubDoc: PublicDocumentRecord;
   navItems: PortalNavItem[];
-  portalBase: string;
+  portalBase?: string;
   crossLink?: { href: string; label: string };
+  locale?: "id" | "en";
 }) {
+  const docsHeading = locale === "en" ? "Documents" : "Dokumen";
+  const docsCopy =
+    locale === "en"
+      ? "Open a document for the full policy or procedure."
+      : "Pilih dokumen di bawah untuk detail lengkap kebijakan dan prosedur.";
+  const openLabel = locale === "en" ? "Open document" : "Buka dokumen";
+  const related = locale === "en" ? "Related" : "Portal terkait";
+  void portalBase;
+
   return (
     <div className="flex flex-col gap-10 pb-8">
       <MarkdownDocument markdown={hubDoc.markdownBody} showToc={false} compact />
@@ -92,11 +107,9 @@ export function PortalHubContent({
       {navItems.length > 0 && (
         <section aria-labelledby="portal-documents-heading">
           <h2 id="portal-documents-heading" className="section-title">
-            Dokumen
+            {docsHeading}
           </h2>
-          <p className="section-copy mt-2">
-            Pilih dokumen di bawah untuk detail lengkap kebijakan dan prosedur.
-          </p>
+          <p className="section-copy mt-2">{docsCopy}</p>
           <div className="mt-8 grid gap-8 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-8">
             {navItems.map((item) => (
               <HubCard
@@ -105,6 +118,7 @@ export function PortalHubContent({
                 title={item.title}
                 description={item.description}
                 slug={item.slug}
+                openLabel={openLabel}
               />
             ))}
           </div>
@@ -113,13 +127,11 @@ export function PortalHubContent({
 
       {crossLink && (
         <div className="border-t border-border/60 pt-6">
-          <p className="text-sm font-medium text-foreground">Portal terkait</p>
+          <p className="text-sm font-medium text-foreground">{related}</p>
           <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-            Lihat juga{" "}
             <Link href={crossLink.href} className="link-muted font-medium text-foreground">
               {crossLink.label}
-            </Link>{" "}
-            untuk informasi keamanan, kepatuhan, dan pelaporan kerentanan.
+            </Link>
           </p>
         </div>
       )}
@@ -147,14 +159,14 @@ export function DraftBanner({ visible }: { visible?: boolean }) {
 export function PortalDocShell({
   doc,
   navItems,
-  portalBase,
+  hubHref,
   portalLabel,
   children,
   isDraft,
 }: {
   doc: PublicDocumentRecord;
   navItems: PortalNavItem[];
-  portalBase: string;
+  hubHref: string;
   portalLabel: string;
   children?: React.ReactNode;
   isDraft?: boolean;
@@ -162,7 +174,7 @@ export function PortalDocShell({
   return (
     <div className="flex flex-col gap-6 pb-8 lg:gap-8">
       <PortalMobileNav
-        portalBase={portalBase}
+        hubHref={hubHref}
         portalLabel={portalLabel}
         navItems={navItems}
         activeSlug={doc.slug}
@@ -172,7 +184,7 @@ export function PortalDocShell({
           <p className="eyebrow mb-3">{portalLabel}</p>
           <nav className="flex flex-col gap-0.5" aria-label={`Navigasi ${portalLabel}`}>
             <Link
-              href={`/${portalBase}`}
+              href={hubHref}
               className={cn(
                 "rounded-lg px-3 py-2 text-sm transition-colors",
                 "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
