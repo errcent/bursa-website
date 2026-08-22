@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:webpack": "next dev --webpack",
-    "build": "prisma generate && prisma migrate deploy && tsx scripts/sync-legal-drafts.ts --force && next build",
+    "build": "prisma generate && node scripts/retry-failed-locale-migration.mjs && prisma migrate deploy && tsx scripts/sync-legal-drafts.ts --force && next build",
     "start": "next start",
     "lint": "eslint",
     "test:waitlist": "tsx --test tests/waitlist-lifecycle.test.ts",

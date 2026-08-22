@@ -1,4 +1,4 @@
-﻿-- AlterTable
+-- AlterTable
 ALTER TABLE "PublicDocument" ADD COLUMN "locale" TEXT NOT NULL DEFAULT 'id';
 
 -- DropIndex
