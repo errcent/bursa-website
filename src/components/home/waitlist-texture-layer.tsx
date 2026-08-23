@@ -10,13 +10,18 @@ import {
   useScroll,
   useSpring,
   useTransform,
+  type MotionValue,
 } from "motion/react";
 
 type WaitlistTextureLayerProps = {
   sectionRef: RefObject<HTMLElement | null>;
+  leadProgress?: MotionValue<number>;
 };
 
-export function WaitlistTextureLayer({ sectionRef }: WaitlistTextureLayerProps) {
+export function WaitlistTextureLayer({
+  sectionRef,
+  leadProgress,
+}: WaitlistTextureLayerProps) {
   const reduceMotion = useReducedMotion();
 
   const { scrollYProgress } = useScroll({
@@ -24,10 +29,15 @@ export function WaitlistTextureLayer({ sectionRef }: WaitlistTextureLayerProps) 
     offset: ["start end", "end start"],
   });
 
-  const textureOpacity = useTransform(
+  const fromSection = useTransform(
     scrollYProgress,
     [0, 0.22, 0.45, 0.68, 1],
     [0, 0.36, 0.48, 0.36, 0]
+  );
+  const fromLead = useTransform(leadProgress ?? scrollYProgress, [0.4, 0.58, 0.86], [0, 0.34, 0.46]);
+  const textureOpacity = useTransform(
+    leadProgress ? [fromSection, fromLead] : [fromSection],
+    (values) => Math.max(...values)
   );
   const scrollShift = useTransform(scrollYProgress, [0, 1], [2.6, -2.6]);
 

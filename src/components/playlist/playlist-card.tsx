@@ -34,14 +34,15 @@ export function PlaylistCard({
 }: {
   playlist: PlaylistSummary;
   className?: string;
-  /** "featured", cinematic overlay for landing; "catalog", title below thumbnail. */
-  variant?: "default" | "catalog" | "featured";
+  /** "featured", cinematic overlay; "catalog", title below; "strip", flat filmstrip tile. */
+  variant?: "default" | "catalog" | "featured" | "strip";
   /** Hide bookmark toggle (e.g. landing page). */
   hideBookmark?: boolean;
 }) {
   const isCatalog = variant === "catalog";
   const isFeatured = variant === "featured";
-  const subtitle = isFeatured ? null : playlistSubtitle(playlist);
+  const isStrip = variant === "strip";
+  const subtitle = isFeatured || isStrip ? null : playlistSubtitle(playlist);
 
   return (
     <Link
@@ -50,16 +51,18 @@ export function PlaylistCard({
       className={cn(
         "@container group relative block w-full outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         isCatalog ? "overflow-visible" : "overflow-hidden",
-        isFeatured
-          ? "rounded-2xl shadow-lg transition-shadow duration-300 hover:shadow-xl"
-          : "rounded-xl",
+        isStrip
+          ? "rounded-none"
+          : isFeatured
+            ? "rounded-2xl shadow-lg transition-shadow duration-300 hover:shadow-xl"
+            : "rounded-xl",
         className
       )}
     >
       <div
         className={cn(
           "relative aspect-video w-full min-h-0 overflow-hidden bg-surface-2",
-          isFeatured ? "rounded-2xl" : "rounded-xl"
+          isStrip ? "rounded-none" : isFeatured ? "rounded-2xl" : "rounded-xl"
         )}
       >
         <PlaylistThumbnail
@@ -69,16 +72,18 @@ export function PlaylistCard({
           className="absolute inset-0"
         />
 
-        <div className="pointer-events-none absolute right-2.5 top-2.5 z-10">
-          <ListVideo
-            className={cn(
-              "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]",
-              isFeatured ? "size-5" : "size-4"
-            )}
-            aria-hidden
-          />
-          <span className="sr-only">Playlist</span>
-        </div>
+        {!isStrip ? (
+          <div className="pointer-events-none absolute right-2.5 top-2.5 z-10">
+            <ListVideo
+              className={cn(
+                "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]",
+                isFeatured ? "size-5" : "size-4"
+              )}
+              aria-hidden
+            />
+            <span className="sr-only">Playlist</span>
+          </div>
+        ) : null}
 
         {!hideBookmark ? (
           <div className="absolute bottom-2.5 left-2.5 z-20">
@@ -105,14 +110,16 @@ export function PlaylistCard({
                 </p>
               ) : null}
             </div>
-            <span
-              className={cn(
-                "hidden shrink-0 whitespace-nowrap rounded-full bg-black/45 px-2 py-1 font-medium text-white/85 backdrop-blur-sm @[220px]:inline",
-                isFeatured ? "text-[11px]" : "text-[10px]"
-              )}
-            >
-              {playlistMetaLabel(playlist)}
-            </span>
+            {!isStrip ? (
+              <span
+                className={cn(
+                  "hidden shrink-0 whitespace-nowrap rounded-full bg-black/45 px-2 py-1 font-medium text-white/85 backdrop-blur-sm @[220px]:inline",
+                  isFeatured ? "text-[11px]" : "text-[10px]"
+                )}
+              >
+                {playlistMetaLabel(playlist)}
+              </span>
+            ) : null}
           </div>
         ) : (
           <span className="pointer-events-none absolute bottom-2.5 right-2.5 z-10 shrink-0 whitespace-nowrap rounded-full bg-black/45 px-2 py-1 text-[10px] font-medium text-white/85 backdrop-blur-sm @[220px]:text-[11px]">

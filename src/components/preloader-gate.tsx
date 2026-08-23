@@ -7,12 +7,11 @@ import {
   IntroPreloader,
   INTRO_REVEAL_DURATION_S,
   INTRO_REVEAL_EASE,
-  INTRO_REVEAL_START_MS,
 } from "@/components/intro-preloader";
 
 const SESSION_KEY = "bursa-intro-seen";
 /** Hard cap so a stuck intro never leaves the page unresponsive. */
-const INTRO_FAILSAFE_MS = 5500;
+const INTRO_FAILSAFE_MS = 12000;
 
 type Phase = "intro" | "revealing" | "done";
 
@@ -62,15 +61,9 @@ export function PreloaderGate({ children }: { children: React.ReactNode }) {
     }
   }, [phase]);
 
-  useEffect(() => {
-    if (phase !== "intro") return;
-
-    const revealTimer = window.setTimeout(() => {
-      setPhase("revealing");
-    }, INTRO_REVEAL_START_MS);
-
-    return () => window.clearTimeout(revealTimer);
-  }, [phase]);
+  const handleExitStart = useCallback(() => {
+    setPhase("revealing");
+  }, []);
 
   const handleIntroComplete = useCallback(() => {
     try {
@@ -95,7 +88,9 @@ export function PreloaderGate({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {showOverlay ? <IntroPreloader onComplete={handleIntroComplete} /> : null}
+      {showOverlay ? (
+        <IntroPreloader onExitStart={handleExitStart} onComplete={handleIntroComplete} />
+      ) : null}
 
       <motion.div
         data-app-content

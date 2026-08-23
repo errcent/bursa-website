@@ -22,41 +22,41 @@ export function HomeDiscoverSection({
 
   return (
     <div className={cn("home-discover-section relative min-w-0", className)}>
-      <div className="discover-shell">
-        <div className="discover-shell__header">
-          <div className="discover-shell__copy min-w-0">
-            <p className="eyebrow-tight mb-3">Ragam Playlist</p>
-            <WordReveal
-              as="h2"
-              className="section-display-title text-foreground"
-              text="Banyak jalur, satu platform"
-              trigger="immediate"
-              delay={0.04}
-            />
-            <p className="section-copy mt-3 max-w-xl text-base leading-relaxed">
-              Jalur belajar terkurasi lintas kelas dan mentor: forex, saham, kripto,
-              disusun biar progresmu lebih runut.
-            </p>
+      <div className="discover-solo-track">
+        <div className="discover-solo-sticky">
+          <div className="container-page">
+            <div className="discover-copy mx-auto min-w-0 max-w-xl text-center">
+              <WordReveal
+                as="h2"
+                className="discover-title section-display-title mx-auto text-center text-foreground"
+                text="Tidak perlu menebak harus mulai dari mana."
+                trigger="inView"
+                delay={0.04}
+              />
+              <p className="section-copy mx-auto mt-3 max-w-md text-center text-base leading-relaxed">
+                Beberapa pertanyaan singkat. Kelas pertamamu terlihat.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="discover-shell__content">
-          <div className="discover-carousel-stage">
+          <div className="discover-filmstrip">
             <PlaylistCarousel playlists={playlists} hideBookmark discoverMode />
           </div>
-        </div>
 
-        <div className="discover-shell__footer">
-          <Button
-            size="lg"
-            className="btn-primary h-11 rounded-md px-7"
-            render={<Link href="/panduan-belajar" />}
-          >
-            <span className="inline-flex items-center gap-2">
-              Mulai Panduan Belajar
-              <ArrowRight className="size-4" />
-            </span>
-          </Button>
+          <div className="container-page">
+            <div className="discover-cta">
+              <Button
+                size="lg"
+                className="btn-primary h-11 rounded-md px-7"
+                render={<Link href="/panduan-belajar" />}
+              >
+                <span className="inline-flex items-center gap-2">
+                  Temukan jalur yang cocok untukmu
+                  <ArrowRight className="size-4" />
+                </span>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

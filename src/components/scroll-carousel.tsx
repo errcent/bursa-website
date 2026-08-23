@@ -65,6 +65,16 @@ export function discoverCourseGetScrollPerView(width: number) {
   return 2;
 }
 
+/** Full-bleed landing strip: more tiles visible so jalur terasa banyak. */
+export function discoverStripGetScrollPerView(width: number) {
+  if (width < 768) return 1.55;
+  if (width >= 1400) return 5.4;
+  if (width >= 1100) return 4.6;
+  if (width >= 900) return 3.8;
+  if (width >= 620) return 2.8;
+  return 2.1;
+}
+
 /** Fewer, larger cards so coverflow depth reads clearly on landing. */
 export function discoverCoverflowGetScrollPerView(width: number) {
   if (width < 768) return 1;

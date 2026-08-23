@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Inter } from "next/font/google";
+import { DM_Sans, Inter, Montserrat_Alternates } from "next/font/google";
 import Script from "next/script";
 
 import { AuthProvider } from "@/components/auth-provider";
@@ -8,7 +8,6 @@ import { NextAuthProvider } from "@/components/next-auth-provider";
 import { CursorGlow } from "@/components/cursor-glow";
 import { NavbarRouteTracker } from "@/components/navbar-route-tracker";
 import { PreloaderGate } from "@/components/preloader-gate";
-import { StickyBottomCta } from "@/components/sticky-bottom-cta";
 import { CookieConsentBanner } from "@/components/trust-portal/cookie-consent-banner";
 import { PreviewCatalogBanner } from "@/components/preview-catalog/preview-catalog-banner";
 
@@ -33,6 +32,14 @@ const fontHeading = DM_Sans({
   display: "swap",
 });
 
+/** Product wordmark "bursa" — matches logo_product_bursa_navbar */
+const fontMontAlt = Montserrat_Alternates({
+  variable: "--font-mont-alt",
+  subsets: ["latin"],
+  weight: ["700"],
+  display: "swap",
+});
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -51,7 +58,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${fontSans.variable} ${fontHeading.variable} dark h-full antialiased`}
+      className={`${fontSans.variable} ${fontHeading.variable} ${fontMontAlt.variable} dark h-full antialiased`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
@@ -73,7 +80,6 @@ export default function RootLayout({
             <AuthProvider>
               <PreviewCatalogBanner />
               {children}
-              <StickyBottomCta />
               <CookieConsentBanner />
             </AuthProvider>
           </NextAuthProvider>

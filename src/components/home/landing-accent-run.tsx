@@ -33,27 +33,29 @@ export function LandingAccentRun({
   waitlist: WaitlistElement;
   children: ReactNode;
 }) {
+  const mockupPinRef = useRef<HTMLDivElement>(null);
   const waitlistPinRef = useRef<HTMLDivElement>(null);
   const waitlistSectionRef = useRef<HTMLElement>(null);
   const grainId = useId().replace(/:/g, "");
   const reduceMotion = useReducedMotion();
 
   const { scrollYProgress } = useScroll({
-    target: waitlistPinRef,
-    offset: ["start end", "center center"],
+    target: mockupPinRef,
+    offset: ["start start", "end end"],
   });
 
   const riseY = useTransform(
     scrollYProgress,
-    [0, 0.18, 0.38, 0.58, 0.8, 1],
-    ["40%", "24%", "8%", "-8%", "-28%", "-48%"]
+    [0, 0.4, 0.52, 0.7, 0.88, 1],
+    ["40%", "40%", "20%", "2%", "-22%", "-42%"]
   );
   const canvasTint = useTransform(
     scrollYProgress,
-    [0, 0.18, 0.38, 0.58, 0.8, 1],
-    [0, 3, 8, 15, 24, 32]
+    [0, 0.4, 0.52, 0.7, 0.88, 1],
+    [0, 0, 8, 18, 28, 32]
   );
-  const grainOpacity = useTransform(scrollYProgress, [0, 1], [0.06, 0.18]);
+  const grainOpacity = useTransform(scrollYProgress, [0, 0.4, 1], [0.06, 0.06, 0.18]);
+  const ovalOpacity = useTransform(scrollYProgress, [0, 0.4, 0.62, 1], [0, 0, 0.26, 0.34]);
   const runBg = useMotionTemplate`color-mix(in srgb, var(--hero-accent) ${canvasTint}%, var(--section-canvas))`;
 
   const waitlistNode = isValidElement(waitlist)
@@ -90,8 +92,11 @@ export function LandingAccentRun({
             <div className="landing-accent-run__rise-fill" />
           </motion.div>
         )}
-        <WaitlistTextureLayer sectionRef={waitlistSectionRef} />
-        <span className="landing-accent-run__oval" />
+        <WaitlistTextureLayer sectionRef={waitlistSectionRef} leadProgress={scrollYProgress} />
+        <motion.span
+          className="landing-accent-run__oval"
+          style={{ opacity: reduceMotion ? 0.34 : ovalOpacity }}
+        />
         {!reduceMotion ? (
           <motion.svg className="device-mockup-wash-grain" style={{ opacity: grainOpacity }}>
             <filter id={grainId}>
@@ -111,7 +116,7 @@ export function LandingAccentRun({
         ) : null}
       </div>
 
-      <div className="landing-accent-run__pin">{pin}</div>
+      <div ref={mockupPinRef} className="landing-accent-run__pin">{pin}</div>
       {waitlistNode}
       {children}
     </motion.div>

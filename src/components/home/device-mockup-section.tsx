@@ -17,11 +17,11 @@ export function DeviceMockupSection() {
     offset: ["start start", "end end"],
   });
 
-  const topY = useTransform(scrollYProgress, [0.06, 0.22, 0.5], ["0vh", "-12vh", "-42vh"]);
-  const topOpacity = useTransform(scrollYProgress, [0.32, 0.52], [1, 0]);
-  const bottomY = useTransform(scrollYProgress, [0.08, 0.26, 0.4], ["0vh", "-7vh", "-16vh"]);
-  const bottomOpacity = useTransform(scrollYProgress, [0.1, 0.26, 0.38], [1, 0.28, 0]);
-  const mockupScale = useTransform(scrollYProgress, [0.08, 0.38, 1], [1, 1.18, 1.18]);
+  const topY = useTransform(scrollYProgress, [0.42, 0.58, 0.84], ["0vh", "-12vh", "-42vh"]);
+  const topOpacity = useTransform(scrollYProgress, [0.5, 0.74], [1, 0]);
+  const bottomY = useTransform(scrollYProgress, [0.42, 0.58, 0.76], ["0vh", "-7vh", "-16vh"]);
+  const bottomOpacity = useTransform(scrollYProgress, [0.42, 0.58, 0.72], [1, 0.28, 0]);
+  const mockupScale = useTransform(scrollYProgress, [0.12, 0.4, 1], [1, 1.18, 1.18]);
 
   return (
     <section
