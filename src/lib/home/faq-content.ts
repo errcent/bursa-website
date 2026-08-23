@@ -9,7 +9,7 @@ export const homeFaqs: HomeFaq[] = [
     id: "uniqueness",
     question: "Apa yang membuat Bursa berbeda dari platform edukasi trading lain?",
     answer:
-      "Edukasi terstruktur dengan mentor yang melalui proses kurasi, bukan konten random atau sinyal tanpa konteks. Bayar per kelas, tanpa langganan bulanan.",
+      "Edukasi terstruktur dengan mentor yang melalui proses kurasi, bukan konten acak atau sinyal tanpa konteks. Setiap kelas dibayar per tahun. Bukan langganan bulanan.",
   },
   {
     id: "not-broker",
@@ -30,15 +30,15 @@ export const homeFaqs: HomeFaq[] = [
       "Saham, Crypto, dan Forex. Setiap instrumen punya kelas dari pemula hingga menengah dengan mentor spesialis.",
   },
   {
-    id: "community",
-    question: "Apakah ada komunitas atau chat langsung dengan mentor?",
+    id: "find-class",
+    question: "Bagaimana cara menemukan kelas yang cocok?",
     answer:
-      "Ya. Setiap mentor bisa membuka ruang komunitas untuk diskusi dan Q&A. Akses chat tersedia setelah peluncuran penuh.",
+      "Ada Panduan Belajar. Beberapa pertanyaan singkat, semacam kuis. Setelah itu kamu langsung melihat kelas yang sesuai.",
   },
   {
     id: "pricing-model",
     question: "Apakah harus berlangganan bulanan untuk belajar di Bursa?",
     answer:
-      "Tidak. Model bayar per kelas, tanpa langganan platform. Detail harga akan diumumkan saat peluncuran resmi.",
+      "Tidak. Pembayaran berlaku per kelas, per tahun. Bukan langganan bulanan untuk seluruh platform.",
   },
 ];

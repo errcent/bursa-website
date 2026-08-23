@@ -9,6 +9,7 @@ import {
   type MotionValue,
 } from "motion/react";
 
+import { LandingStoryCursor } from "@/components/home/landing-story-cursor";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { WordReveal } from "@/components/motion/word-reveal";
 
@@ -44,12 +45,20 @@ function StoryProblem({
   strike: MotionValue<number>;
   mute: MotionValue<number>;
 }) {
+  const strikeSize = useTransform(strike, (value) => `${Math.min(1, Math.max(0, value)) * 100}% 1.2px`);
+  const textColor = useTransform(
+    mute,
+    (value) => `color-mix(in srgb, var(--foreground) ${Math.min(1, Math.max(0, value)) * 100}%, transparent)`
+  );
+
   return (
     <motion.p className="home-story__problem" style={{ opacity, y }}>
-      <motion.span className="home-story__problem-text" style={{ opacity: mute }}>
+      <motion.span
+        className="home-story__problem-text"
+        style={{ color: textColor, backgroundSize: strikeSize }}
+      >
         {text}
       </motion.span>
-      <motion.span className="home-story__strike" style={{ scaleX: strike }} aria-hidden />
     </motion.p>
   );
 }
@@ -174,6 +183,7 @@ export function HomeProblemSection() {
 
   const solutionOpacity = useTransform(scrollYProgress, [0, 0.6, 0.66, 1], [0, 0, 1, 1]);
   const solutionY = useTransform(scrollYProgress, [0.6, 0.66], [12, 0]);
+  const cursorProgress = useTransform(scrollYProgress, [0, 0.66], [0, 1]);
 
   const s1Opacity = useTransform(scrollYProgress, [0, 0.64, 0.68, 1], [0, 0, 1, 1]);
   const s1Y = useTransform(scrollYProgress, [0.64, 0.68], [10, 0]);
@@ -211,6 +221,7 @@ export function HomeProblemSection() {
         </ul>
       </div>
 
+      <LandingStoryCursor progress={cursorProgress} />
       <div className="home-story-pin">
       <div className="home-story-sticky" aria-hidden>
         <div className="home-story-stage container-page">

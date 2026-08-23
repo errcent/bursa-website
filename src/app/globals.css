@@ -532,6 +532,64 @@
     background-color: var(--section-canvas);
   }
 
+  @media (hover: hover) and (pointer: fine) {
+    html.landing-story-cursor-on,
+    html.landing-story-cursor-on * {
+      cursor: none !important;
+    }
+
+    html.landing-story-cursor-on .cursor-glow {
+      display: none;
+    }
+  }
+
+  .landing-story-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2147483000;
+    display: none;
+    width: 28px;
+    height: 28px;
+    margin: -14px 0 0 -14px;
+    pointer-events: none;
+    isolation: isolate;
+    will-change: transform;
+  }
+
+  .landing-story-cursor__svg {
+    display: block;
+    overflow: visible;
+  }
+
+  .landing-story-cursor__track,
+  .landing-story-cursor__fill {
+    fill: none;
+    transform-origin: 14px 14px;
+  }
+
+  .landing-story-cursor__track {
+    stroke: color-mix(in srgb, var(--foreground) 20%, transparent);
+    stroke-width: 0.7;
+  }
+
+  .landing-story-cursor__fill {
+    stroke: color-mix(in srgb, var(--foreground) 92%, var(--accent));
+    stroke-width: 1.35;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+  }
+
+  .landing-story-cursor__core {
+    fill: color-mix(in srgb, var(--foreground) 82%, transparent);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .landing-story-cursor {
+      display: block;
+    }
+  }
+
   .section-closing {
     position: relative;
     isolation: isolate;
@@ -1026,17 +1084,15 @@
 
   .home-story__problem-text {
     display: inline;
-  }
-
-  .home-story__strike {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 52%;
-    height: 1px;
-    background: color-mix(in srgb, var(--foreground) 55%, transparent);
-    transform-origin: left center;
-    pointer-events: none;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    background-image: linear-gradient(
+      color-mix(in srgb, var(--foreground) 58%, transparent),
+      color-mix(in srgb, var(--foreground) 58%, transparent)
+    );
+    background-repeat: no-repeat;
+    background-position: left 0.58em;
+    background-size: 0% 1.2px;
   }
 
   .home-story-turn {
@@ -2548,7 +2604,7 @@
       "bottom";
     align-content: center;
     justify-items: center;
-    gap: clamp(0.4rem, 1.6vh, 0.9rem);
+    gap: clamp(1.15rem, 3.8vh, 2.15rem);
     padding-bottom: calc(var(--waitlist-peek, 0vh) * 0.35);
   }
 
@@ -3339,7 +3395,7 @@ img.ai-thumbnail__media {
   }
 
   .device-mockup-sticky__inner {
-    gap: clamp(0.4rem, 1.6vh, 0.9rem);
+    gap: clamp(1.15rem, 3.8vh, 2.15rem);
   }
 
 
