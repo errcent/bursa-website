@@ -36,8 +36,8 @@ export function WaitlistTextureLayer({
   );
   const fromLead = useTransform(leadProgress ?? scrollYProgress, [0.4, 0.58, 0.86], [0, 0.34, 0.46]);
   const textureOpacity = useTransform(
-    leadProgress ? [fromSection, fromLead] : [fromSection],
-    (values) => Math.max(...values)
+    [fromSection, fromLead],
+    ([section, lead]: number[]) => Math.max(section, lead)
   );
   const scrollShift = useTransform(scrollYProgress, [0, 1], [2.6, -2.6]);
 
