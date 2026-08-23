@@ -558,6 +558,22 @@
     pointer-events: none;
   }
 
+  .landing-accent-run__texture {
+    position: absolute;
+    inset: -4%;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    will-change: transform, opacity;
+  }
+
+  .landing-accent-run__texture-img {
+    object-fit: cover;
+    object-position: center;
+    filter: grayscale(100%) contrast(1.18) brightness(0.68);
+  }
+
   .landing-accent-run__pin,
   .landing-accent-run > .section-closing,
   .landing-accent-run > section {
@@ -651,18 +667,18 @@
     left: 50%;
     top: 48%;
     z-index: 1;
-    width: min(120vw, 72rem);
-    height: min(96vw, 58rem);
+    width: min(124vw, 76rem);
+    height: min(100vw, 60rem);
     transform: translate(-50%, -50%);
     border-radius: 50%;
     pointer-events: none;
-    filter: blur(80px);
-    opacity: 0.28;
+    filter: blur(76px);
+    opacity: 0.34;
     mix-blend-mode: screen;
     background: radial-gradient(
       ellipse at 50% 48%,
-      color-mix(in srgb, var(--hero-accent) 36%, transparent) 0%,
-      color-mix(in srgb, var(--hero-accent) 16%, transparent) 46%,
+      color-mix(in srgb, var(--hero-accent) 40%, transparent) 0%,
+      color-mix(in srgb, var(--hero-accent) 18%, transparent) 46%,
       transparent 74%
     );
   }

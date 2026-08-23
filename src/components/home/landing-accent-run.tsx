@@ -17,7 +17,12 @@ import {
   useTransform,
 } from "motion/react";
 
-type WaitlistElement = ReactElement<{ pinRef?: Ref<HTMLDivElement | null> }>;
+import { WaitlistTextureLayer } from "@/components/home/waitlist-texture-layer";
+
+type WaitlistElement = ReactElement<{
+  pinRef?: Ref<HTMLDivElement | null>;
+  sectionRef?: Ref<HTMLElement | null>;
+}>;
 
 export function LandingAccentRun({
   pin,
@@ -29,6 +34,7 @@ export function LandingAccentRun({
   children: ReactNode;
 }) {
   const waitlistPinRef = useRef<HTMLDivElement>(null);
+  const waitlistSectionRef = useRef<HTMLElement>(null);
   const grainId = useId().replace(/:/g, "");
   const reduceMotion = useReducedMotion();
 
@@ -47,11 +53,14 @@ export function LandingAccentRun({
     [0, 0.18, 0.38, 0.58, 0.8, 1],
     [0, 3, 8, 15, 24, 32]
   );
-  const grainOpacity = useTransform(scrollYProgress, [0, 1], [0.015, 0.06]);
+  const grainOpacity = useTransform(scrollYProgress, [0, 1], [0.06, 0.18]);
   const runBg = useMotionTemplate`color-mix(in srgb, var(--hero-accent) ${canvasTint}%, var(--section-canvas))`;
 
   const waitlistNode = isValidElement(waitlist)
-    ? cloneElement(waitlist, { pinRef: waitlistPinRef })
+    ? cloneElement(waitlist, {
+        pinRef: waitlistPinRef,
+        sectionRef: waitlistSectionRef,
+      })
     : waitlist;
 
   return (
@@ -66,12 +75,24 @@ export function LandingAccentRun({
           : { backgroundColor: runBg }
       }
     >
-      {!reduceMotion ? (
-        <div className="landing-accent-run__wash" aria-hidden>
-          <span className="landing-accent-run__oval" />
+      <div
+        className={
+          reduceMotion
+            ? "landing-accent-run__wash landing-accent-run__wash--static"
+            : "landing-accent-run__wash"
+        }
+        aria-hidden
+      >
+        {reduceMotion ? (
+          <div className="landing-accent-run__rise-fill" />
+        ) : (
           <motion.div className="landing-accent-run__rise" style={{ y: riseY }}>
             <div className="landing-accent-run__rise-fill" />
           </motion.div>
+        )}
+        <WaitlistTextureLayer sectionRef={waitlistSectionRef} />
+        <span className="landing-accent-run__oval" />
+        {!reduceMotion ? (
           <motion.svg className="device-mockup-wash-grain" style={{ opacity: grainOpacity }}>
             <filter id={grainId}>
               <feTurbulence
@@ -81,19 +102,14 @@ export function LandingAccentRun({
                 stitchTiles="stitch"
               />
               <feComponentTransfer>
-                <feFuncA type="table" tableValues="0 0.85" />
+                <feFuncA type="table" tableValues="0 1" />
               </feComponentTransfer>
               <feColorMatrix type="saturate" values="0" />
             </filter>
             <rect width="100%" height="100%" filter={`url(#${grainId})`} />
           </motion.svg>
-        </div>
-      ) : (
-        <div className="landing-accent-run__wash landing-accent-run__wash--static" aria-hidden>
-          <span className="landing-accent-run__oval" />
-          <div className="landing-accent-run__rise-fill" />
-        </div>
-      )}
+        ) : null}
+      </div>
 
       <div className="landing-accent-run__pin">{pin}</div>
       {waitlistNode}

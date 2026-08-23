@@ -13,8 +13,10 @@ import { Button } from "@/components/ui/button";
 /** The single closing CTA of the landing page, waitlist-focused close. */
 export function ClosingCtaSection({
   pinRef,
+  sectionRef,
 }: {
   pinRef?: Ref<HTMLDivElement | null>;
+  sectionRef?: Ref<HTMLElement | null>;
 }) {
   const { session, isLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
@@ -34,7 +36,7 @@ export function ClosingCtaSection({
     : "Dapatkan kabar saat kelas dan mentor dibuka.";
 
   return (
-    <section className="section-closing relative">
+    <section ref={sectionRef} className="section-closing relative">
       <div className="section-closing__glow pointer-events-none absolute inset-0" aria-hidden />
       <div ref={pinRef} className="section-closing__pin">
         <div className="container-page relative z-10">
