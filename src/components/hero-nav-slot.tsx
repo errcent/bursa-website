@@ -7,6 +7,8 @@ import { HeroNavContext } from "@/components/hero-nav-context";
 
 /** Pixels over which dock → pin visuals ease in/out (bg opacity, search reveal). */
 const PIN_EASE_PX = 88;
+/** After the hero is this far above the pin line, skip per-tick style writes. */
+const PIN_FREEZE_PX = 80;
 
 const SEARCH_REVEAL_THRESHOLD = 0.58;
 const SEARCH_VISIBLE_THRESHOLD = 0.06;
@@ -70,9 +72,14 @@ export function HeroNavSlot({ children }: { children: React.ReactNode }) {
 
       const heroRect = hero.getBoundingClientRect();
       const dockTop = heroRect.bottom - navHeight;
+      const nextPinned = dockTop <= 0;
+
+      if (nextPinned && dockTop < -PIN_FREEZE_PX && pinnedRef.current) {
+        return;
+      }
+
       const progress = Math.min(1, Math.max(0, 1 - dockTop / PIN_EASE_PX));
       const nextTop = Math.max(0, dockTop);
-      const nextPinned = dockTop <= 0;
       const nextSearchVisible = progress > SEARCH_VISIBLE_THRESHOLD;
       const nextSearchReveal = progress > SEARCH_REVEAL_THRESHOLD;
 

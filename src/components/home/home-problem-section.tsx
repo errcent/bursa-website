@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useSyncExternalStore } from "react";
 import {
   motion,
   useReducedMotion,
@@ -32,6 +32,18 @@ const COPY = {
   close: "Kamu tahu harus mulai dari mana.",
 } as const;
 
+const STORY_LIFT_QUERY = "(max-width: 768px), (pointer: coarse)";
+
+function subscribeSkipStoryLift(onChange: () => void) {
+  const media = window.matchMedia(STORY_LIFT_QUERY);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
+
+function getSkipStoryLift() {
+  return window.matchMedia(STORY_LIFT_QUERY).matches;
+}
+
 function StoryProblem({
   text,
   opacity,
@@ -41,7 +53,7 @@ function StoryProblem({
 }: {
   text: string;
   opacity: MotionValue<number>;
-  y: MotionValue<number>;
+  y?: MotionValue<number>;
   strike: MotionValue<number>;
   mute: MotionValue<number>;
 }) {
@@ -52,7 +64,7 @@ function StoryProblem({
   );
 
   return (
-    <motion.p className="home-story__problem" style={{ opacity, y }}>
+    <motion.p className="home-story__problem" style={y ? { opacity, y } : { opacity }}>
       <motion.span
         className="home-story__problem-text"
         style={{ color: textColor, backgroundSize: strikeSize }}
@@ -70,10 +82,10 @@ function StorySolution({
 }: {
   step: (typeof SOLUTIONS)[number];
   opacity: MotionValue<number>;
-  y: MotionValue<number>;
+  y?: MotionValue<number>;
 }) {
   return (
-    <motion.p className="home-story__step" style={{ opacity, y }}>
+    <motion.p className="home-story__step" style={y ? { opacity, y } : { opacity }}>
       <span className="home-story__key">{step.key}</span>
       <span className="home-story__line">{step.line}</span>
     </motion.p>
@@ -151,6 +163,7 @@ function StoryStatic() {
 export function HomeProblemSection() {
   const trackRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
+  const skipLift = useSyncExternalStore(subscribeSkipStoryLift, getSkipStoryLift, () => false);
 
   const { scrollYProgress } = useScroll({
     target: trackRef,
@@ -226,7 +239,7 @@ export function HomeProblemSection() {
       <div className="home-story-sticky" aria-hidden>
         <div className="home-story-stage container-page">
           <div className="home-story-frame">
-            <StoryAct className="home-story-intro" opacity={introOpacity} y={introY}>
+            <StoryAct className="home-story-intro" opacity={introOpacity} y={skipLift ? undefined : introY}>
               <p className="home-story-folio">01</p>
               <p className="home-story-headline section-display-title">
                 {COPY.headline}
@@ -239,21 +252,21 @@ export function HomeProblemSection() {
               <StoryProblem
                 text={PROBLEMS[0]}
                 opacity={p1Opacity}
-                y={p1Y}
+                y={skipLift ? undefined : p1Y}
                 strike={p1Strike}
                 mute={p1Mute}
               />
               <StoryProblem
                 text={PROBLEMS[1]}
                 opacity={p2Opacity}
-                y={p2Y}
+                y={skipLift ? undefined : p2Y}
                 strike={p2Strike}
                 mute={p2Mute}
               />
               <StoryProblem
                 text={PROBLEMS[2]}
                 opacity={p3Opacity}
-                y={p3Y}
+                y={skipLift ? undefined : p3Y}
                 strike={p3Strike}
                 mute={p3Mute}
               />
@@ -263,16 +276,19 @@ export function HomeProblemSection() {
               className="home-story-solution home-story-solution--stay"
               style={{ opacity: solutionOpacity }}
             >
-              <motion.div className="home-story-act__inner" style={{ y: solutionY }}>
+              <motion.div
+                className="home-story-act__inner"
+                style={skipLift ? undefined : { y: solutionY }}
+              >
                 <p className="home-story-folio">03</p>
                 <p className="home-story-turn">{COPY.turn}</p>
                 <p className="home-story-headline section-display-title">
                   {COPY.close}
                 </p>
                 <div className="home-story-steps">
-                  <StorySolution step={SOLUTIONS[0]} opacity={s1Opacity} y={s1Y} />
-                  <StorySolution step={SOLUTIONS[1]} opacity={s2Opacity} y={s2Y} />
-                  <StorySolution step={SOLUTIONS[2]} opacity={s3Opacity} y={s3Y} />
+                  <StorySolution step={SOLUTIONS[0]} opacity={s1Opacity} y={skipLift ? undefined : s1Y} />
+                  <StorySolution step={SOLUTIONS[1]} opacity={s2Opacity} y={skipLift ? undefined : s2Y} />
+                  <StorySolution step={SOLUTIONS[2]} opacity={s3Opacity} y={skipLift ? undefined : s3Y} />
                 </div>
               </motion.div>
             </motion.div>
