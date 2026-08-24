@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Montserrat_Alternates } from "next/font/google";
-import { motion, useReducedMotion } from "motion/react";
+import { useReducedMotion } from "motion/react";
 
 import VaporizeTextCycle, { Tag } from "@/components/ui/vapour-text-effect";
 
@@ -16,7 +16,7 @@ const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
 const MIN_HOLD_MS = 450;
 const VAPORIZE_DURATION_S = 1.6;
 const FADE_IN_DURATION_S = 0.85;
-const OVERLAY_FADE_S = 0.42;
+const OVERLAY_FADE_S = 0.95;
 
 type IntroPreloaderProps = {
   onExitStart: () => void;
@@ -98,14 +98,13 @@ export function IntroPreloader({ onExitStart, onComplete }: IntroPreloaderProps)
   );
 
   return (
-    <motion.div
-      className={`intro-overlay fixed inset-0 z-[10000] flex items-center justify-center bg-black ${montAlt.className}`}
+    <div
+      className={`intro-overlay fixed inset-0 z-[10000] flex items-center justify-center bg-black ${montAlt.className}${
+        exiting ? " is-exiting" : ""
+      }`}
       role="status"
       aria-live="polite"
       aria-label="Memuat Bursa"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: exiting ? 0 : 1 }}
-      transition={{ duration: OVERLAY_FADE_S, ease: REVEAL_EASE }}
     >
       {prefersReducedMotion ? (
         <p className="text-[44px] font-bold tracking-[-0.02em] text-[#ededed] sm:text-[68px]">
@@ -133,7 +132,7 @@ export function IntroPreloader({ onExitStart, onComplete }: IntroPreloaderProps)
           />
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 

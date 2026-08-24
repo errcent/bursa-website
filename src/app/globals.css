@@ -481,6 +481,12 @@
     }
   }
 
+  @media (max-width: 768px), (pointer: coarse) {
+    .hero-nav-float {
+      display: none !important;
+    }
+  }
+
   /* Match `.nav-shell` padding exactly so pinned hero nav = Katalog dimensions. */
   .hero-nav-float--pad {
     padding-inline: max(0.75rem, env(safe-area-inset-left, 0px))
@@ -1000,6 +1006,54 @@
     background-color: transparent;
   }
 
+  .home-story-sticky--locked {
+    top: var(--site-header-offset);
+    height: calc(100vh - var(--site-header-offset));
+    max-height: calc(100vh - var(--site-header-offset));
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  @supports (height: 100svh) {
+    .home-story-sticky--locked {
+      height: calc(100svh - var(--site-header-offset));
+      max-height: calc(100svh - var(--site-header-offset));
+    }
+  }
+
+  .home-story-sticky--locked .home-story-stage {
+    padding-top: 1.25rem;
+  }
+
+  .home-story-sticky--locked .home-story-intro,
+  .home-story-sticky--locked .home-story-problems,
+  .home-story-sticky--locked .home-story-solution {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: none;
+  }
+
+  .home-story-sticky--locked .home-story-intro.is-on,
+  .home-story-sticky--locked .home-story-problems.is-on,
+  .home-story-sticky--locked .home-story-solution.is-on {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .home-story-sticky--locked .home-story__problem {
+    opacity: 0;
+  }
+
+  .home-story-sticky--locked .home-story__problem.is-on {
+    opacity: 1;
+  }
+
+  .home-story-sticky--locked .home-story__problem.is-struck .home-story__problem-text {
+    background-size: 100% 1.2px;
+    color: color-mix(in srgb, var(--foreground) 48%, transparent);
+  }
+
   .home-story-stage {
     position: relative;
     z-index: 1;
@@ -1150,18 +1204,6 @@
 
     .home-story-pin {
       min-height: 360vh;
-    }
-
-    .home-story-sticky {
-      height: 100vh;
-      max-height: 100vh;
-    }
-
-    @supports (height: 100svh) {
-      .home-story-sticky {
-        height: 100svh;
-        max-height: 100svh;
-      }
     }
 
     .home-story__step {
@@ -2123,6 +2165,13 @@
 
   .intro-overlay {
     backface-visibility: hidden;
+    opacity: 1;
+    transition: opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .intro-overlay.is-exiting {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .intro-overlay-radial-exit {

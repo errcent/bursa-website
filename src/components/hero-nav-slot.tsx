@@ -58,6 +58,7 @@ export function HeroNavSlot({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
+    if (window.matchMedia("(max-width: 768px), (pointer: coarse)").matches) return;
 
     const slot = slotRef.current;
     const inner = innerRef.current;
