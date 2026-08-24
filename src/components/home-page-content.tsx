@@ -3,7 +3,6 @@ import { DeviceMockupSection } from "@/components/home/device-mockup-section";
 import { HomeDiscoverSection } from "@/components/home/home-discover-section";
 import { HomeFaqSection } from "@/components/home/home-faq-section";
 import { HomeHeroSection } from "@/components/home/home-hero-section";
-import { HomeLandingLockNav } from "@/components/home/home-landing-lock-nav";
 import { HomeProblemSection } from "@/components/home/home-problem-section";
 import { LandingAccentRun } from "@/components/home/landing-accent-run";
 import { LandingStoryRun } from "@/components/home/landing-story-run";
@@ -22,7 +21,6 @@ export function HomePageContent({
       <Suspense fallback={null}>
         <LandingViewTracker page="/" />
       </Suspense>
-      <HomeLandingLockNav />
       <main className="landing-page flex-1 overflow-x-clip">
         <HomeHeroSection />
 

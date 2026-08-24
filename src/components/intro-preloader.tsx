@@ -99,19 +99,20 @@ export function IntroPreloader({ onExitStart, onComplete }: IntroPreloaderProps)
 
   return (
     <div
-      className={`intro-overlay fixed inset-0 z-[10000] flex items-center justify-center bg-black ${montAlt.className}${
+      className={`intro-overlay fixed inset-0 z-[10000] flex items-center justify-center ${montAlt.className}${
         exiting ? " is-exiting" : ""
       }`}
       role="status"
       aria-live="polite"
       aria-label="Memuat Bursa"
     >
-      {prefersReducedMotion ? (
-        <p className="text-[44px] font-bold tracking-[-0.02em] text-[#ededed] sm:text-[68px]">
+      <div className="intro-overlay-plate" aria-hidden />
+      {exiting ? null : prefersReducedMotion ? (
+        <p className="relative z-[1] text-[44px] font-bold tracking-[-0.02em] text-[#ededed] sm:text-[68px]">
           bursa
         </p>
       ) : (
-        <div className="h-[120px] w-full max-w-[min(92vw,36rem)] sm:h-[160px]">
+        <div className="relative z-[1] h-[120px] w-full max-w-[min(92vw,36rem)] sm:h-[160px]">
           <VaporizeTextCycle
             texts={["bursa"]}
             font={font}

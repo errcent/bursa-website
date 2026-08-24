@@ -481,12 +481,6 @@
     }
   }
 
-  @media (max-width: 768px), (pointer: coarse) {
-    .hero-nav-float {
-      display: none !important;
-    }
-  }
-
   /* Match `.nav-shell` padding exactly so pinned hero nav = Katalog dimensions. */
   .hero-nav-float--pad {
     padding-inline: max(0.75rem, env(safe-area-inset-left, 0px))
@@ -2165,13 +2159,23 @@
 
   .intro-overlay {
     backface-visibility: hidden;
+  }
+
+  .intro-overlay-plate {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: #000;
     opacity: 1;
     transition: opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .intro-overlay.is-exiting {
-    opacity: 0;
     pointer-events: none;
+  }
+
+  .intro-overlay.is-exiting .intro-overlay-plate {
+    opacity: 0;
   }
 
   .intro-overlay-radial-exit {

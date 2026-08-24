@@ -20,7 +20,6 @@ import {
 } from "@/components/motion/word-reveal";
 import { SiteNavbar } from "@/components/site-navbar";
 import { Button } from "@/components/ui/button";
-import { useLandingLock } from "@/components/home/use-landing-lock";
 
 const HERO_HEADLINE_LINES = ["Pelajari trading", "nyaman & terstruktur"] as const;
 const HERO_SUBCOPY =
@@ -46,8 +45,6 @@ export function HomeHeroSection() {
     getHeroSubcopyDelay,
     getHeroSubcopyDelaySSR
   );
-  const lockNav = useLandingLock();
-
   return (
     <section className="hero-cinematic hero-home-aurora hero-home-viewport relative flex min-h-[100dvh] flex-col">
       <HeroLivingBackground />
@@ -93,11 +90,9 @@ export function HomeHeroSection() {
         </div>
       </div>
 
-      {lockNav ? null : (
-        <HeroNavSlot>
-          <SiteNavbar layout="hero-anchor" />
-        </HeroNavSlot>
-      )}
+      <HeroNavSlot>
+        <SiteNavbar layout="hero-anchor" />
+      </HeroNavSlot>
     </section>
   );
 }
