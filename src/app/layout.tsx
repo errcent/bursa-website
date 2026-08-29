@@ -80,10 +80,10 @@ export default function RootLayout({
             <AuthProvider>
               <PreviewCatalogBanner />
               {children}
-              <CookieConsentBanner />
             </AuthProvider>
           </NextAuthProvider>
         </PreloaderGate>
+        <CookieConsentBanner />
       </body>
     </html>
   );

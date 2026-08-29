@@ -5,7 +5,6 @@ import { motion, type HTMLMotionProps, useReducedMotion } from "motion/react";
 
 import {
   snapInTransition,
-  snapRevealVariants,
   snapStaggerContainer,
   snapStaggerItem,
 } from "@/components/motion/snap";
@@ -94,10 +93,9 @@ export function RevealText({
   return (
     <motion.div
       className={cn(className)}
-      variants={snapRevealVariants}
-      initial="hidden"
-      animate="show"
-      transition={{ ...snapInTransition, delay }}
+      initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1], delay }}
     >
       {children}
     </motion.div>

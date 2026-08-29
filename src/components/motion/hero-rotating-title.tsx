@@ -3,10 +3,8 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
-import {
-  resolveHeroIntroDelay,
-  resolveHeroIntroDelaySSR,
-} from "@/components/motion/hero-intro-timing";
+import { HERO_HEADLINE_BASE_DELAY } from "@/components/motion/hero-intro-timing";
+import { useHeroIntroReady } from "@/components/motion/use-hero-intro-ready";
 import {
   tokenizeForReveal,
   WORD_REVEAL_DURATION,
@@ -18,17 +16,20 @@ import { cn } from "@/lib/utils";
 
 /**
  * Hero headline where the first line slowly cross-fades (with a soft blur)
- * between phrases while the second line stays fixed. Reads as one sentence:
- * e.g. "Pelajari trading" + "nyaman & terstruktur".
+ * between phrases while the second line stays fixed.
  *
- * The two lines are always stacked (top/bottom), never inline.
- * Initial load: both lines reveal word-by-word (continuous stagger across lines).
+ * Initial load: both lines reveal word-by-word. Rotation uses overlapping
+ * crossfade (no mode="wait") so phrases blend instead of cutting.
  */
 
 const PHRASES = ["Pelajari trading", "Mendalami trading", "Nikmati pembelajaran"];
 
-const ROTATE_INTERVAL_MS = 4200;
-const POST_REVEAL_HOLD_MS = 2400;
+const ROTATE_INTERVAL_MS = 4600;
+const POST_REVEAL_HOLD_MS = 2800;
+const CROSSFADE = {
+  duration: 1.45,
+  ease: [0.22, 1, 0.36, 1] as const,
+};
 
 function resolveLine2Delay(headlineDelay: number): number {
   const line1WordCount = tokenizeForReveal(PHRASES[0]).length;
@@ -45,6 +46,28 @@ function resolveInitialRevealEndMs(headlineDelay: number, staticLine: string): n
   return endSec * 1000 + POST_REVEAL_HOLD_MS;
 }
 
+function PhraseCrossfade({ index }: { index: number }) {
+  return (
+    <span className="relative block min-h-[1.15em]">
+      <span className="invisible block" aria-hidden>
+        {PHRASES[index]}
+      </span>
+      <AnimatePresence initial={false}>
+        <motion.span
+          key={index}
+          className="text-gradient absolute inset-x-0 top-0 block text-center"
+          initial={{ opacity: 0, filter: "blur(16px)", y: 12 }}
+          animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+          exit={{ opacity: 0, filter: "blur(16px)", y: -10 }}
+          transition={CROSSFADE}
+        >
+          {PHRASES[index]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
 export function HeroRotatingTitle({
   staticLine = "nyaman & terstruktur",
   className,
@@ -52,51 +75,48 @@ export function HeroRotatingTitle({
   staticLine?: string;
   className?: string;
 }) {
+  const introReady = useHeroIntroReady();
   const [index, setIndex] = useState(0);
-  const [initialRevealDone, setInitialRevealDone] = useState(false);
-  const [rotationStarted, setRotationStarted] = useState(false);
-  const [headlineDelay, setHeadlineDelay] = useState(resolveHeroIntroDelaySSR);
+  const [crossfadeReady, setCrossfadeReady] = useState(false);
+  const headlineDelay = HERO_HEADLINE_BASE_DELAY;
 
   useEffect(() => {
-    setHeadlineDelay(resolveHeroIntroDelay());
-  }, []);
-
-  useEffect(() => {
+    if (!introReady) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setInitialRevealDone(true);
+      setCrossfadeReady(true);
       return;
     }
 
     const revealEndMs = resolveInitialRevealEndMs(headlineDelay, staticLine);
     const revealTimer = window.setTimeout(() => {
-      setInitialRevealDone(true);
+      // Hand off at phrase 0 first so the next tick can crossfade 0 → 1.
+      setCrossfadeReady(true);
     }, revealEndMs);
 
     return () => window.clearTimeout(revealTimer);
-  }, [headlineDelay, staticLine]);
+  }, [introReady, headlineDelay, staticLine]);
 
   useEffect(() => {
-    if (!initialRevealDone) return;
+    if (!crossfadeReady) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const id = window.setInterval(
-      () =>
-        setIndex((prev) => {
-          setRotationStarted(true);
-          return (prev + 1) % PHRASES.length;
-        }),
-      ROTATE_INTERVAL_MS
-    );
+    const id = window.setInterval(() => {
+      setIndex((prev) => (prev + 1) % PHRASES.length);
+    }, ROTATE_INTERVAL_MS);
     return () => window.clearInterval(id);
-  }, [initialRevealDone]);
+  }, [crossfadeReady]);
 
   const line2Delay = resolveLine2Delay(headlineDelay);
-  const showInitialWordReveal = !initialRevealDone && index === 0;
+  const showWordReveal = introReady && !crossfadeReady;
 
   return (
     <h1 className={cn("page-hero-title", className)} aria-label={`${PHRASES[index]} ${staticLine}`}>
       <span className="block min-h-[1.15em]">
-        {showInitialWordReveal ? (
+        {!introReady ? (
+          <span className="text-gradient block opacity-0" aria-hidden>
+            {PHRASES[0]}
+          </span>
+        ) : showWordReveal ? (
           <WordReveal
             as="span"
             text={PHRASES[0]}
@@ -108,29 +128,15 @@ export function HeroRotatingTitle({
             intensity="headline"
             trigger="immediate"
           />
-        ) : initialRevealDone && rotationStarted ? (
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={index}
-              className="text-gradient block"
-              initial={{ opacity: 0, filter: "blur(14px)", y: 12 }}
-              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-              exit={{ opacity: 0, filter: "blur(14px)", y: -12 }}
-              transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {PHRASES[index]}
-            </motion.span>
-          </AnimatePresence>
-        ) : initialRevealDone ? (
-          <span className="text-gradient block">{PHRASES[0]}</span>
         ) : (
-          <span className="text-gradient block opacity-0" aria-hidden>
-            {PHRASES[0]}
-          </span>
+          <PhraseCrossfade index={index} />
         )}
-      </span>
-      {" "}
-      {showInitialWordReveal ? (
+      </span>{" "}
+      {!introReady ? (
+        <span className="text-gradient block opacity-0" aria-hidden>
+          {staticLine}
+        </span>
+      ) : showWordReveal ? (
         <WordReveal
           as="span"
           text={staticLine}
@@ -142,12 +148,8 @@ export function HeroRotatingTitle({
           intensity="headline"
           trigger="immediate"
         />
-      ) : initialRevealDone ? (
-        <span className="text-gradient block">{staticLine}</span>
       ) : (
-        <span className="text-gradient block opacity-0" aria-hidden>
-          {staticLine}
-        </span>
+        <span className="text-gradient block">{staticLine}</span>
       )}
     </h1>
   );

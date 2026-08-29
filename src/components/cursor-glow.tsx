@@ -1,15 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useReducedMotion } from "motion/react";
 
+/** Soft pointer wash — landing hero only. Hidden again when the landasan ring cursor is on. */
 export function CursorGlow() {
+  const pathname = usePathname();
   const prefersReducedMotion = useReducedMotion();
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [visible, setVisible] = useState(false);
 
+  const onLanding = pathname === "/";
+
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion || !onLanding) {
+      setVisible(false);
+      return;
+    }
 
     const onMove = (e: MouseEvent) => {
       setPos({ x: e.clientX, y: e.clientY });
@@ -23,9 +31,9 @@ export function CursorGlow() {
       window.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseleave", onLeave);
     };
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, onLanding]);
 
-  if (prefersReducedMotion || !visible) return null;
+  if (!onLanding || prefersReducedMotion || !visible) return null;
 
   return (
     <div

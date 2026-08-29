@@ -12,8 +12,8 @@ import {
 import { cn } from "@/lib/utils";
 
 export const WORD_REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
-export const WORD_REVEAL_STAGGER = 0.09;
-export const WORD_REVEAL_DURATION = 0.5;
+export const WORD_REVEAL_STAGGER = 0.1;
+export const WORD_REVEAL_DURATION = 0.62;
 
 /** Atom AI hero presets, headline: y10/blur10; body copy: y5/blur2. */
 export const WORD_REVEAL_PRESETS = {

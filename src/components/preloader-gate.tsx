@@ -8,6 +8,7 @@ import {
   INTRO_REVEAL_DURATION_S,
   INTRO_REVEAL_EASE,
 } from "@/components/intro-preloader";
+import { notifyIntroExitStart } from "@/components/motion/hero-intro-timing";
 
 const SESSION_KEY = "bursa-intro-seen";
 /** Hard cap so a stuck intro never leaves the page unresponsive. */
@@ -37,6 +38,7 @@ export function PreloaderGate({ children }: { children: React.ReactNode }) {
   useLayoutEffect(() => {
     if (prefersReducedMotion) {
       clearIntroPending();
+      notifyIntroExitStart();
       setPhase("done");
       setShowOverlay(false);
       return;
@@ -44,6 +46,7 @@ export function PreloaderGate({ children }: { children: React.ReactNode }) {
 
     if (!readShouldPlayIntro()) {
       clearIntroPending();
+      notifyIntroExitStart();
       setPhase("done");
       setShowOverlay(false);
       return;
@@ -62,10 +65,12 @@ export function PreloaderGate({ children }: { children: React.ReactNode }) {
   }, [phase]);
 
   const handleExitStart = useCallback(() => {
+    notifyIntroExitStart();
     setPhase("revealing");
   }, []);
 
   const handleIntroComplete = useCallback(() => {
+    notifyIntroExitStart();
     try {
       sessionStorage.setItem(SESSION_KEY, "1");
     } catch {
@@ -96,28 +101,16 @@ export function PreloaderGate({ children }: { children: React.ReactNode }) {
         data-app-content
         className="flex min-h-0 flex-1 flex-col"
         initial={false}
-        animate={
-          contentHidden
-            ? { opacity: 0, scale: 1.018, y: 8, filter: "blur(3px)" }
-            : contentAnimating
-              ? { opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }
-              : false
-        }
+        animate={{ opacity: contentHidden ? 0 : 1 }}
         transition={
-          contentAnimating
+          contentAnimating || contentHidden
             ? { duration: INTRO_REVEAL_DURATION_S, ease: INTRO_REVEAL_EASE }
             : { duration: 0 }
         }
-        style={
-          contentHidden || contentAnimating
-            ? {
-                pointerEvents: contentHidden ? "none" : undefined,
-                visibility: contentHidden ? "hidden" : "visible",
-                willChange: "transform, opacity, filter",
-                transform: "translateZ(0)",
-              }
-            : undefined
-        }
+        style={{
+          pointerEvents: contentHidden ? "none" : undefined,
+          visibility: contentHidden ? "hidden" : "visible",
+        }}
       >
         {children}
       </motion.div>

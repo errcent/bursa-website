@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
@@ -15,6 +16,7 @@ type ConsentState = "accepted" | "essential-only";
 
 export function CookieConsentBanner() {
   const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname() ?? "/";
   const locale = localeFromPathname(pathname);
   const hrefs = legalHrefsFor(locale);
@@ -40,6 +42,7 @@ export function CookieConsentBanner() {
         };
 
   useEffect(() => {
+    setMounted(true);
     try {
       if (!localStorage.getItem(STORAGE_KEY)) {
         setVisible(true);
@@ -59,13 +62,13 @@ export function CookieConsentBanner() {
     setVisible(false);
   }
 
-  if (!visible) return null;
+  if (!mounted || !visible) return null;
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-label={copy.aria}
-      className="fixed inset-x-0 bottom-0 z-[60] border-t border-border/80 bg-background/92 px-4 py-3 backdrop-blur-md sm:px-6"
+      className="pointer-events-auto fixed inset-x-0 bottom-0 z-[80] border-t border-border/80 bg-background/92 px-4 py-3 shadow-[0_-8px_32px_rgba(0,0,0,0.35)] backdrop-blur-md sm:px-6"
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
     >
       <div className="container-page flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
@@ -83,12 +86,7 @@ export function CookieConsentBanner() {
           <Button type="button" variant="ghost" size="sm" className="h-9 px-3" onClick={() => save("essential-only")}>
             {copy.essential}
           </Button>
-          <Button
-            type="button"
-            size="sm"
-            className="btn-primary h-9 px-4"
-            onClick={() => save("accepted")}
-          >
+          <Button type="button" size="sm" className="btn-primary h-9 px-4" onClick={() => save("accepted")}>
             {copy.accept}
           </Button>
           <button
@@ -101,6 +99,7 @@ export function CookieConsentBanner() {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
