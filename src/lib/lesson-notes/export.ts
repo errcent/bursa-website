@@ -1,16 +1,6 @@
-import {
-  Document,
-  HeadingLevel,
-  Packer,
-  Paragraph,
-  TextRun,
-  ExternalHyperlink,
-} from "docx";
-import { jsPDF } from "jspdf";
 import TurndownService from "turndown";
 
 export type NoteExportFormat = "md" | "docx" | "pdf" | "txt" | "notion";
-
 export interface NoteExportMeta {
   courseTitle: string;
   lessonTitle: string;
@@ -261,135 +251,131 @@ export function buildNotionMarkdownExport(content: string, meta: NoteExportMeta)
   return lines.join("\n");
 }
 
-function docxRunsFromInlines(inlines: InlineNode[]) {
-  const children: Array<TextRun | ExternalHyperlink> = [];
-  for (const node of inlines) {
-    if (node.type === "link") {
-      children.push(
-        new ExternalHyperlink({
-          children: [
-            new TextRun({
-              text: node.text,
-              bold: node.bold,
-              italics: node.italic,
-              underline: {},
-              color: "4A4D7A",
-              font: node.code ? "Consolas" : undefined,
-              size: node.code ? 18 : 22,
-            }),
-          ],
-          link: node.href,
-        })
-      );
-      continue;
-    }
-    children.push(
-      new TextRun({
-        text: node.text,
-        bold: node.bold,
-        italics: node.italic,
-        underline: node.underline ? {} : undefined,
-        font: node.code ? "Consolas" : undefined,
-        size: node.code ? 18 : 22,
-      })
-    );
-  }
-  return children;
-}
-
-function blocksToDocxParagraphs(blocks: BlockNode[]): Paragraph[] {
-  const paragraphs: Paragraph[] = [];
-
-  for (const block of blocks) {
-    if (block.type === "heading") {
-      paragraphs.push(
-        new Paragraph({
-          heading:
-            block.level === 1
-              ? HeadingLevel.HEADING_1
-              : block.level === 2
-                ? HeadingLevel.HEADING_2
-                : HeadingLevel.HEADING_3,
-          children: docxRunsFromInlines(block.inlines),
-          spacing: { before: 160, after: 80 },
-        })
-      );
-      continue;
-    }
-
-    if (block.type === "blockquote") {
-      paragraphs.push(
-        new Paragraph({
-          children: [
-            new TextRun({
-              text: inlinesToPlain(block.inlines),
-              italics: true,
-              color: "6B6B75",
-              size: 22,
-            }),
-          ],
-          indent: { left: 360 },
-          border: {
-            left: { color: "DFE0E8", space: 8, style: "single", size: 12 },
-          },
-          spacing: { before: 80, after: 80 },
-        })
-      );
-      continue;
-    }
-
-    if (block.type === "code-block") {
-      paragraphs.push(
-        new Paragraph({
-          children: [
-            new TextRun({
-              text: block.text,
-              font: "Consolas",
-              size: 18,
-            }),
-          ],
-          shading: { type: "clear", fill: "F3F4F8" },
-          spacing: { before: 80, after: 80 },
-        })
-      );
-      continue;
-    }
-
-    if (block.type === "list-item") {
-      const prefix = block.ordered ? `${block.index}. ` : "• ";
-      paragraphs.push(
-        new Paragraph({
-          children: [
-            new TextRun({ text: prefix, size: 22 }),
-            ...docxRunsFromInlines(block.inlines),
-          ],
-          indent: { left: 360 },
-          spacing: { before: 40, after: 40 },
-        })
-      );
-      continue;
-    }
-
-    paragraphs.push(
-      new Paragraph({
-        children: docxRunsFromInlines(block.inlines),
-        spacing: { before: 60, after: 60 },
-      })
-    );
-  }
-
-  return paragraphs;
-}
-
 export async function buildDocxBlob(content: string, meta: NoteExportMeta) {
-  const children: Paragraph[] = [
-    new Paragraph({
-      heading: HeadingLevel.TITLE,
-      children: [new TextRun({ text: `Catatan: ${meta.lessonTitle}`, bold: true, size: 32 })],
+  // Dynamic import: docx is ~300KB+, loaded only when user exports to docx (keep initial bundle lean)
+  const docx = await import("docx");
+  const { Document, Packer, Paragraph: DocxParagraph, TextRun: DocxTextRun, HeadingLevel: DocxHeadingLevel, ExternalHyperlink } = docx;
+
+  function docxRunsFromInlines(inlines: InlineNode[]) {
+    const runs: InstanceType<typeof DocxTextRun>[] = [];
+    for (const node of inlines) {
+      if (node.type === "link") {
+        runs.push(
+          new ExternalHyperlink({
+            link: node.href,
+            children: [
+              new DocxTextRun({
+                text: node.text,
+                color: "0B57D0",
+                underline: {},
+                bold: node.bold,
+                italics: node.italic,
+              }),
+            ],
+          }) as unknown as InstanceType<typeof DocxTextRun>,
+        );
+      } else {
+        runs.push(
+          new DocxTextRun({
+            text: node.text,
+            bold: node.bold,
+            italics: node.italic,
+            underline: node.underline ? {} : undefined,
+            font: node.code ? "Consolas" : undefined,
+            size: node.code ? 18 : 22,
+          }),
+        );
+      }
+    }
+    return runs;
+  }
+
+  function blocksToDocxParagraphs(blocks: BlockNode[]): InstanceType<typeof DocxParagraph>[] {
+    const paragraphs: InstanceType<typeof DocxParagraph>[] = [];
+    for (const block of blocks) {
+      if (block.type === "heading") {
+        paragraphs.push(
+          new DocxParagraph({
+            heading:
+              block.level === 1
+                ? DocxHeadingLevel.HEADING_1
+                : block.level === 2
+                  ? DocxHeadingLevel.HEADING_2
+                  : DocxHeadingLevel.HEADING_3,
+            children: docxRunsFromInlines(block.inlines),
+            spacing: { before: 160, after: 80 },
+          }),
+        );
+        continue;
+      }
+      if (block.type === "blockquote") {
+        paragraphs.push(
+          new DocxParagraph({
+            children: [
+              new DocxTextRun({
+                text: inlinesToPlain(block.inlines),
+                italics: true,
+                color: "6B6B75",
+                size: 22,
+              }),
+            ],
+            indent: { left: 360 },
+            border: {
+              left: { color: "DFE0E8", space: 8, style: "single", size: 12 },
+            },
+            spacing: { before: 80, after: 80 },
+          }),
+        );
+        continue;
+      }
+      if (block.type === "code-block") {
+        paragraphs.push(
+          new DocxParagraph({
+            children: [
+              new DocxTextRun({
+                text: block.text,
+                font: "Consolas",
+                size: 18,
+              }),
+            ],
+            shading: { type: "clear", fill: "F3F4F8" },
+            spacing: { before: 80, after: 80 },
+          }),
+        );
+        continue;
+      }
+      if (block.type === "list-item") {
+        const prefix = block.ordered ? `${block.index}. ` : "• ";
+        paragraphs.push(
+          new DocxParagraph({
+            children: [
+              new DocxTextRun({ text: prefix, size: 22 }),
+              ...docxRunsFromInlines(block.inlines),
+            ],
+            indent: { left: 360 },
+            spacing: { before: 40, after: 40 },
+          }),
+        );
+        continue;
+      }
+      paragraphs.push(
+        new DocxParagraph({
+          children: docxRunsFromInlines(block.inlines),
+          spacing: { before: 60, after: 60 },
+        }),
+      );
+    }
+    return paragraphs;
+  }
+
+  const children: InstanceType<typeof DocxParagraph>[] = [
+    new DocxParagraph({
+      heading: DocxHeadingLevel.TITLE,
+      children: [new DocxTextRun({ text: `Catatan: ${meta.lessonTitle}`, bold: true, size: 32 })],
     }),
-    new Paragraph({
+    new DocxParagraph({
       children: [
-        new TextRun({
+        new DocxTextRun({
           text: `Kelas: ${meta.courseTitle} · Diekspor ${(meta.exportedAt ?? new Date()).toLocaleString("id-ID")}`,
           color: "6B6B75",
           size: 20,
@@ -401,9 +387,9 @@ export async function buildDocxBlob(content: string, meta: NoteExportMeta) {
 
   if (!noteHasVisibleContent(content)) {
     children.push(
-      new Paragraph({
-        children: [new TextRun({ text: "Belum ada catatan.", italics: true })],
-      })
+      new DocxParagraph({
+        children: [new DocxTextRun({ text: "Belum ada catatan.", italics: true })],
+      }),
     );
   } else {
     children.push(...blocksToDocxParagraphs(parseBlocks(content)));
@@ -424,11 +410,12 @@ export async function buildDocxBlob(content: string, meta: NoteExportMeta) {
   return Packer.toBlob(doc);
 }
 
-function wrapText(doc: jsPDF, text: string, maxWidth: number) {
-  return doc.splitTextToSize(text, maxWidth) as string[];
-}
-
-export function buildPdfBlob(content: string, meta: NoteExportMeta) {
+export async function buildPdfBlob(content: string, meta: NoteExportMeta) {
+  // Dynamic import: jspdf is ~200KB+, loaded only when user exports to PDF
+  const { jsPDF } = await import("jspdf");
+  function wrapText(doc: InstanceType<typeof jsPDF>, text: string, maxWidth: number) {
+    return doc.splitTextToSize(text, maxWidth) as string[];
+  }
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -588,7 +575,7 @@ export async function downloadNotesExport(
   }
 
   if (format === "pdf") {
-    const blob = buildPdfBlob(content, withDate);
+    const blob = await buildPdfBlob(content, withDate);
     triggerDownload(blob, `${base}.pdf`);
   }
 }

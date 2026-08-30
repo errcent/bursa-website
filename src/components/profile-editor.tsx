@@ -3,16 +3,21 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Camera, Check, Loader2, Settings, Trash2, X } from "lucide-react";
+import dynamic from "next/dynamic";
 
 import { ConfirmDialog } from "@/components/admin/form-modal";
 import { useAuth } from "@/components/auth-provider";
-import { ProfileAvatarCropModal } from "@/components/profile-avatar-crop-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getConsumerRoleLabel } from "@/lib/auth/roles";
 import type { UserRole } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
+
+const ProfileAvatarCropModal = dynamic(
+  () => import("@/components/profile-avatar-crop-modal").then((m) => m.ProfileAvatarCropModal),
+  { ssr: false },
+);
 
 type ProfilePayload = {
   id: string;

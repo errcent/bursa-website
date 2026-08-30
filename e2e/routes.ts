@@ -3,12 +3,16 @@
  * Admin / developer routes are intentionally excluded.
  */
 
+export type AuditRole = "public" | "learner" | "mentor";
+
 export type AuditRoute = {
   path: string;
   /** Filename-safe slug for screenshots */
   slug: string;
   /** Requires authenticated session for a meaningful audit */
   gated?: boolean;
+  /** Role required to view the route; defaults to learner when gated, otherwise public */
+  role: AuditRole;
 };
 
 const LAB_TOOLS = [
@@ -47,7 +51,10 @@ const KEPERCAYAAN_SLUGS = [
   "faq",
 ] as const;
 
-function route(path: string, opts?: { gated?: boolean; slug?: string }): AuditRoute {
+function route(
+  path: string,
+  opts?: { gated?: boolean; slug?: string; role?: AuditRole },
+): AuditRoute {
   const derived =
     path
       .replace(/^\//, "")
@@ -55,7 +62,8 @@ function route(path: string, opts?: { gated?: boolean; slug?: string }): AuditRo
       .replace(/-+/g, "-")
       .replace(/^-|-$/g, "") || "home";
   const slug = opts?.slug ?? derived;
-  return { path, slug, gated: opts?.gated };
+  const role: AuditRole = opts?.role ?? (opts?.gated ? "learner" : "public");
+  return { path, slug, gated: opts?.gated, role };
 }
 
 export const AUDIT_ROUTES: AuditRoute[] = [
@@ -81,13 +89,23 @@ export const AUDIT_ROUTES: AuditRoute[] = [
   route("/verifikasi-email"),
 
   // Learner (gated)
-  route("/dashboard", { gated: true }),
-  route("/dashboard/tersimpan", { gated: true }),
-  route("/profil", { gated: true }),
-  route("/pengaturan", { gated: true }),
-  route("/pengaturan?tab=account", { gated: true, slug: "pengaturan-account" }),
-  route("/pengaturan?tab=devices", { gated: true, slug: "pengaturan-devices" }),
-  route("/pengaturan?tab=payment", { gated: true, slug: "pengaturan-payment" }),
+  route("/dashboard", { gated: true, role: "learner" }),
+  route("/dashboard/tersimpan", { gated: true, role: "learner" }),
+  route("/profil", { gated: true, role: "learner" }),
+  route("/pengaturan", { gated: true, role: "learner" }),
+  route("/pengaturan?tab=account", { gated: true, slug: "pengaturan-account", role: "learner" }),
+  route("/pengaturan?tab=devices", { gated: true, slug: "pengaturan-devices", role: "learner" }),
+  route("/pengaturan?tab=payment", { gated: true, slug: "pengaturan-payment", role: "learner" }),
+
+  // Mentor (gated, mentor role) — plan §2 signed-in mentor product surface
+  route("/mentor", { gated: true, role: "mentor" }),
+  route("/mentor/profil", { gated: true, role: "mentor" }),
+  route("/mentor/pengaturan", { gated: true, role: "mentor" }),
+  route("/mentor/usulan", { gated: true, role: "mentor" }),
+  route("/instruktur-dashboard", { gated: true, role: "mentor" }),
+  route("/instruktur-dashboard/profil", { gated: true, role: "mentor" }),
+  route("/instruktur-dashboard/course", { gated: true, role: "mentor" }),
+  route("/instruktur-dashboard/transaksi", { gated: true, role: "mentor" }),
 
   // Lab
   route("/lab"),

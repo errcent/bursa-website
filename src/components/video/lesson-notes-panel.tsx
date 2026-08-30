@@ -13,9 +13,7 @@ import {
   StickyNote,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-
 import { useAuth } from "@/components/auth-provider";
-import { NotesRichEditor } from "@/components/video/notes-rich-editor";
 import { Button } from "@/components/ui/button";
 import { buildLoginHref, resolvePostAuthRedirect, POST_AUTH_HOME } from "@/lib/auth/redirect";
 import {
@@ -26,6 +24,12 @@ import {
 import { mergeNotesContent, pickPrimaryNote } from "@/lib/lesson-notes/merge";
 import type { LessonNote } from "@/lib/lesson-notes/types";
 import { cn } from "@/lib/utils";
+import dynamic from "next/dynamic";
+
+const NotesRichEditor = dynamic(
+  () => import("@/components/video/notes-rich-editor").then((m) => m.NotesRichEditor),
+  { ssr: false, loading: () => <div className="min-h-[120px] animate-pulse rounded-md bg-muted" /> },
+);
 
 const AUTOSAVE_DELAY_MS = 1200;
 

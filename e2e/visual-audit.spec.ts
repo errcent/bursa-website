@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 
-import { AUDIT_ROUTES } from "./routes";
+import { AUDIT_ROUTES, type AuditRole } from "./routes";
 
 const SCREENSHOT_ROOT = path.join(__dirname, "screenshots");
 const META_ROOT = path.join(__dirname, "reports");
@@ -15,6 +15,7 @@ type RouteMeta = {
   slug: string;
   project: string;
   gated?: boolean;
+  role: AuditRole;
   authenticated: boolean;
   status: number | null;
   finalUrl: string;
@@ -141,6 +142,7 @@ test.describe("Visual audit capture", () => {
         slug: route.slug,
         project,
         gated: route.gated,
+        role: route.role,
         authenticated: hasAuth,
         status,
         finalUrl,
