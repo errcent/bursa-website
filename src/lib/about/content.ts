@@ -8,27 +8,10 @@ export const aboutHero = {
 export const aboutIntro = {
   title: "Tentang Bursa",
   paragraphs: [
-    "Bursa adalah platform edukasi trading di Indonesia. Satu tempat untuk kelas saham, crypto, dan forex — dengan progress tracking dan ruang diskusi per mentor.",
-    "Kamu pilih kelas yang dibutuhkan, bayar sekali, tanpa paket langganan bulanan.",
+    "Bursa adalah platform edukasi trading di Indonesia. Satu tempat untuk kelas saham, crypto, dan forex — dengan progress tracking dan ruang diskusi per mentor. Kamu pilih kelas yang dibutuhkan, bayar sekali, tanpa paket langganan bulanan.",
+    "Kami ingin jadi tempat belajar trading yang nyaman dan bisa dipercaya: mentor dicek, materi runut, struktur jelas. Arah jangka panjangnya sederhana — jadi platform edukasi trading premium di Indonesia yang menggabungkan kredibilitas, struktur, dan proses belajar yang enak diikuti.",
+    "Bursanalar didirikan oleh Fakhri Muzakki dan Esa Kaisar. Materi di sini untuk edukasi, bukan saran investasi. Trading berisiko — keputusan dan risiko ada di tanganmu.",
   ],
-};
-
-export const aboutMissionVision = {
-  mission: {
-    title: "Misi",
-    description:
-      "Tempat belajar trading yang nyaman dan bisa dipercaya — mentor dicek, materi runut, struktur jelas.",
-  },
-  vision: {
-    title: "Visi",
-    description:
-      "Platform edukasi trading premium di Indonesia yang menggabungkan kredibilitas, struktur, dan proses belajar yang nyaman.",
-  },
-};
-
-export const aboutFounders = {
-  title: "Pendiri",
-  body: "Bursanalar didirikan oleh Fakhri Muzakki dan Esa Kaisar.",
 };
 
 export const aboutFocus = [

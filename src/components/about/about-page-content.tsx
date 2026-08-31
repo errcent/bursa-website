@@ -6,12 +6,7 @@ import { Layers, ListOrdered, ShieldCheck } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-  aboutFocus,
-  aboutFounders,
-  aboutIntro,
-  aboutMissionVision,
-} from "@/lib/about/content";
+import { aboutFocus, aboutIntro } from "@/lib/about/content";
 
 const iconMap = {
   shield: ShieldCheck,
@@ -34,34 +29,6 @@ export function AboutPageContent() {
               {paragraph}
             </p>
           ))}
-        </Reveal>
-
-        <Stagger className="mt-10 grid gap-8 sm:grid-cols-2 sm:gap-10">
-          {[aboutMissionVision.mission, aboutMissionVision.vision].map((item) => (
-            <StaggerItem key={item.title}>
-              <div className="flex h-full flex-col gap-3 border-t border-border/70 pt-5">
-                <h3 className="font-heading text-lg font-semibold tracking-tight">{item.title}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
-              </div>
-            </StaggerItem>
-          ))}
-        </Stagger>
-
-        <Reveal delay={0.1} className="mt-10">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {aboutFounders.title}
-          </p>
-          <p className="section-copy mt-2 max-w-2xl text-foreground/85">{aboutFounders.body}</p>
-        </Reveal>
-
-        <Reveal delay={0.12} className="mt-8">
-          <div className="border-l-2 border-foreground/25 py-1 pl-4 sm:pl-5">
-            <p className="text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
-              <span className="font-medium text-foreground">Catatan:</span> Materi di Bursa
-              untuk edukasi, bukan saran investasi. Trading berisiko — keputusan dan risiko ada di
-              tanganmu.
-            </p>
-          </div>
         </Reveal>
       </section>
 
