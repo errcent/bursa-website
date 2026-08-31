@@ -28,6 +28,7 @@ export function HeroNavSlot({ children }: { children: React.ReactNode }) {
   const searchVisibleRef = useRef(false);
   const searchRevealedRef = useRef(false);
   const reservedHeightRef = useRef(0);
+  const frozenHeroHeightRef = useRef(0);
   const [hydrated, setHydrated] = useState(false);
   const [pinned, setPinned] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
@@ -66,12 +67,21 @@ export function HeroNavSlot({ children }: { children: React.ReactNode }) {
     const hero = slot.closest("section");
     if (!hero) return;
 
+    const freezeHeroHeight = () => {
+      const frozen = Math.max(480, Math.round(window.innerHeight));
+      frozenHeroHeightRef.current = frozen;
+      hero.style.setProperty("--hero-vh", `${frozen}px`);
+    };
+    freezeHeroHeight();
+
     const applyFrame = () => {
       const navHeight = reservedHeightRef.current;
       if (navHeight <= 0) return;
 
       const heroRect = hero.getBoundingClientRect();
-      const dockTop = heroRect.bottom - navHeight;
+      const heroHeight = frozenHeroHeightRef.current || heroRect.height;
+      // Frozen px height — not heroRect.bottom — so iOS dvh chrome resize does not move the dock.
+      const dockTop = heroRect.top + heroHeight - navHeight;
       const nextPinned = dockTop <= 0;
 
       if (nextPinned && dockTop < -PIN_FREEZE_PX && pinnedRef.current) {
@@ -95,11 +105,7 @@ export function HeroNavSlot({ children }: { children: React.ReactNode }) {
       const navGlass = inner.querySelector<HTMLElement>("[data-hero-nav-glass]");
       // Single glass path: strength 0→1 matches Katalog `.nav-glass` at 1, no class swap at pin.
       const glassStrength = nextPinned ? 1 : progress;
-      const blurPx = `${glassStrength * 24}px`;
       navGlass?.style.setProperty("--nav-glass-strength", String(glassStrength));
-      // Inline blur survives prod CSS minifier dropping unprefixed backdrop-filter next to -webkit-.
-      navGlass?.style.setProperty("backdrop-filter", `blur(${blurPx})`);
-      navGlass?.style.setProperty("-webkit-backdrop-filter", `blur(${blurPx})`);
 
       const searchSlot = inner.querySelector<HTMLElement>("[data-hero-nav-search]");
       searchSlot?.style.setProperty("--search-reveal", String(progress));
@@ -131,15 +137,19 @@ export function HeroNavSlot({ children }: { children: React.ReactNode }) {
 
     scheduleFrame();
     window.addEventListener("scroll", scheduleFrame, { passive: true });
-    window.addEventListener("resize", scheduleFrame);
-    window.visualViewport?.addEventListener("resize", scheduleFrame);
-    window.visualViewport?.addEventListener("scroll", scheduleFrame);
+    window.addEventListener("resize", () => {
+      freezeHeroHeight();
+      scheduleFrame();
+    });
+    window.addEventListener("orientationchange", () => {
+      freezeHeroHeight();
+      scheduleFrame();
+    });
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener("scroll", scheduleFrame);
       window.removeEventListener("resize", scheduleFrame);
-      window.visualViewport?.removeEventListener("resize", scheduleFrame);
-      window.visualViewport?.removeEventListener("scroll", scheduleFrame);
+      window.removeEventListener("orientationchange", scheduleFrame);
     };
   }, [hydrated]);
 

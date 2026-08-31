@@ -37,7 +37,7 @@ export function HomeHeroSection() {
   const ctaDelay = subcopyDelay + 0.32;
 
   return (
-    <section className="hero-cinematic hero-home-aurora hero-home-viewport relative flex min-h-[100dvh] flex-col">
+    <section className="hero-cinematic hero-home-aurora hero-home-viewport relative flex flex-col">
       <HeroLivingBackground />
 
       <div aria-hidden className="hero-text-scrim pointer-events-none absolute inset-0 z-[1]" />

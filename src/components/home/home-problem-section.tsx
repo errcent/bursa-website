@@ -243,11 +243,14 @@ function syncProblemLines(
 
 /** Lock pin height to px on mount so iOS chrome resize does not shrink/grow the stage. */
 function useFrozenStoryPinHeight(trackRef: RefObject<HTMLElement | null>) {
+  const pinHRef = useRef(0);
+
   useLayoutEffect(() => {
     const apply = () => {
       const track = trackRef.current;
       if (!track) return;
       const pinH = Math.max(320, Math.round(window.innerHeight));
+      pinHRef.current = pinH;
       track.style.setProperty("--story-pin-h", `${pinH}px`);
     };
 
@@ -255,11 +258,65 @@ function useFrozenStoryPinHeight(trackRef: RefObject<HTMLElement | null>) {
     window.addEventListener("orientationchange", apply);
     return () => window.removeEventListener("orientationchange", apply);
   }, [trackRef]);
+
+  return pinHRef;
+}
+
+/**
+ * iOS sticky compositor jitter: pin with fixed/absolute + in-flow spacer (Discover overlap stays stable).
+ */
+function useMobileStoryPin(
+  trackRef: RefObject<HTMLElement | null>,
+  stickyRef: RefObject<HTMLDivElement | null>,
+  spacerRef: RefObject<HTMLDivElement | null>,
+  pinHRef: RefObject<number>
+) {
+  useEffect(() => {
+    const sync = () => {
+      const track = trackRef.current;
+      const sticky = stickyRef.current;
+      const spacer = spacerRef.current;
+      if (!track || !sticky || !spacer) return;
+
+      const pinH = pinHRef.current || Math.max(320, Math.round(window.innerHeight));
+      const trackTop = track.getBoundingClientRect().top;
+      const trackBottom = track.getBoundingClientRect().bottom;
+
+      const isFixed = trackTop <= 0 && trackBottom > pinH + 1;
+      const isReleased = trackBottom <= pinH + 1;
+
+      sticky.classList.toggle("is-pin-fixed", isFixed);
+      sticky.classList.toggle("is-pin-released", isReleased);
+      spacer.style.height = isFixed ? `${pinH}px` : "0px";
+    };
+
+    let rafId = 0;
+    const schedule = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        sync();
+      });
+    };
+
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    window.addEventListener("orientationchange", schedule);
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("orientationchange", schedule);
+    };
+  }, [trackRef, stickyRef, spacerRef, pinHRef]);
 }
 
 /** Mobile/coarse: sticky stage, threshold classes via DOM (no React setState per scroll). */
 function LockedStory() {
   const trackRef = useRef<HTMLElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+  const spacerRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const problemsRef = useRef<HTMLDivElement>(null);
   const solutionRef = useRef<HTMLDivElement>(null);
@@ -268,7 +325,8 @@ function LockedStory() {
   const linesRef = useRef(0);
   const strikesRef = useRef(0);
 
-  useFrozenStoryPinHeight(trackRef);
+  const pinHRef = useFrozenStoryPinHeight(trackRef);
+  useMobileStoryPin(trackRef, stickyRef, spacerRef, pinHRef);
 
   const { scrollYProgress } = useScroll({
     target: trackRef,
@@ -310,7 +368,8 @@ function LockedStory() {
     >
       <StorySrOnly />
       <div className="home-story-pin">
-        <div className="home-story-sticky home-story-sticky--locked" aria-hidden>
+        <div ref={spacerRef} className="home-story-pin-spacer" aria-hidden />
+        <div ref={stickyRef} className="home-story-sticky home-story-sticky--locked" aria-hidden>
           <div className="home-story-stage container-page">
             <div className="home-story-frame">
               <div ref={introRef} className="home-story-intro">
