@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type RefObject } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -241,6 +241,26 @@ function syncProblemLines(
   });
 }
 
+/** Lock pin height to px on mount so iOS chrome resize does not shrink/grow the stage. */
+function useFrozenStoryPinHeight(trackRef: RefObject<HTMLElement | null>) {
+  useLayoutEffect(() => {
+    const apply = () => {
+      const track = trackRef.current;
+      if (!track) return;
+      const headerPx =
+        Number.parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue("--site-header-offset")
+        ) || 0;
+      const pinH = Math.max(320, Math.round(window.innerHeight - headerPx));
+      track.style.setProperty("--story-pin-h", `${pinH}px`);
+    };
+
+    apply();
+    window.addEventListener("orientationchange", apply);
+    return () => window.removeEventListener("orientationchange", apply);
+  }, [trackRef]);
+}
+
 /** Mobile/coarse: sticky stage, threshold classes via DOM (no React setState per scroll). */
 function LockedStory() {
   const trackRef = useRef<HTMLElement>(null);
@@ -251,6 +271,8 @@ function LockedStory() {
   const actRef = useRef(0);
   const linesRef = useRef(0);
   const strikesRef = useRef(0);
+
+  useFrozenStoryPinHeight(trackRef);
 
   const { scrollYProgress } = useScroll({
     target: trackRef,

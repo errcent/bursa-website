@@ -1003,16 +1003,9 @@
 
   .home-story-sticky--locked {
     top: var(--site-header-offset);
-    height: calc(100vh - var(--site-header-offset));
-    max-height: calc(100vh - var(--site-header-offset));
+    height: var(--story-pin-h, calc(100vh - var(--site-header-offset)));
+    max-height: var(--story-pin-h, calc(100vh - var(--site-header-offset)));
     backface-visibility: hidden;
-  }
-
-  @supports (height: 100svh) {
-    .home-story-sticky--locked {
-      height: calc(100svh - var(--site-header-offset));
-      max-height: calc(100svh - var(--site-header-offset));
-    }
   }
 
   .home-story-sticky--locked .home-story-stage {
@@ -1202,6 +1195,21 @@
 
     .home-story-pin {
       min-height: 360vh;
+    }
+
+    /* Frozen pin height + no act transitions: stop iOS address-bar resize jitter. */
+    .home-story-sticky--locked .home-story-intro,
+    .home-story-sticky--locked .home-story-problems,
+    .home-story-sticky--locked .home-story-solution {
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: clamp(1.25rem, 14vh, 4.5rem);
+      transition: none;
+    }
+
+    .home-story-sticky--locked .home-story__problem,
+    .home-story-sticky--locked .home-story__problem.is-struck .home-story__problem-text {
+      transition: none;
     }
 
     .home-story__step {
