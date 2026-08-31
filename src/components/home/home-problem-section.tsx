@@ -45,31 +45,42 @@ function getSkipStoryLift() {
   return window.matchMedia(STORY_LIFT_QUERY).matches;
 }
 
-/** Hysteresis so rubber-band scroll near a threshold cannot flap acts. */
+/**
+ * Hysteresis so rubber-band scroll near a threshold cannot flap acts.
+ * Fast jumps still land on act 1 when crossing the mid band (never skip 02).
+ */
 function resolveLockedAct(value: number, prev: number) {
-  if (prev === 0) return value >= 0.17 ? (value >= 0.61 ? 2 : 1) : 0;
+  if (prev === 0) {
+    if (value < 0.16) return 0;
+    if (value < 0.62) return 1;
+    return 2;
+  }
   if (prev === 1) {
-    if (value < 0.145) return 0;
-    if (value >= 0.61) return 2;
+    if (value < 0.13) return 0;
+    if (value >= 0.64) return 2;
     return 1;
   }
-  if (value < 0.575) return value < 0.145 ? 0 : 1;
+  if (value < 0.58) return value < 0.13 ? 0 : 1;
   return 2;
 }
 
-function resolveLockedLines(value: number, prev: number) {
+function resolveLockedLines(value: number, prev: number, act: number) {
+  // Act 02 must never look empty: at least the first problem line is on.
+  if (act === 1 && prev < 1) return Math.max(1, prev);
+
   if (prev <= 0) return value >= 0.19 ? (value >= 0.35 ? (value >= 0.49 ? 3 : 2) : 1) : 0;
   if (prev === 1) {
+    if (act === 1 && value < 0.17) return 1;
     if (value < 0.17) return 0;
     if (value >= 0.35) return value >= 0.49 ? 3 : 2;
     return 1;
   }
   if (prev === 2) {
-    if (value < 0.33) return value < 0.17 ? 0 : 1;
+    if (value < 0.33) return value < 0.17 ? (act === 1 ? 1 : 0) : 1;
     if (value >= 0.49) return 3;
     return 2;
   }
-  if (value < 0.47) return value < 0.33 ? (value < 0.17 ? 0 : 1) : 2;
+  if (value < 0.47) return value < 0.33 ? (value < 0.17 ? (act === 1 ? 1 : 0) : 1) : 2;
   return 3;
 }
 
@@ -92,13 +103,11 @@ function resolveLockedStrikes(value: number, prev: number) {
 function StoryProblem({
   text,
   opacity,
-  y,
   strike,
   mute,
 }: {
   text: string;
   opacity: MotionValue<number>;
-  y?: MotionValue<number>;
   strike: MotionValue<number>;
   mute: MotionValue<number>;
 }) {
@@ -109,7 +118,7 @@ function StoryProblem({
   );
 
   return (
-    <motion.p className="home-story__problem" style={y ? { opacity, y } : { opacity }}>
+    <motion.p className="home-story__problem" style={{ opacity }}>
       <motion.span
         className="home-story__problem-text"
         style={{ color: textColor, backgroundSize: strikeSize }}
@@ -123,14 +132,12 @@ function StoryProblem({
 function StorySolution({
   step,
   opacity,
-  y,
 }: {
   step: (typeof SOLUTIONS)[number];
   opacity: MotionValue<number>;
-  y?: MotionValue<number>;
 }) {
   return (
-    <motion.p className="home-story__step" style={y ? { opacity, y } : { opacity }}>
+    <motion.p className="home-story__step" style={{ opacity }}>
       <span className="home-story__key">{step.key}</span>
       <span className="home-story__line">{step.line}</span>
     </motion.p>
@@ -140,21 +147,17 @@ function StorySolution({
 function StoryAct({
   className,
   opacity,
-  y,
   children,
 }: {
   className: string;
   opacity: MotionValue<number>;
-  y?: MotionValue<number>;
   children: React.ReactNode;
 }) {
   const visibility = useTransform(opacity, (value) => (value <= 0.04 ? "hidden" : "visible"));
 
   return (
     <motion.div className={className} style={{ opacity, visibility }}>
-      <motion.div className="home-story-act__inner" style={y ? { y } : undefined}>
-        {children}
-      </motion.div>
+      <div className="home-story-act__inner">{children}</div>
     </motion.div>
   );
 }
@@ -227,6 +230,17 @@ function StorySrOnly() {
   );
 }
 
+function syncProblemLines(
+  nodes: (HTMLParagraphElement | null)[],
+  lines: number,
+  strikes: number
+) {
+  nodes.forEach((node, index) => {
+    node?.classList.toggle("is-on", lines > index);
+    node?.classList.toggle("is-struck", strikes > index);
+  });
+}
+
 /** Mobile/coarse: sticky stage, threshold classes via DOM (no React setState per scroll). */
 function LockedStory() {
   const trackRef = useRef<HTMLElement>(null);
@@ -249,8 +263,11 @@ function LockedStory() {
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     const nextAct = resolveLockedAct(value, actRef.current);
-    const nextLines = resolveLockedLines(value, linesRef.current);
-    const nextStrikes = resolveLockedStrikes(value, strikesRef.current);
+    let nextLines = resolveLockedLines(value, linesRef.current, nextAct);
+    if (nextAct === 1) nextLines = Math.max(1, nextLines);
+    if (nextAct !== 1) nextLines = nextAct === 0 ? 0 : 3;
+    const nextStrikes =
+      nextAct === 1 ? resolveLockedStrikes(value, strikesRef.current) : nextAct === 2 ? 3 : 0;
 
     if (actRef.current !== nextAct) {
       actRef.current = nextAct;
@@ -259,18 +276,10 @@ function LockedStory() {
       solutionRef.current?.classList.toggle("is-on", nextAct === 2);
     }
 
-    if (linesRef.current !== nextLines) {
+    if (linesRef.current !== nextLines || strikesRef.current !== nextStrikes) {
       linesRef.current = nextLines;
-      problemLineRefs.current.forEach((node, index) => {
-        node?.classList.toggle("is-on", nextLines > index);
-      });
-    }
-
-    if (strikesRef.current !== nextStrikes) {
       strikesRef.current = nextStrikes;
-      problemLineRefs.current.forEach((node, index) => {
-        node?.classList.toggle("is-struck", nextStrikes > index);
-      });
+      syncProblemLines(problemLineRefs.current, nextLines, nextStrikes);
     }
   });
 
@@ -343,7 +352,6 @@ function DesktopStory() {
   });
 
   const introOpacity = useTransform(scrollYProgress, [0, 0.12, 0.145], [1, 1, 0]);
-  const introY = useTransform(scrollYProgress, [0, 0.12, 0.145], [0, 0, -12]);
 
   const problemStageOpacity = useTransform(
     scrollYProgress,
@@ -352,30 +360,23 @@ function DesktopStory() {
   );
 
   const p1Opacity = useTransform(scrollYProgress, [0.16, 0.185, 0.575, 0.6], [0, 1, 1, 0]);
-  const p1Y = useTransform(scrollYProgress, [0.16, 0.185], [12, 0]);
   const p1Strike = useTransform(scrollYProgress, [0.27, 0.29], [0, 1]);
   const p1Mute = useTransform(scrollYProgress, [0.27, 0.29], [1, 0.48]);
 
   const p2Opacity = useTransform(scrollYProgress, [0.32, 0.345, 0.575, 0.6], [0, 1, 1, 0]);
-  const p2Y = useTransform(scrollYProgress, [0.32, 0.345], [12, 0]);
   const p2Strike = useTransform(scrollYProgress, [0.42, 0.44], [0, 1]);
   const p2Mute = useTransform(scrollYProgress, [0.42, 0.44], [1, 0.48]);
 
   const p3Opacity = useTransform(scrollYProgress, [0.46, 0.485, 0.575, 0.6], [0, 1, 1, 0]);
-  const p3Y = useTransform(scrollYProgress, [0.46, 0.485], [12, 0]);
   const p3Strike = useTransform(scrollYProgress, [0.54, 0.56], [0, 1]);
   const p3Mute = useTransform(scrollYProgress, [0.54, 0.56], [1, 0.48]);
 
   const solutionOpacity = useTransform(scrollYProgress, [0, 0.6, 0.66, 1], [0, 0, 1, 1]);
-  const solutionY = useTransform(scrollYProgress, [0.6, 0.66], [12, 0]);
   const cursorProgress = useTransform(scrollYProgress, [0, 0.66], [0, 1]);
 
   const s1Opacity = useTransform(scrollYProgress, [0, 0.64, 0.68, 1], [0, 0, 1, 1]);
-  const s1Y = useTransform(scrollYProgress, [0.64, 0.68], [10, 0]);
   const s2Opacity = useTransform(scrollYProgress, [0, 0.67, 0.705, 1], [0, 0, 1, 1]);
-  const s2Y = useTransform(scrollYProgress, [0.67, 0.705], [10, 0]);
   const s3Opacity = useTransform(scrollYProgress, [0, 0.7, 0.735, 1], [0, 0, 1, 1]);
-  const s3Y = useTransform(scrollYProgress, [0.7, 0.735], [10, 0]);
 
   return (
     <section
@@ -390,7 +391,7 @@ function DesktopStory() {
         <div className="home-story-sticky" aria-hidden>
           <div className="home-story-stage container-page">
             <div className="home-story-frame">
-              <StoryAct className="home-story-intro" opacity={introOpacity} y={introY}>
+              <StoryAct className="home-story-intro" opacity={introOpacity}>
                 <p className="home-story-folio">01</p>
                 <p className="home-story-headline section-display-title">{COPY.headline}</p>
                 <p className="section-copy home-story-lede">{COPY.lede}</p>
@@ -401,21 +402,18 @@ function DesktopStory() {
                 <StoryProblem
                   text={PROBLEMS[0]}
                   opacity={p1Opacity}
-                  y={p1Y}
                   strike={p1Strike}
                   mute={p1Mute}
                 />
                 <StoryProblem
                   text={PROBLEMS[1]}
                   opacity={p2Opacity}
-                  y={p2Y}
                   strike={p2Strike}
                   mute={p2Mute}
                 />
                 <StoryProblem
                   text={PROBLEMS[2]}
                   opacity={p3Opacity}
-                  y={p3Y}
                   strike={p3Strike}
                   mute={p3Mute}
                 />
@@ -425,16 +423,16 @@ function DesktopStory() {
                 className="home-story-solution home-story-solution--stay"
                 style={{ opacity: solutionOpacity }}
               >
-                <motion.div className="home-story-act__inner" style={{ y: solutionY }}>
+                <div className="home-story-act__inner">
                   <p className="home-story-folio">03</p>
                   <p className="home-story-turn">{COPY.turn}</p>
                   <p className="home-story-headline section-display-title">{COPY.close}</p>
                   <div className="home-story-steps">
-                    <StorySolution step={SOLUTIONS[0]} opacity={s1Opacity} y={s1Y} />
-                    <StorySolution step={SOLUTIONS[1]} opacity={s2Opacity} y={s2Y} />
-                    <StorySolution step={SOLUTIONS[2]} opacity={s3Opacity} y={s3Y} />
+                    <StorySolution step={SOLUTIONS[0]} opacity={s1Opacity} />
+                    <StorySolution step={SOLUTIONS[1]} opacity={s2Opacity} />
+                    <StorySolution step={SOLUTIONS[2]} opacity={s3Opacity} />
                   </div>
-                </motion.div>
+                </div>
               </motion.div>
             </div>
           </div>

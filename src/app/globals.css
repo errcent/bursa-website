@@ -995,43 +995,35 @@
     top: 0;
     z-index: 2;
     display: flex;
-    height: 100dvh;
-    max-height: 100dvh;
+    height: 100vh;
+    max-height: 100vh;
     overflow: hidden;
     background-color: transparent;
-  }
-
-  .home-story-sticky--locked {
-    top: var(--site-header-offset);
-    height: calc(100vh - var(--site-header-offset));
-    max-height: calc(100vh - var(--site-header-offset));
-    /* Avoid translateZ — it creates a layer that fights sticky compositing on mobile. */
     backface-visibility: hidden;
   }
 
   @supports (height: 100svh) {
-    .home-story-sticky--locked {
-      height: calc(100svh - var(--site-header-offset));
-      max-height: calc(100svh - var(--site-header-offset));
+    .home-story-sticky {
+      height: 100svh;
+      max-height: 100svh;
     }
   }
 
-  .home-story-sticky--locked .home-story-stage {
-    padding-top: 1.25rem;
-  }
-
+  /* Locked = same pin geometry; act visibility is class-driven on mobile/coarse. */
   .home-story-sticky--locked .home-story-intro,
   .home-story-sticky--locked .home-story-problems,
   .home-story-sticky--locked .home-story-solution {
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.28s ease;
+    transition: opacity 0.28s ease, visibility 0.28s ease;
   }
 
   .home-story-sticky--locked .home-story-intro.is-on,
   .home-story-sticky--locked .home-story-problems.is-on,
   .home-story-sticky--locked .home-story-solution.is-on {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
   }
 
