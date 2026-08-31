@@ -35,6 +35,36 @@ const COPY = {
 
 const STORY_LIFT_QUERY = "(max-width: 768px), (pointer: coarse)";
 
+// #region agent log
+function agentDebugLog(payload: {
+  hypothesisId: string;
+  location: string;
+  message: string;
+  data?: Record<string, unknown>;
+  runId?: string;
+}) {
+  const body = JSON.stringify({
+    sessionId: "5402e1",
+    runId: payload.runId ?? "pre-fix",
+    hypothesisId: payload.hypothesisId,
+    location: payload.location,
+    message: payload.message,
+    data: payload.data ?? {},
+    timestamp: Date.now(),
+  });
+  const headers = {
+    "Content-Type": "application/json",
+    "X-Debug-Session-Id": "5402e1",
+  };
+  fetch("/api/agent-debug-5402e1", { method: "POST", headers, body }).catch(() => {});
+  fetch("http://127.0.0.1:7530/ingest/c33c766e-e1bb-4e60-96df-20dc44d9761c", {
+    method: "POST",
+    headers,
+    body,
+  }).catch(() => {});
+}
+// #endregion
+
 function subscribeSkipStoryLift(onChange: () => void) {
   const media = window.matchMedia(STORY_LIFT_QUERY);
   media.addEventListener("change", onChange);
@@ -244,6 +274,7 @@ function syncProblemLines(
 /** Mobile/coarse: sticky stage, threshold classes via DOM (no React setState per scroll). */
 function LockedStory() {
   const trackRef = useRef<HTMLElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const problemsRef = useRef<HTMLDivElement>(null);
   const solutionRef = useRef<HTMLDivElement>(null);
@@ -251,6 +282,12 @@ function LockedStory() {
   const actRef = useRef(0);
   const linesRef = useRef(0);
   const strikesRef = useRef(0);
+  // #region agent log
+  const debugLastSampleRef = useRef(0);
+  const debugPrevStickyTopRef = useRef<number | null>(null);
+  const debugPrevFolioTopRef = useRef<number | null>(null);
+  const debugActFlipsRef = useRef(0);
+  // #endregion
 
   const { scrollYProgress } = useScroll({
     target: trackRef,
@@ -260,6 +297,23 @@ function LockedStory() {
   useEffect(() => {
     introRef.current?.classList.add("is-on");
   }, []);
+
+  // #region agent log
+  useEffect(() => {
+    agentDebugLog({
+      hypothesisId: "E",
+      location: "home-problem-section.tsx:LockedStory:mount",
+      message: "LockedStory mounted (mobile/coarse path)",
+      data: {
+        mq: window.matchMedia(STORY_LIFT_QUERY).matches,
+        ua: navigator.userAgent.slice(0, 120),
+        innerH: window.innerHeight,
+        vvH: window.visualViewport?.height ?? null,
+        vvOffsetTop: window.visualViewport?.offsetTop ?? null,
+      },
+    });
+  }, []);
+  // #endregion
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     const nextAct = resolveLockedAct(value, actRef.current);
@@ -271,6 +325,15 @@ function LockedStory() {
 
     if (actRef.current !== nextAct) {
       actRef.current = nextAct;
+      // #region agent log
+      debugActFlipsRef.current += 1;
+      agentDebugLog({
+        hypothesisId: "C",
+        location: "home-problem-section.tsx:LockedStory:actFlip",
+        message: "act class flip",
+        data: { progress: value, nextAct, flips: debugActFlipsRef.current },
+      });
+      // #endregion
       introRef.current?.classList.toggle("is-on", nextAct === 0);
       problemsRef.current?.classList.toggle("is-on", nextAct === 1);
       solutionRef.current?.classList.toggle("is-on", nextAct === 2);
@@ -281,6 +344,55 @@ function LockedStory() {
       strikesRef.current = nextStrikes;
       syncProblemLines(problemLineRefs.current, nextLines, nextStrikes);
     }
+
+    // #region agent log
+    const now = Date.now();
+    if (now - debugLastSampleRef.current >= 120) {
+      debugLastSampleRef.current = now;
+      const sticky = stickyRef.current;
+      const folio = sticky?.querySelector(".is-on .home-story-folio, .home-story-folio");
+      const stickyRect = sticky?.getBoundingClientRect();
+      const folioRect = folio?.getBoundingClientRect();
+      const cs = sticky ? getComputedStyle(sticky) : null;
+      const stickyTop = stickyRect?.top ?? null;
+      const folioTop = folioRect?.top ?? null;
+      const stickyDelta =
+        stickyTop != null && debugPrevStickyTopRef.current != null
+          ? stickyTop - debugPrevStickyTopRef.current
+          : 0;
+      const folioDelta =
+        folioTop != null && debugPrevFolioTopRef.current != null
+          ? folioTop - debugPrevFolioTopRef.current
+          : 0;
+      if (stickyTop != null) debugPrevStickyTopRef.current = stickyTop;
+      if (folioTop != null) debugPrevFolioTopRef.current = folioTop;
+      const midPin = value > 0.02 && value < 0.98;
+      const moved = Math.abs(stickyDelta) > 0.4 || Math.abs(folioDelta) > 0.4;
+      if (midPin && moved) {
+        agentDebugLog({
+          hypothesisId: "A-B-D",
+          location: "home-problem-section.tsx:LockedStory:jitterSample",
+          message: "scroll-frame position delta",
+          data: {
+            progress: value,
+            act: actRef.current,
+            stickyTop,
+            stickyDelta,
+            stickyH: stickyRect?.height ?? null,
+            folioTop,
+            folioDelta,
+            position: cs?.position ?? null,
+            cssHeight: cs?.height ?? null,
+            cssTop: cs?.top ?? null,
+            innerH: window.innerHeight,
+            vvH: window.visualViewport?.height ?? null,
+            vvOffsetTop: window.visualViewport?.offsetTop ?? null,
+            scrollY: window.scrollY,
+          },
+        });
+      }
+    }
+    // #endregion
   });
 
   return (
@@ -292,7 +404,11 @@ function LockedStory() {
     >
       <StorySrOnly />
       <div className="home-story-pin">
-        <div className="home-story-sticky home-story-sticky--locked" aria-hidden>
+        <div
+          ref={stickyRef}
+          className="home-story-sticky home-story-sticky--locked"
+          aria-hidden
+        >
           <div className="home-story-stage container-page">
             <div className="home-story-frame">
               <div ref={introRef} className="home-story-intro">
