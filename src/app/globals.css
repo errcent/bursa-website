@@ -995,52 +995,31 @@
     top: 0;
     z-index: 2;
     display: flex;
-    height: 100vh;
-    max-height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
     overflow: hidden;
     background-color: transparent;
+  }
+
+  .home-story-sticky--locked {
+    top: var(--site-header-offset);
+    height: calc(100vh - var(--site-header-offset));
+    max-height: calc(100vh - var(--site-header-offset));
     backface-visibility: hidden;
   }
 
   @supports (height: 100svh) {
-    .home-story-sticky {
-      height: 100svh;
-      max-height: 100svh;
+    .home-story-sticky--locked {
+      height: calc(100svh - var(--site-header-offset));
+      max-height: calc(100svh - var(--site-header-offset));
     }
   }
 
-  /*
-   * Mobile/coarse LockedStory: avoid iOS sticky compositor jitter by pinning with
-   * fixed/absolute instead of position:sticky while the long track scrolls.
-   */
-  .home-story-pin {
-    position: relative;
+  .home-story-sticky--locked .home-story-stage {
+    padding-top: 1.25rem;
   }
 
-  .home-story-sticky--locked {
-    position: relative;
-    top: auto;
-    width: 100%;
-  }
-
-  .home-story-sticky--locked.is-fixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-  }
-
-  .home-story-sticky--locked.is-released {
-    position: absolute;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-  }
-
-  /* Locked = same pin geometry; act visibility is class-driven on mobile/coarse. */
+  /* Locked = act visibility is class-driven on mobile/coarse. */
   .home-story-sticky--locked .home-story-intro,
   .home-story-sticky--locked .home-story-problems,
   .home-story-sticky--locked .home-story-solution {
