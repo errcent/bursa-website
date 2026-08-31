@@ -37,9 +37,9 @@ export function AboutPageContent() {
       <section>
         <Reveal>
           <p className="eyebrow mb-2">Fokus</p>
-          <h2 className="section-title">Tiga yang kami jaga sama rata</h2>
+          <h2 className="section-title">Tiga fokus utama</h2>
           <p className="section-copy mt-2 max-w-2xl">
-            Mentor, materi runut, dan struktur belajar — ketiganya sama pentingnya.
+            Mentor terverifikasi, materi berurutan, dan struktur belajar memiliki bobot yang setara.
           </p>
         </Reveal>
 
@@ -63,9 +63,10 @@ export function AboutPageContent() {
 
       <Reveal delay={0.08} className="mt-14 text-center">
         <p className="eyebrow mb-3">Mulai</p>
-        <h2 className="section-title sm:text-3xl">Siap mulai belajar?</h2>
+        <h2 className="section-title sm:text-3xl">Siap memulai pembelajaran?</h2>
         <p className="section-copy mx-auto mt-3 max-w-lg">
-          Gabung waitlist untuk kabar peluncuran, atau lihat dulu katalog kelas dan mentornya.
+          Bergabung dengan waitlist untuk informasi peluncuran, atau telusuri katalog kelas dan
+          mentor.
         </p>
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button

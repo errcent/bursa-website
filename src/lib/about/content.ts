@@ -1,16 +1,16 @@
 export const aboutHero = {
   eyebrow: "Tentang Kami",
-  title: "Belajar trading dengan nyaman & terstruktur",
+  title: "Belajar trading dengan nyaman dan terstruktur",
   description:
-    "Mentor terverifikasi, materi runut, dan struktur belajar yang jelas — tiga fokus setara di Bursa. Kelas saham, crypto, dan forex; bayar per kelas, tanpa langganan.",
+    "Bursa menempatkan mentor terverifikasi, materi berurutan, dan struktur belajar yang jelas sebagai tiga fokus setara. Tersedia kelas saham, crypto, dan forex dengan pembayaran per kelas, tanpa langganan.",
 };
 
 export const aboutIntro = {
   title: "Tentang Bursa",
   paragraphs: [
-    "Bursa adalah platform edukasi trading di Indonesia. Satu tempat untuk kelas saham, crypto, dan forex — dengan progress tracking dan ruang diskusi per mentor. Kamu pilih kelas yang dibutuhkan, bayar sekali, tanpa paket langganan bulanan.",
-    "Kami ingin jadi tempat belajar trading yang nyaman dan bisa dipercaya: mentor dicek, materi runut, struktur jelas. Arah jangka panjangnya sederhana — jadi platform edukasi trading premium di Indonesia yang menggabungkan kredibilitas, struktur, dan proses belajar yang enak diikuti.",
-    "Bursanalar didirikan oleh Fakhri Muzakki dan Esa Kaisar. Materi di sini untuk edukasi, bukan saran investasi. Trading berisiko — keputusan dan risiko ada di tanganmu.",
+    "Bursa adalah platform edukasi trading di Indonesia yang menghadirkan kelas saham, crypto, dan forex dalam satu ekosistem, dilengkapi pelacakan progres dan ruang diskusi per mentor. Peserta memilih kelas sesuai kebutuhan dan membayar sekali tanpa paket langganan bulanan.",
+    "Bursa dibangun sebagai tempat belajar trading yang andal: mentor diverifikasi, materi disusun secara berurutan, dan struktur belajar ditetapkan dengan jelas. Visi jangka panjangnya adalah menjadi platform edukasi trading premium di Indonesia yang menggabungkan kredibilitas, struktur kurikulum, dan proses pembelajaran yang terukur.",
+    "Bursanalar didirikan oleh Fakhri Muzakki dan Esa Kaisar. Seluruh materi bersifat edukatif dan bukan rekomendasi investasi. Aktivitas trading mengandung risiko; keputusan dan tanggung jawab sepenuhnya berada pada pengguna.",
   ],
 };
 
@@ -19,18 +19,18 @@ export const aboutFocus = [
     icon: "shield" as const,
     title: "Mentor terverifikasi",
     description:
-      "Kredensial dicek sebelum kelas tayang. Verifikasi penuh menyusul seiring registry berkembang.",
+      "Kredensial mentor ditinjau sebelum kelas ditayangkan. Proses verifikasi penuh akan dilanjutkan seiring pengembangan registry.",
   },
   {
     icon: "layers" as const,
-    title: "Materi runut",
+    title: "Materi berurutan",
     description:
-      "Video berurutan dari pemula ke menengah — bukan tumpukan konten acak.",
+      "Video disusun dari tingkat pemula hingga menengah, bukan kumpulan konten yang tidak terorganisasi.",
   },
   {
     icon: "list" as const,
     title: "Materi terstruktur",
     description:
-      "Jalur belajar jelas per instrumen dan level, supaya progresnya terukur.",
+      "Jalur pembelajaran ditetapkan per instrumen dan tingkat kemampuan agar progres dapat diukur.",
   },
 ];
