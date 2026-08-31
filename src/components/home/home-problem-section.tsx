@@ -247,11 +247,7 @@ function useFrozenStoryPinHeight(trackRef: RefObject<HTMLElement | null>) {
     const apply = () => {
       const track = trackRef.current;
       if (!track) return;
-      const headerPx =
-        Number.parseFloat(
-          getComputedStyle(document.documentElement).getPropertyValue("--site-header-offset")
-        ) || 0;
-      const pinH = Math.max(320, Math.round(window.innerHeight - headerPx));
+      const pinH = Math.max(320, Math.round(window.innerHeight));
       track.style.setProperty("--story-pin-h", `${pinH}px`);
     };
 

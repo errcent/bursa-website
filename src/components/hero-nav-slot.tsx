@@ -79,12 +79,17 @@ export function HeroNavSlot({ children }: { children: React.ReactNode }) {
       }
 
       const progress = Math.min(1, Math.max(0, 1 - dockTop / PIN_EASE_PX));
-      const nextTop = Math.max(0, dockTop);
+      const nextTop = Math.max(0, Math.round(dockTop));
       const nextSearchVisible = progress > SEARCH_VISIBLE_THRESHOLD;
       const nextSearchReveal = progress > SEARCH_REVEAL_THRESHOLD;
 
-      inner.style.transform = "";
-      inner.style.top = `${nextTop}px`;
+      // iOS: move via transform (not top) to avoid fixed-layer jitter during dock → pin.
+      inner.style.top = "0";
+      if (nextPinned) {
+        inner.style.transform = "";
+      } else {
+        inner.style.transform = `translate3d(0, ${nextTop}px, 0)`;
+      }
       inner.dataset.pinned = nextPinned ? "true" : "false";
 
       const navGlass = inner.querySelector<HTMLElement>("[data-hero-nav-glass]");
@@ -115,16 +120,26 @@ export function HeroNavSlot({ children }: { children: React.ReactNode }) {
       }
     };
 
-    const onScroll = () => {
-      applyFrame();
+    let rafId = 0;
+    const scheduleFrame = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        applyFrame();
+      });
     };
 
-    applyFrame();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    scheduleFrame();
+    window.addEventListener("scroll", scheduleFrame, { passive: true });
+    window.addEventListener("resize", scheduleFrame);
+    window.visualViewport?.addEventListener("resize", scheduleFrame);
+    window.visualViewport?.addEventListener("scroll", scheduleFrame);
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", scheduleFrame);
+      window.removeEventListener("resize", scheduleFrame);
+      window.visualViewport?.removeEventListener("resize", scheduleFrame);
+      window.visualViewport?.removeEventListener("scroll", scheduleFrame);
     };
   }, [hydrated]);
 

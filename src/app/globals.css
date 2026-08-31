@@ -486,6 +486,11 @@
     padding-inline: max(0.75rem, env(safe-area-inset-left, 0px))
       max(0.75rem, env(safe-area-inset-right, 0px));
     padding-top: max(0.25rem, env(safe-area-inset-top, 0px));
+    backface-visibility: hidden;
+  }
+
+  .hero-nav-float[data-pinned="false"] {
+    will-change: transform;
   }
 
   @media (min-width: 640px) {
@@ -1002,14 +1007,14 @@
   }
 
   .home-story-sticky--locked {
-    top: var(--site-header-offset);
-    height: var(--story-pin-h, calc(100vh - var(--site-header-offset)));
-    max-height: var(--story-pin-h, calc(100vh - var(--site-header-offset)));
+    top: 0;
+    height: var(--story-pin-h, 100vh);
+    max-height: var(--story-pin-h, 100vh);
     backface-visibility: hidden;
   }
 
   .home-story-sticky--locked .home-story-stage {
-    padding-top: 1.25rem;
+    padding-top: calc(var(--site-header-offset) + 1.25rem);
   }
 
   /* Locked = act visibility is class-driven on mobile/coarse. */
@@ -1201,9 +1206,6 @@
     .home-story-sticky--locked .home-story-intro,
     .home-story-sticky--locked .home-story-problems,
     .home-story-sticky--locked .home-story-solution {
-      align-items: flex-start;
-      justify-content: center;
-      padding-top: clamp(1.25rem, 14vh, 4.5rem);
       transition: none;
     }
 
