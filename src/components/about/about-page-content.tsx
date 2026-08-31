@@ -1,19 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Ban,
-  Layers,
-  ShieldCheck,
-  Users,
-  Video,
-  Wallet,
-} from "lucide-react";
+import { Layers, ShieldCheck, Video } from "lucide-react";
 
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
+  aboutFounders,
   aboutIntro,
   aboutMissionVision,
   aboutPillars,
@@ -23,10 +17,7 @@ import {
 const iconMap = {
   shield: ShieldCheck,
   layers: Layers,
-  wallet: Wallet,
-  users: Users,
   video: Video,
-  ban: Ban,
 } as const;
 
 export function AboutPageContent() {
@@ -49,9 +40,9 @@ export function AboutPageContent() {
         <Reveal delay={0.12} className="mt-8">
           <div className="border-l-2 border-foreground/25 py-1 pl-4 sm:pl-5">
             <p className="text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
-              <span className="font-medium text-foreground">Penting:</span> Materi di Bursa
-              bersifat edukasi, bukan rekomendasi investasi. Trading dan investasi mengandung
-              risiko kerugian modal, keputusan sepenuhnya tanggung jawab pengguna.
+              <span className="font-medium text-foreground">Catatan:</span> Materi di Bursa
+              untuk edukasi, bukan saran investasi. Trading berisiko — keputusan dan risiko ada di
+              tanganmu.
             </p>
           </div>
         </Reveal>
@@ -61,11 +52,10 @@ export function AboutPageContent() {
 
       <section>
         <Reveal>
-          <p className="eyebrow mb-2">Arah kami</p>
-          <h2 className="section-title">Misi & Visi</h2>
+          <p className="eyebrow mb-2">Arah</p>
+          <h2 className="section-title">Yang kami bangun</h2>
           <p className="section-copy mt-2 max-w-2xl">
-            Prinsip yang memandu setiap keputusan produk, kurasi mentor, dan pengalaman belajar di
-            Bursa.
+            Dua hal yang memandu produk, kurasi mentor, dan cara kami merancang belajar di Bursa.
           </p>
         </Reveal>
 
@@ -85,11 +75,21 @@ export function AboutPageContent() {
 
       <section>
         <Reveal>
-          <p className="eyebrow mb-2">Keuntungan</p>
-          <h2 className="section-title">Mengapa belajar di Bursa?</h2>
+          <p className="eyebrow mb-2">Bursanalar</p>
+          <h2 className="section-title">{aboutFounders.title}</h2>
+          <p className="section-copy mt-3 max-w-2xl text-foreground/85">{aboutFounders.body}</p>
+        </Reveal>
+      </section>
+
+      <Separator className="my-14 opacity-60" />
+
+      <section>
+        <Reveal>
+          <p className="eyebrow mb-2">Kenapa Bursa</p>
+          <h2 className="section-title">Cara kami beda</h2>
           <p className="section-copy mt-2 max-w-2xl">
-            Dirancang untuk pelajar yang ingin proses belajar trading yang jelas, terpercaya, dan
-            tanpa tekanan langganan.
+            Fokusnya sederhana: mentor yang dikurasi, materi yang berurutan, dan pengalaman belajar
+            yang rapi.
           </p>
         </Reveal>
 
@@ -117,10 +117,10 @@ export function AboutPageContent() {
 
       <section>
         <Reveal>
-          <p className="eyebrow mb-2">Diferensiasi</p>
-          <h2 className="section-title">Tiga pilar kepercayaan</h2>
+          <p className="eyebrow mb-2">Fondasi</p>
+          <h2 className="section-title">Tiga yang kami jaga</h2>
           <p className="section-copy mt-2 max-w-2xl">
-            Fondasi yang membedakan Bursa dari konten edukasi trading pada umumnya.
+            Ini yang membedakan Bursa dari konten trading yang bertebaran di mana-mana.
           </p>
         </Reveal>
 
@@ -144,11 +144,10 @@ export function AboutPageContent() {
       </section>
 
       <Reveal delay={0.08} className="mt-14 text-center">
-        <p className="eyebrow mb-3">Mulai sekarang</p>
-        <h2 className="section-title sm:text-3xl">Siap membangun fondasi belajar yang solid?</h2>
+        <p className="eyebrow mb-3">Mulai</p>
+        <h2 className="section-title sm:text-3xl">Siap mulai belajar?</h2>
         <p className="section-copy mx-auto mt-3 max-w-lg">
-          Gabung waitlist untuk kabar peluncuran, atau jelajahi preview katalog kelas dan mentor
-          sesuai level serta instrumenmu.
+          Gabung waitlist untuk kabar peluncuran, atau lihat dulu katalog kelas dan mentornya.
         </p>
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button

@@ -1,15 +1,15 @@
 export const aboutHero = {
   eyebrow: "Tentang Kami",
-  title: "Belajar dari yang terbukti, bukan yang viral",
+  title: "Belajar trading dengan mentor yang dikurasi",
   description:
-    "Bursa adalah platform edukasi trading untuk saham, crypto, dan forex, dengan proses kurasi mentor, kurikulum terstruktur, dan komunitas yang akuntabel. Bukan broker, bukan penyedia sinyal.",
+    "Bursa mengumpulkan kelas saham, crypto, dan forex dalam satu platform — kurikulum jelas, progress terukur, komunitas per mentor. Bayar per kelas, tanpa langganan.",
 };
 
 export const aboutIntro = {
-  title: "Apa itu Bursa?",
+  title: "Tentang Bursa",
   paragraphs: [
-    "Bursa adalah platform edukasi trading di Indonesia yang menghadirkan banyak mentor dan instruktur dalam satu ekosistem belajar, dengan jalur kurasi kredensial yang sedang dibangun menuju verifikasi penuh. Kami mengumpulkan kelas berkualitas tinggi untuk saham, crypto, dan forex, dengan video berurutan, progress tracking, dan ruang komunitas per mentor.",
-    "Berbeda dari konten gratis yang tersebar atau kelas dari satu figur tanpa review independen, Bursa dibangun sebagai infrastruktur kepercayaan: setiap mentor dan kurikulum ditinjau tim sebelum tayang. Kamu bayar per kelas tanpa langganan bulanan, dan platform tidak mengelola dana tradingmu.",
+    "Bursa adalah platform edukasi trading di Indonesia. Banyak mentor, satu tempat belajar — dengan kelas berurutan, progress tracking, dan ruang diskusi per mentor untuk saham, crypto, dan forex.",
+    "Setiap mentor dan kurikulum ditinjau tim sebelum tayang. Kamu pilih kelas yang dibutuhkan, bayar sekali, tanpa paket langganan bulanan.",
   ],
 };
 
@@ -17,71 +17,58 @@ export const aboutMissionVision = {
   mission: {
     title: "Misi",
     description:
-      "Memberikan tempat tepercaya bagi masyarakat Indonesia yang serius ingin menguasai skill trading dan investasi, dengan standar kurikulum, produksi konten, dan proses kurasi mentor yang dapat dipertanggungjawabkan.",
+      "Jadi tempat belajar trading yang bisa dipercaya — kurikulum rapi, konten layak, mentor yang benar-benar dikurasi.",
   },
   vision: {
     title: "Visi",
     description:
-      "Menjadi platform edukasi trading premium di Indonesia yang menggabungkan kredibilitas lewat kurasi, produksi berkualitas, struktur belajar berjenjang, dan komunitas akuntabel dalam satu ekosistem.",
+      "Platform edukasi trading premium di Indonesia: kredibel, terstruktur, dan punya komunitas yang fokus pada proses belajar.",
   },
+};
+
+export const aboutFounders = {
+  title: "Pendiri",
+  body: "Bursanalar didirikan oleh Fakhri Muzakki dan Esa Kaisar.",
 };
 
 export const aboutWhyUse = [
   {
     icon: "shield" as const,
-    title: "Proses kurasi mentor",
+    title: "Kurasi mentor",
     description:
-      "Setiap instruktur melalui proses kurasi: kredensial, kurikulum, dan aspek kepatuhan diperiksa sebelum kelas tayang. Verifikasi penuh menyusul seiring supply registry.",
+      "Kredensial, kurikulum, dan kepatuhan dicek dulu sebelum kelas tayang. Verifikasi penuh menyusul seiring registry berkembang.",
   },
   {
     icon: "layers" as const,
-    title: "Kurikulum terstruktur",
+    title: "Kurikulum berjenjang",
     description:
-      "Bukan tumpukan video acak. Video berurutan dari pemula hingga menengah, dengan jalur belajar yang jelas per instrumen.",
-  },
-  {
-    icon: "wallet" as const,
-    title: "Bayar per kelas",
-    description:
-      "Tanpa biaya langganan platform. Kamu hanya membayar kelas yang dipilih, transparan sebelum checkout.",
-  },
-  {
-    icon: "users" as const,
-    title: "Komunitas akuntabel",
-    description:
-      "Diskusi, Q&A, dan ruang belajar per mentor. Belajar bareng komunitas yang fokus pada proses, bukan janji profit.",
+      "Bukan tumpukan video acak. Materi berurutan dari pemula ke menengah, dengan jalur jelas per instrumen.",
   },
   {
     icon: "video" as const,
-    title: "Produksi berkualitas",
+    title: "Produksi rapi",
     description:
-      "Konten video dengan standar produksi profesional, mudah diikuti, terstruktur, dan dilindungi untuk murid terdaftar.",
-  },
-  {
-    icon: "ban" as const,
-    title: "Bukan broker",
-    description:
-      "Bursa tidak menyimpan saldo, tidak mengeksekusi order, dan tidak menjanjikan keuntungan. Semua keputusan investasi ada pada kamu.",
+      "Video dengan standar produksi yang konsisten — mudah diikuti, terstruktur, dan hanya untuk murid terdaftar.",
   },
 ];
 
 export const aboutPillars = [
   {
     step: "01",
-    title: "Verified Track Record",
+    title: "Track record yang bisa dicek",
     description:
-      "Instruktur dengan kredibilitas yang dapat diaudit, lisensi relevan, riwayat kompetisi, atau reputasi institusional sebelum tayang.",
+      "Mentor masuk katalog setelah kredibilitasnya bisa diaudit — lisensi, kompetisi, atau reputasi institusional.",
   },
   {
     step: "02",
-    title: "Produksi Premium",
+    title: "Produksi yang layak ditonton",
     description:
-      "Visual dan packaging setara produksi profesional, dengan alur produksi standar yang konsisten di seluruh katalog kelas.",
+      "Visual dan alur materi setara produksi profesional, konsisten di seluruh katalog.",
   },
   {
     step: "03",
-    title: "Struktur & Komunitas",
+    title: "Struktur + komunitas",
     description:
-      "Jalur pemula hingga mahir, progress tracking, dan komunitas by-level, belajar yang terukur, bukan sekadar menonton.",
+      "Jalur belajar terukur, progress tracking, dan ruang diskusi per mentor — bukan cuma menonton sendirian.",
   },
 ];
