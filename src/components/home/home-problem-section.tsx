@@ -271,7 +271,7 @@ function syncProblemLines(
   });
 }
 
-/** Mobile/coarse: sticky stage, threshold classes via DOM (no React setState per scroll). */
+/** Mobile/coarse: fixed-pin stage, threshold classes via DOM (no React setState per scroll). */
 function LockedStory() {
   const trackRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
@@ -282,11 +282,13 @@ function LockedStory() {
   const actRef = useRef(0);
   const linesRef = useRef(0);
   const strikesRef = useRef(0);
+  const pinModeRef = useRef<"start" | "fixed" | "released">("start");
   // #region agent log
   const debugLastSampleRef = useRef(0);
   const debugPrevStickyTopRef = useRef<number | null>(null);
   const debugPrevFolioTopRef = useRef<number | null>(null);
   const debugActFlipsRef = useRef(0);
+  const debugHeartbeatCountRef = useRef(0);
   // #endregion
 
   const { scrollYProgress } = useScroll({
@@ -298,12 +300,58 @@ function LockedStory() {
     introRef.current?.classList.add("is-on");
   }, []);
 
+  useEffect(() => {
+    const syncPinMode = () => {
+      const track = trackRef.current;
+      const sticky = stickyRef.current;
+      if (!track || !sticky) return;
+
+      const trackRect = track.getBoundingClientRect();
+      const pinH = sticky.offsetHeight || window.innerHeight;
+      let nextMode: "start" | "fixed" | "released" = "start";
+      if (trackRect.top <= 0 && trackRect.bottom > pinH) nextMode = "fixed";
+      else if (trackRect.bottom <= pinH) nextMode = "released";
+
+      if (pinModeRef.current === nextMode) return;
+      pinModeRef.current = nextMode;
+      sticky.classList.toggle("is-fixed", nextMode === "fixed");
+      sticky.classList.toggle("is-released", nextMode === "released");
+      // #region agent log
+      agentDebugLog({
+        hypothesisId: "A",
+        location: "home-problem-section.tsx:LockedStory:pinMode",
+        message: "pin mode change",
+        runId: "post-fix",
+        data: {
+          nextMode,
+          trackTop: trackRect.top,
+          trackBottom: trackRect.bottom,
+          pinH,
+        },
+      });
+      // #endregion
+    };
+
+    syncPinMode();
+    window.addEventListener("scroll", syncPinMode, { passive: true });
+    window.addEventListener("resize", syncPinMode);
+    window.visualViewport?.addEventListener("resize", syncPinMode);
+    window.visualViewport?.addEventListener("scroll", syncPinMode);
+    return () => {
+      window.removeEventListener("scroll", syncPinMode);
+      window.removeEventListener("resize", syncPinMode);
+      window.visualViewport?.removeEventListener("resize", syncPinMode);
+      window.visualViewport?.removeEventListener("scroll", syncPinMode);
+    };
+  }, []);
+
   // #region agent log
   useEffect(() => {
     agentDebugLog({
       hypothesisId: "E",
       location: "home-problem-section.tsx:LockedStory:mount",
       message: "LockedStory mounted (mobile/coarse path)",
+      runId: "post-fix",
       data: {
         mq: window.matchMedia(STORY_LIFT_QUERY).matches,
         ua: navigator.userAgent.slice(0, 120),
@@ -331,6 +379,7 @@ function LockedStory() {
         hypothesisId: "C",
         location: "home-problem-section.tsx:LockedStory:actFlip",
         message: "act class flip",
+        runId: "post-fix",
         data: { progress: value, nextAct, flips: debugActFlipsRef.current },
       });
       // #endregion
@@ -347,13 +396,13 @@ function LockedStory() {
 
     // #region agent log
     const now = Date.now();
-    if (now - debugLastSampleRef.current >= 120) {
+    if (now - debugLastSampleRef.current >= 200 && debugHeartbeatCountRef.current < 30) {
       debugLastSampleRef.current = now;
-      const sticky = stickyRef.current;
-      const folio = sticky?.querySelector(".is-on .home-story-folio, .home-story-folio");
-      const stickyRect = sticky?.getBoundingClientRect();
+      const node = stickyRef.current;
+      const folio = node?.querySelector(".is-on .home-story-folio, .home-story-folio");
+      const stickyRect = node?.getBoundingClientRect();
       const folioRect = folio?.getBoundingClientRect();
-      const cs = sticky ? getComputedStyle(sticky) : null;
+      const cs = node ? getComputedStyle(node) : null;
       const stickyTop = stickyRect?.top ?? null;
       const folioTop = folioRect?.top ?? null;
       const stickyDelta =
@@ -366,16 +415,18 @@ function LockedStory() {
           : 0;
       if (stickyTop != null) debugPrevStickyTopRef.current = stickyTop;
       if (folioTop != null) debugPrevFolioTopRef.current = folioTop;
-      const midPin = value > 0.02 && value < 0.98;
-      const moved = Math.abs(stickyDelta) > 0.4 || Math.abs(folioDelta) > 0.4;
-      if (midPin && moved) {
+      const midPin = value > 0.05 && value < 0.95;
+      if (midPin) {
+        debugHeartbeatCountRef.current += 1;
         agentDebugLog({
           hypothesisId: "A-B-D",
           location: "home-problem-section.tsx:LockedStory:jitterSample",
-          message: "scroll-frame position delta",
+          message: "scroll-frame heartbeat",
+          runId: "post-fix",
           data: {
             progress: value,
             act: actRef.current,
+            pinMode: pinModeRef.current,
             stickyTop,
             stickyDelta,
             stickyH: stickyRect?.height ?? null,
@@ -388,6 +439,7 @@ function LockedStory() {
             vvH: window.visualViewport?.height ?? null,
             vvOffsetTop: window.visualViewport?.offsetTop ?? null,
             scrollY: window.scrollY,
+            n: debugHeartbeatCountRef.current,
           },
         });
       }

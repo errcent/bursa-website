@@ -1009,6 +1009,37 @@
     }
   }
 
+  /*
+   * Mobile/coarse LockedStory: avoid iOS sticky compositor jitter by pinning with
+   * fixed/absolute instead of position:sticky while the long track scrolls.
+   */
+  .home-story-pin {
+    position: relative;
+  }
+
+  .home-story-sticky--locked {
+    position: relative;
+    top: auto;
+    width: 100%;
+  }
+
+  .home-story-sticky--locked.is-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
+  .home-story-sticky--locked.is-released {
+    position: absolute;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
   /* Locked = same pin geometry; act visibility is class-driven on mobile/coarse. */
   .home-story-sticky--locked .home-story-intro,
   .home-story-sticky--locked .home-story-problems,
