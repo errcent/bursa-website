@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
 import { CourseThumbnail } from "@/components/course-thumbnail";
-import { LEVEL_TOOLTIP, LevelBadge } from "@/components/instrument-badge";
 import { useMyLearning } from "@/hooks/use-my-learning";
 import { courseEnrollmentFromLearning } from "@/lib/learning/enrollment";
 import { useCatalogIndex } from "@/hooks/use-catalog-index";
@@ -89,75 +88,33 @@ export function CourseCard({
     >
       <div
         className={cn(
-          "group/level-reveal relative aspect-video w-full min-h-0 overflow-hidden bg-surface-2",
+          "relative aspect-video w-full min-h-0 overflow-hidden bg-surface-2",
           isFeatured ? "rounded-2xl" : "rounded-xl"
         )}
       >
-        <div
-          className={cn(
-            "absolute inset-0 transition-[filter] duration-300 ease-out",
-            "group-has-[[data-level-hotspot]:hover]/level-reveal:blur-[3px]",
-            "group-has-[[data-level-hotspot]:hover]/level-reveal:brightness-[0.45]"
-          )}
-        >
-          <CourseThumbnail
-            course={course}
-            withScrim={!isCatalog}
-            fillSlot
-            className="absolute inset-0"
-            alt={course.title}
-            progressPercent={enrolled ? progressPercent : undefined}
-          />
-        </div>
-
-        <div className="absolute left-3 top-3 z-20 flex items-center gap-1.5 sm:left-3.5 sm:top-3.5">
-          <LevelBadge level={course.level} />
-        </div>
-
-        <p
-          role="tooltip"
-          className={cn(
-            "pointer-events-none absolute inset-0 z-30 flex items-center justify-center px-5",
-            "text-center font-sans text-[13px] font-medium leading-snug text-white",
-            "drop-shadow-[0_1px_8px_rgba(0,0,0,0.65)]",
-            "opacity-0 transition-opacity duration-300 ease-out",
-            "group-has-[[data-level-hotspot]:hover]/level-reveal:opacity-100",
-            isFeatured ? "sm:text-sm" : "sm:text-[13px]"
-          )}
-        >
-          {LEVEL_TOOLTIP[course.level]}
-        </p>
+        <CourseThumbnail
+          course={course}
+          withScrim={!isCatalog}
+          fillSlot
+          className="absolute inset-0"
+          alt={course.title}
+          progressPercent={enrolled ? progressPercent : undefined}
+        />
 
         {enrolled && (
-          <span
-            className={cn(
-              "pointer-events-none absolute right-2 top-2 z-10 rounded-full border border-accent/30 bg-accent/20 px-2 py-0.5 text-[10px] font-medium tracking-wide text-accent backdrop-blur-sm transition-opacity duration-300",
-              "group-has-[[data-level-hotspot]:hover]/level-reveal:opacity-0"
-            )}
-          >
+          <span className="pointer-events-none absolute right-2 top-2 z-10 rounded-full border border-accent/30 bg-accent/20 px-2 py-0.5 text-[10px] font-medium tracking-wide text-accent backdrop-blur-sm">
             Dimiliki
           </span>
         )}
 
         {!hideBookmark ? (
-          <div
-            className={cn(
-              "absolute bottom-2.5 left-2.5 z-20 transition-opacity duration-300",
-              "group-has-[[data-level-hotspot]:hover]/level-reveal:pointer-events-none",
-              "group-has-[[data-level-hotspot]:hover]/level-reveal:opacity-0"
-            )}
-          >
+          <div className="absolute bottom-2.5 left-2.5 z-20">
             <BookmarkToggleButton bookmarkRef={{ type: "course", slug: course.slug }} />
           </div>
         ) : null}
 
         {!isCatalog ? (
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-1.5 p-2.5 pb-3 transition-opacity duration-300",
-              "group-has-[[data-level-hotspot]:hover]/level-reveal:opacity-0"
-            )}
-          >
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-1.5 p-2.5 pb-3">
             <div className="min-w-0 flex-1">
               <h3
                 className={cn(
@@ -190,12 +147,7 @@ export function CourseCard({
             </span>
           </div>
         ) : (
-          <span
-            className={cn(
-              "pointer-events-none absolute bottom-2.5 right-2.5 z-10 shrink-0 whitespace-nowrap rounded-full bg-black/45 px-2 py-1 text-[10px] font-medium text-white/85 backdrop-blur-sm transition-opacity duration-300 @[220px]:text-[11px]",
-              "group-has-[[data-level-hotspot]:hover]/level-reveal:opacity-0"
-            )}
-          >
+          <span className="pointer-events-none absolute bottom-2.5 right-2.5 z-10 shrink-0 whitespace-nowrap rounded-full bg-black/45 px-2 py-1 text-[10px] font-medium text-white/85 backdrop-blur-sm @[220px]:text-[11px]">
             {courseMetaLabel(course)}
           </span>
         )}
@@ -216,4 +168,3 @@ export function CourseCard({
     </Link>
   );
 }
-

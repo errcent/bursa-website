@@ -14,6 +14,11 @@ import {
 const RING = 28;
 const RADIUS = 11;
 
+/**
+ * Landing landasan cursor.
+ * Uses mix-blend-mode: difference so the ring stays visible on both black and white.
+ * Idle = thin ring + tiny core. Interactive = thicker ring + solid core (clickable cue).
+ */
 export function LandingStoryCursor({ progress }: { progress: MotionValue<number> }) {
   const reduceMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
@@ -24,7 +29,12 @@ export function LandingStoryCursor({ progress }: { progress: MotionValue<number>
 
   const fill = useSpring(progress, { stiffness: 150, damping: 28, mass: 0.35 });
   const dashOffset = useTransform(fill, (value) => 1 - Math.min(1, Math.max(0, value)));
-  const scale = useSpring(useTransform(hover, [0, 1], [1, 1.1]), {
+  const scale = useSpring(useTransform(hover, [0, 1], [1, 1.28]), {
+    stiffness: 900,
+    damping: 38,
+    mass: 0.2,
+  });
+  const coreRadius = useSpring(useTransform(hover, [0, 1], [1.15, 3.4]), {
     stiffness: 900,
     damping: 38,
     mass: 0.2,
@@ -47,7 +57,8 @@ export function LandingStoryCursor({ progress }: { progress: MotionValue<number>
       visible.set(1);
       const target = event.target;
       hover.set(
-        target instanceof Element && target.closest("a, button, [role='button'], input, textarea, select")
+        target instanceof Element &&
+          target.closest("a, button, [role='button'], input, textarea, select, label, summary")
           ? 1
           : 0
       );
@@ -87,7 +98,12 @@ export function LandingStoryCursor({ progress }: { progress: MotionValue<number>
           strokeDasharray="1 1"
           style={{ strokeDashoffset: dashOffset }}
         />
-        <circle className="landing-story-cursor__core" cx={RING / 2} cy={RING / 2} r="1.15" />
+        <motion.circle
+          className="landing-story-cursor__core"
+          cx={RING / 2}
+          cy={RING / 2}
+          r={coreRadius}
+        />
       </svg>
     </motion.div>,
     document.body

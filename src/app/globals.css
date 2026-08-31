@@ -554,6 +554,7 @@
     margin: -14px 0 0 -14px;
     pointer-events: none;
     isolation: isolate;
+    mix-blend-mode: difference;
     will-change: transform;
   }
 
@@ -569,19 +570,19 @@
   }
 
   .landing-story-cursor__track {
-    stroke: color-mix(in srgb, var(--foreground) 20%, transparent);
+    stroke: rgba(255, 255, 255, 0.42);
     stroke-width: 0.7;
   }
 
   .landing-story-cursor__fill {
-    stroke: color-mix(in srgb, var(--foreground) 92%, var(--accent));
-    stroke-width: 1.35;
+    stroke: #fff;
+    stroke-width: 1.45;
     stroke-linecap: round;
     transform: rotate(-90deg);
   }
 
   .landing-story-cursor__core {
-    fill: color-mix(in srgb, var(--foreground) 82%, transparent);
+    fill: #fff;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -1004,7 +1005,7 @@
     top: var(--site-header-offset);
     height: calc(100vh - var(--site-header-offset));
     max-height: calc(100vh - var(--site-header-offset));
-    transform: translateZ(0);
+    /* Avoid translateZ — it creates a layer that fights sticky compositing on mobile. */
     backface-visibility: hidden;
   }
 
@@ -1023,20 +1024,20 @@
   .home-story-sticky--locked .home-story-problems,
   .home-story-sticky--locked .home-story-solution {
     opacity: 0;
-    visibility: hidden;
     pointer-events: none;
-    transform: none;
+    transition: opacity 0.28s ease;
   }
 
   .home-story-sticky--locked .home-story-intro.is-on,
   .home-story-sticky--locked .home-story-problems.is-on,
   .home-story-sticky--locked .home-story-solution.is-on {
     opacity: 1;
-    visibility: visible;
+    pointer-events: auto;
   }
 
   .home-story-sticky--locked .home-story__problem {
     opacity: 0;
+    transition: opacity 0.28s ease;
   }
 
   .home-story-sticky--locked .home-story__problem.is-on {
@@ -1046,6 +1047,7 @@
   .home-story-sticky--locked .home-story__problem.is-struck .home-story__problem-text {
     background-size: 100% 1.2px;
     color: color-mix(in srgb, var(--foreground) 48%, transparent);
+    transition: color 0.28s ease, background-size 0.35s ease;
   }
 
   .home-story-stage {

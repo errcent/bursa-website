@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -43,6 +43,50 @@ function subscribeSkipStoryLift(onChange: () => void) {
 
 function getSkipStoryLift() {
   return window.matchMedia(STORY_LIFT_QUERY).matches;
+}
+
+/** Hysteresis so rubber-band scroll near a threshold cannot flap acts. */
+function resolveLockedAct(value: number, prev: number) {
+  if (prev === 0) return value >= 0.17 ? (value >= 0.61 ? 2 : 1) : 0;
+  if (prev === 1) {
+    if (value < 0.145) return 0;
+    if (value >= 0.61) return 2;
+    return 1;
+  }
+  if (value < 0.575) return value < 0.145 ? 0 : 1;
+  return 2;
+}
+
+function resolveLockedLines(value: number, prev: number) {
+  if (prev <= 0) return value >= 0.19 ? (value >= 0.35 ? (value >= 0.49 ? 3 : 2) : 1) : 0;
+  if (prev === 1) {
+    if (value < 0.17) return 0;
+    if (value >= 0.35) return value >= 0.49 ? 3 : 2;
+    return 1;
+  }
+  if (prev === 2) {
+    if (value < 0.33) return value < 0.17 ? 0 : 1;
+    if (value >= 0.49) return 3;
+    return 2;
+  }
+  if (value < 0.47) return value < 0.33 ? (value < 0.17 ? 0 : 1) : 2;
+  return 3;
+}
+
+function resolveLockedStrikes(value: number, prev: number) {
+  if (prev <= 0) return value >= 0.3 ? (value >= 0.45 ? (value >= 0.57 ? 3 : 2) : 1) : 0;
+  if (prev === 1) {
+    if (value < 0.27) return 0;
+    if (value >= 0.45) return value >= 0.57 ? 3 : 2;
+    return 1;
+  }
+  if (prev === 2) {
+    if (value < 0.42) return value < 0.27 ? 0 : 1;
+    if (value >= 0.57) return 3;
+    return 2;
+  }
+  if (value < 0.54) return value < 0.42 ? (value < 0.27 ? 0 : 1) : 2;
+  return 3;
 }
 
 function StoryProblem({
@@ -161,44 +205,141 @@ function StoryStatic() {
   );
 }
 
-export function HomeProblemSection() {
-  const trackRef = useRef<HTMLElement>(null);
-  const reduceMotion = useReducedMotion();
-  const skipLift = useSyncExternalStore(subscribeSkipStoryLift, getSkipStoryLift, () => false);
-  const skipLiftRef = useRef(skipLift);
-  skipLiftRef.current = skipLift;
+function StorySrOnly() {
+  return (
+    <div className="sr-only">
+      <h2 id="landasan-heading">{COPY.headline}</h2>
+      <p>{COPY.lede}</p>
+      <ul>
+        {PROBLEMS.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+      <p>{COPY.turn}</p>
+      <ul>
+        {SOLUTIONS.map((step) => (
+          <li key={step.key}>
+            {step.key} {step.line}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
-  const [lockedAct, setLockedAct] = useState(0);
-  const [lockedLines, setLockedLines] = useState(0);
-  const [lockedStrikes, setLockedStrikes] = useState(0);
-  const lockedActRef = useRef(0);
-  const lockedLinesRef = useRef(0);
-  const lockedStrikesRef = useRef(0);
+/** Mobile/coarse: sticky stage, threshold classes via DOM (no React setState per scroll). */
+function LockedStory() {
+  const trackRef = useRef<HTMLElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
+  const problemsRef = useRef<HTMLDivElement>(null);
+  const solutionRef = useRef<HTMLDivElement>(null);
+  const problemLineRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const actRef = useRef(0);
+  const linesRef = useRef(0);
+  const strikesRef = useRef(0);
 
   const { scrollYProgress } = useScroll({
     target: trackRef,
     offset: ["start start", "end end"],
   });
 
+  useEffect(() => {
+    introRef.current?.classList.add("is-on");
+  }, []);
+
   useMotionValueEvent(scrollYProgress, "change", (value) => {
-    if (!skipLiftRef.current) return;
+    const nextAct = resolveLockedAct(value, actRef.current);
+    const nextLines = resolveLockedLines(value, linesRef.current);
+    const nextStrikes = resolveLockedStrikes(value, strikesRef.current);
 
-    const nextAct = value < 0.16 ? 0 : value < 0.6 ? 1 : 2;
-    const nextLines = value < 0.185 ? 0 : value < 0.345 ? 1 : value < 0.485 ? 2 : 3;
-    const nextStrikes = value < 0.29 ? 0 : value < 0.44 ? 1 : value < 0.56 ? 2 : 3;
+    if (actRef.current !== nextAct) {
+      actRef.current = nextAct;
+      introRef.current?.classList.toggle("is-on", nextAct === 0);
+      problemsRef.current?.classList.toggle("is-on", nextAct === 1);
+      solutionRef.current?.classList.toggle("is-on", nextAct === 2);
+    }
 
-    if (lockedActRef.current !== nextAct) {
-      lockedActRef.current = nextAct;
-      setLockedAct(nextAct);
+    if (linesRef.current !== nextLines) {
+      linesRef.current = nextLines;
+      problemLineRefs.current.forEach((node, index) => {
+        node?.classList.toggle("is-on", nextLines > index);
+      });
     }
-    if (lockedLinesRef.current !== nextLines) {
-      lockedLinesRef.current = nextLines;
-      setLockedLines(nextLines);
+
+    if (strikesRef.current !== nextStrikes) {
+      strikesRef.current = nextStrikes;
+      problemLineRefs.current.forEach((node, index) => {
+        node?.classList.toggle("is-struck", nextStrikes > index);
+      });
     }
-    if (lockedStrikesRef.current !== nextStrikes) {
-      lockedStrikesRef.current = nextStrikes;
-      setLockedStrikes(nextStrikes);
-    }
+  });
+
+  return (
+    <section
+      ref={trackRef}
+      id="landasan"
+      className="home-story-track scroll-mt-24"
+      aria-labelledby="landasan-heading"
+    >
+      <StorySrOnly />
+      <div className="home-story-pin">
+        <div className="home-story-sticky home-story-sticky--locked" aria-hidden>
+          <div className="home-story-stage container-page">
+            <div className="home-story-frame">
+              <div ref={introRef} className="home-story-intro">
+                <div className="home-story-act__inner">
+                  <p className="home-story-folio">01</p>
+                  <p className="home-story-headline section-display-title">{COPY.headline}</p>
+                  <p className="section-copy home-story-lede">{COPY.lede}</p>
+                </div>
+              </div>
+
+              <div ref={problemsRef} className="home-story-problems">
+                <div className="home-story-act__inner">
+                  <p className="home-story-folio">02</p>
+                  {PROBLEMS.map((text, index) => (
+                    <p
+                      key={text}
+                      ref={(node) => {
+                        problemLineRefs.current[index] = node;
+                      }}
+                      className="home-story__problem"
+                    >
+                      <span className="home-story__problem-text">{text}</span>
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              <div ref={solutionRef} className="home-story-solution home-story-solution--stay">
+                <div className="home-story-act__inner">
+                  <p className="home-story-folio">03</p>
+                  <p className="home-story-turn">{COPY.turn}</p>
+                  <p className="home-story-headline section-display-title">{COPY.close}</p>
+                  <div className="home-story-steps">
+                    {SOLUTIONS.map((step) => (
+                      <p key={step.key} className="home-story__step">
+                        <span className="home-story__key">{step.key}</span>
+                        <span className="home-story__line">{step.line}</span>
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DesktopStory() {
+  const trackRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: trackRef,
+    offset: ["start start", "end end"],
   });
 
   const introOpacity = useTransform(scrollYProgress, [0, 0.12, 0.145], [1, 1, 0]);
@@ -236,10 +377,6 @@ export function HomeProblemSection() {
   const s3Opacity = useTransform(scrollYProgress, [0, 0.7, 0.735, 1], [0, 0, 1, 1]);
   const s3Y = useTransform(scrollYProgress, [0.7, 0.735], [10, 0]);
 
-  if (reduceMotion) {
-    return <StoryStatic />;
-  }
-
   return (
     <section
       ref={trackRef}
@@ -247,136 +384,71 @@ export function HomeProblemSection() {
       className="home-story-track scroll-mt-24"
       aria-labelledby="landasan-heading"
     >
-      <div className="sr-only">
-        <h2 id="landasan-heading">{COPY.headline}</h2>
-        <p>{COPY.lede}</p>
-        <ul>
-          {PROBLEMS.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-        <p>{COPY.turn}</p>
-        <ul>
-          {SOLUTIONS.map((step) => (
-            <li key={step.key}>
-              {step.key} {step.line}
-            </li>
-          ))}
-        </ul>
-      </div>
-
+      <StorySrOnly />
       <LandingStoryCursor progress={cursorProgress} />
       <div className="home-story-pin">
-      <div
-        className={skipLift ? "home-story-sticky home-story-sticky--locked" : "home-story-sticky"}
-        aria-hidden
-      >
-        <div className="home-story-stage container-page">
-          <div className="home-story-frame">
-            {skipLift ? (
-              <>
-                <div className={`home-story-intro${lockedAct === 0 ? " is-on" : ""}`}>
-                  <div className="home-story-act__inner">
-                    <p className="home-story-folio">01</p>
-                    <p className="home-story-headline section-display-title">{COPY.headline}</p>
-                    <p className="section-copy home-story-lede">{COPY.lede}</p>
+        <div className="home-story-sticky" aria-hidden>
+          <div className="home-story-stage container-page">
+            <div className="home-story-frame">
+              <StoryAct className="home-story-intro" opacity={introOpacity} y={introY}>
+                <p className="home-story-folio">01</p>
+                <p className="home-story-headline section-display-title">{COPY.headline}</p>
+                <p className="section-copy home-story-lede">{COPY.lede}</p>
+              </StoryAct>
+
+              <StoryAct className="home-story-problems" opacity={problemStageOpacity}>
+                <p className="home-story-folio">02</p>
+                <StoryProblem
+                  text={PROBLEMS[0]}
+                  opacity={p1Opacity}
+                  y={p1Y}
+                  strike={p1Strike}
+                  mute={p1Mute}
+                />
+                <StoryProblem
+                  text={PROBLEMS[1]}
+                  opacity={p2Opacity}
+                  y={p2Y}
+                  strike={p2Strike}
+                  mute={p2Mute}
+                />
+                <StoryProblem
+                  text={PROBLEMS[2]}
+                  opacity={p3Opacity}
+                  y={p3Y}
+                  strike={p3Strike}
+                  mute={p3Mute}
+                />
+              </StoryAct>
+
+              <motion.div
+                className="home-story-solution home-story-solution--stay"
+                style={{ opacity: solutionOpacity }}
+              >
+                <motion.div className="home-story-act__inner" style={{ y: solutionY }}>
+                  <p className="home-story-folio">03</p>
+                  <p className="home-story-turn">{COPY.turn}</p>
+                  <p className="home-story-headline section-display-title">{COPY.close}</p>
+                  <div className="home-story-steps">
+                    <StorySolution step={SOLUTIONS[0]} opacity={s1Opacity} y={s1Y} />
+                    <StorySolution step={SOLUTIONS[1]} opacity={s2Opacity} y={s2Y} />
+                    <StorySolution step={SOLUTIONS[2]} opacity={s3Opacity} y={s3Y} />
                   </div>
-                </div>
-
-                <div className={`home-story-problems${lockedAct === 1 ? " is-on" : ""}`}>
-                  <div className="home-story-act__inner">
-                    <p className="home-story-folio">02</p>
-                    {PROBLEMS.map((text, index) => (
-                      <p
-                        key={text}
-                        className={`home-story__problem${lockedLines > index ? " is-on" : ""}${
-                          lockedStrikes > index ? " is-struck" : ""
-                        }`}
-                      >
-                        <span className="home-story__problem-text">{text}</span>
-                      </p>
-                    ))}
-                  </div>
-                </div>
-
-                <div
-                  className={`home-story-solution home-story-solution--stay${
-                    lockedAct === 2 ? " is-on" : ""
-                  }`}
-                >
-                  <div className="home-story-act__inner">
-                    <p className="home-story-folio">03</p>
-                    <p className="home-story-turn">{COPY.turn}</p>
-                    <p className="home-story-headline section-display-title">{COPY.close}</p>
-                    <div className="home-story-steps">
-                      {SOLUTIONS.map((step) => (
-                        <p key={step.key} className="home-story__step">
-                          <span className="home-story__key">{step.key}</span>
-                          <span className="home-story__line">{step.line}</span>
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-            <StoryAct className="home-story-intro" opacity={introOpacity} y={introY}>
-              <p className="home-story-folio">01</p>
-              <p className="home-story-headline section-display-title">
-                {COPY.headline}
-              </p>
-              <p className="section-copy home-story-lede">{COPY.lede}</p>
-            </StoryAct>
-
-            <StoryAct className="home-story-problems" opacity={problemStageOpacity}>
-              <p className="home-story-folio">02</p>
-              <StoryProblem
-                text={PROBLEMS[0]}
-                opacity={p1Opacity}
-                y={p1Y}
-                strike={p1Strike}
-                mute={p1Mute}
-              />
-              <StoryProblem
-                text={PROBLEMS[1]}
-                opacity={p2Opacity}
-                y={p2Y}
-                strike={p2Strike}
-                mute={p2Mute}
-              />
-              <StoryProblem
-                text={PROBLEMS[2]}
-                opacity={p3Opacity}
-                y={p3Y}
-                strike={p3Strike}
-                mute={p3Mute}
-              />
-            </StoryAct>
-
-            <motion.div
-              className="home-story-solution home-story-solution--stay"
-              style={{ opacity: solutionOpacity }}
-            >
-              <motion.div className="home-story-act__inner" style={{ y: solutionY }}>
-                <p className="home-story-folio">03</p>
-                <p className="home-story-turn">{COPY.turn}</p>
-                <p className="home-story-headline section-display-title">
-                  {COPY.close}
-                </p>
-                <div className="home-story-steps">
-                  <StorySolution step={SOLUTIONS[0]} opacity={s1Opacity} y={s1Y} />
-                  <StorySolution step={SOLUTIONS[1]} opacity={s2Opacity} y={s2Y} />
-                  <StorySolution step={SOLUTIONS[2]} opacity={s3Opacity} y={s3Y} />
-                </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-              </>
-            )}
+            </div>
           </div>
         </div>
       </div>
-      </div>
     </section>
   );
+}
+
+export function HomeProblemSection() {
+  const reduceMotion = useReducedMotion();
+  const skipLift = useSyncExternalStore(subscribeSkipStoryLift, getSkipStoryLift, () => false);
+
+  if (reduceMotion) return <StoryStatic />;
+  if (skipLift) return <LockedStory />;
+  return <DesktopStory />;
 }
