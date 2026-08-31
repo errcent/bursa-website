@@ -263,31 +263,42 @@ function useFrozenStoryPinHeight(trackRef: RefObject<HTMLElement | null>) {
 }
 
 /**
- * iOS sticky compositor jitter: pin with fixed/absolute + in-flow spacer (Discover overlap stays stable).
+ * iOS sticky compositor jitter: pin with absolute/fixed/absolute.
+ * Pin min-height already reserves scroll room — no spacer toggle (that made Discover jump).
+ * Hysteresis stops fixed↔released thrash at the overlap with Discover.
  */
 function useMobileStoryPin(
   trackRef: RefObject<HTMLElement | null>,
   stickyRef: RefObject<HTMLDivElement | null>,
-  spacerRef: RefObject<HTMLDivElement | null>,
   pinHRef: RefObject<number>
 ) {
   useEffect(() => {
+    const modeRef = { current: "start" as "start" | "fixed" | "released" };
+    const EDGE = 28;
+
     const sync = () => {
       const track = trackRef.current;
       const sticky = stickyRef.current;
-      const spacer = spacerRef.current;
-      if (!track || !sticky || !spacer) return;
+      if (!track || !sticky) return;
 
       const pinH = pinHRef.current || Math.max(320, Math.round(window.innerHeight));
-      const trackTop = track.getBoundingClientRect().top;
-      const trackBottom = track.getBoundingClientRect().bottom;
+      const { top: trackTop, bottom: trackBottom } = track.getBoundingClientRect();
+      const prev = modeRef.current;
+      let next = prev;
 
-      const isFixed = trackTop <= 0 && trackBottom > pinH + 1;
-      const isReleased = trackBottom <= pinH + 1;
+      if (prev === "start") {
+        if (trackTop <= -EDGE) next = "fixed";
+      } else if (prev === "fixed") {
+        if (trackTop > EDGE) next = "start";
+        else if (trackBottom <= pinH - EDGE) next = "released";
+      } else if (trackBottom > pinH + EDGE) {
+        next = "fixed";
+      }
 
-      sticky.classList.toggle("is-pin-fixed", isFixed);
-      sticky.classList.toggle("is-pin-released", isReleased);
-      spacer.style.height = isFixed ? `${pinH}px` : "0px";
+      if (next === prev) return;
+      modeRef.current = next;
+      sticky.classList.toggle("is-pin-fixed", next === "fixed");
+      sticky.classList.toggle("is-pin-released", next === "released");
     };
 
     let rafId = 0;
@@ -309,14 +320,13 @@ function useMobileStoryPin(
       window.removeEventListener("resize", schedule);
       window.removeEventListener("orientationchange", schedule);
     };
-  }, [trackRef, stickyRef, spacerRef, pinHRef]);
+  }, [trackRef, stickyRef, pinHRef]);
 }
 
 /** Mobile/coarse: sticky stage, threshold classes via DOM (no React setState per scroll). */
 function LockedStory() {
   const trackRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
-  const spacerRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const problemsRef = useRef<HTMLDivElement>(null);
   const solutionRef = useRef<HTMLDivElement>(null);
@@ -326,7 +336,7 @@ function LockedStory() {
   const strikesRef = useRef(0);
 
   const pinHRef = useFrozenStoryPinHeight(trackRef);
-  useMobileStoryPin(trackRef, stickyRef, spacerRef, pinHRef);
+  useMobileStoryPin(trackRef, stickyRef, pinHRef);
 
   const { scrollYProgress } = useScroll({
     target: trackRef,
@@ -368,7 +378,6 @@ function LockedStory() {
     >
       <StorySrOnly />
       <div className="home-story-pin">
-        <div ref={spacerRef} className="home-story-pin-spacer" aria-hidden />
         <div ref={stickyRef} className="home-story-sticky home-story-sticky--locked" aria-hidden>
           <div className="home-story-stage container-page">
             <div className="home-story-frame">

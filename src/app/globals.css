@@ -1022,8 +1022,8 @@
   }
 
   /*
-   * Mobile/coarse LockedStory: fixed/absolute pin + in-flow spacer (not sticky).
-   * Spacer preserves document height so Discover overlap stays stable.
+   * Mobile/coarse LockedStory: absolute → fixed → absolute (no sticky, no spacer toggle).
+   * Pin min-height keeps scroll length; hysteresis in JS stops Discover thrash at release.
    */
   @media (max-width: 768px) {
     .home-story-track {
@@ -1034,21 +1034,14 @@
       position: relative;
     }
 
-    .home-story-pin-spacer {
-      display: block;
-      height: 0;
-      pointer-events: none;
-    }
-
     .home-story-sticky--locked {
-      position: relative;
-      top: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
       width: 100%;
-      overflow: visible;
-    }
-
-    .home-story-sticky--locked .home-story-frame {
       overflow: hidden;
+      transform: translateZ(0);
     }
 
     .home-story-sticky--locked.is-pin-fixed {
@@ -1257,16 +1250,25 @@
       min-height: 360vh;
     }
 
-    /* Frozen pin height + no act transitions: stop iOS address-bar resize jitter. */
+    /* Soft act fades on mobile — pin is JS-fixed so opacity transitions are safe again. */
     .home-story-sticky--locked .home-story-intro,
     .home-story-sticky--locked .home-story-problems,
     .home-story-sticky--locked .home-story-solution {
-      transition: none;
+      transition: opacity 0.45s ease, visibility 0.45s ease;
     }
 
-    .home-story-sticky--locked .home-story__problem,
+    .home-story-sticky--locked .home-story__problem {
+      transition: opacity 0.35s ease;
+    }
+
     .home-story-sticky--locked .home-story__problem.is-struck .home-story__problem-text {
-      transition: none;
+      transition: color 0.35s ease, background-size 0.4s ease;
+    }
+
+    /* Freeze Discover sticky height — live 100dvh jitters with iOS chrome in the overlap. */
+    .discover-solo-sticky {
+      min-height: calc(100svh - var(--site-header-offset));
+      max-height: none;
     }
 
     .home-story__step {
