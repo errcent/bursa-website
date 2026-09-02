@@ -13,6 +13,7 @@ import {
   ADMIN_HOST,
   LOCALE_HEADER,
   PRODUCTION_APP_HOSTS,
+  apexNoteRedirectTarget,
   apexPrivacyRedirectTarget,
   apexTrustRedirectTarget,
   hostRole,
@@ -21,6 +22,7 @@ import {
   internalTrustPath,
   isAdminAuthedPath,
   isAdminHostAllowedPath,
+  isNoteHostAllowedPath,
   isPrivacyHostAllowedPath,
   isProductionHostRouting,
   isTrustHostAllowedPath,
@@ -140,6 +142,13 @@ function productionHostRouter(request: NextRequest): NextResponse | null {
     if (trustTarget) {
       return NextResponse.redirect(`${trustTarget}${search}`, 308);
     }
+    const noteTarget = apexNoteRedirectTarget(pathname);
+    if (noteTarget) {
+      return NextResponse.redirect(`${noteTarget}${search}`, 308);
+    }
+    if (pathname.startsWith("/api/note") && pathname !== "/api/note/sso/start") {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
     return null;
   }
 
@@ -183,6 +192,16 @@ function productionHostRouter(request: NextRequest): NextResponse | null {
     const internalSlug = mapTrustPublicToInternal(pathWithoutLocale);
     if (internalSlug) {
       return rewriteWithLocale(request, internalTrustPath(internalSlug, locale), locale);
+    }
+    return null;
+  }
+
+  if (role === "note") {
+    if (!isNoteHostAllowedPath(pathname)) {
+      return hostRedirect(APEX_HOST, pathname, search);
+    }
+    if (pathname === "/") {
+      return rewriteWithLocale(request, "/note", "id");
     }
     return null;
   }

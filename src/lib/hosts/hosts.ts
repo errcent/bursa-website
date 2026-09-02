@@ -4,7 +4,7 @@
  */
 
 export type LegalLocale = "id" | "en";
-export type HostRole = "apex" | "admin" | "trust" | "privacy" | "other";
+export type HostRole = "apex" | "admin" | "trust" | "privacy" | "note" | "other";
 
 export const LOCALE_HEADER = "x-bursa-locale";
 
@@ -12,12 +12,14 @@ export const APEX_HOST = "bursanalar.com";
 export const ADMIN_HOST = "admin.bursanalar.com";
 export const TRUST_HOST = "trust.bursanalar.com";
 export const PRIVACY_HOST = "privacy.bursanalar.com";
+export const NOTE_HOST = "note.bursanalar.com";
 
 export const PRODUCTION_APP_HOSTS = new Set([
   APEX_HOST,
   ADMIN_HOST,
   TRUST_HOST,
   PRIVACY_HOST,
+  NOTE_HOST,
 ]);
 
 export const GOVERNING_LANGUAGE_ID =
@@ -35,6 +37,7 @@ export function hostRole(host: string | null | undefined): HostRole {
   if (h === ADMIN_HOST) return "admin";
   if (h === TRUST_HOST) return "trust";
   if (h === PRIVACY_HOST) return "privacy";
+  if (h === NOTE_HOST) return "note";
   return "other";
 }
 
@@ -44,6 +47,7 @@ export function originFor(role: Exclude<HostRole, "other">): string {
     admin: ADMIN_HOST,
     trust: TRUST_HOST,
     privacy: PRIVACY_HOST,
+    note: NOTE_HOST,
   } as const;
   return `https://${hosts[role]}`;
 }
@@ -312,4 +316,18 @@ export function isTrustHostAllowedPath(pathname: string): boolean {
   const { pathname: path } = stripLocalePrefix(pathname);
   if (path === "/kepercayaan" || path.startsWith("/kepercayaan/")) return true;
   return mapTrustPublicToInternal(path) !== null;
+}
+
+export function isNoteHostAllowedPath(pathname: string): boolean {
+  if (pathname === "/") return true;
+  if (pathname === "/note" || pathname.startsWith("/note/")) return true;
+  if (pathname === "/api/note" || pathname.startsWith("/api/note/")) return true;
+  return false;
+}
+
+export function apexNoteRedirectTarget(pathname: string): string | null {
+  if (pathname === "/note" || pathname === "/note/" || pathname.startsWith("/note/")) {
+    return `https://${NOTE_HOST}${pathname}`;
+  }
+  return null;
 }

@@ -1,4 +1,4 @@
-export type HelpCategory = "Akun" | "Pembayaran" | "Belajar" | "Komunitas" | "Mentor";
+export type HelpCategory = "Akun" | "Pembayaran" | "Belajar" | "Note" | "Komunitas" | "Mentor";
 
 export interface HelpFaq {
   id: string;
@@ -11,6 +11,7 @@ export const helpCategories: HelpCategory[] = [
   "Akun",
   "Pembayaran",
   "Belajar",
+  "Note",
   "Komunitas",
   "Mentor",
 ];
@@ -70,7 +71,7 @@ export const helpFaqs: HelpFaq[] = [
     category: "Belajar",
     question: "Apakah progress belajar tersimpan antar perangkat?",
     answer:
-      "Progress belajar dan catatan video tersinkron via akun Bursa · masuk dengan akun yang sama di desktop atau mobile untuk melanjutkan dari posisi terakhir. Simpanan kelas/video (bookmark) saat ini tersimpan di perangkat browser atau aplikasi; sinkron antar perangkat untuk bookmark sedang dalam rencana.",
+      "Progress belajar dan catatan lesson (Notes) tersinkron via akun Bursa · masuk dengan akun yang sama di desktop atau mobile untuk melanjutkan dari posisi terakhir. Simpanan kelas/video (bookmark) saat ini tersimpan di perangkat browser atau aplikasi; sinkron antar perangkat untuk bookmark sedang dalam rencana. Jurnal eksekusi (Bursa Note) terpisah dari catatan lesson.",
   },
   {
     id: "belajar-sertifikat",
@@ -78,6 +79,20 @@ export const helpFaqs: HelpFaq[] = [
     question: "Apakah ada sertifikat setelah menyelesaikan kelas?",
     answer:
       "Beberapa kelas menyediakan sertifikat penyelesaian setelah semua video selesai. Badge sertifikat tampil di profil jika mentor mengaktifkan fitur tersebut untuk kelasnya.",
+  },
+  {
+    id: "note-apa",
+    category: "Note",
+    question: "Apa bedanya Notes pelajaran dengan Bursa Note?",
+    answer:
+      "Notes adalah catatan timestamp di dalam video kelas. Bursa Note (note.bursanalar.com) adalah jurnal privat untuk mencatat trade & invest: PnL, posisi, dan refleksi. Keduanya tidak saling menimpa.",
+  },
+  {
+    id: "note-privasi",
+    category: "Note",
+    question: "Apakah mentor atau admin bisa membaca jurnal saya?",
+    answer:
+      "Tidak. Jurnal default privat. Mentor dan admin tidak punya akses. Berbagi entri hanya terjadi jika kamu membuat tautan berbagi yang bisa dicabut.",
   },
   {
     id: "komunitas-join",

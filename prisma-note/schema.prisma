@@ -1,0 +1,57 @@
+// Isolated Bursa Note schema. Separate Prisma Postgres instance in production.
+// Do not import this into the course Prisma client.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/note-client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("NOTE_DATABASE_URL")
+  directUrl = env("NOTE_DIRECT_URL")
+}
+
+model NoteAccount {
+  id         String   @id @default(cuid())
+  apexUserId String   @unique
+  plus       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  entries    JournalEntry[]
+}
+
+model JournalEntry {
+  id             String      @id @default(cuid())
+  account        NoteAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId      String
+  kind           String
+  mode           String
+  symbol         String
+  side           String
+  qty            Float?
+  entryPrice     Float?
+  exitPrice      Float?
+  fees           Float?
+  pnl            Float?
+  result         String?
+  emotion        String?
+  note           String?
+  ruleBroken     String?
+  lesson         String?
+  clinicModuleId String?
+  protocol       String?
+  accountLabel   String?
+  openedAt       DateTime
+  createdAt      DateTime    @default(now())
+
+  @@index([accountId, createdAt])
+}
+
+model NoteSsoCode {
+  code       String   @id
+  apexUserId String
+  email      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+}

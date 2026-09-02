@@ -43,6 +43,7 @@ const baseNavLinks: {
 }[] = [
   { href: "/katalog", label: "Katalog", prefetch: true },
   { href: "/lab", label: "Lab" },
+  { href: "/note", label: "Note" },
 ];
 
 const navLinks = baseNavLinks;

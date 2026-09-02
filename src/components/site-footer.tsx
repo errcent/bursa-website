@@ -111,6 +111,7 @@ const footerColumns = [
     links: [
       { label: "Tentang Kami", href: "/tentang-kami" },
       { label: "Pusat Bantuan", href: "/bantuan" },
+      { label: "Bursa Note", href: "/note" },
       { label: "Jadi Mentor", href: "/jadi-mentor" },
     ],
   },
@@ -281,8 +282,8 @@ export function SiteFooter() {
         <div className="flex flex-col gap-4">
           <BrandLogo variant="product" slot="productFooter" decorative className="self-start" />
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-            Platform edukasi trading berbagai aset dengan materi runut terkurasi dari mentor
-            terverifikasi.
+            Platform edukasi trading dan investasi berbagai aset dengan materi runut terkurasi dari
+            mentor terverifikasi.
           </p>
           <SocialLinkButtons />
           <AppDownloadBadges className="pt-1" />

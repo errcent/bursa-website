@@ -59,6 +59,8 @@ next-env.d.ts
 
 # image studio local data (generations + ledger)
 .data/image-studio/
+.data/note-local.json
+/src/generated/note-client
 
 # local scratch / tooling output
 .video-frames/

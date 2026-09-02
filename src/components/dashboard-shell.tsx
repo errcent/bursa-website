@@ -211,6 +211,9 @@ function DashboardBody() {
                       <Button render={<Link href="/katalog" />} variant="outline" className="border-border/70">
                         Jelajahi Katalog
                       </Button>
+                      <Button render={<Link href="/note" />} variant="ghost">
+                        Bursa Note
+                      </Button>
                     </div>
                   </div>
                 ) : (
