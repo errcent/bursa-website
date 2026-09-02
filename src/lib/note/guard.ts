@@ -39,7 +39,7 @@ export function isNoteApiAllowedOnHost(request: NextRequest, pathname: string): 
   if (!isProductionHostRouting()) return true;
   const role = hostRole(request.headers.get("host"));
   if (pathname === "/api/note/sso/start" || pathname.startsWith("/api/note/sso/start?")) {
-    return role === "apex" || role === "note";
+    return role === "apex";
   }
   return role === "note";
 }

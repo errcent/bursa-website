@@ -197,6 +197,13 @@ function productionHostRouter(request: NextRequest): NextResponse | null {
   }
 
   if (role === "note") {
+    if (pathname === "/api/note/sso/start") {
+      const dest = new URL(`https://${APEX_HOST}/api/note/sso/start`);
+      request.nextUrl.searchParams.forEach((value, key) => {
+        dest.searchParams.set(key, value);
+      });
+      return NextResponse.redirect(dest, 302);
+    }
     if (!isNoteHostAllowedPath(pathname)) {
       return hostRedirect(APEX_HOST, pathname, search);
     }

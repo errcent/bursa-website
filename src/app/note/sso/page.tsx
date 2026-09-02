@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+
+import { noteSsoStartHref, sanitizeNoteNext } from "@/lib/note/sso-urls";
 
 function NoteSsoInner() {
   const params = useSearchParams();
 
   useEffect(() => {
     const code = params.get("code");
-    const next = params.get("next") || "/note";
+    const next = sanitizeNoteNext(params.get("next"));
     if (!code) {
-      window.location.replace("/api/note/sso/start");
+      window.location.replace(noteSsoStartHref(next));
       return;
     }
     void fetch("/api/note/sso/consume", {
@@ -19,16 +20,16 @@ function NoteSsoInner() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code }),
     }).then((res) => {
-      window.location.replace(res.ok ? next : "/api/note/sso/start");
+      window.location.replace(res.ok ? next : noteSsoStartHref(next));
     });
   }, [params]);
 
-  return <p className="p-8 text-sm text-muted-foreground">Menyambungkan sesi Note…</p>;
+  return <p className="p-8 text-sm text-zinc-400">Menyambungkan sesi Note…</p>;
 }
 
 export default function NoteSsoPage() {
   return (
-    <Suspense fallback={<p className="p-8 text-sm text-muted-foreground">Menyambungkan sesi Note…</p>}>
+    <Suspense fallback={<p className="p-8 text-sm text-zinc-400">Menyambungkan sesi Note…</p>}>
       <NoteSsoInner />
     </Suspense>
   );

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Inter, Montserrat_Alternates } from "next/font/google";
+import { headers } from "next/headers";
 import Script from "next/script";
 
 import { AuthProvider } from "@/components/auth-provider";
@@ -12,6 +13,7 @@ import { CookieConsentBanner } from "@/components/trust-portal/cookie-consent-ba
 import { PreviewCatalogBanner } from "@/components/preview-catalog/preview-catalog-banner";
 
 import { SearchSeoJsonLd } from "@/components/search/search-seo-jsonld";
+import { hostRole } from "@/lib/hosts/hosts";
 import { rootSiteMetadata } from "@/lib/site-metadata";
 
 import "./globals.css";
@@ -50,40 +52,51 @@ const INTRO_PENDING_SCRIPT = `(function(){try{if(!sessionStorage.getItem("bursa-
 
 export const metadata: Metadata = rootSiteMetadata;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const noteSurface = hostRole((await headers()).get("host")) === "note";
+
   return (
     <html
       lang="id"
       className={`${fontSans.variable} ${fontHeading.variable} ${fontMontAlt.variable} dark h-full antialiased`}
       data-scroll-behavior="smooth"
+      data-note-surface={noteSurface ? "1" : undefined}
       suppressHydrationWarning
     >
       <body
         className="flex min-h-full flex-col overflow-x-hidden bg-background text-foreground"
         suppressHydrationWarning
       >
-        <Script
-          id="bursa-intro-pending"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: INTRO_PENDING_SCRIPT }}
-        />
-        <SearchSeoJsonLd />
+        {noteSurface ? null : (
+          <Script
+            id="bursa-intro-pending"
+            strategy="beforeInteractive"
+            dangerouslySetInnerHTML={{ __html: INTRO_PENDING_SCRIPT }}
+          />
+        )}
+        {noteSurface ? null : <SearchSeoJsonLd />}
         <PostHogProvider />
-        <CursorGlow />
-        <PreloaderGate>
-          <NavbarRouteTracker />
+        {noteSurface ? null : <CursorGlow />}
+        {noteSurface ? (
           <NextAuthProvider>
-            <AuthProvider>
-              <PreviewCatalogBanner />
-              {children}
-            </AuthProvider>
+            <AuthProvider>{children}</AuthProvider>
           </NextAuthProvider>
-        </PreloaderGate>
-        <CookieConsentBanner />
+        ) : (
+          <PreloaderGate>
+            <NavbarRouteTracker />
+            <NextAuthProvider>
+              <AuthProvider>
+                <PreviewCatalogBanner />
+                {children}
+              </AuthProvider>
+            </NextAuthProvider>
+          </PreloaderGate>
+        )}
+        {noteSurface ? null : <CookieConsentBanner />}
       </body>
     </html>
   );

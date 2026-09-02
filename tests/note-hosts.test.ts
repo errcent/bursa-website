@@ -24,6 +24,7 @@ describe("Note host isolation", () => {
     assert.equal(isNoteHostAllowedPath("/"), true);
     assert.equal(isNoteHostAllowedPath("/note"), true);
     assert.equal(isNoteHostAllowedPath("/api/note/entries"), true);
+    assert.equal(isNoteHostAllowedPath("/masuk"), false);
     assert.equal(isNoteHostAllowedPath("/katalog"), false);
     assert.equal(isNoteHostAllowedPath("/api/me/profile"), false);
   });

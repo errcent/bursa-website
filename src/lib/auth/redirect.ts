@@ -1,3 +1,5 @@
+import { rewriteNotePostAuthPath } from "@/lib/note/sso-urls";
+
 /** Default landing after login/register, beranda. */
 export const POST_AUTH_HOME = "/";
 
@@ -34,7 +36,7 @@ export function resolvePostAuthRedirect(
   }
   if (NON_RETURNABLE.has(path)) return POST_AUTH_HOME;
 
-  return rawNext;
+  return rewriteNotePostAuthPath(rawNext);
 }
 
 /** Whether a path is safe to pass as `?next=` on the login URL. */

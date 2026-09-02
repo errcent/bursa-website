@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { noteSsoStartHref } from "@/lib/note/sso-urls";
 import type { JournalEntry } from "@/lib/note/types";
 
 type Payload = {
@@ -27,7 +28,7 @@ export function NoteHome() {
     void fetch("/api/note/entries", { cache: "no-store" })
       .then(async (res) => {
         if (res.status === 401) {
-          window.location.href = `/api/note/sso/start?next=${encodeURIComponent("/note")}`;
+          window.location.href = noteSsoStartHref("/note");
           return null;
         }
         if (!res.ok) throw new Error("Gagal memuat jurnal.");

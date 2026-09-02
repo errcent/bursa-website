@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { noteSsoStartHref } from "@/lib/note/sso-urls";
 
 export function NoteImportForm() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export function NoteImportForm() {
     const json = (await res.json().catch(() => ({}))) as { error?: string; imported?: number };
     setPending(false);
     if (res.status === 401) {
-      window.location.href = `/api/note/sso/start?next=${encodeURIComponent("/note/impor")}`;
+      window.location.href = noteSsoStartHref("/note/impor");
       return;
     }
     if (!res.ok) {

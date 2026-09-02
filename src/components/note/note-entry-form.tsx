@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { CLINIC_MODULES, FREE_CLINIC_MODULE_ID } from "@/lib/note/taxonomy";
+import { noteSsoStartHref } from "@/lib/note/sso-urls";
 import type { JournalKind, JournalMode } from "@/lib/note/types";
 
 const EMOTIONS = ["tenang", "yakin", "cemas", "marah", "FOMO", "lega", "malu"];
@@ -54,7 +55,7 @@ export function NoteEntryForm({ initialMode }: { initialMode: JournalMode }) {
     const body = (await res.json().catch(() => ({}))) as { error?: string };
     setPending(false);
     if (res.status === 401) {
-      window.location.href = `/api/note/sso/start?next=${encodeURIComponent(`/note/baru?mode=${mode}`)}`;
+      window.location.href = noteSsoStartHref(`/note/baru?mode=${mode}`);
       return;
     }
     if (!res.ok) {
