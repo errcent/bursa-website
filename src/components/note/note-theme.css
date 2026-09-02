@@ -1,0 +1,59 @@
+[data-note-theme="light"] {
+  color-scheme: light;
+}
+
+[data-note-theme="light"] .text-zinc-50,
+[data-note-theme="light"] .text-zinc-100,
+[data-note-theme="light"] .text-zinc-200 {
+  color: #18181b;
+}
+
+[data-note-theme="light"] .text-zinc-300 {
+  color: #3f3f46;
+}
+
+[data-note-theme="light"] .text-zinc-400,
+[data-note-theme="light"] .text-zinc-500 {
+  color: #52525b;
+}
+
+[data-note-theme="light"] .text-zinc-600 {
+  color: #71717a;
+}
+
+[data-note-theme="light"] .bg-zinc-950 {
+  background-color: #fafafa;
+}
+
+[data-note-theme="light"] .bg-zinc-900 {
+  background-color: #f4f4f5;
+}
+
+[data-note-theme="light"] .hover\:bg-zinc-900:hover {
+  background-color: #e4e4e7;
+}
+
+[data-note-theme="light"] .border-zinc-800,
+[data-note-theme="light"] .border-zinc-800\/80 {
+  border-color: #e4e4e7;
+}
+
+[data-note-theme="light"] .border-zinc-700 {
+  border-color: #d4d4d8;
+}
+
+[data-note-theme="light"] .bg-zinc-100 {
+  background-color: #18181b;
+}
+
+[data-note-theme="light"] .text-zinc-950 {
+  color: #fafafa;
+}
+
+[data-note-theme="light"] .hover\:bg-white:hover {
+  background-color: #27272a;
+}
+
+[data-note-theme="light"] .ring-zinc-100 {
+  --tw-ring-color: #18181b;
+}

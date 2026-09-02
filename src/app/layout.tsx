@@ -13,7 +13,7 @@ import { CookieConsentBanner } from "@/components/trust-portal/cookie-consent-ba
 import { PreviewCatalogBanner } from "@/components/preview-catalog/preview-catalog-banner";
 
 import { SearchSeoJsonLd } from "@/components/search/search-seo-jsonld";
-import { hostRole } from "@/lib/hosts/hosts";
+import { isNoteLayoutSurface, NOTE_SURFACE_HEADER } from "@/lib/hosts/hosts";
 import { rootSiteMetadata } from "@/lib/site-metadata";
 
 import "./globals.css";
@@ -57,7 +57,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const noteSurface = hostRole((await headers()).get("host")) === "note";
+  const headerList = await headers();
+  const noteSurface = isNoteLayoutSurface(
+    headerList.get("host"),
+    headerList.get(NOTE_SURFACE_HEADER)
+  );
 
   return (
     <html

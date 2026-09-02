@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 
-import { NoteHome } from "@/components/note/note-home";
+import { NoteSettingsForm } from "@/components/note/note-settings-form";
 import { NoteShell } from "@/components/note/note-shell";
 
 export const metadata: Metadata = {
-  title: "Bursa Note",
+  title: "Setelan · Bursa Note",
   robots: { index: false, follow: false },
 };
 
-export default function NotePage() {
+export default function NoteSettingsPage() {
   return (
-    <NoteShell>
-      <NoteHome />
+    <NoteShell title="Setelan">
+      <NoteSettingsForm />
     </NoteShell>
   );
 }

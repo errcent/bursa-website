@@ -6,6 +6,7 @@ import {
   apexNoteRedirectTarget,
   hostRole,
   isNoteHostAllowedPath,
+  isNoteLayoutSurface,
 } from "../src/lib/hosts/hosts";
 
 describe("Note host isolation", () => {
@@ -27,5 +28,11 @@ describe("Note host isolation", () => {
     assert.equal(isNoteHostAllowedPath("/masuk"), false);
     assert.equal(isNoteHostAllowedPath("/katalog"), false);
     assert.equal(isNoteHostAllowedPath("/api/me/profile"), false);
+  });
+
+  it("treats localhost /note as note chrome via surface header", () => {
+    assert.equal(isNoteLayoutSurface("localhost:3000", "note"), true);
+    assert.equal(isNoteLayoutSurface("localhost:3000", null), false);
+    assert.equal(isNoteLayoutSurface(NOTE_HOST, null), true);
   });
 });

@@ -33,6 +33,7 @@ import {
   privacyPublicPath,
   stripLocalePrefix,
   termsPublicPath,
+  NOTE_SURFACE_HEADER,
   type LegalLocale,
 } from "@/lib/hosts/hosts";
 
@@ -42,6 +43,19 @@ const MOBILE_DEV_ORIGINS = new Set([
   "http://localhost:19006",
   "http://127.0.0.1:19006",
 ]);
+
+function nextResponse(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  if (
+    !isProductionHostRouting() &&
+    (pathname === "/note" || pathname.startsWith("/note/"))
+  ) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set(NOTE_SURFACE_HEADER, "note");
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
+  return NextResponse.next();
+}
 
 function needsRequestGuard(pathname: string): boolean {
   return (
@@ -244,7 +258,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (!needsRequestGuard(pathname) && !(role === "admin" && isAdminAuthedPath(pathname))) {
-    return NextResponse.next();
+    return nextResponse(request);
   }
 
   if (isApi) {

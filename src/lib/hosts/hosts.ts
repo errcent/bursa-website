@@ -13,6 +13,7 @@ export const ADMIN_HOST = "admin.bursanalar.com";
 export const TRUST_HOST = "trust.bursanalar.com";
 export const PRIVACY_HOST = "privacy.bursanalar.com";
 export const NOTE_HOST = "note.bursanalar.com";
+export const NOTE_SURFACE_HEADER = "x-bursa-surface";
 
 export const PRODUCTION_APP_HOSTS = new Set([
   APEX_HOST,
@@ -54,6 +55,11 @@ export function originFor(role: Exclude<HostRole, "other">): string {
 
 export function isProductionHostRouting(): boolean {
   return process.env.VERCEL_ENV === "production";
+}
+
+export function isNoteLayoutSurface(host: string | null, surfaceHeader: string | null): boolean {
+  if (hostRole(host) === "note") return true;
+  return !isProductionHostRouting() && surfaceHeader === "note";
 }
 
 /** Privacy: DB/vault slug → public path segment (empty = hub). */

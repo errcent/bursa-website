@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 
-import { NoteHome } from "@/components/note/note-home";
+import { NoteProfilePage } from "@/components/note/note-profile-page";
 import { NoteShell } from "@/components/note/note-shell";
 
 export const metadata: Metadata = {
-  title: "Bursa Note",
+  title: "Profil · Bursa Note",
   robots: { index: false, follow: false },
 };
 
-export default function NotePage() {
+export default function NoteProfilRoute() {
   return (
-    <NoteShell>
-      <NoteHome />
+    <NoteShell title="Profil">
+      <NoteProfilePage />
     </NoteShell>
   );
 }

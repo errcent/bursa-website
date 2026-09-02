@@ -1,6 +1,6 @@
-# Bursa ? Platform Edukasi Trading (Next.js)
+# Bursa — Platform Edukasi Trading dan Investasi (Next.js)
 
-> **Status: PROTOTYPE LANJUTAN (P0+ selesai, P1/P2 parsial).** Frontend premium + backend parsial (Prisma, API routes, admin, chat, search). Bukan production-ready ? payment real, video hosting belum. **Google OAuth (NextAuth)** tersedia untuk login/daftar; sesi client localStorage masih dipakai sebagai bridge prototype.
+> **Status: PROTOTYPE LANJUTAN (P0+ selesai, P1/P2 parsial).** Frontend premium + backend parsial (Prisma, API routes, admin, chat, search). Voice publik: edukasi **trading dan investasi**. Bursa Note (`note.bursanalar.com`) = jurnal privat terpisah dari lesson Notes. Bukan production-ready secara bisnis — payment real dan video hosting masih open. **Google OAuth (NextAuth)** tersedia untuk login/daftar; sesi client localStorage masih dipakai sebagai bridge prototype.
 
 **Dokumentasi lengkap:** [`../00 - START HERE.md`](../00%20-%20START%20HERE.md)  
 **Status implementasi terkini:** [`../Documentation/Engineering/Onboarding/15 - Status Implementasi Kode (Living Doc).md`](../Documentation/Engineering/Onboarding/15%20-%20Status%20Implementasi%20Kode%20(Living%20Doc).md)

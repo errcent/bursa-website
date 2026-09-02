@@ -1,3 +1,4 @@
+import { inferJournalResult } from "@/lib/note/stats";
 import type { CreateEntryInput, JournalEntry } from "@/lib/note/types";
 
 export function buildJournalEntry(apexUserId: string, input: CreateEntryInput): JournalEntry {
@@ -14,7 +15,7 @@ export function buildJournalEntry(apexUserId: string, input: CreateEntryInput): 
     exitPrice: input.exitPrice ?? null,
     fees: input.fees ?? null,
     pnl: input.pnl ?? null,
-    result: input.result ?? null,
+    result: inferJournalResult(input.pnl ?? null, input.result ?? null),
     emotion: input.emotion ?? null,
     note: input.note ?? null,
     ruleBroken: input.ruleBroken ?? null,

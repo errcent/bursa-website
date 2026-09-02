@@ -3,115 +3,198 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { noteSsoStartHref } from "@/lib/note/sso-urls";
-import type { JournalEntry } from "@/lib/note/types";
-
-type Payload = {
-  entries: JournalEntry[];
-  plus: boolean;
-  reviewCountThisWeek: number;
-};
-
-function formatPnl(value: number | null) {
-  if (value == null) return "—";
-  const sign = value > 0 ? "+" : "";
-  return `${sign}${value.toLocaleString("id-ID")}`;
-}
+import { NoteBreakdown } from "@/components/note/note-breakdown";
+import { NoteCalendar } from "@/components/note/note-calendar";
+import { NoteEntryList } from "@/components/note/note-entry-list";
+import { useNoteJournal } from "@/components/note/note-journal-context";
+import { useNoteKind } from "@/components/note/note-kind-context";
+import { NoteStatsStrip } from "@/components/note/note-stats-strip";
+import { noteCopy } from "@/lib/note/copy";
+import { noteApexLoginHref } from "@/lib/note/sso-urls";
+import { pnlOptsFromPrefs } from "@/lib/note/prefs";
+import {
+  cumulativePnl,
+  dayKey,
+  filterEntries,
+  formatNoteTimestamp,
+  formatPnl,
+  groupByEmotion,
+  groupBySymbol,
+  latestActivityIso,
+  monthBuckets,
+  summarizeJournal,
+} from "@/lib/note/stats";
+import { useNotePrefs } from "@/lib/note/use-note-prefs";
 
 export function NoteHome() {
-  const [data, setData] = useState<Payload | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [prefs] = useNotePrefs();
+  const copy = noteCopy(prefs.locale);
+  const formatOpts = pnlOptsFromPrefs(prefs);
+  const cellOpts = { ...formatOpts, compact: true, naked: true, decimals: 0 as const };
+  const { kind } = useNoteKind();
+  const journal = useNoteJournal();
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const now = new Date();
+  const [cursor, setCursor] = useState({ year: now.getFullYear(), month: now.getMonth() });
+  const today = dayKey(now.toISOString());
 
   useEffect(() => {
-    let cancelled = false;
-    void fetch("/api/note/entries", { cache: "no-store" })
-      .then(async (res) => {
-        if (res.status === 401) {
-          window.location.href = noteSsoStartHref("/note");
-          return null;
-        }
-        if (!res.ok) throw new Error("Gagal memuat jurnal.");
-        return (await res.json()) as Payload;
-      })
-      .then((payload) => {
-        if (!cancelled && payload) setData(payload);
-      })
-      .catch((err: Error) => {
-        if (!cancelled) setError(err.message);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    setSelectedDate(null);
+  }, [kind]);
 
-  const pnlSum = useMemo(
-    () => (data?.entries ?? []).reduce((sum, e) => sum + (e.pnl ?? 0), 0),
-    [data]
+  const kindScoped = useMemo(
+    () => filterEntries(journal.data?.entries ?? [], { kind, result: "ALL" }),
+    [journal.data, kind]
   );
+  const monthPrefix = `${cursor.year}-${String(cursor.month + 1).padStart(2, "0")}-`;
+  const heroEntries = useMemo(() => {
+    if (prefs.heroRange !== "month") return kindScoped;
+    return kindScoped.filter((entry) => dayKey(entry.openedAt).startsWith(monthPrefix));
+  }, [kindScoped, prefs.heroRange, monthPrefix]);
+  const dayEntries = useMemo(
+    () => (selectedDate ? filterEntries(kindScoped, { kind: "ALL", result: "ALL", date: selectedDate }) : null),
+    [kindScoped, selectedDate]
+  );
+  const logEntries = dayEntries ?? kindScoped;
+  const snapshot = useMemo(() => summarizeJournal(heroEntries), [heroEntries]);
+  const equity = useMemo(() => cumulativePnl(heroEntries), [heroEntries]);
+  const buckets = useMemo(
+    () => monthBuckets(kindScoped, cursor.year, cursor.month),
+    [kindScoped, cursor]
+  );
+  const symbols = useMemo(() => groupBySymbol(heroEntries), [heroEntries]);
+  const emotions = useMemo(() => groupByEmotion(heroEntries), [heroEntries]);
+  const updatedIso = useMemo(() => latestActivityIso(kindScoped), [kindScoped]);
+  const updated = updatedIso ? formatNoteTimestamp(updatedIso) : null;
+  const daySnap = dayEntries ? summarizeJournal(dayEntries) : null;
+  const baruHref = selectedDate ? `/note/baru?date=${selectedDate}` : "/note/baru";
+  const recentEntries = useMemo(() => {
+    if (selectedDate) return logEntries;
+    return [...logEntries]
+      .sort((a, b) => Date.parse(b.openedAt) - Date.parse(a.openedAt))
+      .slice(0, 12);
+  }, [logEntries, selectedDate]);
 
-  if (error) {
-    return <p className="text-sm text-destructive">{error}</p>;
+  if (journal.error) {
+    return <p className="text-sm text-rose-400">{journal.error}</p>;
   }
-  if (!data) {
-    return <p className="text-sm text-muted-foreground">Memuat jurnal…</p>;
+  if (journal.loading || !journal.data) {
+    return <p className="text-sm text-zinc-600">{prefs.locale === "en" ? "Loading…" : "Memuat jurnal…"}</p>;
   }
+
+  const space = prefs.density === "compact" ? "space-y-6" : "space-y-8";
 
   return (
-    <div className="space-y-8">
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-border bg-card/40 p-4">
-          <p className="text-xs text-muted-foreground">PnL semua</p>
-          <p className="mt-1 font-heading text-2xl">{formatPnl(pnlSum)}</p>
-        </div>
-        <div className="rounded-xl border border-border bg-card/40 p-4">
-          <p className="text-xs text-muted-foreground">Entry terlihat</p>
-          <p className="mt-1 font-heading text-2xl">{data.entries.length}</p>
-        </div>
-        <div className="rounded-xl border border-border bg-card/40 p-4">
-          <p className="text-xs text-muted-foreground">Review minggu ini</p>
-          <p className="mt-1 font-heading text-2xl">{data.reviewCountThisWeek}</p>
+    <div className={space}>
+      {journal.demo ? (
+        <p className="text-xs text-zinc-500">
+          {copy.contoh}{" "}
+          <Link href={noteApexLoginHref("/note")} className="text-zinc-200 hover:underline">
+            {copy.masuk}
+          </Link>
+        </p>
+      ) : null}
+
+      <NoteStatsStrip
+        snapshot={snapshot}
+        equity={equity}
+        updatedLabel={updated ? `${updated.relative} · ${updated.absolute}` : null}
+        colorMode={prefs.colorMode}
+        formatOpts={formatOpts}
+        labels={{
+          net: copy.net,
+          win: copy.win,
+          entry: copy.entry,
+          kurva: copy.kurva,
+          expectansi: copy.expectansi,
+          diperbarui: copy.diperbarui,
+        }}
+      />
+
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.9fr)] lg:items-start">
+        <NoteCalendar
+          year={cursor.year}
+          monthIndex={cursor.month}
+          buckets={buckets}
+          selectedDate={selectedDate}
+          today={today}
+          weekStart={prefs.weekStart}
+          showNet={prefs.calendarShowNet}
+          density={prefs.density}
+          colorMode={prefs.colorMode}
+          formatOpts={cellOpts}
+          onSelect={(date) => setSelectedDate((current) => (current === date ? null : date))}
+          onPrev={() =>
+            setCursor((c) =>
+              c.month === 0 ? { year: c.year - 1, month: 11 } : { year: c.year, month: c.month - 1 }
+            )
+          }
+          onNext={() =>
+            setCursor((c) =>
+              c.month === 11 ? { year: c.year + 1, month: 0 } : { year: c.year, month: c.month + 1 }
+            )
+          }
+        />
+
+        <div className={space}>
+          {selectedDate && daySnap ? (
+            <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400">
+              <span>
+                {copy.hariItu}:{" "}
+                <span className="tabular-nums text-zinc-200">
+                  {formatPnl(daySnap.pnlSum, formatOpts)} · {daySnap.tradeCount}
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedDate(null)}
+                className="rounded-md border border-zinc-700 px-2 py-1 text-zinc-200 hover:bg-zinc-900 hover:text-white"
+              >
+                {copy.lepas}
+              </button>
+              <Link
+                href={baruHref}
+                className="rounded-md bg-zinc-100 px-2 py-1 font-medium text-zinc-950 hover:bg-white"
+              >
+                {copy.baru}
+              </Link>
+            </div>
+          ) : null}
+
+          <div>
+            <h2 className="mb-3 text-[11px] text-zinc-500">
+              {selectedDate
+                ? `${copy.log} · ${selectedDate}`
+                : logEntries.length > recentEntries.length
+                  ? `${copy.terbaru} · ${recentEntries.length}`
+                  : copy.terbaru}
+            </h2>
+            <NoteEntryList
+              entries={recentEntries}
+              colorMode={prefs.colorMode}
+              formatOpts={formatOpts}
+              hideDates={Boolean(selectedDate)}
+              empty={
+                <p className="text-sm text-zinc-500">
+                  {selectedDate ? copy.belumAdaHari : copy.belumAda}{" "}
+                  <Link href={baruHref} className="text-zinc-200 hover:underline">
+                    {copy.tulisSatu}
+                  </Link>
+                </p>
+              }
+            />
+          </div>
         </div>
       </div>
 
-      <div>
-        <p className="mb-3 text-sm text-muted-foreground">
-          Pilih mode — Cepat untuk habit, Review setelah sesi, Klinik saat pola berulang.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <Button render={<Link href="/note/baru?mode=cepat" />}>Cepat</Button>
-          <Button variant="outline" render={<Link href="/note/baru?mode=review" />}>
-            Review
-          </Button>
-          <Button variant="outline" render={<Link href="/note/baru?mode=klinik" />}>
-            Klinik
-          </Button>
-          <Button variant="ghost" render={<Link href="/note/impor" />}>
-            Impor CSV
-          </Button>
-        </div>
-      </div>
-
-      {data.entries.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Belum ada entry. Mulai dari Cepat (20 detik) — jangan tunggu Review panjang setelah rugi.
-        </p>
-      ) : (
-        <ul className="divide-y divide-border rounded-xl border border-border">
-          {data.entries.map((entry) => (
-            <li key={entry.id} className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-medium">
-                  {entry.symbol} · {entry.side} · {entry.kind === "INVEST" ? "Invest" : "Trade"}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {entry.mode} {entry.emotion ? `· ${entry.emotion}` : ""} {entry.note ? `· ${entry.note}` : ""}
-                </p>
-              </div>
-              <p className="text-sm tabular-nums">{formatPnl(entry.pnl)}</p>
-            </li>
-          ))}
-        </ul>
+      {selectedDate ? null : (
+        <NoteBreakdown
+          symbols={symbols}
+          emotions={emotions}
+          colorMode={prefs.colorMode}
+          formatOpts={formatOpts}
+          scopeLabel={copy.scopeFilter}
+        />
       )}
     </div>
   );

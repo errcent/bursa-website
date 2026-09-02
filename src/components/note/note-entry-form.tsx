@@ -1,35 +1,41 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
-import { CLINIC_MODULES, FREE_CLINIC_MODULE_ID } from "@/lib/note/taxonomy";
+import { noteCopy } from "@/lib/note/copy";
 import { noteSsoStartHref } from "@/lib/note/sso-urls";
-import type { JournalKind, JournalMode } from "@/lib/note/types";
+import type { JournalKind } from "@/lib/note/types";
+import { useNotePrefs } from "@/lib/note/use-note-prefs";
 
-const EMOTIONS = ["tenang", "yakin", "cemas", "marah", "FOMO", "lega", "malu"];
+const EMOTIONS = ["", "tenang", "yakin", "cemas", "marah", "FOMO", "lega", "malu"] as const;
 
-export function NoteEntryForm({ initialMode }: { initialMode: JournalMode }) {
+const inputClass =
+  "mt-1 h-10 w-full border-0 border-b border-zinc-800 bg-transparent px-0 text-sm text-zinc-100 outline-none placeholder:text-zinc-700 focus:border-zinc-500";
+
+const labelClass = "block text-[11px] text-zinc-500";
+
+export function NoteEntryForm({ initialDate }: { initialDate?: string | null }) {
   const router = useRouter();
-  const [mode, setMode] = useState<JournalMode>(initialMode);
-  const [kind, setKind] = useState<JournalKind>("TRADE");
+  const [prefs] = useNotePrefs();
+  const copy = noteCopy(prefs.locale);
+  const [kind, setKind] = useState<JournalKind>(prefs.defaultKind);
   const [symbol, setSymbol] = useState("");
   const [side, setSide] = useState("BUY");
   const [pnl, setPnl] = useState("");
-  const [emotion, setEmotion] = useState("tenang");
+  const [openedDate, setOpenedDate] = useState(initialDate ?? "");
+  const [emotion, setEmotion] = useState("");
   const [note, setNote] = useState("");
-  const [ruleBroken, setRuleBroken] = useState("");
-  const [lesson, setLesson] = useState("");
-  const [clinicModuleId, setClinicModuleId] = useState(FREE_CLINIC_MODULE_ID);
-  const [protocol, setProtocol] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  const clinic = useMemo(
-    () => CLINIC_MODULES.find((m) => m.id === clinicModuleId),
-    [clinicModuleId]
-  );
+  useEffect(() => {
+    setKind(prefs.defaultKind);
+  }, [prefs.defaultKind]);
+
+  const pnlNumber = pnl === "" ? null : Number(pnl);
+  const showLossEmotionHint =
+    prefs.emotionPrompt === "after-loss" && pnlNumber != null && pnlNumber < 0 && !emotion;
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -40,22 +46,19 @@ export function NoteEntryForm({ initialMode }: { initialMode: JournalMode }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         kind,
-        mode,
+        mode: "cepat",
         symbol,
         side,
-        pnl: pnl === "" ? null : Number(pnl),
-        emotion,
-        note,
-        ruleBroken: mode === "cepat" ? null : ruleBroken,
-        lesson: mode === "cepat" ? null : lesson,
-        clinicModuleId: mode === "klinik" ? clinicModuleId : null,
-        protocol: mode === "klinik" ? protocol || clinic?.protocol : null,
+        pnl: pnlNumber,
+        emotion: emotion || null,
+        note: note.trim() || null,
+        openedAt: openedDate ? `${openedDate}T12:00:00+07:00` : null,
       }),
     });
     const body = (await res.json().catch(() => ({}))) as { error?: string };
     setPending(false);
     if (res.status === 401) {
-      window.location.href = noteSsoStartHref(`/note/baru?mode=${mode}`);
+      window.location.href = noteSsoStartHref("/note/baru");
       return;
     }
     if (!res.ok) {
@@ -67,163 +70,112 @@ export function NoteEntryForm({ initialMode }: { initialMode: JournalMode }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto max-w-xl space-y-5">
-      <div className="flex flex-wrap gap-2">
-        {(["cepat", "review", "klinik"] as const).map((item) => (
-          <Button
-            key={item}
+    <form onSubmit={onSubmit} className="mx-auto max-w-md space-y-8">
+      <div>
+        <p className={labelClass}>Jenis</p>
+        <div className="mt-2 flex gap-3 text-sm">
+          <button
             type="button"
-            size="sm"
-            variant={mode === item ? "default" : "outline"}
-            onClick={() => setMode(item)}
+            onClick={() => setKind("TRADE")}
+            className={kind === "TRADE" ? "font-medium text-zinc-100 underline decoration-zinc-500 underline-offset-4" : "text-zinc-500 hover:text-zinc-300"}
           >
-            {item === "cepat" ? "Cepat" : item === "review" ? "Review" : "Klinik"}
-          </Button>
-        ))}
+            Trade
+          </button>
+          <button
+            type="button"
+            onClick={() => setKind("INVEST")}
+            className={kind === "INVEST" ? "font-medium text-zinc-100 underline decoration-zinc-500 underline-offset-4" : "text-zinc-500 hover:text-zinc-300"}
+          >
+            Invest
+          </button>
+        </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="text-sm">
-          Jenis
-          <select
-            className="mt-1 h-11 w-full rounded-md border border-border bg-background px-3"
-            value={kind}
-            onChange={(e) => setKind(e.target.value as JournalKind)}
-          >
-            <option value="TRADE">Trade</option>
-            <option value="INVEST">Invest</option>
-          </select>
+      <div className="grid grid-cols-2 gap-x-6 gap-y-6">
+        <label className="col-span-2">
+          <span className={labelClass}>Simbol</span>
+          <input
+            required
+            className={inputClass}
+            value={symbol}
+            onChange={(e) => setSymbol(e.target.value)}
+            aria-label="Simbol"
+          />
         </label>
-        <label className="text-sm">
-          Sisi
-          <select
-            className="mt-1 h-11 w-full rounded-md border border-border bg-background px-3"
-            value={side}
-            onChange={(e) => setSide(e.target.value)}
-          >
-            <option value="BUY">BUY / Long</option>
-            <option value="SELL">SELL / Short</option>
-            <option value="HOLD">HOLD</option>
+        <label>
+          <span className={labelClass}>Sisi</span>
+          <select className={inputClass} value={side} onChange={(e) => setSide(e.target.value)} aria-label="Sisi">
+            <option value="BUY">Buy</option>
+            <option value="SELL">Sell</option>
+            <option value="HOLD">Hold</option>
             <option value="DCA">DCA</option>
           </select>
         </label>
-        <label className="text-sm sm:col-span-2">
-          Simbol
-          <input
-            required
-            className="mt-1 h-11 w-full rounded-md border border-border bg-background px-3"
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value)}
-            placeholder="BBCA / EURUSD / BTC"
-          />
-        </label>
-        <label className="text-sm">
-          PnL (opsional)
+        <label>
+          <span className={labelClass}>PnL</span>
           <input
             type="number"
             step="any"
-            className="mt-1 h-11 w-full rounded-md border border-border bg-background px-3"
+            className={inputClass}
             value={pnl}
             onChange={(e) => setPnl(e.target.value)}
+            aria-label="PnL"
           />
         </label>
-        <label className="text-sm">
-          Emosi
+        <label>
+          <span className={labelClass}>Tanggal</span>
+          <input
+            type="date"
+            className={`${inputClass} text-zinc-300`}
+            value={openedDate}
+            onChange={(e) => setOpenedDate(e.target.value)}
+            aria-label="Tanggal"
+          />
+        </label>
+        <label>
+          <span className={labelClass}>Emosi (opsional)</span>
           <select
-            className="mt-1 h-11 w-full rounded-md border border-border bg-background px-3"
+            className={inputClass}
             value={emotion}
             onChange={(e) => setEmotion(e.target.value)}
+            aria-label="Emosi"
           >
-            {EMOTIONS.map((item) => (
+            <option value="">—</option>
+            {EMOTIONS.filter(Boolean).map((item) => (
               <option key={item} value={item}>
                 {item}
               </option>
             ))}
           </select>
+          {showLossEmotionHint ? (
+            <p className="mt-1 text-[11px] text-zinc-500">Setelah rugi, satu kata membantu. Boleh dikosongkan.</p>
+          ) : null}
+        </label>
+        <label className="col-span-2">
+          <span className={labelClass}>Catatan (opsional)</span>
+          <textarea
+            rows={2}
+            className={`${inputClass} resize-none py-2`}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            aria-label="Catatan"
+          />
         </label>
       </div>
 
-      <label className="block text-sm">
-        Satu kalimat
-        <textarea
-          required
-          rows={2}
-          className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="Apa yang terjadi, tanpa drama."
-        />
-      </label>
+      {error ? <p className="text-sm text-rose-400">{error}</p> : null}
 
-      {mode !== "cepat" ? (
-        <>
-          <label className="block text-sm">
-            Aturan yang dilanggar
-            <input
-              className="mt-1 h-11 w-full rounded-md border border-border bg-background px-3"
-              value={ruleBroken}
-              onChange={(e) => setRuleBroken(e.target.value)}
-              placeholder="Contoh: entry tanpa stop"
-            />
-          </label>
-          <label className="block text-sm">
-            Satu pelajaran
-            <input
-              className="mt-1 h-11 w-full rounded-md border border-border bg-background px-3"
-              value={lesson}
-              onChange={(e) => setLesson(e.target.value)}
-            />
-          </label>
-        </>
-      ) : null}
-
-      {mode === "klinik" ? (
-        <div className="space-y-3 rounded-xl border border-border p-4">
-          <label className="block text-sm">
-            Modul
-            <select
-              className="mt-1 h-11 w-full rounded-md border border-border bg-background px-3"
-              value={clinicModuleId}
-              onChange={(e) => {
-                setClinicModuleId(e.target.value);
-                setProtocol(CLINIC_MODULES.find((m) => m.id === e.target.value)?.protocol ?? "");
-              }}
-            >
-              {CLINIC_MODULES.map((mod) => (
-                <option key={mod.id} value={mod.id}>
-                  {mod.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          {clinic ? (
-            <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-              {clinic.questions.map((q) => (
-                <li key={q.id}>{q.prompt}</li>
-              ))}
-            </ul>
-          ) : null}
-          <label className="block text-sm">
-            Protokol 1 langkah
-            <textarea
-              rows={2}
-              className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2"
-              value={protocol || clinic?.protocol || ""}
-              onChange={(e) => setProtocol(e.target.value)}
-            />
-          </label>
-        </div>
-      ) : null}
-
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
-
-      <div className="flex gap-2">
-        <Button type="submit" disabled={pending}>
-          {pending ? "Menyimpan…" : "Simpan"}
-        </Button>
-        <Button type="button" variant="ghost" onClick={() => router.push("/note")}>
-          Batal
-        </Button>
+      <div className="flex items-center justify-between">
+        <button type="button" className="text-sm text-zinc-500 hover:text-zinc-200" onClick={() => router.push("/note")}>
+          {copy.batal}
+        </button>
+        <button
+          type="submit"
+          disabled={pending}
+          className="rounded-md bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-950 hover:bg-white disabled:bg-zinc-800 disabled:text-zinc-500"
+        >
+          {pending ? copy.menyimpan : copy.simpan}
+        </button>
       </div>
     </form>
   );
