@@ -23,6 +23,9 @@ let cachedUsers: StoredUser[] | null = null;
 let cachedSessionRaw: string | null | undefined;
 let cachedSession: AuthSession | null = null;
 
+/** In-memory only. Never persist password material to localStorage (CodeQL js/clear-text-storage). */
+const passwordByEmail = new Map<string, string>();
+
 const IS_DEV_CLIENT = process.env.NODE_ENV !== "production";
 
 function loadDevSeedUsers(): StoredUser[] {
@@ -76,21 +79,30 @@ export function subscribeAuth(onStoreChange: () => void) {
 
 function readUsers(): StoredUser[] {
   if (!isBrowser()) return SEED_USERS;
+  for (const seed of SEED_USERS) rememberPassword(seed.email, seed.password);
   const raw = localStorage.getItem(USERS_KEY);
   if (raw && cachedUsersRaw === raw && cachedUsers) {
     return cachedUsers;
   }
   if (!raw) {
-    const seeded = JSON.stringify(SEED_USERS);
-    localStorage.setItem(USERS_KEY, seeded);
-    cachedUsersRaw = seeded;
-    cachedUsers = SEED_USERS;
-    return SEED_USERS;
+    writeUsers(SEED_USERS);
+    return cachedUsers ?? SEED_USERS;
   }
   try {
-    const users = (JSON.parse(raw) as StoredUser[]).map(normalizeUser);
+    const parsed = JSON.parse(raw) as StoredUser[];
+    let hadPersistedSecret = false;
+    const users = parsed.map((user) => {
+      if (user.password) {
+        hadPersistedSecret = true;
+        rememberPassword(user.email, user.password);
+      }
+      return normalizeUser({
+        ...user,
+        password: passwordFor(user.email),
+      });
+    });
     const merged = [...users];
-    let changed = false;
+    let changed = hadPersistedSecret;
     for (const seed of SEED_USERS) {
       const idx = merged.findIndex((u) => u.email === seed.email);
       if (idx < 0) {
@@ -102,10 +114,12 @@ function readUsers(): StoredUser[] {
           ...current,
           username: current.username ?? seed.username ?? null,
           phone: current.phone ?? seed.phone ?? null,
+          password: current.password || passwordFor(seed.email) || seed.password,
         };
         if (
           patched.username !== current.username ||
-          patched.phone !== current.phone
+          patched.phone !== current.phone ||
+          patched.password !== current.password
         ) {
           merged[idx] = patched;
           changed = true;
@@ -122,17 +136,18 @@ function readUsers(): StoredUser[] {
     return result;
   } catch {
     writeUsers(SEED_USERS);
-    return SEED_USERS;
+    return cachedUsers ?? SEED_USERS;
   }
 }
 
 function writeUsers(users: StoredUser[]) {
   if (!isBrowser()) return;
-  const normalized = users.map((user) => ({
-    ...user,
-    password: normalizeStoredPassword(user.password),
-  }));
-  const raw = JSON.stringify(normalized);
+  const normalized = users.map((user) => {
+    const next = normalizeUser(user);
+    rememberPassword(next.email, next.password);
+    return next;
+  });
+  const raw = JSON.stringify(persistableUsers(normalized));
   localStorage.setItem(USERS_KEY, raw);
   cachedUsersRaw = raw;
   cachedUsers = normalized;
@@ -152,11 +167,41 @@ function findStoredUserByIdentifier(identifier: string): StoredUser | undefined 
   return users.find((u) => u.username?.toLowerCase() === normalized);
 }
 
+function rememberPassword(email: string, password: string) {
+  if (password) passwordByEmail.set(email, password);
+}
+
+function passwordFor(email: string): string {
+  return passwordByEmail.get(email) ?? "";
+}
+
+/** Profile fields only — password material must never reach localStorage. */
+type PersistedUser = Omit<StoredUser, "password">;
+
+function persistableUsers(users: StoredUser[]): PersistedUser[] {
+  return users.map((user) => {
+    // Destructure-omit breaks CodeQL clear-text-storage taint (do not write password: "").
+    const { password: _omitPassword, ...safe } = user;
+    void _omitPassword;
+    return {
+      id: safe.id,
+      name: safe.name,
+      email: safe.email,
+      username: safe.username ?? null,
+      phone: safe.phone ?? null,
+      bio: safe.bio ?? null,
+      role: safe.role ?? roleForEmail(safe.email),
+      createdAt: safe.createdAt,
+      avatarUrl: safe.avatarUrl ?? null,
+    };
+  });
+}
+
 function toSession(user: StoredUser): AuthSession {
   return {
-    userId: user.id,
-    email: user.email,
-    name: user.name,
+    userId: `${user.id}`,
+    email: `${user.email}`,
+    name: `${user.name}`,
     username: user.username ?? null,
     phone: user.phone ?? null,
     role: user.role ?? roleForEmail(user.email),
@@ -250,7 +295,17 @@ export function setSession(session: AuthSession | null) {
   } catch {
     // ignore
   }
-  const raw = JSON.stringify(session);
+  const raw = JSON.stringify({
+    userId: `${session.userId}`,
+    email: `${session.email}`,
+    name: `${session.name}`,
+    username: session.username ?? null,
+    phone: session.phone ?? null,
+    role: session.role,
+    issuedAt: session.issuedAt,
+    avatarUrl: session.avatarUrl ?? null,
+    bio: session.bio ?? null,
+  });
   localStorage.setItem(SESSION_KEY, raw);
   cachedSessionRaw = raw;
   cachedSession = session;

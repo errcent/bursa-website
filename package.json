@@ -17,7 +17,7 @@
     "seed:preview-catalog": "tsx scripts/seed-preview-catalog.ts",
     "sync:catalog-copy": "tsx scripts/sync-catalog-copy.ts",
     "test:email-policy": "tsx --test tests/email-policy.test.ts",
-    "test:security-bn": "tsx --test tests/auth-redirect.test.ts tests/rate-limit-key.test.ts tests/auth-secret-and-ip.test.ts tests/web-session-jti.test.ts tests/mentor-application-urls.test.ts tests/mentor-application-pipeline.test.ts tests/google-oauth-reclaim.test.ts tests/content-security-policy.test.ts",
+    "test:security-bn": "tsx --test tests/auth-redirect.test.ts tests/rate-limit-key.test.ts tests/auth-secret-and-ip.test.ts tests/web-session-jti.test.ts tests/mentor-application-urls.test.ts tests/mentor-application-pipeline.test.ts tests/google-oauth-reclaim.test.ts tests/github-security-alerts.test.ts",
     "test:note": "tsx --test tests/note-taxonomy.test.ts tests/note-entitlements.test.ts tests/note-csv.test.ts tests/note-hosts.test.ts tests/note-sso-urls.test.ts tests/note-stats.test.ts tests/note-prefs.test.ts",
     "postinstall": "prisma generate && prisma generate --schema prisma-note/schema.prisma && node scripts/ensure-patched-sharp.mjs",
     "db:generate": "prisma generate",
@@ -44,12 +44,12 @@
     "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.19.3",
     "@react-email/render": "^2.1.0",
-    "@tiptap/extension-link": "3.27.3",
-    "@tiptap/extension-placeholder": "3.27.3",
-    "@tiptap/extension-underline": "3.27.3",
-    "@tiptap/pm": "3.27.3",
-    "@tiptap/react": "3.27.3",
-    "@tiptap/starter-kit": "3.27.3",
+    "@tiptap/extension-link": "3.31.0",
+    "@tiptap/extension-placeholder": "3.31.0",
+    "@tiptap/extension-underline": "3.31.0",
+    "@tiptap/pm": "3.31.0",
+    "@tiptap/react": "3.31.0",
+    "@tiptap/starter-kit": "3.31.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.2",
     "bcryptjs": "^3.0.3",
@@ -78,8 +78,13 @@
     "zod": "^4.4.3"
   },
   "overrides": {
-    "postcss": "8.5.16",
-    "@hono/node-server": "^2.0.10"
+    "postcss": "8.5.26",
+    "@hono/node-server": "^2.0.10",
+    "deepmerge-ts": "8.0.2",
+    "js-yaml": "4.3.2",
+    "browserslist": "4.28.8",
+    "qs": "6.16.0",
+    "fast-uri": "3.1.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",

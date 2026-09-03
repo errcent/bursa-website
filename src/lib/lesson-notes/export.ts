@@ -28,31 +28,57 @@ type BlockNode =
   | { type: "blockquote"; inlines: InlineNode[] }
   | { type: "code-block"; text: string };
 
+/** Single-pass entity decode — avoids chained &amp; → & double-unescape (js/double-escaping). */
+const NAMED_HTML_ENTITIES: Record<string, string> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  nbsp: " ",
+};
+
+function decodeHtmlEntities(text: string) {
+  return text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (_full, entity: string) => {
+    if (entity[0] === "#") {
+      const code =
+        entity[1] === "x" || entity[1] === "X"
+          ? Number.parseInt(entity.slice(2), 16)
+          : Number.parseInt(entity.slice(1), 10);
+      if (!Number.isFinite(code) || code < 0 || code > 0x10ffff) return "";
+      try {
+        return String.fromCodePoint(code);
+      } catch {
+        return "";
+      }
+    }
+    return NAMED_HTML_ENTITIES[entity.toLowerCase()] ?? "";
+  });
+}
+
+function stripTags(html: string) {
+  let text = html;
+  let previous = "";
+  while (text !== previous) {
+    previous = text;
+    text = text.replace(/<[^>]*>/g, "");
+  }
+  return text;
+}
+
 function stripHtml(html: string) {
-  return html
+  const withBreaks = html
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/p>/gi, "\n\n")
     .replace(/<\/(h[1-6]|li|div|tr)>/gi, "\n")
-    .replace(/<li[^>]*>/gi, "• ")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
+    .replace(/<li[^>]*>/gi, "• ");
+  return decodeHtmlEntities(stripTags(withBreaks))
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 
 function decodeEntities(text: string) {
-  return text
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
+  return decodeHtmlEntities(text);
 }
 
 function isLikelyHtml(content: string) {
