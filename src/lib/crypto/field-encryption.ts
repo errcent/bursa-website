@@ -23,8 +23,9 @@ export function isEncryptedField(value: string): boolean {
 
 export function encryptField(plaintext: string): string {
   const iv = crypto.randomBytes(IV_BYTES);
+  // Semgrep requires a literal authTagLength (not a const alias).
   const cipher = crypto.createCipheriv(ALGO, encryptionKey(), iv, {
-    authTagLength: AUTH_TAG_BYTES,
+    authTagLength: 16,
   });
   const encrypted = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
   const tag = cipher.getAuthTag();
@@ -39,8 +40,9 @@ export function decryptField(value: string): string {
   const iv = Buffer.from(ivB64, "base64url");
   const tag = Buffer.from(tagB64, "base64url");
   if (iv.length !== IV_BYTES || tag.length !== AUTH_TAG_BYTES) return value;
+  // Semgrep requires a literal authTagLength (not a const alias).
   const decipher = crypto.createDecipheriv(ALGO, encryptionKey(), iv, {
-    authTagLength: AUTH_TAG_BYTES,
+    authTagLength: 16,
   });
   decipher.setAuthTag(tag);
   const decrypted = Buffer.concat([

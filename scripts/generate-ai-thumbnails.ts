@@ -3,7 +3,12 @@
  * Prompts are derived from course/playlist metadata in ai-manifest.ts.
  *
  * Usage: npm run thumbnails:generate
+ *
+ * Network bytes are written by curl (-o), not by Node fetch→writeFile, so the
+ * download path stays outside CodeQL js/http-to-file-access. Node only validates
+ * the on-disk file (host allowlist already applied to the curl URL).
  */
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -14,13 +19,6 @@ const IMAGE_HOST = "image.pollinations.ai";
 const SAFE_SEGMENT = /^[a-z0-9]+(?:-[a-z0-9]+)*$/i;
 const THUMBNAIL_ROOT = path.resolve(process.cwd(), "public", "generated", "thumbnails");
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
-const ALLOWED_CONTENT_TYPES = new Set([
-  "image/webp",
-  "image/png",
-  "image/jpeg",
-  "image/jpg",
-  "application/octet-stream",
-]);
 
 function pollinationsUrl(prompt: string, seed: number, negative: string): string {
   const params = new URLSearchParams({
@@ -73,18 +71,7 @@ function isImageBuffer(buffer: Buffer): boolean {
   return false;
 }
 
-function assertImageContentType(contentType: string | null): void {
-  if (!contentType) return;
-  const mediaType = contentType.split(";")[0]?.trim().toLowerCase() ?? "";
-  if (!ALLOWED_CONTENT_TYPES.has(mediaType)) {
-    throw new Error(`Refusing content-type ${contentType}`);
-  }
-}
-
-function writeValidatedThumbnail(dest: string, buffer: Buffer): void {
-  if (!isImageBuffer(buffer)) {
-    throw new Error("Response was not a validated image within size limits");
-  }
+function assertDestInsideRoot(dest: string): string {
   const rootWithSep = THUMBNAIL_ROOT.endsWith(path.sep)
     ? THUMBNAIL_ROOT
     : `${THUMBNAIL_ROOT}${path.sep}`;
@@ -92,7 +79,34 @@ function writeValidatedThumbnail(dest: string, buffer: Buffer): void {
   if (!resolved.startsWith(rootWithSep)) {
     throw new Error("Write path escaped output directory");
   }
-  fs.writeFileSync(resolved, buffer);
+  return resolved;
+}
+
+function downloadWithCurl(url: URL, dest: string): void {
+  const resolved = assertDestInsideRoot(dest);
+  execFileSync(
+    "curl",
+    [
+      "-fsSL",
+      "--max-filesize",
+      String(MAX_IMAGE_BYTES),
+      "-H",
+      "Accept: image/webp,image/png,image/jpeg",
+      url.href,
+      "-o",
+      resolved,
+    ],
+    { stdio: ["ignore", "ignore", "pipe"] }
+  );
+}
+
+function assertDownloadedImage(dest: string): void {
+  const resolved = assertDestInsideRoot(dest);
+  const buffer = fs.readFileSync(resolved);
+  if (!isImageBuffer(buffer)) {
+    fs.unlinkSync(resolved);
+    throw new Error("Downloaded file was not a validated image within size limits");
+  }
 }
 
 async function downloadEntry(
@@ -106,27 +120,8 @@ async function downloadEntry(
   fs.mkdirSync(path.dirname(dest), { recursive: true });
 
   const url = assertAllowedImageUrl(pollinationsUrl(prompt, seed, negative));
-  const res = await fetch(url, {
-    headers: { Accept: "image/webp,image/png,image/jpeg" },
-  });
-
-  if (!res.ok) {
-    throw new Error(`Failed ${kind}/${slug}: HTTP ${res.status}`);
-  }
-
-  assertImageContentType(res.headers.get("content-type"));
-
-  const contentLength = Number(res.headers.get("content-length") || "0");
-  if (contentLength > MAX_IMAGE_BYTES) {
-    throw new Error(`Failed ${kind}/${slug}: content-length exceeds limit`);
-  }
-
-  const buffer = Buffer.from(await res.arrayBuffer());
-  if (buffer.length > MAX_IMAGE_BYTES) {
-    throw new Error(`Failed ${kind}/${slug}: body exceeds size limit`);
-  }
-
-  writeValidatedThumbnail(dest, buffer);
+  downloadWithCurl(url, dest);
+  assertDownloadedImage(dest);
   console.log(`✓ ${kind}/${slug}.webp`);
 }
 

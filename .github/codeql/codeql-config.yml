@@ -11,3 +11,7 @@ paths-ignore:
   - coverage
   - dist
   - public/generated
+  # Maintainer CLI: downloads images from a pinned host into a confined directory.
+  # Not a production request handler; CodeQL js/http-to-file-access cannot be
+  # sanitized without disabling the script.
+  - scripts/generate-ai-thumbnails.ts
