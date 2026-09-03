@@ -120,6 +120,22 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
           {children}
         </main>
       </div>
+
+      <div
+        role="status"
+        className="pointer-events-none fixed inset-x-0 bottom-5 z-50 flex justify-center px-4"
+      >
+        <p
+          className={cn(
+            "rounded-full border px-3.5 py-1.5 text-center text-xs font-medium shadow-lg backdrop-blur-sm",
+            theme === "light"
+              ? "border-amber-300/80 bg-amber-50/95 text-amber-950"
+              : "border-amber-500/40 bg-amber-950/90 text-amber-100"
+          )}
+        >
+          {copy.underDev}
+        </p>
+      </div>
     </div>
   );
 }

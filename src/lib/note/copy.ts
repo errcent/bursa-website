@@ -92,6 +92,7 @@ const ID = {
   privacyFoot: "Jurnal privat. Win rate tidak dibagikan.",
   terbaru: "Terbaru",
   log: "Log",
+  underDev: "Masih dalam pengembangan",
 };
 
 const EN: typeof ID = {
@@ -186,6 +187,7 @@ const EN: typeof ID = {
   privacyFoot: "Private journal. Win rate is not shared.",
   terbaru: "Latest",
   log: "Log",
+  underDev: "Still under development",
 };
 
 export function noteCopy(locale: NoteLocale) {
