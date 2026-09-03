@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { toSafeHttpUrl } from "@/lib/security/safe-http-url";
 import {
   L1_EXPERTISE_OPTIONS,
   L1_YEARS_OPTIONS,
@@ -32,8 +33,9 @@ const claimsValues = L2_CLAIMS_EVIDENCE_OPTIONS.map((o) => o.value) as [
 const httpUrl = z
   .string()
   .trim()
-  .url("URL tidak valid.")
-  .refine((value) => /^https?:\/\//i.test(value), { message: "URL harus http atau https." });
+  .refine((value) => toSafeHttpUrl(value) !== null, {
+    message: "URL harus http atau https.",
+  });
 
 const optionalHttpUrl = z
   .string()

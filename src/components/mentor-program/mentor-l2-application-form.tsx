@@ -16,6 +16,7 @@ import {
   type L1ExpertiseValue,
 } from "@/lib/mentor-program/fields";
 import type { MentorApplicationRecord } from "@/lib/mentor-program/types";
+import { toSafeHttpUrl } from "@/lib/security/safe-http-url";
 import { cn } from "@/lib/utils";
 import type { MentorL2DraftInput } from "@/lib/validations/mentor-application";
 
@@ -173,6 +174,8 @@ export function MentorL2ApplicationForm({ token }: { token: string }) {
 
   const l1 = application.l1Answers;
   const disabled = readOnly || saving;
+  const linkedinUrl = asString(l1.l1_linkedin_url);
+  const safeLinkedinHref = toSafeHttpUrl(linkedinUrl);
 
   return (
     <div className="flex flex-col gap-8">
@@ -185,11 +188,15 @@ export function MentorL2ApplicationForm({ token }: { token: string }) {
           {asString(l1.l1_full_name) || application.fullName} · {application.email}
           {asString(l1.l1_city) ? ` · ${asString(l1.l1_city)}, ${asString(l1.l1_country)}` : ""}
         </p>
-        {asString(l1.l1_linkedin_url) ? (
+        {linkedinUrl ? (
           <p className="mt-1 text-xs">
-            <a href={asString(l1.l1_linkedin_url)} className="underline" target="_blank" rel="noreferrer">
-              {asString(l1.l1_linkedin_url)}
-            </a>
+            {safeLinkedinHref ? (
+              <a href={safeLinkedinHref} className="underline" target="_blank" rel="noreferrer">
+                {linkedinUrl}
+              </a>
+            ) : (
+              linkedinUrl
+            )}
           </p>
         ) : null}
         {Array.isArray(l1.l1_expertise) && l1.l1_expertise.length > 0 ? (

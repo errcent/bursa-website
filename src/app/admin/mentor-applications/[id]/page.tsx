@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { decideMentorApplication, fetchMentorApplication } from "@/lib/admin/api";
 import { hasMeaningfulL1Answers, l1AdminRows } from "@/lib/mentor-program/l1-admin-display";
 import type { MentorApplicationRecord } from "@/lib/mentor-program/types";
+import { toSafeHttpUrl } from "@/lib/security/safe-http-url";
 
 const ACTIONS: Array<{ action: string; label: string }> = [
   { action: "invite_l2", label: "Undang / buat tautan L2" },
@@ -67,11 +68,12 @@ function L1AnswerList({ data }: { data: Record<string, unknown> }) {
             <dd className="break-words whitespace-pre-wrap">
               {row.id.includes("url") || row.id === "l1_extra_links" ? (
                 <span className="flex flex-col gap-1">
-                  {row.value.split("\n").map((href) =>
-                    href.startsWith("http") ? (
+                  {row.value.split("\n").map((href) => {
+                    const safeHref = toSafeHttpUrl(href);
+                    return safeHref ? (
                       <a
                         key={href}
-                        href={href}
+                        href={safeHref}
                         className="text-accent underline-offset-2 hover:underline"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -80,8 +82,8 @@ function L1AnswerList({ data }: { data: Record<string, unknown> }) {
                       </a>
                     ) : (
                       <span key={href}>{href}</span>
-                    ),
-                  )}
+                    );
+                  })}
                 </span>
               ) : (
                 row.value

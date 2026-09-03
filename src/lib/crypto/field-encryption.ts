@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 const PREFIX = "enc:v1:";
 const ALGO = "aes-256-gcm";
 const IV_BYTES = 12;
+const AUTH_TAG_BYTES = 16;
 
 function encryptionKey(): Buffer {
   const raw = process.env.FIELD_ENCRYPTION_KEY?.trim();
@@ -22,7 +23,9 @@ export function isEncryptedField(value: string): boolean {
 
 export function encryptField(plaintext: string): string {
   const iv = crypto.randomBytes(IV_BYTES);
-  const cipher = crypto.createCipheriv(ALGO, encryptionKey(), iv);
+  const cipher = crypto.createCipheriv(ALGO, encryptionKey(), iv, {
+    authTagLength: AUTH_TAG_BYTES,
+  });
   const encrypted = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
   const tag = cipher.getAuthTag();
   return `${PREFIX}${iv.toString("base64url")}.${tag.toString("base64url")}.${encrypted.toString("base64url")}`;
@@ -33,12 +36,13 @@ export function decryptField(value: string): string {
   const body = value.slice(PREFIX.length);
   const [ivB64, tagB64, dataB64] = body.split(".");
   if (!ivB64 || !tagB64 || !dataB64) return value;
-  const decipher = crypto.createDecipheriv(
-    ALGO,
-    encryptionKey(),
-    Buffer.from(ivB64, "base64url")
-  );
-  decipher.setAuthTag(Buffer.from(tagB64, "base64url"));
+  const iv = Buffer.from(ivB64, "base64url");
+  const tag = Buffer.from(tagB64, "base64url");
+  if (iv.length !== IV_BYTES || tag.length !== AUTH_TAG_BYTES) return value;
+  const decipher = crypto.createDecipheriv(ALGO, encryptionKey(), iv, {
+    authTagLength: AUTH_TAG_BYTES,
+  });
+  decipher.setAuthTag(tag);
   const decrypted = Buffer.concat([
     decipher.update(Buffer.from(dataB64, "base64url")),
     decipher.final(),

@@ -15,6 +15,7 @@ import {
   L1_YEARS_OPTIONS,
   type L1ExpertiseValue,
 } from "@/lib/mentor-program/fields";
+import { toSafeHttpUrl } from "@/lib/security/safe-http-url";
 import { cn } from "@/lib/utils";
 
 const textareaClassName =
@@ -84,9 +85,12 @@ function ReviewItem({ label, children }: { label: string; children: React.ReactN
 
 function ReviewLink({ href }: { href: string }) {
   if (!href) return "—";
+  const safeHref = toSafeHttpUrl(href);
+  // Never put DOM/user text into href without scheme allowlisting (js/xss-through-dom).
+  if (!safeHref) return <span>{href}</span>;
   return (
     <a
-      href={href}
+      href={safeHref}
       className="break-all text-accent underline-offset-2 hover:underline [overflow-wrap:anywhere]"
       target="_blank"
       rel="noopener noreferrer"
