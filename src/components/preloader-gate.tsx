@@ -1,14 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import dynamic from "next/dynamic";
 
-import {
-  IntroPreloader,
-  INTRO_REVEAL_DURATION_S,
-  INTRO_REVEAL_EASE,
-} from "@/components/intro-preloader";
 import { notifyIntroExitStart } from "@/components/motion/hero-intro-timing";
+
+const IntroPreloader = dynamic(
+  () => import("@/components/intro-preloader").then((m) => m.IntroPreloader),
+  { ssr: false, loading: () => null },
+);
+
+// Duplicated from intro-preloader to avoid pulling heavy canvas code into initial bundle
+const INTRO_REVEAL_DURATION_S = 0.95;
+const INTRO_REVEAL_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const SESSION_KEY = "bursa-intro-seen";
 /** Hard cap so a stuck intro never leaves the page unresponsive. */
@@ -29,8 +33,29 @@ function readShouldPlayIntro(): boolean {
   }
 }
 
+function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(() => {
+    try {
+      return typeof window !== "undefined" ? window.matchMedia("(prefers-reduced-motion: reduce)").matches : false;
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    try {
+      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    } catch {
+      return;
+    }
+  }, []);
+  return reduced;
+}
+
 export function PreloaderGate({ children }: { children: React.ReactNode }) {
-  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotion = usePrefersReducedMotion();
   // SSR and first client paint must match: children only, no overlay.
   const [phase, setPhase] = useState<Phase>("done");
   const [showOverlay, setShowOverlay] = useState(false);
@@ -97,23 +122,21 @@ export function PreloaderGate({ children }: { children: React.ReactNode }) {
         <IntroPreloader onExitStart={handleExitStart} onComplete={handleIntroComplete} />
       ) : null}
 
-      <motion.div
+      <div
         data-app-content
         className="flex min-h-0 flex-1 flex-col"
-        initial={false}
-        animate={{ opacity: contentHidden ? 0 : 1 }}
-        transition={
-          contentAnimating || contentHidden
-            ? { duration: INTRO_REVEAL_DURATION_S, ease: INTRO_REVEAL_EASE }
-            : { duration: 0 }
-        }
         style={{
-          pointerEvents: contentHidden ? "none" : undefined,
+          opacity: contentHidden ? 0 : 1,
           visibility: contentHidden ? "hidden" : "visible",
+          pointerEvents: contentHidden ? "none" : undefined,
+          transition:
+            contentAnimating || contentHidden
+              ? `opacity ${INTRO_REVEAL_DURATION_S}s cubic-bezier(${INTRO_REVEAL_EASE.join(",")})`
+              : "none",
         }}
       >
         {children}
-      </motion.div>
+      </div>
     </>
   );
 }

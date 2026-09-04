@@ -191,21 +191,25 @@ async function fetchCatalogMentorsListing(): Promise<Mentor[]> {
 
 const getCachedCatalogData = unstable_cache(
   async () => {
-    const [courses, mentors, playlists] = await Promise.all([
-      fetchCatalogCoursesListing(),
-      fetchCatalogMentorsListing(),
-      listCuratedPlaylists(),
-    ]);
-    return {
-      courses,
-      mentors,
-      playlists: playlists.map(serializePlaylistSummary),
-    };
+    try {
+      const [courses, mentors, playlists] = await Promise.all([
+        fetchCatalogCoursesListing(),
+        fetchCatalogMentorsListing(),
+        listCuratedPlaylists(),
+      ]);
+      return {
+        courses,
+        mentors,
+        playlists: playlists.map(serializePlaylistSummary),
+      };
+    } catch {
+      // Build without DB or with unavailable DB: return empty catalog so static generation can succeed
+      return { courses: [] as Course[], mentors: [] as Mentor[], playlists: [] as PlaylistSummary[] };
+    }
   },
   ["catalog-data"],
   { revalidate: CATALOG_REVALIDATE_SECONDS, tags: [CATALOG_CACHE_TAG] }
 );
-
 /** Mentors visible in public catalog, verified profiles only. */
 export async function getCatalogMentors(): Promise<Mentor[]> {
   return fetchCatalogMentorsListing();
@@ -280,25 +284,33 @@ export async function getCoursesByMentor(mentorSlug: string): Promise<Course[]> 
 
 /** Slugs for static generation of mentor profile pages. */
 export async function getCatalogMentorSlugs(): Promise<string[]> {
-  const profiles = await db.mentorProfile.findMany({
-    where: { verificationStatus: VerificationStatus.VERIFIED },
-    select: { slug: true },
-  });
-  return profiles.map((p) => p.slug);
+  try {
+    const profiles = await db.mentorProfile.findMany({
+      where: { verificationStatus: VerificationStatus.VERIFIED },
+      select: { slug: true },
+    });
+    return profiles.map((p) => p.slug);
+  } catch {
+    // Build without DATABASE_URL or with DB unavailable: skip static generation; routes remain dynamic.
+    return [];
+  }
 }
 
 /** Slugs for static generation of course detail pages. */
 export async function getCatalogCourseSlugs(): Promise<string[]> {
-  const courses = await db.course.findMany({
-    where: {
-      isPublished: true,
-      mentor: { verificationStatus: VerificationStatus.VERIFIED },
-    },
-    select: { slug: true },
-  });
-  return courses.map((c) => c.slug);
+  try {
+    const courses = await db.course.findMany({
+      where: {
+        isPublished: true,
+        mentor: { verificationStatus: VerificationStatus.VERIFIED },
+      },
+      select: { slug: true },
+    });
+    return courses.map((c) => c.slug);
+  } catch {
+    return [];
+  }
 }
-
 /** Published reviews for a single course detail page. */
 export async function getCourseReviews(courseSlug: string, limit = 4) {
   const course = await db.course.findFirst({

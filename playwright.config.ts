@@ -36,7 +36,7 @@ export default defineConfig({
       : []),
     {
       name: "desktop",
-      testMatch: /(visual-audit|gated-pages)\.spec\.ts/,
+      testMatch: /(visual-audit|gated-pages|performance-regression)\.spec\.ts/,
       dependencies: hasAuth ? ["setup"] : [],
       use: {
         viewport: { width: 1440, height: 900 },
@@ -45,7 +45,7 @@ export default defineConfig({
     },
     {
       name: "mobile",
-      testMatch: /(visual-audit|gated-pages)\.spec\.ts/,
+      testMatch: /(visual-audit|gated-pages|performance-regression)\.spec\.ts/,
       dependencies: hasAuth ? ["setup"] : [],
       use: {
         browserName: "chromium",
