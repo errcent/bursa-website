@@ -649,7 +649,7 @@
 
   /* One aurora field: mockup pin through waitlist + FAQ. */
   .landing-accent-run {
-    --waitlist-peek: 32vh;
+    --waitlist-peek: 24vh;
     --discover-peek: 38vh;
     position: relative;
     z-index: 3;
@@ -2843,18 +2843,6 @@
     height: auto;
     max-height: 52vh;
     object-fit: contain;
-  }
-
-  @media (min-width: 769px) {
-    .device-mockup-stage,
-    .device-mockup-stage__frame,
-    .device-mockup-stage__img {
-      max-height: 44vh;
-    }
-
-    .device-mockup-stage__frame {
-      width: min(52vw, 26rem);
-    }
   }
 
   .device-mockup-scene-shell {
