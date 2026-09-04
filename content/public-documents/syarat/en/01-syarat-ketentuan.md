@@ -8,15 +8,17 @@ description: Terms that govern your use of Bursa. By accessing, registering, or 
 sortOrder: 1
 ---
 
-_Effective: 22 August 2026 · Last updated: 22 August 2026_
+_Effective: 22 August 2026 · Last updated: 4 September 2026_
 
 If the Indonesian and English versions differ, **the Indonesian version governs.** This English text is a convenience translation.
 
-This document, together with the [Privacy Policy](https://privacy.bursanalar.com/en/policies) and [Learner Guidelines](/en/terms/learner-guidelines), is a binding agreement between you and Bursa.
+This document, together with the [Privacy Policy](https://privacy.bursanalar.com/en/policies) and [Learner Guidelines](/en/terms/learner-guidelines), is a binding agreement between you and **PT Global Makmur Madani**, which operates the Bursa / Bursanalar brand (“Bursa”, “Platform”, “we”).
 
 ## Introduction & acceptance
 
-Welcome to Bursa (“Bursa”, “Platform”, “we”), a multi-instructor trading and investment education catalogue at bursanalar.com and related applications. These Terms of Service (“Terms”) are a legal agreement between you (“User”, “you”) and Bursa.
+Welcome to Bursa (“Bursa”, “Platform”, “we”), a multi-instructor trading and investment education catalogue at bursanalar.com and related applications. These Terms of Service (“Terms”) are a legal agreement between you (“User”, “you”) and PT Global Makmur Madani.
+
+Bursanalar is operated under **PT Global Makmur Madani**, an Indonesian limited liability company (registration number 1846773), at Gedung Menara 165, 4th Floor, Jalan TB Simatupang Kav. 1, South Jakarta. Day-to-day management of Bursanalar is by Raden Mohammad Kaisar Khan and Fakhri Muzakki.
 
 By creating an account, accessing, or using the services, you confirm that you have read and agree to these Terms and the Privacy Policy. If you do not agree, do not use the Platform.
 
@@ -134,8 +136,12 @@ These Terms + Privacy Policy + Learner Guidelines = the entire usage agreement.
 
 Rights under Law No. 8/1999. Complaints: support@bursanalar.com, then competent authorities if needed.
 
-## 23. Contact
+## 23. Contact & operator identity
 
+- Legal entity: PT Global Makmur Madani (operates Bursa / Bursanalar)
+- Registration number: 1846773
+- Address: Gedung Menara 165, 4th Floor, Jalan TB Simatupang Kav. 1, South Jakarta
+- Bursanalar management: Raden Mohammad Kaisar Khan and Fakhri Muzakki
 - Support: support@bursanalar.com
 - Privacy: privacy@bursanalar.com
 - Legal: legal@bursanalar.com

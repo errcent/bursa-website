@@ -8,15 +8,17 @@ description: Ketentuan penggunaan platform Bursa. Dengan mengakses, mendaftar, a
 sortOrder: 1
 ---
 
-_Berlaku efektif: 22 Agustus 2026 · Terakhir diperbarui: 22 Agustus 2026_
+_Berlaku efektif: 22 Agustus 2026 · Terakhir diperbarui: 4 September 2026_
 
 Jika versi Bahasa Indonesia dan Inggris berbeda, **versi Bahasa Indonesia yang berlaku**.
 
-Dokumen ini, bersama [Kebijakan Privasi](https://privacy.bursanalar.com/policies) dan [Panduan Pelajar](/terms/learner-guidelines), merupakan perjanjian yang mengikat antara kamu dan Bursa.
+Dokumen ini, bersama [Kebijakan Privasi](https://privacy.bursanalar.com/policies) dan [Panduan Pelajar](/terms/learner-guidelines), merupakan perjanjian yang mengikat antara kamu dan **PT Global Makmur Madani** yang menaungi merek Bursa / Bursanalar ("Bursa", "Platform", "kami").
 
 ## Pengantar & Penerimaan
 
-Selamat datang di Bursa ("Bursa", "Platform", "kami"), platform edukasi trading dan investasi berbasis katalog multi-instruktur di bursanalar.com dan aplikasi terkait. Syarat & Ketentuan ini ("S&K") adalah perjanjian hukum antara kamu ("Pengguna", "kamu") dan Bursa.
+Selamat datang di Bursa ("Bursa", "Platform", "kami"), platform edukasi trading dan investasi berbasis katalog multi-instruktur di bursanalar.com dan aplikasi terkait. Syarat & Ketentuan ini ("S&K") adalah perjanjian hukum antara kamu ("Pengguna", "kamu") dan PT Global Makmur Madani.
+
+Bursanalar dinaungi oleh **PT Global Makmur Madani**, perseroan terbatas Indonesia (nomor registrasi 1846773), berkedudukan di Gedung Menara 165 Lantai 4, Jalan TB Simatupang Kav. 1, Jakarta Selatan. Pengurusan kegiatan usaha Bursanalar dijalankan oleh Raden Mohammad Kaisar Khan dan Fakhri Muzakki.
 
 Dengan membuat akun, mengakses, atau menggunakan layanan, kamu menyatakan telah membaca dan menyetujui S&K ini beserta Kebijakan Privasi. Jika tidak setuju, jangan gunakan Platform.
 
@@ -134,8 +136,12 @@ S&K + Kebijakan Privasi + Panduan Pelajar = keseluruhan perjanjian penggunaan.
 
 Hak sesuai UU No. 8/1999. Pengaduan: support@bursanalar.com, kemudian lembaga berwenang jika perlu.
 
-## 23. Kontak
+## 23. Kontak & Identitas Penyelenggara
 
+- Badan hukum: PT Global Makmur Madani (menaungi Bursa / Bursanalar)
+- Nomor registrasi: 1846773
+- Alamat: Gedung Menara 165 Lantai 4, Jalan TB Simatupang Kav. 1, Jakarta Selatan
+- Pengurus kegiatan usaha Bursanalar: Raden Mohammad Kaisar Khan dan Fakhri Muzakki
 - Dukungan: support@bursanalar.com
 - Privasi: privacy@bursanalar.com
 - Hukum: legal@bursanalar.com

@@ -6,7 +6,8 @@ import { Layers, ListOrdered, ShieldCheck } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { aboutFocus, aboutIntro } from "@/lib/about/content";
+import { aboutFocus, aboutIntro, aboutLegal } from "@/lib/about/content";
+import { legalEntityCopy } from "@/lib/legal/entity";
 
 const iconMap = {
   shield: ShieldCheck,
@@ -29,6 +30,18 @@ export function AboutPageContent() {
               {paragraph}
             </p>
           ))}
+        </Reveal>
+      </section>
+
+      <Separator className="my-14 opacity-60" />
+
+      <section>
+        <Reveal>
+          <p className="eyebrow mb-2">{aboutLegal.eyebrow}</p>
+          <h2 className="section-title">{aboutLegal.title}</h2>
+        </Reveal>
+        <Reveal delay={0.08} className="mt-6 max-w-3xl">
+          <p className="section-copy text-foreground/85">{legalEntityCopy.id.imprintBlock}</p>
         </Reveal>
       </section>
 

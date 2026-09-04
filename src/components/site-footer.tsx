@@ -13,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { LEGAL_ENTITY, legalEntityCopy } from "@/lib/legal/entity";
 import { cn } from "@/lib/utils";
 
 const socialLinks = [
@@ -297,9 +298,17 @@ export function SiteFooter() {
 
       <div className="border-t border-border/30">
         <div className="container-page flex flex-col gap-5 py-8 md:flex-row md:items-end md:justify-between">
-          <p className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground/45 uppercase">
-            © {new Date().getFullYear()} Bursa
-          </p>
+          <div className="flex max-w-md flex-col gap-1.5">
+            <p className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground/45 uppercase">
+              {legalEntityCopy.id.footerCopyright}
+            </p>
+            <p className="text-[11px] leading-relaxed text-muted-foreground/50">
+              {legalEntityCopy.id.imprintShort}
+            </p>
+            <p className="text-[11px] leading-relaxed text-muted-foreground/40">
+              {LEGAL_ENTITY.streetAddress}, {LEGAL_ENTITY.city}
+            </p>
+          </div>
           <RiskDisclaimer variant="compact" />
         </div>
       </div>

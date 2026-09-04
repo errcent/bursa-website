@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { legalHrefsFor, originFor, type LegalLocale } from "@/lib/hosts/hosts";
+import { legalEntityCopy } from "@/lib/legal/entity";
 import { cn } from "@/lib/utils";
 
 export function LocaleToggle({
@@ -104,7 +105,12 @@ export function PortalFooter({ locale }: { locale: LegalLocale }) {
   return (
     <footer className="mt-auto border-t border-border/70">
       <div className="container-page flex flex-col gap-3 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-        <p>{copy}</p>
+        <div className="flex max-w-lg flex-col gap-1">
+          <p>{copy}</p>
+          <p className="text-xs text-muted-foreground/70">
+            {locale === "en" ? legalEntityCopy.en.imprintShort : legalEntityCopy.id.imprintShort}
+          </p>
+        </div>
         <div className="flex flex-wrap gap-x-4 gap-y-1">
           <Link href={hrefs.privacy} className="hover:text-foreground">
             {locale === "en" ? "Privacy" : "Privasi"}

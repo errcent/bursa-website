@@ -10,8 +10,13 @@ export const aboutIntro = {
   paragraphs: [
     "Bursa adalah platform edukasi trading dan investasi di Indonesia yang menghadirkan kelas saham, crypto, dan forex dalam satu ekosistem, dilengkapi pelacakan progres dan ruang diskusi per mentor. Peserta memilih kelas sesuai kebutuhan dan membayar sekali tanpa paket langganan bulanan.",
     "Bursa dibangun sebagai tempat belajar trading dan investasi yang andal: mentor diverifikasi, materi disusun secara berurutan, dan struktur belajar ditetapkan dengan jelas. Visi jangka panjangnya adalah menjadi platform edukasi trading dan investasi premium di Indonesia yang menggabungkan kredibilitas, struktur kurikulum, dan proses pembelajaran yang terukur.",
-    "Bursanalar didirikan oleh Fakhri Muzakki dan Esa Kaisar. Seluruh materi bersifat edukatif dan bukan rekomendasi investasi. Aktivitas trading mengandung risiko; keputusan dan tanggung jawab sepenuhnya berada pada pengguna.",
+    "Seluruh materi bersifat edukatif dan bukan rekomendasi investasi. Aktivitas trading mengandung risiko; keputusan dan tanggung jawab sepenuhnya berada pada pengguna.",
   ],
+};
+
+export const aboutLegal = {
+  eyebrow: "Legal",
+  title: "Badan hukum",
 };
 
 export const aboutFocus = [

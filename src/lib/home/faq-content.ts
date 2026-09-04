@@ -18,6 +18,12 @@ export const homeFaqs: HomeFaq[] = [
       "Tidak. Bursa adalah platform edukasi, bukan broker. Kami tidak menyimpan saldo, tidak mengeksekusi order, dan tidak menjanjikan keuntungan.",
   },
   {
+    id: "legal-entity",
+    question: "Siapa yang mengoperasikan Bursa?",
+    answer:
+      "PT Global Makmur Madani menaungi merek Bursa / Bursanalar. Pengurusan kegiatan usaha Bursanalar dijalankan oleh Raden Mohammad Kaisar Khan dan Fakhri Muzakki.",
+  },
+  {
     id: "beginners",
     question: "Apakah Bursa cocok untuk pemula yang belum pernah trading vs. investing?",
     answer:

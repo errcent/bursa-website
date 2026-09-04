@@ -14,13 +14,13 @@ If the Indonesian and English versions differ, **the Indonesian version governs.
 
 ## Platform regulatory position
 
-Bursa is a **trading-education platform** — not a financial-services provider (PUJK), broker, or investment adviser. We provide learning infrastructure, not trade execution or personalised investment recommendations.
+Bursa is a **trading-education platform** operated under **PT Global Makmur Madani** — not a financial-services provider (PUJK), broker, or investment adviser. We provide learning infrastructure, not trade execution or personalised investment recommendations. Day-to-day management of Bursanalar is by Raden Mohammad Kaisar Khan and Fakhri Muzakki.
 
 ## Law No. 27/2022 — Personal Data Protection
 
 | Aspect | Bursa implementation |
 |-------|-------------------|
-| Personal-data controller | Bursa as controller |
+| Personal-data controller | PT Global Makmur Madani as controller |
 | Legal bases for processing | Consent, contract, legal obligation, legitimate interest |
 | Data-subject rights | Request form + privacy@bursanalar.com |
 | Data security | TLS, bcrypt, RBAC, audit log |

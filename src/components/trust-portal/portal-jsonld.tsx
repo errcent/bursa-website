@@ -1,5 +1,7 @@
 import type { PortalSlug } from "@/lib/public-documents/types";
 import type { LegalLocale } from "@/lib/hosts/hosts";
+import { LEGAL_ENTITY } from "@/lib/legal/entity";
+import { buildOrganizationJsonLd } from "@/lib/search/seo";
 
 import { JsonLdScript } from "@/components/json-ld-script";
 
@@ -34,7 +36,7 @@ export function PortalJsonLd({
         inLanguage: locale === "en" ? "en" : "id",
         isPartOf: {
           "@type": "WebSite",
-          name: "Bursa",
+          name: LEGAL_ENTITY.brand,
           url: "https://bursanalar.com",
         },
         about: {
@@ -43,9 +45,7 @@ export function PortalJsonLd({
         },
       },
       {
-        "@type": "Organization",
-        name: "Bursa",
-        url: "https://bursanalar.com",
+        ...buildOrganizationJsonLd(),
         contactPoint: [
           {
             "@type": "ContactPoint",

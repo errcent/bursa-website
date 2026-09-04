@@ -1,4 +1,4 @@
-export type HelpCategory = "Akun" | "Pembayaran" | "Belajar" | "Note" | "Komunitas" | "Mentor";
+export type HelpCategory = "Platform" | "Akun" | "Pembayaran" | "Belajar" | "Note" | "Komunitas" | "Mentor";
 
 export interface HelpFaq {
   id: string;
@@ -8,6 +8,7 @@ export interface HelpFaq {
 }
 
 export const helpCategories: HelpCategory[] = [
+  "Platform",
   "Akun",
   "Pembayaran",
   "Belajar",
@@ -17,6 +18,13 @@ export const helpCategories: HelpCategory[] = [
 ];
 
 export const helpFaqs: HelpFaq[] = [
+  {
+    id: "platform-badan-hukum",
+    category: "Platform",
+    question: "Siapa yang mengoperasikan Bursa?",
+    answer:
+      "PT Global Makmur Madani menaungi merek Bursa / Bursanalar. Pengurusan kegiatan usaha Bursanalar dijalankan oleh Raden Mohammad Kaisar Khan dan Fakhri Muzakki. Bursa bukan PUJK, broker, atau penasihat investasi.",
+  },
   {
     id: "akun-daftar",
     category: "Akun",

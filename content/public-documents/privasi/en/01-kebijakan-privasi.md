@@ -12,9 +12,9 @@ _Effective: 4 August 2026 · Version 2.1_
 
 If the Indonesian and English versions differ, **the Indonesian version governs.**
 
-**Bursa Trading Academy** (“Bursa”, “Platform”, “we”) — operated through bursanalar.com — is committed to protecting your personal data (“User”, “you”) under Law No. 27 of 2022 on Personal Data Protection (**UU PDP**) and its implementing rules. This policy explains what data we collect, why, how we protect it, and your rights as a data subject.
+**PT Global Makmur Madani** (“Bursa”, “Platform”, “we”) operates the Bursa / Bursanalar brand and bursanalar.com. We are committed to protecting your personal data (“User”, “you”) under Law No. 27 of 2022 on Personal Data Protection (**UU PDP**) and its implementing rules. This policy explains what data we collect, why, how we protect it, and your rights as a data subject.
 
-Under UU PDP, Bursa acts as **personal-data controller** and uses third-party **personal-data processors** (hosting, payment gateway, email) as described in Article 4. This policy is an integral part of the [Terms of Service](https://bursanalar.com/en/terms).
+Under UU PDP, **PT Global Makmur Madani** acts as **personal-data controller** and uses third-party **personal-data processors** (hosting, payment gateway, email) as described in Article 4. This policy is an integral part of the [Terms of Service](https://bursanalar.com/en/terms).
 
 ## Article 1 — Data we collect
 
@@ -136,7 +136,9 @@ Material changes are notified by email/notification before they take effect. Con
 
 ## Article 12 — Contact & data-protection officer
 
-- **Personal-data controller:** Bursa Trading Academy (bursanalar.com)
+- **Personal-data controller:** PT Global Makmur Madani (Bursa / Bursanalar brand, bursanalar.com)
+- **Address:** Gedung Menara 165, 4th Floor, Jalan TB Simatupang Kav. 1, South Jakarta
+- **Bursanalar management:** Raden Mohammad Kaisar Khan and Fakhri Muzakki
 - **Privacy email / data-protection contact:** [privacy@bursanalar.com](mailto:privacy@bursanalar.com)
 - **General support:** [support@bursanalar.com](mailto:support@bursanalar.com)
 

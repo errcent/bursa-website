@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getCatalogData } from "@/lib/catalog/server";
 import { searchAll } from "@/lib/search/engine";
 import { LEGAL_HREFS, privacyPublicUrl, termsPublicUrl, trustPublicUrl } from "@/lib/hosts/hosts";
+import { LEGAL_ENTITY } from "@/lib/legal/entity";
 import { DEFAULT_OG, SITE_URL } from "@/lib/site-metadata";
 
 export async function buildSearchMetadata(query?: string): Promise<Metadata> {
@@ -117,9 +118,18 @@ export function buildOrganizationJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Bursa",
+    name: LEGAL_ENTITY.brand,
+    legalName: LEGAL_ENTITY.legalName,
+    alternateName: [LEGAL_ENTITY.productName],
     url: SITE_URL,
     description: "Platform edukasi trading dan investasi Indonesia dengan proses kurasi mentor.",
+    identifier: LEGAL_ENTITY.registrationNumber,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: LEGAL_ENTITY.streetAddress,
+      addressLocality: LEGAL_ENTITY.city,
+      addressCountry: LEGAL_ENTITY.country,
+    },
     sameAs: [],
   };
 }

@@ -9,9 +9,9 @@ sortOrder: 1
 
 _Berlaku efektif: 4 Agustus 2026 · Versi 2.1_
 
-**Bursa Trading Academy** ("Bursa", "Platform", "kami") — dioperasikan melalui bursanalar.com — berkomitmen melindungi privasi data pribadimu ("Pengguna", "kamu") sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (**UU PDP**) beserta peraturan pelaksanaannya. Kebijakan ini menjelaskan data apa yang kami kumpulkan, mengapa, bagaimana kami melindunginya, dan hak-hakmu sebagai subjek data.
+**PT Global Makmur Madani** ("Bursa", "Platform", "kami") menaungi merek Bursa / Bursanalar dan mengoperasikan bursanalar.com. Kami berkomitmen melindungi privasi data pribadimu ("Pengguna", "kamu") sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (**UU PDP**) beserta peraturan pelaksanaannya. Kebijakan ini menjelaskan data apa yang kami kumpulkan, mengapa, bagaimana kami melindunginya, dan hak-hakmu sebagai subjek data.
 
-Dalam konteks UU PDP, Bursa bertindak sebagai **Pengendali Data Pribadi** dan menggunakan **Prosesor Data Pribadi** pihak ketiga (hosting, payment gateway, email) sebagaimana dijelaskan pada Pasal 4. Kebijakan ini merupakan bagian tidak terpisahkan dari [Syarat & Ketentuan](/syarat-dan-ketentuan).
+Dalam konteks UU PDP, **PT Global Makmur Madani** bertindak sebagai **Pengendali Data Pribadi** dan menggunakan **Prosesor Data Pribadi** pihak ketiga (hosting, payment gateway, email) sebagaimana dijelaskan pada Pasal 4. Kebijakan ini merupakan bagian tidak terpisahkan dari [Syarat & Ketentuan](/syarat-dan-ketentuan).
 
 ## Pasal 1 — Data yang Kami Kumpulkan
 
@@ -133,7 +133,9 @@ Perubahan material diberitahukan via email/notifikasi sebelum berlaku. Penggunaa
 
 ## Pasal 12 — Kontak & Penanggung Jawab Perlindungan Data
 
-- **Pengendali Data Pribadi:** Bursa Trading Academy (bursanalar.com)
+- **Pengendali Data Pribadi:** PT Global Makmur Madani (merek Bursa / Bursanalar, bursanalar.com)
+- **Alamat:** Gedung Menara 165 Lantai 4, Jalan TB Simatupang Kav. 1, Jakarta Selatan
+- **Pengurus kegiatan usaha Bursanalar:** Raden Mohammad Kaisar Khan dan Fakhri Muzakki
 - **Email privasi / Penanggung jawab pelindungan data:** [privacy@bursanalar.com](mailto:privacy@bursanalar.com)
 - **Dukungan umum:** [support@bursanalar.com](mailto:support@bursanalar.com)
 

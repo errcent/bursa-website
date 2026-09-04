@@ -14,7 +14,7 @@ If the Indonesian and English versions differ, **the Indonesian version governs.
 
 Welcome to Bursa’s Privacy Center. Here you can learn how we collect, use, and protect your personal data while you study on our trading-education platform.
 
-Bursa acts as a **personal-data controller** under Law No. 27 of 2022 on Personal Data Protection (UU PDP).
+**PT Global Makmur Madani** operates Bursa / Bursanalar and acts as **personal-data controller** under Law No. 27 of 2022 on Personal Data Protection (UU PDP). Day-to-day management of Bursanalar is by Raden Mohammad Kaisar Khan and Fakhri Muzakki.
 
 ## Our privacy principles
 

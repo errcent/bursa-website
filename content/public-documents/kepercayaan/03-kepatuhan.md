@@ -11,13 +11,13 @@ _Berlaku efektif: 22 Juli 2026_
 
 ## Posisi Regulasi Platform
 
-Bursa adalah **platform edukasi trading** — bukan Penyedia Jasa Keuangan (PUJK), broker, atau penasihat investasi. Kami menyediakan infrastruktur belajar, bukan eksekusi trading atau rekomendasi investasi personal.
+Bursa adalah **platform edukasi trading** yang dinaungi **PT Global Makmur Madani** — bukan Penyedia Jasa Keuangan (PUJK), broker, atau penasihat investasi. Kami menyediakan infrastruktur belajar, bukan eksekusi trading atau rekomendasi investasi personal. Pengurusan kegiatan usaha Bursanalar dijalankan oleh Raden Mohammad Kaisar Khan dan Fakhri Muzakki.
 
 ## UU No. 27/2022 — Pelindungan Data Pribadi
 
 | Aspek | Implementasi Bursa |
 |-------|-------------------|
-| Pengendali Data Pribadi | Bursa sebagai controller |
+| Pengendali Data Pribadi | PT Global Makmur Madani sebagai controller |
 | Dasar hukum pemrosesan | Consent, kontrak, kewajiban hukum, legitimate interest |
 | Hak subjek data | Form permintaan + email privacy@bursanalar.com |
 | Keamanan data | TLS, bcrypt, RBAC, audit log |

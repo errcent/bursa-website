@@ -13,7 +13,7 @@ Jika versi Bahasa Indonesia dan Inggris berbeda, **versi Bahasa Indonesia yang b
 
 Selamat datang di Pusat Privasi Bursa. Di sini kamu bisa mempelajari bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadimu saat belajar di platform edukasi trading kami.
 
-Bursa bertindak sebagai **Pengendali Data Pribadi** sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP).
+**PT Global Makmur Madani** menaungi Bursa / Bursanalar dan bertindak sebagai **Pengendali Data Pribadi** sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP). Pengurusan kegiatan usaha Bursanalar dijalankan oleh Raden Mohammad Kaisar Khan dan Fakhri Muzakki.
 
 ## Prinsip Privasi Kami
 
