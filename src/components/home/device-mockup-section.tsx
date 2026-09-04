@@ -21,7 +21,9 @@ export function DeviceMockupSection() {
   const topOpacity = useTransform(scrollYProgress, [0.5, 0.74], [1, 0]);
   const bottomY = useTransform(scrollYProgress, [0.42, 0.58, 0.76], ["0vh", "-7vh", "-16vh"]);
   const bottomOpacity = useTransform(scrollYProgress, [0.42, 0.58, 0.72], [1, 0.28, 0]);
-  const mockupScale = useTransform(scrollYProgress, [0.12, 0.4, 1], [1, 1.18, 1.18]);
+  const mockupScale = useTransform(scrollYProgress, [0.12, 0.4, 0.58, 0.84], [1, 1.18, 1.12, 0.92]);
+  const mockupY = useTransform(scrollYProgress, [0.55, 0.84], ["0vh", "18vh"]);
+  const mockupOpacity = useTransform(scrollYProgress, [0.58, 0.72, 0.86], [1, 0.42, 0]);
 
   return (
     <section
@@ -72,7 +74,11 @@ export function DeviceMockupSection() {
           >
             <motion.div
               className="device-mockup-stage__grow"
-              style={reduceMotion ? undefined : { scale: mockupScale }}
+              style={
+                reduceMotion
+                  ? undefined
+                  : { scale: mockupScale, y: mockupY, opacity: mockupOpacity }
+              }
             >
               <div className="device-mockup-stage__frame">
                 <Image

@@ -616,7 +616,7 @@
 
   /* One aurora field: mockup pin through waitlist + FAQ. */
   .landing-accent-run {
-    --waitlist-peek: 24vh;
+    --waitlist-peek: 32vh;
     --discover-peek: 38vh;
     position: relative;
     z-index: 3;
@@ -972,7 +972,7 @@
   }
 
   .landing-story-run {
-    --story-peek: 40vh;
+    --story-peek: 28vh;
     position: relative;
     background-color: var(--section-canvas);
   }
@@ -1138,6 +1138,13 @@
 
   .home-story-solution--stay {
     visibility: visible;
+  }
+
+  @media (min-width: 769px) {
+    .home-story-solution {
+      align-items: flex-start;
+      padding-top: calc(var(--site-header-offset) + clamp(2.25rem, 7vh, 4.75rem));
+    }
   }
 
   .home-story-folio {
@@ -2803,6 +2810,18 @@
     height: auto;
     max-height: 52vh;
     object-fit: contain;
+  }
+
+  @media (min-width: 769px) {
+    .device-mockup-stage,
+    .device-mockup-stage__frame,
+    .device-mockup-stage__img {
+      max-height: 44vh;
+    }
+
+    .device-mockup-stage__frame {
+      width: min(52vw, 26rem);
+    }
   }
 
   .device-mockup-scene-shell {
