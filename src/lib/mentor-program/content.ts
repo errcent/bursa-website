@@ -30,7 +30,7 @@ export const mentorBenefits: MentorBenefit[] = [
     icon: "users",
     title: "Audiens siap belajar",
     description:
-      "Akses ke komunitas pelajar aktif yang mencari edukasi trading terstruktur, bukan konten random.",
+      "Akses ke komunitas pelajar aktif yang mencari edukasi trading dan investasi terstruktur, bukan konten random.",
   },
   {
     icon: "shield",

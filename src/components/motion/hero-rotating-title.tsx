@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
  * crossfade (no mode="wait") so phrases blend instead of cutting.
  */
 
-const PHRASES = ["Pelajari trading", "Mendalami trading", "Nikmati pembelajaran"];
+const PHRASES = ["Pelajari trading & investasi", "Mendalami trading & investasi", "Nikmati pembelajaran"];
 
 const ROTATE_INTERVAL_MS = 4600;
 const POST_REVEAL_HOLD_MS = 2800;

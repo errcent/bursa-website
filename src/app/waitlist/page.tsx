@@ -10,7 +10,7 @@ import { WaitlistForm } from "@/components/waitlist-form";
 export const metadata: Metadata = {
   title: "Gabung Waitlist",
   description:
-    "Daftar ke waitlist Bursa dan jadi yang pertama tahu saat platform edukasi trading kami dibuka.",
+    "Daftar ke waitlist Bursa dan jadi yang pertama tahu saat platform edukasi trading dan investasi kami dibuka.",
 };
 
 const perks = [

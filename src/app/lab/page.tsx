@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteNavbar } from "@/components/site-navbar";
 
 export const metadata: Metadata = {
-  title: "Bursa Lab · Kalkulator Trading",
+  title: "Bursa Lab · Kalkulator Trading & Investasi",
   description:
-    "Kalkulator dan simulator trading client-side untuk risiko, biaya, dan probabilitas, saham, forex, dan crypto.",
+    "Kalkulator dan simulator trading & investasi client-side untuk risiko, biaya, dan probabilitas, saham, forex, dan crypto.",
 };
 
 export default function LabPage() {
@@ -21,7 +21,7 @@ export default function LabPage() {
               Bursa Lab
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Kalkulator dan simulator trading untuk risiko, biaya, dan probabilitas.
+              Kalkulator dan simulator trading & investasi untuk risiko, biaya, dan probabilitas.
             </p>
           </header>
           <LabHubContent />

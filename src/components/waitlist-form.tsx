@@ -131,8 +131,8 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
           ) : (
             <>
               Terima kasih, <span className="font-medium text-foreground">{submittedEmail}</span>{" "}
-              sudah masuk waitlist. Kami akan mengabari kamu begitu platform edukasi trading Bursa
-              siap dibuka.
+              sudah masuk waitlist. Kami akan mengabari kamu begitu platform edukasi trading dan
+              investasi Bursa siap dibuka.
             </>
           )}
         </p>

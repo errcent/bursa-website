@@ -7,7 +7,7 @@ import { SiteNavbar } from "@/components/site-navbar";
 export const metadata: Metadata = {
   title: "Panduan Belajar",
   description:
-    "Temukan jalur belajar trading yang selaras dengan tujuan dan levelmu melalui quiz singkat Bursa.",
+    "Temukan jalur belajar trading dan investasi yang selaras dengan tujuan dan levelmu melalui quiz singkat Bursa.",
 };
 
 export default function PanduanBelajarPage() {
@@ -21,7 +21,7 @@ export default function PanduanBelajarPage() {
               Panduan Belajar
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Temukan jalur belajar trading yang selaras dengan tujuan dan levelmu.
+              Temukan jalur belajar trading dan investasi yang selaras dengan tujuan dan levelmu.
             </p>
           </header>
           <LearningGuidanceOverviewActions />

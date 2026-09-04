@@ -8,24 +8,24 @@ export const DEFAULT_OG = {
   url: BRAND_ASSETS.ogDefault,
   width: 1200,
   height: 630,
-  alt: "Bursa: katalog mentor dan kelas trading",
+  alt: "Bursa: katalog mentor dan kelas trading & investasi",
 } as const;
 
 export const DEFAULT_TWITTER_IMAGE = {
   url: BRAND_ASSETS.ogTwitter,
   width: 1200,
   height: 675,
-  alt: "Bursa: katalog mentor dan kelas trading",
+  alt: "Bursa: katalog mentor dan kelas trading & investasi",
 } as const;
 
 export const rootSiteMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Bursa · Katalog Mentor dan Kelas Trading",
+    default: "Bursa · Katalog Mentor dan Kelas Trading & Investasi",
     template: "%s · Bursa",
   },
   description:
-    "Platform edukasi trading dengan katalog mentor dan kelas saham, crypto, serta forex. Fokus pada proses belajar, riset, dan manajemen risiko.",
+    "Platform edukasi trading dan investasi dengan katalog mentor dan kelas saham, crypto, serta forex. Fokus pada proses belajar, riset, dan manajemen risiko.",
   manifest: "/site.webmanifest",
   icons: {
     icon: [
@@ -39,17 +39,17 @@ export const rootSiteMetadata: Metadata = {
     type: "website",
     locale: "id_ID",
     siteName: "Bursa",
-    title: "Bursa · Katalog Mentor dan Kelas Trading",
+    title: "Bursa · Katalog Mentor dan Kelas Trading & Investasi",
     description:
-      "Platform edukasi trading dengan katalog mentor dan kelas saham, crypto, serta forex.",
+      "Platform edukasi trading dan investasi dengan katalog mentor dan kelas saham, crypto, serta forex.",
     url: SITE_URL,
     images: [DEFAULT_OG],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bursa · Katalog Mentor dan Kelas Trading",
+    title: "Bursa · Katalog Mentor dan Kelas Trading & Investasi",
     description:
-      "Platform edukasi trading dengan katalog mentor dan kelas saham, crypto, serta forex.",
+      "Platform edukasi trading dan investasi dengan katalog mentor dan kelas saham, crypto, serta forex.",
     images: [DEFAULT_TWITTER_IMAGE.url],
   },
 };

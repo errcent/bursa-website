@@ -1,6 +1,6 @@
 export const aboutHero = {
   eyebrow: "Tentang Kami",
-  title: "Belajar trading dengan nyaman dan terstruktur",
+  title: "Belajar trading dan investasi dengan nyaman dan terstruktur",
   description:
     "Bursa menempatkan mentor terverifikasi, materi berurutan, dan struktur belajar yang jelas sebagai tiga fokus setara. Tersedia kelas saham, crypto, dan forex dengan pembayaran per kelas, tanpa langganan.",
 };
@@ -8,8 +8,8 @@ export const aboutHero = {
 export const aboutIntro = {
   title: "Tentang Bursa",
   paragraphs: [
-    "Bursa adalah platform edukasi trading di Indonesia yang menghadirkan kelas saham, crypto, dan forex dalam satu ekosistem, dilengkapi pelacakan progres dan ruang diskusi per mentor. Peserta memilih kelas sesuai kebutuhan dan membayar sekali tanpa paket langganan bulanan.",
-    "Bursa dibangun sebagai tempat belajar trading yang andal: mentor diverifikasi, materi disusun secara berurutan, dan struktur belajar ditetapkan dengan jelas. Visi jangka panjangnya adalah menjadi platform edukasi trading premium di Indonesia yang menggabungkan kredibilitas, struktur kurikulum, dan proses pembelajaran yang terukur.",
+    "Bursa adalah platform edukasi trading dan investasi di Indonesia yang menghadirkan kelas saham, crypto, dan forex dalam satu ekosistem, dilengkapi pelacakan progres dan ruang diskusi per mentor. Peserta memilih kelas sesuai kebutuhan dan membayar sekali tanpa paket langganan bulanan.",
+    "Bursa dibangun sebagai tempat belajar trading dan investasi yang andal: mentor diverifikasi, materi disusun secara berurutan, dan struktur belajar ditetapkan dengan jelas. Visi jangka panjangnya adalah menjadi platform edukasi trading dan investasi premium di Indonesia yang menggabungkan kredibilitas, struktur kurikulum, dan proses pembelajaran yang terukur.",
     "Bursanalar didirikan oleh Fakhri Muzakki dan Esa Kaisar. Seluruh materi bersifat edukatif dan bukan rekomendasi investasi. Aktivitas trading mengandung risiko; keputusan dan tanggung jawab sepenuhnya berada pada pengguna.",
   ],
 };

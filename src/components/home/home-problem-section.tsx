@@ -28,7 +28,7 @@ const SOLUTIONS = [
 
 const COPY = {
   headline: "Yang kamu butuhkan adalah kepastian.",
-  lede: "Banyak trader tersesat bukan karena kurang belajar. Mereka belum menemukan jalur yang sesuai.",
+  lede: "Banyak yang belajar trading dan investasi tersesat bukan karena kurang materi. Mereka belum menemukan jalur yang sesuai.",
   turn: "Yang kamu dapatkan",
   close: "Kamu tahu harus mulai dari mana.",
 } as const;

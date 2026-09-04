@@ -27,7 +27,7 @@ export interface SearchSuggestion {
   category: "trending" | "instrument" | "level" | "topic";
 }
 
-/** Kata kunci SEO, disusun untuk intent pencarian edukasi trading Indonesia */
+/** Kata kunci SEO, disusun untuk intent pencarian edukasi trading dan investasi Indonesia */
 export const TRENDING_SEARCHES: SearchSuggestion[] = [
   { label: "Fundamental saham pemula", query: "fundamental saham", category: "trending" },
   { label: "Swing trading teknikal", query: "swing trading", category: "trending" },
@@ -35,6 +35,7 @@ export const TRENDING_SEARCHES: SearchSuggestion[] = [
   { label: "Analisis laporan keuangan", query: "laporan keuangan", category: "trending" },
   { label: "Forex & analisis makro", query: "forex trading", category: "trending" },
   { label: "On-chain analysis crypto", query: "on-chain", category: "trending" },
+  { label: "Belajar investasi pemula", query: "belajar investasi", category: "trending" },
   { label: "Value investing Indonesia", query: "value investing", category: "trending" },
   { label: "Manajemen risiko trading", query: "manajemen risiko", category: "topic" },
 ];

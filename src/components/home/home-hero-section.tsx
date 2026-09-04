@@ -19,7 +19,7 @@ import {
 import { SiteNavbar } from "@/components/site-navbar";
 import { Button } from "@/components/ui/button";
 
-const HERO_HEADLINE_LINES = ["Pelajari trading", "nyaman & terstruktur"] as const;
+const HERO_HEADLINE_LINES = ["Pelajari trading & investasi", "nyaman & terstruktur"] as const;
 const HERO_SUBCOPY =
   "Pilih kelas yang cocok. Materi runut terkurasi lewat proses review mentor.";
 

@@ -1,7 +1,7 @@
 {
   "name": "Bursa",
   "short_name": "Bursa",
-  "description": "Katalog mentor dan kelas trading",
+  "description": "Katalog mentor dan kelas trading & investasi",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

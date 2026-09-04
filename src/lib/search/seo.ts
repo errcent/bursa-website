@@ -10,11 +10,12 @@ export async function buildSearchMetadata(query?: string): Promise<Metadata> {
 
   if (!trimmed) {
     return {
-      title: "Katalog Kelas & Mentor Trading",
+      title: "Katalog Kelas & Mentor Trading & Investasi",
       description:
-        "Jelajahi katalog kelas trading saham, crypto, dan forex dari mentor yang melalui proses kurasi. Cari berdasarkan instrumen, level, atau nama mentor.",
+        "Jelajahi katalog kelas trading dan investasi saham, crypto, dan forex dari mentor yang melalui proses kurasi. Cari berdasarkan instrumen, level, atau nama mentor.",
       keywords: [
         "kelas trading Indonesia",
+        "belajar investasi",
         "belajar saham",
         "kursus crypto",
         "edukasi forex",
@@ -26,9 +27,9 @@ export async function buildSearchMetadata(query?: string): Promise<Metadata> {
         canonical: `${SITE_URL}/katalog`,
       },
       openGraph: {
-        title: "Katalog Kelas & Mentor Trading · Bursa",
+        title: "Katalog Kelas & Mentor Trading & Investasi · Bursa",
         description:
-          "Temukan kelas dan mentor trading terbaik untuk saham, crypto, dan forex.",
+          "Temukan kelas dan mentor trading & investasi untuk saham, crypto, dan forex.",
         url: `${SITE_URL}/katalog`,
         type: "website",
         locale: "id_ID",
@@ -43,7 +44,7 @@ export async function buildSearchMetadata(query?: string): Promise<Metadata> {
   const mentorCount = results.filter((r) => r.type === "mentor").length;
 
   const title = `Hasil "${trimmed}", ${courseCount} kelas, ${mentorCount} mentor`;
-  const description = `Temukan ${courseCount} kelas dan ${mentorCount} mentor terkait "${trimmed}" di Bursa. Edukasi trading saham, crypto, dan forex dari instruktur yang dikurasi.`;
+  const description = `Temukan ${courseCount} kelas dan ${mentorCount} mentor terkait "${trimmed}" di Bursa. Edukasi trading dan investasi saham, crypto, dan forex dari instruktur yang dikurasi.`;
 
   return {
     title,
@@ -53,7 +54,7 @@ export async function buildSearchMetadata(query?: string): Promise<Metadata> {
       `belajar ${trimmed}`,
       `kelas ${trimmed}`,
       `mentor ${trimmed}`,
-      "edukasi trading Indonesia",
+      "edukasi trading dan investasi Indonesia",
     ],
     alternates: {
       canonical: `${SITE_URL}/katalog?q=${encodeURIComponent(trimmed)}`,
@@ -80,7 +81,7 @@ export function buildWebsiteSearchJsonLd() {
     name: "Bursa",
     url: SITE_URL,
     description:
-      "Platform edukasi trading dengan katalog mentor dan kelas saham, crypto, serta forex.",
+      "Platform edukasi trading dan investasi dengan katalog mentor dan kelas saham, crypto, serta forex.",
     inLanguage: "id-ID",
     potentialAction: {
       "@type": "SearchAction",
@@ -118,7 +119,7 @@ export function buildOrganizationJsonLd() {
     "@type": "Organization",
     name: "Bursa",
     url: SITE_URL,
-    description: "Platform edukasi trading Indonesia dengan proses kurasi mentor.",
+    description: "Platform edukasi trading dan investasi Indonesia dengan proses kurasi mentor.",
     sameAs: [],
   };
 }
@@ -206,6 +207,7 @@ export async function getSitemapEntries() {
     "fundamental saham",
     "swing trading",
     "crypto pemula",
+    "belajar investasi",
     "forex trading",
     "analisis teknikal",
     "laporan keuangan",

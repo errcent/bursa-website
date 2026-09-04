@@ -5,9 +5,9 @@ import type { Metadata } from "next";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Belajar Trading Terstruktur",
+  title: "Belajar trading dan investasi, terstruktur",
   description:
-    "Belajar trading lewat katalog mentor dan kelas terstruktur. Bursa adalah platform edukasi, bukan broker.",
+    "Belajar trading dan investasi lewat katalog mentor dan kelas terstruktur. Bursa adalah platform edukasi, bukan broker.",
 };
 
 export default async function HomePage() {

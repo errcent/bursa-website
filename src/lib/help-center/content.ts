@@ -81,6 +81,13 @@ export const helpFaqs: HelpFaq[] = [
       "Beberapa kelas menyediakan sertifikat penyelesaian setelah semua video selesai. Badge sertifikat tampil di profil jika mentor mengaktifkan fitur tersebut untuk kelasnya.",
   },
   {
+    id: "belajar-investasi",
+    category: "Belajar",
+    question: "Apakah Bursa hanya untuk trader, atau juga untuk investasi jangka panjang?",
+    answer:
+      "Keduanya. Katalog mencakup trading vs. investing — dari horizon pendek sampai alokasi jangka panjang. Bursa tetap platform edukasi, bukan penasihat investasi.",
+  },
+  {
     id: "note-apa",
     category: "Note",
     question: "Apa bedanya Notes pelajaran dengan Bursa Note?",

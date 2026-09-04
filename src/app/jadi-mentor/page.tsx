@@ -16,7 +16,7 @@ import { PLATFORM_COMMISSION_RATE } from "@/lib/pricing";
 export const metadata: Metadata = {
   title: "Jadi Mentor",
   description:
-    "Daftar sebagai mentor di Bursa. Bagikan keahlian tradingmu, dapatkan pendapatan langsung, dan akses infrastruktur kelas lengkap.",
+    "Daftar sebagai mentor di Bursa. Bagikan keahlian trading dan investasimu, dapatkan pendapatan langsung, dan akses infrastruktur kelas lengkap.",
 };
 
 export default function JadiMentorPage() {
@@ -29,7 +29,7 @@ export default function JadiMentorPage() {
         <InfoPageHero
           eyebrow="Program Mentor"
           title="Jadi Mentor di Bursa"
-          description={`Bagikan keahlian tradingmu ke ribuan pelajar. Kamu fokus mengajar, kami urus infrastruktur, pembayaran, dan kepercayaan. Working model (indikatif): komisi platform ~${commissionPercent}%.`}
+          description={`Bagikan keahlian trading dan investasimu ke ribuan pelajar. Kamu fokus mengajar, kami urus infrastruktur, pembayaran, dan kepercayaan. Working model (indikatif): komisi platform ~${commissionPercent}%.`}
         />
 
         <div className="container-page section-spacious">

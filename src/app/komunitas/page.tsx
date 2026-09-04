@@ -7,7 +7,7 @@ import { SiteNavbar } from "@/components/site-navbar";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Komunitas Trading",
+  title: "Komunitas Trading & Investasi",
   description:
     "Ruang diskusi mentor sedang disiapkan. Gabung waitlist untuk kabar pembukaan.",
 };

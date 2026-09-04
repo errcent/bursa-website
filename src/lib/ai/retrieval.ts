@@ -80,7 +80,7 @@ const FAQ_CACHE: Record<string, string> = {
   komisi:
     "Working model (indikatif): komisi platform ~25% per transaksi course. Harga mentor-set = kebijakan asumsi, belum dikunci data.",
   disclaimer:
-    "Konten edukasi trading bukan rekomendasi investasi. Trading mengandung risiko kerugian.",
+    "Konten edukasi trading dan investasi bukan rekomendasi investasi. Keputusan dan risiko ada pada pengguna.",
 };
 
 export function lookupFaq(query: string): string | null {
