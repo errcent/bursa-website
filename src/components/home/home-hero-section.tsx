@@ -8,7 +8,10 @@ import { HeroLivingBackground } from "@/components/hero-living-bg";
 import { HeroNavSlot } from "@/components/hero-nav-slot";
 import { HERO_HEADLINE_BASE_DELAY } from "@/components/motion/hero-intro-timing";
 import { useHeroIntroReady } from "@/components/motion/use-hero-intro-ready";
-import { HeroRotatingTitle } from "@/components/motion/hero-rotating-title";
+import {
+  HERO_HEADLINE_REVEAL_LINES,
+  HeroRotatingTitle,
+} from "@/components/motion/hero-rotating-title";
 import { RevealText } from "@/components/motion/reveal";
 import {
   tokenizeForReveal,
@@ -19,12 +22,10 @@ import {
 import { SiteNavbar } from "@/components/site-navbar";
 import { Button } from "@/components/ui/button";
 
-const HERO_HEADLINE_LINES = ["Pelajari trading & investasi", "nyaman & terstruktur"] as const;
-const HERO_SUBCOPY =
-  "Pilih kelas yang cocok. Materi runut terkurasi lewat proses review mentor.";
+const HERO_SUBCOPY = "Kurikulum runut, bersama praktisi & mentor profesional";
 
 function resolveSubcopyDelay(): number {
-  const totalWords = HERO_HEADLINE_LINES.reduce(
+  const totalWords = HERO_HEADLINE_REVEAL_LINES.reduce(
     (sum, line) => sum + tokenizeForReveal(line).length,
     0
   );
@@ -43,13 +44,13 @@ export function HomeHeroSection() {
       <div aria-hidden className="hero-text-scrim pointer-events-none absolute inset-0 z-[1]" />
 
       <div className="container-page relative z-10 flex flex-1 flex-col justify-center px-5 pb-24 pt-[calc(var(--site-header-offset)+1.25rem)] sm:px-8 sm:py-20 sm:pb-10 lg:py-24 lg:pb-12">
-        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <HeroRotatingTitle staticLine={HERO_HEADLINE_LINES[1]} className="mx-auto max-w-4xl" />
+        <div className="hero-home-copy mx-auto flex w-full max-w-5xl flex-col items-center text-center">
+          <HeroRotatingTitle className="mx-auto w-full max-w-5xl" />
           {introReady ? (
             <WordReveal
               as="p"
               text={HERO_SUBCOPY}
-              className="section-copy mx-auto mt-5 max-w-xl sm:text-base"
+              className="section-copy mx-auto mt-[var(--hero-sub-gap)] max-w-xl sm:text-base"
               delay={subcopyDelay}
               stagger={WORD_REVEAL_STAGGER}
               duration={WORD_REVEAL_DURATION}
@@ -57,13 +58,16 @@ export function HomeHeroSection() {
               trigger="immediate"
             />
           ) : (
-            <p className="section-copy mx-auto mt-5 max-w-xl opacity-0 sm:text-base" aria-hidden>
+            <p
+              className="section-copy mx-auto mt-[var(--hero-sub-gap)] max-w-xl opacity-0 sm:text-base"
+              aria-hidden
+            >
               {HERO_SUBCOPY}
             </p>
           )}
           {introReady ? (
             <RevealText delay={ctaDelay}>
-              <div className="mt-8 flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
+              <div className="mt-[var(--hero-cta-gap)] flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
                 <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     size="lg"
@@ -86,7 +90,7 @@ export function HomeHeroSection() {
               </div>
             </RevealText>
           ) : (
-            <div className="mt-8 h-12 opacity-0" aria-hidden />
+            <div className="mt-[var(--hero-cta-gap)] h-12 opacity-0" aria-hidden />
           )}
         </div>
       </div>
