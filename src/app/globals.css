@@ -1626,15 +1626,20 @@
     margin-inline: calc(-1 * var(--catalog-container-px));
   }
 
-  /** Mobile only: true viewport bleed for horizontal peek rows. */
+  /** Mobile only: bleed into container padding (not full viewport — avoids clip). */
   @media (max-width: 767px) {
     .carousel-bleed-shell,
     .landing-carousel-bleed,
-    .testimonial-scroll-carousel,
-    .catalog-page .catalog-row-bleed {
+    .testimonial-scroll-carousel {
       width: 100dvw;
       max-width: 100dvw;
       margin-inline: calc(50% - 50dvw);
+    }
+
+    .catalog-page .catalog-row-bleed {
+      width: calc(100% + var(--catalog-container-px));
+      max-width: calc(100% + var(--catalog-container-px));
+      margin-inline: calc(-1 * var(--catalog-container-px)) 0;
     }
   }
 
@@ -1647,6 +1652,15 @@
     touch-action: pan-x pan-y;
     scroll-padding-inline-start: var(--carousel-edge-inset);
     scroll-padding-inline-end: var(--carousel-edge-inset);
+  }
+
+  @media (min-width: 768px) {
+    .catalog-scroll-carousel {
+      scroll-snap-type: none;
+    }
+    .catalog-scroll-carousel-item {
+      scroll-snap-align: unset;
+    }
   }
 
   .carousel-scroll-track {

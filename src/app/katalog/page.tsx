@@ -35,7 +35,7 @@ export default async function KatalogPage({ searchParams }: KatalogPageProps) {
     <>
       {searchJsonLd && <JsonLdScript id="jsonld-search-results" data={searchJsonLd} />}
       <SiteNavbar />
-      <main className="catalog-page flex-1 overflow-x-clip pb-6">
+      <main className="catalog-page flex-1 pb-6 max-md:overflow-x-clip">
         <div className="container-page pt-4 sm:pt-6">
           <h1 className="sr-only">Katalog</h1>
           <Suspense fallback={<CatalogBrowserSkeleton />}>

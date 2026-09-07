@@ -71,6 +71,7 @@ export function CatalogCarouselRow({
           gap={SCROLL_CAROUSEL_GAP}
           hideArrows
           edgeFade="none"
+          pageScroll
           onScrollStateChange={applyScrollState}
         >
           {children}

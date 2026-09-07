@@ -151,6 +151,8 @@ interface ScrollCarouselProps {
   autoPlayInterval?: number;
   /** When true, the timer does not advance (e.g. inactive discover tab). */
   autoPlayPaused?: boolean;
+  /** When true, arrow/step scroll moves by floor(getPerView) items and clamps at edges. */
+  pageScroll?: boolean;
 }
 
 export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselProps>(
@@ -172,6 +174,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       autoPlay = false,
       autoPlayInterval = SCROLL_CAROUSEL_AUTOPLAY_INTERVAL_MS,
       autoPlayPaused = false,
+      pageScroll = false,
     },
     ref
   ) {
@@ -264,15 +267,32 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       if (!el) return;
 
       const firstItem = el.querySelector<HTMLElement>("[data-scroll-carousel-item]");
-      const stride = firstItem
+      const itemStride = firstItem
         ? firstItem.offsetWidth + gap
         : itemWidth !== null
           ? itemWidth + gap
           : el.clientWidth * 0.8;
 
-      el.scrollBy({ left: direction * stride, behavior: "smooth" });
+      const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth);
+
+      if (pageScroll) {
+        const stepItems = Math.max(1, Math.floor(getPerView(el.clientWidth)));
+        const pageStride = itemStride * stepItems;
+        const target =
+          direction === 1
+            ? Math.min(el.scrollLeft + pageStride, maxScroll)
+            : Math.max(el.scrollLeft - pageStride, 0);
+        el.scrollTo({ left: target, behavior: "smooth" });
+        return;
+      }
+
+      const nextScroll =
+        direction === 1
+          ? Math.min(el.scrollLeft + itemStride, maxScroll)
+          : Math.max(el.scrollLeft - itemStride, 0);
+      el.scrollTo({ left: nextScroll, behavior: "smooth" });
     },
-    [gap, itemWidth]
+    [gap, getPerView, itemWidth, pageScroll]
   );
 
   const scrollToIndex = useCallback(
