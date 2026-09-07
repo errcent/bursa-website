@@ -224,7 +224,7 @@ export function DsarWizardModal({ locale = "id" }: { locale?: LegalLocale }) {
             <p className="mt-4 text-sm font-medium">{t.refLabel}</p>
             <p className="mt-1 font-mono text-lg font-semibold tracking-wide">{referenceCode}</p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <Button type="button" className="privacy-action-primary border-0" onClick={() => router.push(hrefs.dsarStatus)}>
+              <Button type="button" onClick={() => router.push(hrefs.dsarStatus)}>
                 {t.track}
               </Button>
               <Button
@@ -340,7 +340,7 @@ export function DsarWizardModal({ locale = "id" }: { locale?: LegalLocale }) {
               {error && <p className="text-sm text-destructive">{error}</p>}
               <Button
                 type="button"
-                className={cn("privacy-action-primary w-full border-0")}
+                className="w-full"
                 disabled={loading || fullName.length < 2 || email.length < 5 || details.length < 10}
                 onClick={submitRequest}
               >

@@ -141,7 +141,6 @@ export function DsarStatusLookup({ locale = "id" }: { locale?: LegalLocale }) {
         {!otpSent ? (
           <Button
             type="button"
-            className="privacy-action-primary border-0"
             disabled={loading || !email || !referenceCode}
             onClick={requestOtp}
           >
@@ -164,7 +163,6 @@ export function DsarStatusLookup({ locale = "id" }: { locale?: LegalLocale }) {
             </div>
             <Button
               type="button"
-              className="privacy-action-primary border-0"
               disabled={loading || otp.length !== 6}
               onClick={fetchStatus}
             >

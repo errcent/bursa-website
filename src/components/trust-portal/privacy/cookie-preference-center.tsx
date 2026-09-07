@@ -135,10 +135,10 @@ export function CookiePreferenceCenter({ locale = "id" }: { locale?: LegalLocale
           />
         </li>
       </ul>
-      <Button type="button" className="privacy-action-primary mt-6 border-0" disabled={saving} onClick={persist}>
+      <Button type="button" className="mt-6" disabled={saving} onClick={persist}>
         {t.save}
       </Button>
-      {saved && <p className="mt-2 text-sm text-emerald-700">{t.saved}</p>}
+      {saved && <p className="mt-2 text-sm text-emerald">{t.saved}</p>}
     </section>
   );
 }
