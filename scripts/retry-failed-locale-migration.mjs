@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process";
 const FAILED_BOM_MIGRATIONS = [
   "20260822150000_public_document_locale",
   "20260907100000_privacy_center_dsar_consent",
+  "20260907180000_all_access_subscription",
 ];
 
 function prisma(args) {

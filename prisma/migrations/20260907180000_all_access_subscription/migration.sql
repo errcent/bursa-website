@@ -1,4 +1,4 @@
-﻿-- CreateEnum
+-- CreateEnum
 CREATE TYPE "SubscriptionStatus" AS ENUM ('COMPLIMENTARY', 'ACTIVE', 'CANCELED', 'EXPIRED');
 
 -- CreateTable
