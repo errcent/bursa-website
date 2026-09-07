@@ -17,6 +17,7 @@ const labelMap: Record<string, string> = {
   "change-requests": "Usulan Mentor",
   moderation: "Moderasi",
   "dokumen-publik": "Dokumen Publik",
+  "permintaan-data": "Permintaan Data",
   waitlist: "Waitlist",
   users: "Pengguna",
   settings: "Pengaturan",

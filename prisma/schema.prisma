@@ -1132,6 +1132,12 @@ enum DataSubjectRequestStatus {
   REJECTED
 }
 
+enum DataSubjectType {
+  ACCOUNT
+  NON_ACCOUNT
+  MENTOR_APPLICANT
+}
+
 enum MentorApplicationTrack {
   OPEN
   DIRECT
@@ -1308,18 +1314,46 @@ model PublicDocument {
 }
 
 model DataSubjectRequest {
-  id          String                   @id @default(cuid())
-  fullName    String
-  email       String
-  requestType DataSubjectRequestType
-  details     String                   @db.Text
-  status      DataSubjectRequestStatus @default(PENDING)
-  adminNotes  String?                  @db.Text
-  createdAt   DateTime                 @default(now())
-  updatedAt   DateTime                 @updatedAt
+  id              String                   @id @default(cuid())
+  referenceCode   String                   @unique
+  fullName        String
+  email           String
+  requestType     DataSubjectRequestType
+  subjectType     DataSubjectType?
+  details         String                   @db.Text
+  status          DataSubjectRequestStatus @default(PENDING)
+  adminNotes      String?                  @db.Text
+  statusTokenHash String?
+  verifiedAt      DateTime?
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
 
   @@index([status, createdAt])
   @@index([email])
+  @@index([referenceCode])
+}
+
+model DsarStatusOtp {
+  id            String   @id @default(cuid())
+  email         String
+  referenceCode String
+  otpHash       String
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([email, referenceCode])
+}
+
+model CookieConsentRecord {
+  id         String   @id @default(cuid())
+  visitorId  String
+  categories Json
+  version    String   @default("2026-07")
+  locale     String   @default("id")
+  ipHash     String?
+  createdAt  DateTime @default(now())
+
+  @@index([visitorId, createdAt])
 }
 
 /// Runtime flags and audit for founder-controlled launch settings.

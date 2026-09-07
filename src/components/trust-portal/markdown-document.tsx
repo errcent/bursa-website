@@ -7,7 +7,7 @@ import Link from "next/link";
 import { rewriteLegalHref, type LegalLocale } from "@/lib/hosts/hosts";
 import { cn } from "@/lib/utils";
 
-function extractHeadings(markdown: string): { id: string; text: string; level: number }[] {
+export function extractHeadings(markdown: string): { id: string; text: string; level: number }[] {
   const headings: { id: string; text: string; level: number }[] = [];
   const lines = markdown.split("\n");
   for (const line of lines) {

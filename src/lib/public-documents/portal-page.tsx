@@ -12,6 +12,10 @@ import {
   PortalDocShell,
   PortalHubContent,
 } from "@/components/trust-portal/portal-layout";
+import { PrivacyDocContent, PrivacyPortalExtras } from "@/components/trust-portal/privacy/privacy-doc-content";
+import { PrivacyPolicyShell } from "@/components/trust-portal/privacy/privacy-policy-shell";
+import { PrivacyPortalHero } from "@/components/trust-portal/privacy/privacy-portal-hero";
+import { PrivacySkipLinks } from "@/components/trust-portal/privacy/privacy-portal-hero";
 import {
   GOVERNING_LANGUAGE_EN,
   GOVERNING_LANGUAGE_ID,
@@ -45,14 +49,15 @@ const PORTAL_META: Record<
   privasi: {
     id: {
       label: "Pusat Privasi",
-      heroTitle: "Pusat Privasi",
+      heroTitle: "Data yang kami kumpulkan, bagaimana kami menggunakannya, dan dengan siapa kami membagikannya",
       heroDescription:
-        "Pelajari bagaimana Bursa mengumpulkan, menggunakan, dan melindungi data pribadimu.",
+        "Pelajari bagaimana Bursa mengumpulkan, menggunakan, dan melindungi data pribadimu — serta bagaimana kamu mengendalikan hak-hakmu.",
     },
     en: {
       label: "Privacy Center",
-      heroTitle: "Privacy Center",
-      heroDescription: "How Bursa collects, uses, and protects your personal data.",
+      heroTitle: "The data we collect, how we use it, and who we share it with",
+      heroDescription:
+        "Learn how Bursa collects, uses, and protects your personal data — and how you control your rights.",
     },
   },
   kepercayaan: {
@@ -171,8 +176,10 @@ export async function renderPortalPage(
   const internalSlug = isHub ? (isTerms ? "terms" : "hub") : docSlug;
   const idHref = publicPathFor(portalSlug, internalSlug, "id");
   const enHref = publicPathFor(portalSlug, internalSlug, "en");
-  const backLabel = locale === "en" ? "Back" : "Kembali";
   const governing = locale === "en" ? GOVERNING_LANGUAGE_EN : GOVERNING_LANGUAGE_ID;
+
+  const isPrivacy = portalSlug === "privasi";
+  const chromeVariant = isPrivacy ? "privacy" : "default";
 
   if (isHub) {
     const hubDoc = await getHubDocument(portal, locale);
@@ -187,20 +194,37 @@ export async function renderPortalPage(
           url={publicUrlFor(portalSlug, internalSlug, locale)}
           locale={locale}
         />
-        <PortalChrome locale={locale} idHref={idHref} enHref={enHref} />
+        {isPrivacy && <PrivacySkipLinks locale={locale} />}
+        <PortalChrome locale={locale} idHref={idHref} enHref={enHref} variant={chromeVariant} />
         <main className="flex-1">
-          <InfoPageHero
-            eyebrow={hubDoc.eyebrow || meta.label}
-            title={hubDoc.title}
-            description={hubDoc.description}
-          />
-          <div className="container-page section-spacious pb-16">
-            <Link href={originApex()} className="link-muted mb-6 inline-flex items-center gap-1.5">
-              <ArrowLeft className="size-4" />
-              {backLabel}
-            </Link>
+          {isPrivacy ? (
+            <PrivacyPortalHero locale={locale} title={hubDoc.title} description={hubDoc.description} />
+          ) : (
+            <InfoPageHero
+              eyebrow={hubDoc.eyebrow || meta.label}
+              title={hubDoc.title}
+              description={hubDoc.description}
+            />
+          )}
+          <div className={isPrivacy ? "container-page pb-16 pt-2" : "container-page section-spacious pb-16"}>
+            {!isPrivacy && (
+              <Link href={originApex()} className="link-muted mb-6 inline-flex items-center gap-1.5">
+                <ArrowLeft className="size-4" />
+                {backLabel}
+              </Link>
+            )}
             <p className="mb-8 text-xs text-muted-foreground">{governing}</p>
-            {isTerms ? (
+            {isPrivacy ? (
+              <PrivacyPolicyShell>
+                <PortalHubContent
+                  hubDoc={hubDoc}
+                  navItems={navItems}
+                  portalBase=""
+                  crossLink={crossLink(portalSlug, locale)}
+                  locale={locale}
+                />
+              </PrivacyPolicyShell>
+            ) : isTerms ? (
               <PortalDocShell
                 doc={hubDoc}
                 navItems={navItems}
@@ -219,7 +243,8 @@ export async function renderPortalPage(
             )}
           </div>
         </main>
-        <PortalFooter locale={locale} />
+        <PortalFooter locale={locale} variant={chromeVariant} />
+        {isPrivacy && <PrivacyPortalExtras locale={locale} />}
       </>
     );
   }
@@ -239,27 +264,47 @@ export async function renderPortalPage(
         url={publicUrlFor(portalSlug, docSlug, locale)}
         locale={locale}
       />
-      <PortalChrome locale={locale} idHref={idHref} enHref={enHref} />
+      {isPrivacy && <PrivacySkipLinks locale={locale} />}
+      <PortalChrome locale={locale} idHref={idHref} enHref={enHref} variant={chromeVariant} />
       <main className="flex-1">
-        <InfoPageHero eyebrow={doc.eyebrow || meta.label} title={doc.title} description={doc.description} />
-        <div className="container-page section-spacious pb-16">
-          <Link href={hubHref} className="link-muted mb-6 inline-flex items-center gap-1.5">
-            <ArrowLeft className="size-4" />
-            {meta.label}
-          </Link>
+        {isPrivacy ? (
+          <PrivacyPortalHero locale={locale} title={doc.title} description={doc.description} />
+        ) : (
+          <InfoPageHero eyebrow={doc.eyebrow || meta.label} title={doc.title} description={doc.description} />
+        )}
+        <div className={isPrivacy ? "container-page pb-16 pt-2" : "container-page section-spacious pb-16"}>
+          {!isPrivacy && (
+            <Link href={hubHref} className="link-muted mb-6 inline-flex items-center gap-1.5">
+              <ArrowLeft className="size-4" />
+              {meta.label}
+            </Link>
+          )}
           <p className="mb-8 text-xs text-muted-foreground">{governing}</p>
-          <PortalDocShell
-            doc={doc}
-            navItems={navItems}
-            hubHref={hubHref}
-            portalLabel={meta.label}
-            locale={locale}
-          >
-            {showDsar && <DsarRequestForm locale={locale} />}
-          </PortalDocShell>
+          {isPrivacy ? (
+            <PrivacyPolicyShell>
+              <PrivacyDocContent
+                doc={doc}
+                navItems={navItems}
+                hubHref={hubHref}
+                portalLabel={meta.label}
+                locale={locale}
+              />
+            </PrivacyPolicyShell>
+          ) : (
+            <PortalDocShell
+              doc={doc}
+              navItems={navItems}
+              hubHref={hubHref}
+              portalLabel={meta.label}
+              locale={locale}
+            >
+              {showDsar && <DsarRequestForm locale={locale} />}
+            </PortalDocShell>
+          )}
         </div>
       </main>
-      <PortalFooter locale={locale} />
+      <PortalFooter locale={locale} variant={chromeVariant} />
+      {isPrivacy && <PrivacyPortalExtras locale={locale} />}
     </>
   );
 }
@@ -269,7 +314,15 @@ function originApex(): string {
 }
 
 export function portalStaticParams(portalSlug: PortalSlug): { slug?: string[] }[] {
-  const privasiSlugs = ["kebijakan", "cookie", "sub-prosesor", "permintaan-data", "faq"];
+  const privasiSlugs = [
+    "kebijakan",
+    "cookie",
+    "sub-prosesor",
+    "permintaan-data",
+    "permintaan-status",
+    "cara-kerja",
+    "faq",
+  ];
   const kepercayaanSlugs = ["keamanan", "kontrol", "kepatuhan", "pelaporan", "sumber-daya", "faq"];
   const termsSlugs = ["learner-guidelines"];
   const slugs =

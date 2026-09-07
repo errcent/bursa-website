@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import type { LegalLocale } from "@/lib/hosts/hosts";
+import { legalHrefsFor } from "@/lib/hosts/hosts";
 
 const REQUEST_TYPES = [
   "ACCESS",
@@ -26,6 +27,8 @@ const COPY = {
     successTitle: "Permintaan terkirim",
     successBody: "Kami akan merespons paling lambat 14 hari kerja ke alamat email yang tercantum.",
     another: "Kirim permintaan lain",
+    refLabel: "Nomor referensi",
+    track: "Lacak status",
     heading: "Formulir permintaan data",
     name: "Nama lengkap",
     email: "Email terdaftar",
@@ -54,6 +57,8 @@ const COPY = {
     successTitle: "Request received",
     successBody: "We will respond within 14 business days to the email address provided.",
     another: "Submit another request",
+    refLabel: "Reference number",
+    track: "Track status",
     heading: "Data subject request",
     name: "Full name",
     email: "Registered email",
@@ -76,6 +81,7 @@ const COPY = {
 
 export function DsarRequestForm({ locale = "id" }: { locale?: LegalLocale }) {
   const t = COPY[locale];
+  const hrefs = legalHrefsFor(locale);
   const schema = useMemo(
     () =>
       z.object({
@@ -93,6 +99,7 @@ export function DsarRequestForm({ locale = "id" }: { locale?: LegalLocale }) {
   const [details, setDetails] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [referenceCode, setReferenceCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -110,13 +117,14 @@ export function DsarRequestForm({ locale = "id" }: { locale?: LegalLocale }) {
       const res = await fetch("/api/privacy/data-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
+        body: JSON.stringify({ ...parsed.data, locale }),
       });
-      const data = (await res.json()) as { error?: string };
+      const data = (await res.json()) as { error?: string; referenceCode?: string };
       if (!res.ok) {
         setError(data.error ?? t.sendFail);
         return;
       }
+      setReferenceCode(data.referenceCode ?? null);
       setSuccess(true);
       setFullName("");
       setEmail("");
@@ -130,12 +138,30 @@ export function DsarRequestForm({ locale = "id" }: { locale?: LegalLocale }) {
 
   if (success) {
     return (
-      <div className="mt-8 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 p-6">
-        <p className="font-medium text-emerald-100">{t.successTitle}</p>
+      <div className="mt-8 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6">
+        <p className="font-medium text-foreground">{t.successTitle}</p>
         <p className="mt-2 text-sm text-muted-foreground">{t.successBody}</p>
-        <Button type="button" variant="outline" className="mt-4" onClick={() => setSuccess(false)}>
-          {t.another}
-        </Button>
+        {referenceCode && (
+          <>
+            <p className="mt-4 text-sm font-medium">{t.refLabel}</p>
+            <p className="font-mono text-lg font-semibold">{referenceCode}</p>
+          </>
+        )}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button type="button" className="privacy-action-primary border-0" asChild>
+            <a href={hrefs.dsarStatus}>{t.track}</a>
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              setSuccess(false);
+              setReferenceCode(null);
+            }}
+          >
+            {t.another}
+          </Button>
+        </div>
       </div>
     );
   }

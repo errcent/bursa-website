@@ -13,6 +13,7 @@ import {
   ADMIN_HOST,
   LOCALE_HEADER,
   PRODUCTION_APP_HOSTS,
+  PRIVACY_SURFACE_HEADER,
   apexNoteRedirectTarget,
   apexPrivacyRedirectTarget,
   apexTrustRedirectTarget,
@@ -46,12 +47,31 @@ const MOBILE_DEV_ORIGINS = new Set([
 
 function nextResponse(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const requestHeaders = new Headers(request.headers);
+  let hasHeaderOverride = false;
+
   if (
     !isProductionHostRouting() &&
     (pathname === "/note" || pathname.startsWith("/note/"))
   ) {
-    const requestHeaders = new Headers(request.headers);
     requestHeaders.set(NOTE_SURFACE_HEADER, "note");
+    hasHeaderOverride = true;
+  }
+
+  if (
+    !isProductionHostRouting() &&
+    (pathname === "/privasi" || pathname.startsWith("/privasi/"))
+  ) {
+    requestHeaders.set(PRIVACY_SURFACE_HEADER, "privacy");
+    hasHeaderOverride = true;
+  }
+
+  if (hostRole(request.headers.get("host")) === "privacy") {
+    requestHeaders.set(PRIVACY_SURFACE_HEADER, "privacy");
+    hasHeaderOverride = true;
+  }
+
+  if (hasHeaderOverride) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
   return NextResponse.next();

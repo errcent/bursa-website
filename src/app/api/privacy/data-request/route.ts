@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import type { DataSubjectRequestType } from "@prisma/client";
+import type { DataSubjectRequestType, DataSubjectType } from "@prisma/client";
 
 import { db } from "@/lib/db";
+import { sendTransactionalEmail } from "@/lib/email/send";
 import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import {
   checkRateLimit,
   clientIp,
   rateLimitResponse,
 } from "@/lib/auth/rate-limit";
+import { dsarConfirmationEmail } from "@/lib/privacy/email-templates";
+import { generateDsarReferenceCode } from "@/lib/privacy/reference-code";
+import type { LegalLocale } from "@/lib/hosts/hosts";
 
 const schema = z.object({
   fullName: z.string().min(2),
@@ -21,11 +25,11 @@ const schema = z.object({
     "OBJECTION",
     "PORTABILITY",
   ]),
+  subjectType: z.enum(["ACCOUNT", "NON_ACCOUNT", "MENTOR_APPLICANT"]).optional(),
   details: z.string().min(10),
+  locale: z.enum(["id", "en"]).optional(),
 });
 
-/** Destructive request types must never be self-executed - they require a verified
- * account + admin action downstream (QC-20260719-24). */
 const IDENTITY_REQUIRED: DataSubjectRequestType[] = [
   "DELETION",
   "WITHDRAW_CONSENT",
@@ -42,36 +46,60 @@ export async function POST(request: Request) {
 
     const body = schema.parse(await request.json());
     const requestType = body.requestType as DataSubjectRequestType;
+    const locale: LegalLocale = body.locale ?? "id";
 
-    // High-impact requests require an authenticated identity whose email matches the
-    // request, so nobody can trigger deletion/portability for another person. The
-    // actual destructive action stays admin-gated (this endpoint only records intent).
     const viewer = await resolveAuthenticatedUser(request, { createIfMissing: false });
     if (IDENTITY_REQUIRED.includes(requestType)) {
       if (!viewer) {
         return NextResponse.json(
-          { error: "Masuk dan verifikasi identitas untuk permintaan ini." },
+          {
+            error:
+              locale === "en"
+                ? "Sign in and verify identity for this request type."
+                : "Masuk dan verifikasi identitas untuk permintaan ini.",
+          },
           { status: 401 }
         );
       }
       if (viewer.email.toLowerCase() !== body.email.toLowerCase()) {
         return NextResponse.json(
-          { error: "Email permintaan harus sama dengan akun terverifikasi kamu." },
+          {
+            error:
+              locale === "en"
+                ? "Request email must match your verified account."
+                : "Email permintaan harus sama dengan akun terverifikasi kamu.",
+          },
           { status: 403 }
         );
       }
     }
 
+    const referenceCode = generateDsarReferenceCode();
+
     const record = await db.dataSubjectRequest.create({
       data: {
+        referenceCode,
         fullName: body.fullName,
         email: body.email,
         requestType,
+        subjectType: (body.subjectType as DataSubjectType | undefined) ?? null,
         details: body.details,
       },
     });
 
-    return NextResponse.json({ id: record.id }, { status: 201 });
+    const mail = dsarConfirmationEmail(locale, {
+      fullName: body.fullName,
+      referenceCode,
+    });
+    void sendTransactionalEmail({
+      category: "privacy_dsar",
+      to: body.email,
+      subject: mail.subject,
+      html: mail.html,
+      text: mail.text,
+    });
+
+    return NextResponse.json({ id: record.id, referenceCode: record.referenceCode }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.issues[0]?.message ?? "Data tidak valid" }, { status: 400 });

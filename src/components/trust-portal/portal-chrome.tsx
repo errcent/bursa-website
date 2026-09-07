@@ -55,10 +55,12 @@ export function PortalChrome({
   locale,
   idHref,
   enHref,
+  variant = "default",
 }: {
   locale: LegalLocale;
   idHref: string;
   enHref: string;
+  variant?: "default" | "privacy";
 }) {
   const hrefs = legalHrefsFor(locale);
 
@@ -71,7 +73,14 @@ export function PortalChrome({
   }, [locale]);
 
   return (
-    <header className="border-b border-border/70 bg-background/90 backdrop-blur-md">
+    <header
+      id="privacy-nav"
+      className={
+        variant === "privacy"
+          ? "border-b border-border/80 bg-card/95 backdrop-blur-sm"
+          : "border-b border-border/70 bg-background/90 backdrop-blur-md"
+      }
+    >
       <div className="container-page flex h-14 items-center justify-between gap-4">
         <Link href={originFor("apex")} className="flex items-center gap-2" aria-label="Bursa">
           <BrandLogo variant="product" decorative className="h-6 w-auto" />
@@ -96,20 +105,38 @@ export function PortalChrome({
   );
 }
 
-export function PortalFooter({ locale }: { locale: LegalLocale }) {
+export function PortalFooter({
+  locale,
+  variant = "default",
+}: {
+  locale: LegalLocale;
+  variant?: "default" | "privacy";
+}) {
   const hrefs = legalHrefsFor(locale);
   const copy =
     locale === "en"
       ? "Indonesian is the governing language. English is a convenience translation."
       : "Bahasa Indonesia adalah naskah yang mengikat. Inggris hanya terjemahan kemudahan.";
+  const official =
+    locale === "en"
+      ? "Official Privacy Center · PT Global Makmur Madani"
+      : "Pusat Privasi resmi · PT Global Makmur Madani";
   return (
     <footer className="mt-auto border-t border-border/70">
       <div className="container-page flex flex-col gap-3 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex max-w-lg flex-col gap-1">
+          {variant === "privacy" && (
+            <p className="text-xs font-medium text-foreground/80">{official}</p>
+          )}
           <p>{copy}</p>
           <p className="text-xs text-muted-foreground/70">
             {locale === "en" ? legalEntityCopy.en.imprintShort : legalEntityCopy.id.imprintShort}
           </p>
+          {variant === "privacy" && (
+            <Link href={hrefs.privacyAbout} className="text-xs hover:text-foreground">
+              {locale === "en" ? "How this Privacy Center works" : "Cara kerja Pusat Privasi"}
+            </Link>
+          )}
         </div>
         <div className="flex flex-wrap gap-x-4 gap-y-1">
           <Link href={hrefs.privacy} className="hover:text-foreground">

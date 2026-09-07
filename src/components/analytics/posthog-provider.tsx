@@ -9,7 +9,8 @@ const CONSENT_EVENT = "bursa-cookie-consent";
 
 function hasAnalyticsConsent(): boolean {
   try {
-    return localStorage.getItem(CONSENT_KEY) === "accepted";
+    const raw = localStorage.getItem(CONSENT_KEY);
+    return raw === "accepted";
   } catch {
     return false;
   }

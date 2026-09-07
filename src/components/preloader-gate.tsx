@@ -29,13 +29,27 @@ function readShouldPlayIntro(): boolean {
   }
 }
 
-export function PreloaderGate({ children }: { children: React.ReactNode }) {
+export function PreloaderGate({
+  children,
+  skip = false,
+}: {
+  children: React.ReactNode;
+  skip?: boolean;
+}) {
   const prefersReducedMotion = useReducedMotion();
   // SSR and first client paint must match: children only, no overlay.
   const [phase, setPhase] = useState<Phase>("done");
   const [showOverlay, setShowOverlay] = useState(false);
 
   useLayoutEffect(() => {
+    if (skip) {
+      clearIntroPending();
+      notifyIntroExitStart();
+      setPhase("done");
+      setShowOverlay(false);
+      return;
+    }
+
     if (prefersReducedMotion) {
       clearIntroPending();
       notifyIntroExitStart();
@@ -56,7 +70,7 @@ export function PreloaderGate({ children }: { children: React.ReactNode }) {
     document.body.style.overflow = "hidden";
     setPhase("intro");
     setShowOverlay(true);
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, skip]);
 
   useEffect(() => {
     if (phase === "revealing" || phase === "done") {

@@ -10,6 +10,7 @@ import {
   Mail,
   Settings,
   Shield,
+  ShieldCheck,
   Users,
   UserSquare2,
 } from "lucide-react";
@@ -29,6 +30,7 @@ export const ADMIN_NAV_LINKS: Array<{
   { href: "/admin/change-requests", label: "Usulan Mentor", icon: ClipboardList },
   { href: "/admin/moderation", label: "Moderasi", icon: Shield },
   { href: "/admin/dokumen-publik", label: "Dokumen Publik", icon: FileText },
+  { href: "/admin/permintaan-data", label: "Permintaan Data", icon: ShieldCheck },
   { href: "/admin/waitlist", label: "Waitlist", icon: Mail },
   { href: "/admin/users", label: "Pengguna", icon: Users },
   { href: "/admin/settings", label: "Pengaturan", icon: Settings },

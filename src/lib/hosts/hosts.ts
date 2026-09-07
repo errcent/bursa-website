@@ -14,6 +14,7 @@ export const TRUST_HOST = "trust.bursanalar.com";
 export const PRIVACY_HOST = "privacy.bursanalar.com";
 export const NOTE_HOST = "note.bursanalar.com";
 export const NOTE_SURFACE_HEADER = "x-bursa-surface";
+export const PRIVACY_SURFACE_HEADER = "x-bursa-surface";
 
 export const PRODUCTION_APP_HOSTS = new Set([
   APEX_HOST,
@@ -62,6 +63,11 @@ export function isNoteLayoutSurface(host: string | null, surfaceHeader: string |
   return !isProductionHostRouting() && surfaceHeader === "note";
 }
 
+export function isPrivacyPortalSurface(host: string | null, surfaceHeader: string | null): boolean {
+  if (hostRole(host) === "privacy") return true;
+  return !isProductionHostRouting() && surfaceHeader === "privacy";
+}
+
 /** Privacy: DB/vault slug → public path segment (empty = hub). */
 export const PRIVACY_INTERNAL_TO_PUBLIC: Record<string, string> = {
   hub: "",
@@ -69,6 +75,8 @@ export const PRIVACY_INTERNAL_TO_PUBLIC: Record<string, string> = {
   cookie: "cookies",
   "sub-prosesor": "subprocessors",
   "permintaan-data": "requests",
+  "permintaan-status": "requests/status",
+  "cara-kerja": "about",
   faq: "faq",
 };
 
@@ -167,6 +175,8 @@ export const LEGAL_HREFS = {
   cookies: privacyPublicUrl("cookie"),
   subprocessors: privacyPublicUrl("sub-prosesor"),
   dsar: privacyPublicUrl("permintaan-data"),
+  dsarStatus: privacyPublicUrl("permintaan-status"),
+  privacyAbout: privacyPublicUrl("cara-kerja"),
   trust: trustPublicUrl("hub"),
   trustEn: trustPublicUrl("hub", "en"),
 } as const;
@@ -238,6 +248,9 @@ export function legalHrefsFor(locale: LegalLocale) {
     privacy: privacyPublicUrl("hub", locale),
     privacyPolicy: privacyPublicUrl("kebijakan", locale),
     cookies: privacyPublicUrl("cookie", locale),
+    dsar: privacyPublicUrl("permintaan-data", locale),
+    dsarStatus: privacyPublicUrl("permintaan-status", locale),
+    privacyAbout: privacyPublicUrl("cara-kerja", locale),
     trust: trustPublicUrl("hub", locale),
   };
 }
@@ -250,7 +263,8 @@ export function localeFromPathname(pathname: string): LegalLocale {
 }
 
 export function mapPrivacyPublicToInternal(publicPath: string): string | null {
-  const segment = publicPath === "/" ? "" : publicPath.replace(/^\//, "");
+  const segment =
+    publicPath === "/" ? "" : publicPath.replace(/^\//, "").replace(/\/$/, "");
   if (!(segment in PRIVACY_PUBLIC_TO_INTERNAL)) return null;
   return PRIVACY_PUBLIC_TO_INTERNAL[segment];
 }

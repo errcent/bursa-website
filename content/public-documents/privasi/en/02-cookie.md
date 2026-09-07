@@ -61,7 +61,7 @@ Sensitive data (authentication tokens) is stored with appropriate security contr
 
 ## How to manage cookies
 
-1. **Consent banner** — set preferences on first visit (Phase 2).
+1. **Cookie preferences** — manage essential, functional, and analytics categories at [Privacy Center](/en/cookies#manage) or via the banner on first visit to bursanalar.com.
 2. **Browser settings** — block/delete cookies via Chrome, Firefox, Safari, etc.
 3. **Google OAuth** — revoke third-party access via [Google Account Security](https://myaccount.google.com/permissions).
 

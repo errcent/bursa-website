@@ -6,6 +6,7 @@ export const EMAIL_CATEGORIES = [
   "mentor_admin",
   "mentor_applicant",
   "lifecycle",
+  "privacy_dsar",
 ] as const;
 
 export type EmailCategory = (typeof EMAIL_CATEGORIES)[number];
@@ -15,6 +16,7 @@ const DEFAULT_LAUNCH_ALLOWLIST: EmailCategory[] = [
   "auth_verification",
   "auth_password_reset",
   "mentor_applicant",
+  "privacy_dsar",
 ];
 
 export function parseEmailAllowedCategories(): Set<EmailCategory> | null {

@@ -28,6 +28,8 @@ const PORTAL_ICONS: Record<string, LucideIcon> = {
   cookie: Cookie,
   "sub-prosesor": Users,
   "permintaan-data": ShieldCheck,
+  "permintaan-status": ShieldCheck,
+  "cara-kerja": BookOpen,
   faq: HelpCircle,
   keamanan: Shield,
   kontrol: Lock,

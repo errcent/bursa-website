@@ -13,7 +13,7 @@ import { CookieConsentBanner } from "@/components/trust-portal/cookie-consent-ba
 import { PreviewCatalogBanner } from "@/components/preview-catalog/preview-catalog-banner";
 
 import { SearchSeoJsonLd } from "@/components/search/search-seo-jsonld";
-import { isNoteLayoutSurface, NOTE_SURFACE_HEADER } from "@/lib/hosts/hosts";
+import { isNoteLayoutSurface, isPrivacyPortalSurface, NOTE_SURFACE_HEADER, PRIVACY_SURFACE_HEADER } from "@/lib/hosts/hosts";
 import { rootSiteMetadata } from "@/lib/site-metadata";
 
 import "./globals.css";
@@ -62,45 +62,51 @@ export default async function RootLayout({
     headerList.get("host"),
     headerList.get(NOTE_SURFACE_HEADER)
   );
+  const privacySurface = isPrivacyPortalSurface(
+    headerList.get("host"),
+    headerList.get(PRIVACY_SURFACE_HEADER)
+  );
+  const minimalSurface = noteSurface || privacySurface;
 
   return (
     <html
       lang="id"
-      className={`${fontSans.variable} ${fontHeading.variable} ${fontMontAlt.variable} dark h-full antialiased`}
+      className={`${fontSans.variable} ${fontHeading.variable} ${fontMontAlt.variable} ${privacySurface ? "" : "dark"} h-full antialiased`}
       data-scroll-behavior="smooth"
       data-note-surface={noteSurface ? "1" : undefined}
+      data-portal-surface={privacySurface ? "privacy" : undefined}
       suppressHydrationWarning
     >
       <body
         className="flex min-h-full flex-col overflow-x-hidden bg-background text-foreground"
         suppressHydrationWarning
       >
-        {noteSurface ? null : (
+        {minimalSurface ? null : (
           <Script
             id="bursa-intro-pending"
             strategy="beforeInteractive"
             dangerouslySetInnerHTML={{ __html: INTRO_PENDING_SCRIPT }}
           />
         )}
-        {noteSurface ? null : <SearchSeoJsonLd />}
+        {minimalSurface ? null : <SearchSeoJsonLd />}
         <PostHogProvider />
-        {noteSurface ? null : <CursorGlow />}
+        {minimalSurface ? null : <CursorGlow />}
         {noteSurface ? (
           <NextAuthProvider>
             <AuthProvider>{children}</AuthProvider>
           </NextAuthProvider>
         ) : (
-          <PreloaderGate>
-            <NavbarRouteTracker />
+          <PreloaderGate skip={privacySurface}>
+            {privacySurface ? null : <NavbarRouteTracker />}
             <NextAuthProvider>
               <AuthProvider>
-                <PreviewCatalogBanner />
+                {privacySurface ? null : <PreviewCatalogBanner />}
                 {children}
               </AuthProvider>
             </NextAuthProvider>
           </PreloaderGate>
         )}
-        {noteSurface ? null : <CookieConsentBanner />}
+        {minimalSurface ? null : <CookieConsentBanner />}
       </body>
     </html>
   );
