@@ -532,14 +532,14 @@ export function LearningWorkspace({
                 <p className="text-xs text-muted-foreground">
                   {nextLesson.durationMinutes} menit ·{" "}
                   {hasCourseAccess
-                    ? "Termasuk dalam langganan Anda"
+                    ? "Termasuk dalam akses katalog"
                     : isLessonFreePreview(
                           nextLesson,
                           nextLessonContext.moduleIndex,
                           nextLessonContext.lessonIndex
                         )
                       ? "Preview gratis tersedia"
-                      : "Konten berbayar, preview dibatasi"}
+                      : "Masuk untuk menonton pelajaran ini"}
                 </p>
               </div>
             </Link>
@@ -561,7 +561,7 @@ export function LearningWorkspace({
           </Button>
           {progressReady && hasCourseAccess ? (
             <span className="rounded-full border border-emerald/25 bg-emerald/10 px-2.5 py-1 text-[11px] font-medium text-emerald">
-              Sudah berlangganan
+              Akses aktif
             </span>
           ) : progressReady && !hasCourseAccess && !isFreePreview ? (
             <Button size="sm" variant="outline" render={<Link href={`/kelas/${course.slug}`} />}>

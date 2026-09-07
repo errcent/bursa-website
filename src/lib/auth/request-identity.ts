@@ -8,6 +8,7 @@ import {
   verifyWebSessionToken,
 } from "@/lib/auth/web-session";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
+import { ensureComplimentarySubscription } from "@/lib/subscription/access";
 
 /**
  * Resolve a trusted caller email for privileged API routes.
@@ -64,5 +65,6 @@ export async function resolveAuthenticatedUser(
   );
   if (!user) return null;
 
+  await ensureComplimentarySubscription(user.id);
   return user;
 }

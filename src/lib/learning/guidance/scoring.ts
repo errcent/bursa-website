@@ -267,8 +267,8 @@ function scoreFormatPreference(
 ): ScoredReason {
   const format = answers.learningFormat ?? "mixed";
 
-  if (format === "live" && mentor?.availableFor1on1) {
-    return { points: 8, text: "Mentor tersedia untuk sesi 1-on-1" };
+  if (format === "live") {
+    return { points: 6, text: "Kelas terstruktur untuk belajar rutin" };
   }
   if (format === "community" && course.studentsCount >= 30) {
     return { points: 6, text: "Komunitas belajar yang aktif" };
@@ -378,8 +378,8 @@ export function scoreMentorForGuidance(
     buckets.push({ points: 6, text: "Menekankan disiplin risiko" });
   }
 
-  if (answers.learningFormat === "live" && mentor.availableFor1on1) {
-    buckets.push({ points: 10, text: "Buka sesi live 1-on-1" });
+  if (answers.learningFormat === "live") {
+    buckets.push({ points: 6, text: "Kelas video terstruktur untuk belajar rutin" });
   }
 
   const ratingPoints = Math.min(Math.round(mentor.rating * 2.5), 12);

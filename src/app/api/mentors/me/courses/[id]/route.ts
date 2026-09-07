@@ -8,8 +8,6 @@ import {
 } from "@/lib/admin/server";
 import { revalidateCatalog } from "@/lib/catalog/server";
 import { db } from "@/lib/db";
-import { calculateCommissionAmounts } from "@/lib/mentor/commission";
-import { validateCoursePriceIdr } from "@/lib/mentor/course-pricing";
 import { forbidden, requireMentor, unauthorizedMentor } from "@/lib/mentor/server";
 import type { Instrument, Level } from "@/lib/types";
 
@@ -41,7 +39,6 @@ export async function PATCH(request: Request, context: RouteContext) {
       shortDescription?: string;
       level?: Level;
       instrument?: Instrument;
-      price?: number;
     };
 
     if (body.title !== undefined) {
@@ -64,34 +61,11 @@ export async function PATCH(request: Request, context: RouteContext) {
       }
     }
 
-    if (body.price !== undefined) {
-      const priceError = validateCoursePriceIdr(body.price);
-      if (priceError) {
-        return NextResponse.json({ error: priceError }, { status: 422 });
-      }
-
-      const pendingReview = await db.courseChangeRequest.findFirst({
-        where: {
-          courseId: id,
-          status: "PENDING",
-        },
-        select: { id: true },
-      });
-
-      if (pendingReview) {
-        return NextResponse.json(
-          { error: "Kelas sedang menunggu review compliance. Harga tidak dapat diubah." },
-          { status: 422 }
-        );
-      }
-    }
-
     await db.course.update({
       where: { id },
       data: {
         title: body.title?.trim(),
         shortDescription: body.shortDescription?.trim(),
-        price: body.price,
         level: body.level ? levelFromUi(body.level) : undefined,
         instrument: body.instrument ? instrumentFromUi(body.instrument) : undefined,
       },
@@ -109,17 +83,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     revalidatePath(`/kelas/${course.slug}`);
 
     const mapped = mapCourse(course);
-    const breakdown =
-      body.price !== undefined
-        ? calculateCommissionAmounts(body.price)
-        : calculateCommissionAmounts(course.price);
-
-    return NextResponse.json({
-      ...mapped,
-      netMentorAmount: breakdown.netMentorAmount,
-      commissionAmount: breakdown.commissionAmount,
-      commissionPct: breakdown.commissionPct,
-    });
+    return NextResponse.json(mapped);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Gagal memperbarui kelas." }, { status: 500 });

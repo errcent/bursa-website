@@ -4,13 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 
-import { CommissionPreview } from "@/components/instruktur-dashboard/commission-preview";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { AdminCourse } from "@/lib/admin/types";
 import { fetchMentorCourses } from "@/lib/mentor/api";
 import { updateMentorCourse } from "@/lib/instruktur-dashboard/api";
-import { formatRupiah } from "@/lib/mock-data";
 import type { Instrument, Level } from "@/lib/types";
 
 const levels: Level[] = ["Pemula", "Menengah", "Mahir"];
@@ -29,7 +27,6 @@ export function MentorCourseManager() {
   const [shortDescription, setShortDescription] = useState("");
   const [level, setLevel] = useState<Level>("Pemula");
   const [instrument, setInstrument] = useState<Instrument>("Saham");
-  const [price, setPrice] = useState(49000);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,7 +52,6 @@ export function MentorCourseManager() {
     setShortDescription(course.shortDescription);
     setLevel(course.level);
     setInstrument(course.instrument);
-    setPrice(course.price);
     setFormError(null);
     setSaved(false);
   }
@@ -72,7 +68,6 @@ export function MentorCourseManager() {
         shortDescription,
         level,
         instrument,
-        price,
       });
       setCourses((prev) => prev.map((c) => (c.id === editingId ? { ...c, ...updated } : c)));
       setSaved(true);
@@ -103,7 +98,7 @@ export function MentorCourseManager() {
       <div className="surface-card flex flex-col items-center gap-4 p-8 text-center">
         <p className="font-heading text-sm font-medium">Belum ada course</p>
         <p className="max-w-sm text-sm text-muted-foreground">
-          Course pertama Anda dapat dibuat melalui bantuan admin. Setelah tersedia, atur harga dan
+          Course pertama Anda dapat dibuat melalui bantuan admin. Setelah tersedia, atur
           detail dasar di sini.
         </p>
       </div>
@@ -124,13 +119,10 @@ export function MentorCourseManager() {
                 )}
               </div>
               <h2 className="font-heading text-base font-semibold">{course.title}</h2>
-              <p className="mt-1 font-mono text-sm tabular-nums text-muted-foreground">
-                {formatRupiah(course.price)}
-              </p>
             </div>
             <div className="flex shrink-0 gap-2">
               <Button size="sm" variant="outline" onClick={() => openEdit(course)}>
-                {editingId === course.id ? "Sedang diedit" : "Edit & Atur Harga"}
+                {editingId === course.id ? "Sedang diedit" : "Edit kelas"}
               </Button>
               <Button size="sm" variant="ghost" render={<Link href={`/kelas/${course.slug}`} />}>
                 Lihat publik
@@ -193,25 +185,12 @@ export function MentorCourseManager() {
                   </select>
                 </label>
               </div>
-              <label className="block space-y-1.5">
-                <span className="text-xs font-medium text-muted-foreground">Harga (IDR)</span>
-                <input
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(Number(e.target.value))}
-                  min={49000}
-                  max={9999999}
-                  step={1000}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-mono tabular-nums"
-                />
-              </label>
-              <CommissionPreview price={price} />
               {formError && <p className="text-sm text-destructive">{formError}</p>}
               <div className="flex items-center gap-3">
                 <Button type="submit" size="sm" disabled={saving}>
                   {saving ? "Menyimpan..." : "Simpan perubahan"}
                 </Button>
-                {saved && <span className="text-xs text-emerald">Harga diperbarui.</span>}
+                {saved && <span className="text-xs text-emerald">Perubahan disimpan.</span>}
               </div>
             </form>
           )}

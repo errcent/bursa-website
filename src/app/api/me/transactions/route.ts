@@ -39,10 +39,7 @@ export async function GET(request: NextRequest) {
         status: tx.status,
         kind: tx.kind,
         createdAt: tx.createdAt.toISOString(),
-        // Session payments (kind=SESSION) have no course; label them by mentor (QC-20260719-47).
-        courseTitle:
-          tx.course?.title ??
-          (tx.mentor ? `Sesi 1-on-1 · ${tx.mentor.user.nama}` : "Sesi 1-on-1"),
+        courseTitle: tx.course?.title ?? "Transaksi",
         courseSlug: tx.course?.slug ?? null,
       })),
     });

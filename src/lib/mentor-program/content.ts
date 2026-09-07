@@ -24,7 +24,7 @@ export const mentorBenefits: MentorBenefit[] = [
     icon: "wallet",
     title: "Pendapatan langsung ke kamu",
     description:
-      "Murid membayar per kelas langsung ke akun mentor. Working model (indikatif): komisi platform ~25%, sisanya (~75%) milikmu. Rincian final sebelum konfirmasi.",
+      "Pendapatan mentor berasal dari pool langganan all-access, dibagi berdasar konsumsi belajar yang memenuhi syarat. Skema rinci menyusul saat pembayaran dibuka.",
   },
   {
     icon: "users",

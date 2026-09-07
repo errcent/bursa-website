@@ -102,8 +102,6 @@ export interface AdminMentor {
   coursesCount: number;
   rating: number;
   licenseLabel?: string;
-  availableFor1on1: boolean;
-  sessionPrice?: string;
 }
 
 export interface AdminLessonInput {
@@ -247,34 +245,6 @@ export interface MentorFormInput {
   yearsExperience: number;
   licenseLabel?: string;
   verified: boolean;
-  availableFor1on1: boolean;
-  sessionPrice?: string;
-}
-
-export interface AvailabilitySlotInput {
-  date: string;
-  startTime: string;
-  endTime: string;
-  notes?: string;
-}
-
-export interface AdminAvailabilitySlot {
-  id: string;
-  mentorId: string;
-  startAt: string;
-  endAt: string;
-  isBooked: boolean;
-  bookedByUserId?: string | null;
-  bookedByName?: string | null;
-  notes?: string | null;
-  createdAt: string;
-}
-
-export interface MentorSessionConfig {
-  id: string;
-  slug: string;
-  availableFor1on1: boolean;
-  sessionPrice: string | null;
 }
 
 export interface CourseFormInput {

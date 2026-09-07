@@ -33,8 +33,7 @@ export function itemHref(
   isLoggedIn: boolean
 ) {
   if (isItemPlayable(status)) return lessonHref(item);
-  const checkoutHref = item.courseSlug ? `/checkout/${item.courseSlug}` : "/katalog";
-  return isLoggedIn ? checkoutHref : buildLoginHref(checkoutHref);
+  return isLoggedIn ? lessonHref(item) : buildLoginHref(lessonHref(item));
 }
 
 export function AccessBadge({ status }: { status: PlaylistItemAccessStatus | undefined }) {
@@ -42,7 +41,7 @@ export function AccessBadge({ status }: { status: PlaylistItemAccessStatus | und
     return (
       <span className="inline-flex items-center gap-1 rounded-full border border-emerald/25 bg-emerald/10 px-2 py-0.5 text-[10px] font-medium text-emerald">
         <CheckCircle2 className="size-3" />
-        Dimiliki
+        Tersedia
       </span>
     );
   }

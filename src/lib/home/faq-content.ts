@@ -9,7 +9,7 @@ export const homeFaqs: HomeFaq[] = [
     id: "uniqueness",
     question: "Apa yang membuat Bursa berbeda dari platform edukasi trading dan investasi lain?",
     answer:
-      "Edukasi terstruktur dengan mentor yang melalui proses kurasi, bukan konten acak atau sinyal tanpa konteks. Setiap kelas dibayar per tahun. Bukan langganan bulanan.",
+      "Edukasi terstruktur dengan mentor yang melalui proses kurasi, bukan konten acak atau sinyal tanpa konteks.",
   },
   {
     id: "not-broker",
@@ -43,8 +43,8 @@ export const homeFaqs: HomeFaq[] = [
   },
   {
     id: "pricing-model",
-    question: "Apakah harus berlangganan bulanan untuk belajar di Bursa?",
+    question: "Bagaimana cara mengakses seluruh kelas di Bursa?",
     answer:
-      "Tidak. Pembayaran berlaku per kelas, per tahun. Bukan langganan bulanan untuk seluruh platform.",
+      "Setelah masuk, kamu mendapat akses ke seluruh katalog. Satu akun, semua kelas. Pembayaran belum dibuka.",
   },
 ];

@@ -79,11 +79,6 @@ export default async function MentorProfilePage({
                 {mentor.instruments.map((i) => (
                   <InstrumentBadge key={i} instrument={i} />
                 ))}
-                {mentor.availableFor1on1 && (
-                  <span className="rounded-full border border-emerald/30 bg-emerald/10 px-2.5 py-1 text-xs font-medium text-emerald">
-                    Tersedia untuk Sesi 1-on-1
-                  </span>
-                )}
               </div>
               <p className="text-sm font-medium text-foreground/80">Belajar dengan mentor</p>
               <h1 className="page-hero-title">{mentor.name}</h1>
@@ -95,11 +90,6 @@ export default async function MentorProfilePage({
                 <Button className="btn-primary h-11 px-6 text-sm" render={<Link href={`#kelas-${mentor.slug}`} />}>
                   Pilih Kelas {mentorFirstName}
                 </Button>
-                {mentor.availableFor1on1 && (
-                  <Button variant="outline" render={<Link href={`/instruktur/${mentor.slug}/sesi`} />}>
-                    Tanya Sesi 1-on-1 · {mentor.sessionPrice} (indikatif/demo)
-                  </Button>
-                )}
               </div>
             </div>
           </div>
@@ -185,7 +175,7 @@ export default async function MentorProfilePage({
             <div className="surface-card border-accent/25 bg-accent-soft/30 p-5 shadow-[0_0_32px_var(--glow)]">
               <h3 className="font-heading text-base font-semibold">Mulai dari kelas mentor</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Pilih kelas sesuai levelmu, lalu lanjutkan dengan pendampingan 1-on-1 jika perlu.
+                Pilih kelas sesuai levelmu, lalu mulai belajar dari silabus mentor.
               </p>
               <Button className="btn-primary mt-4 w-full" render={<Link href={`#kelas-${mentor.slug}`} />}>
                 Ambil Kelas {mentorFirstName}
@@ -213,22 +203,6 @@ export default async function MentorProfilePage({
                 sebaiknya didasarkan pada kecocokan pendekatan dan kebutuhanmu.
               </p>
             </div>
-            {mentor.availableFor1on1 && (
-              <div className="rounded-xl border border-emerald/20 bg-emerald/5 p-5">
-                <h3 className="font-heading text-sm font-medium text-emerald">Sesi 1-on-1</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {mentor.sessionPrice}{" "}
-                  <span className="text-xs">(indikatif/demo)</span>
-                </p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Diskusikan portofolio atau strategi tradingmu secara personal. Pembayaran
-                  ditahan (escrow) hingga sesi terkonfirmasi selesai.
-                </p>
-                <Button className="mt-4 w-full" variant="outline" render={<Link href={`/instruktur/${mentor.slug}/sesi`} />}>
-                  Lihat Jadwal Tersedia
-                </Button>
-              </div>
-            )}
           </aside>
         </div>
       </main>

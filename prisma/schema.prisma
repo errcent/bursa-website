@@ -69,6 +69,7 @@ model User {
   refreshTokens                  RefreshToken[]
   courseDisputes                 CourseDispute[]
   pollVotes                      PollVote[]
+  subscription                   Subscription?
 }
 
 /// Active device/session anchors for lifetime-access excludability - concurrent
@@ -406,6 +407,27 @@ model Transaction {
   @@index([userId, courseId, status])
   @@index([mentorSessionId])
   @@index([mentorId, kind])
+}
+
+enum SubscriptionStatus {
+  COMPLIMENTARY
+  ACTIVE
+  CANCELED
+  EXPIRED
+}
+
+/// All-access entitlement. Pre-monetization every learner is COMPLIMENTARY.
+/// ACTIVE + currentPeriodEnd is reserved for paid recurring later.
+model Subscription {
+  id               String             @id @default(cuid())
+  userId           String             @unique
+  status           SubscriptionStatus @default(COMPLIMENTARY)
+  currentPeriodEnd DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
 }
 
 model Review {

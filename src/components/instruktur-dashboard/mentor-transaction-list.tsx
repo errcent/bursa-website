@@ -8,7 +8,6 @@ import {
   fetchMentorTransactions,
   type MentorTransactionItem,
 } from "@/lib/instruktur-dashboard/api";
-import { formatRupiah } from "@/lib/mock-data";
 
 const payoutLabels: Record<string, string> = {
   PENDING: "Menunggu payout",
@@ -39,10 +38,9 @@ function TransactionRow({ item }: { item: MentorTransactionItem }) {
         <div className="min-w-0">
           <p className="text-xs text-muted-foreground">{formatDate(item.createdAt)}</p>
           <p className="font-heading text-sm font-medium">{item.courseTitle}</p>
-          <p className="text-xs text-muted-foreground">Pembeli: {item.learnerInitials}</p>
+          <p className="text-xs text-muted-foreground">Pelajar: {item.learnerInitials}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-          <span className="font-mono text-sm tabular-nums">{formatRupiah(item.grossAmount)}</span>
           <Badge variant="outline">
             {payoutLabels[item.payoutStatus] ?? item.payoutStatus}
           </Badge>
@@ -56,14 +54,8 @@ function TransactionRow({ item }: { item: MentorTransactionItem }) {
               <dd className="font-mono text-xs">{item.transactionId.slice(0, 12)}…</dd>
             </div>
             <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-              <dt className="text-muted-foreground">Komisi ({item.commissionPct}%)</dt>
-              <dd className="font-mono tabular-nums">{formatRupiah(item.commissionAmount)}</dd>
-            </div>
-            <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
-              <dt className="text-muted-foreground">Net mentor</dt>
-              <dd className="font-mono tabular-nums text-emerald">
-                {formatRupiah(item.netMentorAmount)}
-              </dd>
+              <dt className="text-muted-foreground">Model payout</dt>
+              <dd>Pool watch-time all-access (menyusul)</dd>
             </div>
             <div className="flex justify-between gap-4 sm:flex-col sm:justify-start">
               <dt className="text-muted-foreground">Periode payout</dt>

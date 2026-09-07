@@ -44,35 +44,35 @@ export const helpFaqs: HelpFaq[] = [
     category: "Akun",
     question: "Bisakah saya menghapus akun secara permanen?",
     answer:
-      "Ya. Buka Pengaturan → Akun → Hapus akun. Proses irreversible, progress kelas dan riwayat transaksi akan dihapus sesuai kebijakan retensi data. Akses kelas yang sudah dibeli tidak dapat dipulihkan.",
+      "Ya. Buka Pengaturan → Akun → Hapus akun. Proses irreversible; progres kelas dan data akun akan dihapus sesuai kebijakan retensi data.",
   },
   {
     id: "bayar-metode",
     category: "Pembayaran",
     question: "Metode pembayaran apa saja yang tersedia?",
     answer:
-      "Kami mendukung transfer bank, e-wallet (GoPay, OVO, DANA), dan kartu kredit/debit melalui payment gateway terintegrasi. Metode yang tampil bisa berbeda per kelas dan mentor.",
+      "Pembayaran publik belum dibuka. Setelah masuk, kamu dapat mengakses seluruh katalog tanpa checkout.",
   },
   {
     id: "bayar-refund",
     category: "Pembayaran",
-    question: "Apakah pembelian kelas bisa di-refund?",
+    question: "Apakah akses kelas bisa di-refund?",
     answer:
-      "Pembelian kelas bersifat final. Sebelum checkout, baca deskripsi kelas, preview video gratis, dan ulasan murid. Jika ada masalah teknis (akses tidak aktif setelah pembayaran), hubungi support dengan bukti transaksi.",
+      "Pembayaran belum dibuka. Jika ada masalah teknis yang membuat kelas tidak bisa diakses, hubungi support@bursanalar.com.",
   },
   {
     id: "bayar-invoice",
     category: "Pembayaran",
     question: "Di mana saya bisa unduh invoice?",
     answer:
-      "Invoice tersedia di Dashboard → Riwayat pembelian. Klik transaksi yang selesai, lalu unduh PDF. Invoice mencantumkan nama kelas, mentor, tanggal, dan nominal.",
+      "Riwayat transaksi (jika ada) tersedia di Pengaturan. Invoice digital akan tersedia setelah pembayaran dibuka.",
   },
   {
     id: "belajar-akses",
     category: "Belajar",
-    question: "Berapa lama akses kelas setelah pembelian?",
+    question: "Berapa lama akses kelas setelah masuk?",
     answer:
-      "Kebanyakan kelas memberikan lifetime access sejak tanggal pembelian, termasuk update materi dari mentor. Detail spesifik tercantum di halaman kelas sebelum checkout.",
+      "Selama akun aktif, kamu dapat mengakses seluruh katalog yang dipublikasikan, termasuk pembaruan materi dari mentor.",
   },
   {
     id: "belajar-progress",

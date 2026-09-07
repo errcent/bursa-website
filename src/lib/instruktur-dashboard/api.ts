@@ -53,7 +53,6 @@ export type MentorCoursePatchInput = {
   shortDescription?: string;
   level?: Level;
   instrument?: Instrument;
-  price?: number;
 };
 
 function authHeaders(): HeadersInit {

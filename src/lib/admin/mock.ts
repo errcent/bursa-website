@@ -26,8 +26,6 @@ let mockMentors: AdminMentor[] = mentors.map((m, i) => ({
   coursesCount: m.coursesCount,
   rating: m.rating,
   licenseLabel: m.licenseLabel,
-  availableFor1on1: m.availableFor1on1,
-  sessionPrice: m.sessionPrice,
 }));
 
 let mockCourses: AdminCourse[] = courses.map((c, i) => {

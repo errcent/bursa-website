@@ -494,38 +494,20 @@ export default function DeveloperDocsPage() {
       </DocSection>
 
       {/* ── 6. Enrollment ─────────────────────────────────────────── */}
-      <DocSection id="enrollment" title="6. Enrollment, checkout & hub membership">
+      <DocSection id="enrollment" title="6. Enrollment & akses all-access">
         <ol className="list-decimal space-y-2 pl-5">
           <li>
-            Learner membuka <Code>/kelas/[slug]</Code> lalu checkout mock di{" "}
-            <Code>/checkout/[slug]</Code>
+            Learner masuk, lalu server grant <Code>Subscription</Code> status{" "}
+            <Code>COMPLIMENTARY</Code>
           </li>
           <li>
-            Sukses → <Code>/checkout/sukses</Code>; client memanggil{" "}
-            <Code>POST /api/courses/[courseSlug]/enroll</Code> dengan{" "}
-            <Code>x-user-email</Code>
+            <Code>hasAllAccess</Code> membuka seluruh katalog; tamu hanya preview
           </li>
           <li>
-            Server: bridge user Prisma jika perlu → upsert <Code>Enrollment</Code>
-          </li>
-          <li>
-            Enrollment pertama membuat <Code>Transaction</Code> status{" "}
-            <Code>COMPLETED</Code> (untuk laporan pendapatan)
-          </li>
-          <li>
-            <Code>ensureHubMembershipForCourseEnrollment</Code> menambahkan learner ke hub mentor
-            kelas tersebut (<Code>ChatRoomMember</Code>)
-          </li>
-          <li>
-            GET enroll juga “menyembuhkan” membership hub jika enrollment sudah ada tapi member
-            chat terlewat
+            Memulai kelas memanggil <Code>POST /api/courses/[courseSlug]/enroll</Code> tanpa
+            transaksi pembayaran
           </li>
         </ol>
-        <p>
-          Komisi platform indikatif <Strong>25%</Strong> (
-          <Code>PLATFORM_COMMISSION_RATE</Code> di <Code>lib/pricing.ts</Code>) - dipakai di UI
-          checkout &amp; breakdown pendapatan.
-        </p>
       </DocSection>
 
       {/* ── 7. Learning ───────────────────────────────────────────── */}
@@ -618,7 +600,6 @@ export default function DeveloperDocsPage() {
                   ["/katalog", "Katalog + search/filter"],
                   ["/kelas/[slug]", "Detail kelas"],
                   ["/belajar/...", "Video + notes + Q&A"],
-                  ["/checkout/[slug]", "Checkout mock"],
                   ["/dashboard", "Dashboard learner"],
                   ["/komunitas", "Chat / komunitas"],
                   ["/instruktur/[slug]", "Profil mentor publik"],
@@ -801,25 +782,6 @@ export default function DeveloperDocsPage() {
             </li>
             <li>
               <Code>GET/POST /api/trading/signals</Code> - kartu sinyal trading (entry/target/SL)
-            </li>
-          </ul>
-        </DocSub>
-
-        <DocSub title="Sesi 1-on-1 mentor (booking)">
-          <ul className="list-disc space-y-1 pl-5">
-            <li>
-              <Code>GET /api/mentors/[slug]/availability-slots</Code> - publik; daftar slot terbuka
-              (belum dibooking, di masa depan) jika <Code>mentor.availableFor1on1</Code>
-            </li>
-            <li>
-              <Code>POST /api/mentors/[slug]/availability-slots/[slotId]/book</Code> - butuh
-              identitas (email); menandai slot <Code>isBooked</Code>, 409 jika sudah dibooking, 410
-              jika sudah lewat waktu. Prototype: tidak ada pembayaran terpisah untuk sesi.
-            </li>
-            <li>
-              Admin kelola slot: <Code>GET/POST /api/admin/mentors/[id]/availability-slots</Code>,{" "}
-              <Code>PATCH/DELETE .../availability-slots/[slotId]</Code> (butuh{" "}
-              <Code>requireAdmin</Code>)
             </li>
           </ul>
         </DocSub>
@@ -1062,14 +1024,6 @@ export default function DeveloperDocsPage() {
           </ul>
         </DocSub>
 
-        <DocSub title="Booking sesi 1-on-1 mentor">
-          <p>
-            Booking slot mentor (§10, &ldquo;Sesi 1-on-1 mentor&rdquo;) juga{" "}
-            <Strong>tidak</Strong> memicu pembayaran terpisah di API - slot langsung ditandai{" "}
-            <Code>isBooked</Code> saat learner booking. <Code>sessionPrice</Code> di profil mentor
-            saat ini hanya label informasi di UI.
-          </p>
-        </DocSub>
       </DocSection>
 
       {/* ── 14. Setup ─────────────────────────────────────────────── */}

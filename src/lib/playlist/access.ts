@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { hasAllAccess } from "@/lib/subscription/access";
 import type { PlaylistItemAccessStatus, PlaylistItemView } from "@/lib/playlist/types";
 
 type PlaylistItemRef = {
@@ -9,6 +10,7 @@ type PlaylistItemRef = {
 export type PlaylistAccessContext = {
   enrolledCourseIds: Set<string>;
   freePreviewLessonIds: Set<string>;
+  hasAllAccess: boolean;
 };
 
 function collectCourseIds(items: PlaylistItemRef[]): string[] {
@@ -81,7 +83,7 @@ export async function buildPlaylistAccessContext(
   const courseIds = collectCourseIds(items);
   const lessonIds = collectLessonIds(items);
 
-  const [enrollments, freePreviewLessonIds] = await Promise.all([
+  const [enrollments, freePreviewLessonIds, allAccess] = await Promise.all([
     userId && courseIds.length > 0
       ? db.enrollment.findMany({
           where: { userId, courseId: { in: courseIds } },
@@ -89,11 +91,13 @@ export async function buildPlaylistAccessContext(
         })
       : Promise.resolve([]),
     buildFreePreviewLessonIds(lessonIds),
+    userId ? hasAllAccess(userId) : Promise.resolve(false),
   ]);
 
   return {
     enrolledCourseIds: new Set(enrollments.map((row) => row.courseId)),
     freePreviewLessonIds,
+    hasAllAccess: allAccess,
   };
 }
 
@@ -102,6 +106,8 @@ export function resolvePlaylistItemAccess(
   ctx: PlaylistAccessContext
 ): PlaylistItemAccessStatus {
   const courseId = item.courseId;
+  if (ctx.hasAllAccess) return "owned";
+
   const enrolled = courseId ? ctx.enrolledCourseIds.has(courseId) : false;
 
   if (enrolled) return "owned";

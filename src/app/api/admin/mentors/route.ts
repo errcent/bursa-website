@@ -77,8 +77,6 @@ export async function POST(request: Request) {
           ? VerificationStatus.VERIFIED
           : VerificationStatus.PENDING,
         yearsExperience: input.yearsExperience,
-        availableFor1on1: input.availableFor1on1,
-        sessionPrice: input.sessionPrice,
         trackRecord: [0, 0, 0, 0, 0, 0],
       },
       include: { user: true },

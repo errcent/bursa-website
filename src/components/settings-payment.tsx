@@ -23,7 +23,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { formatRupiah } from "@/lib/mock-data";
 import {
   PAYMENT_METHOD_OPTIONS,
   type PaymentMethodKind,
@@ -56,25 +55,6 @@ interface BillingTransaction {
   courseTitle: string;
   courseSlug: string;
 }
-
-const MOCK_BILLING: BillingTransaction[] = [
-  {
-    id: "mock-tx-1",
-    amount: 499000,
-    status: "COMPLETED",
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    courseTitle: "Fundamental Saham untuk Pemula",
-    courseSlug: "fundamental-saham-pemula",
-  },
-  {
-    id: "mock-tx-2",
-    amount: 349000,
-    status: "COMPLETED",
-    createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
-    courseTitle: "Crypto On-Chain Analysis",
-    courseSlug: "crypto-on-chain",
-  },
-];
 
 function formatTxDate(iso: string) {
   return new Intl.DateTimeFormat("id-ID", {
@@ -274,9 +254,9 @@ export function SettingsPayment({ embedded: _embedded = false }: { embedded?: bo
           : { transactions: [] };
         if (cancelled) return;
         const rows = data.transactions ?? [];
-        setBilling(rows.length > 0 ? rows : MOCK_BILLING);
+        setBilling(rows);
       } catch {
-        if (!cancelled) setBilling(MOCK_BILLING);
+        if (!cancelled) setBilling([]);
       } finally {
         if (!cancelled) setBillingLoading(false);
       }
@@ -376,7 +356,6 @@ export function SettingsPayment({ embedded: _embedded = false }: { embedded?: bo
                   >
                     {statusLabel(tx.status)}
                   </Badge>
-                  <span className="font-mono text-sm tabular-nums">{formatRupiah(tx.amount)}</span>
                 </div>
               </li>
             ))}

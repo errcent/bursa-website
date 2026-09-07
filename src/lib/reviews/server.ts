@@ -116,7 +116,7 @@ export async function getReviewEligibility(
     reason = "Kamu sudah mengirim ulasan untuk kelas ini.";
   } else if (!hasVerifiedAccess) {
     reason =
-      "Hanya pembeli terverifikasi kelas ini yang dapat memberi rating & ulasan.";
+      "Mulai kelas ini dan selesaikan modul yang wajib sebelum memberi ulasan.";
   } else if (completedModules === 0) {
     reason =
       "Selesaikan lebih banyak video terlebih dahulu sebelum memberi rating & ulasan.";

@@ -134,7 +134,7 @@ export const termsOfService: LegalDocument = {
       id: "pembayaran",
       title: "8. Pembayaran, Harga & Pajak",
       paragraphs: [
-        "Pembayaran kelas dilakukan per kelas. Setelah pembayaran berhasil diverifikasi, akses kelas aktif sesuai ketentuan produk. Rincian harga, komisi Platform, dan payout Mentor ditampilkan pada halaman checkout sebelum konfirmasi.",
+        "Akses katalog bersifat all-access: satu akun yang aktif dapat membuka seluruh kelas yang dipublikasikan. Pembayaran berlangganan belum dibuka di produk publik.",
         "Pembayaran diproses melalui mitra payment gateway resmi. Bursa tidak pernah menyimpan data kartu pembayaran mentah, seluruh pemrosesan kartu tunduk pada standar keamanan mitra yang tersertifikasi PCI-DSS.",
         "Harga dapat sudah atau belum termasuk pajak (mis. PPN atas jasa digital) sesuai ketentuan perpajakan Indonesia yang berlaku pada saat transaksi. Bursa berhak mengubah struktur harga di masa mendatang dengan pemberitahuan yang wajar bagi produk yang bersifat berkelanjutan.",
       ],
@@ -143,7 +143,7 @@ export const termsOfService: LegalDocument = {
       id: "refund",
       title: "9. Kebijakan Pengembalian Dana (Refund)",
       paragraphs: [
-        "Secara umum, pembelian akses kelas bersifat final mengingat sifat produk digital yang dapat diakses segera setelah pembayaran. Namun, ketentuan ini tidak menghapus hak-hakmu yang dilindungi secara memaksa oleh peraturan perundang-undangan, termasuk UU Perlindungan Konsumen.",
+        "Pembelian akses kelas bersifat final mengingat sifat produk digital. Namun, ketentuan ini tidak menghapus hak-hakmu yang dilindungi secara memaksa oleh peraturan perundang-undangan, termasuk UU Perlindungan Konsumen.",
         "Pengembalian dana dapat diberikan dalam hal berikut, dievaluasi berdasarkan itikad baik: (a) kegagalan teknis Platform yang menyebabkan kelas tidak dapat diakses dan tidak dapat kami perbaiki dalam waktu wajar; (b) kelas secara material tidak sesuai dengan deskripsi yang dipublikasikan; atau (c) kesalahan penagihan atau transaksi ganda.",
         "Permintaan pengembalian dana diajukan melalui support@bursanalar.com dengan menyertakan bukti transaksi dan alasan. Kami akan menanggapi dalam waktu wajar sesuai prosedur operasional yang berlaku.",
       ],

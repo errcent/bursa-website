@@ -1,23 +1,27 @@
 import { db } from "@/lib/db";
+import { hasAllAccess } from "@/lib/subscription/access";
 
 export interface EnrollmentAccess {
   enrolled: boolean;
-  /** Backed by a COMPLETED paid Transaction (verified purchase). */
+  /** True when the learner has all-access (complimentary or paid period). */
   isPaid: boolean;
   /** The COMPLETED paid Transaction id, when one exists. */
   paidTransactionId: string | null;
+  hasAllAccess: boolean;
+  /** Enrollment row exists — learner has started this course. */
+  started: boolean;
 }
 
 /**
- * Resolve a learner's access to a course. `enrolled` gates write actions on paid
- * content (progress, Q&A, notes, likes, QC-20260719-16/28/29); `isPaid` gates the
- * verified-purchase review/eligibility path and ranking metrics (QC-20260719-15/26/27).
+ * Resolve a learner's access to a course.
+ * Full catalog access is gated by all-access subscription, not per-course purchase.
+ * `enrolled` remains the write/progress/video gate and is true for all-access users.
  */
 export async function getEnrollmentAccess(
   userId: string,
   courseId: string
 ): Promise<EnrollmentAccess> {
-  const [enrollment, paidTx] = await Promise.all([
+  const [enrollment, paidTx, allAccess] = await Promise.all([
     db.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
       select: { id: true, isPaid: true },
@@ -26,17 +30,19 @@ export async function getEnrollmentAccess(
       where: { userId, courseId, status: "COMPLETED", amount: { gt: 0 } },
       select: { id: true },
     }),
+    hasAllAccess(userId),
   ]);
 
-  const isPaid = Boolean(paidTx) || Boolean(enrollment?.isPaid);
   return {
-    enrolled: Boolean(enrollment),
-    isPaid,
+    enrolled: allAccess || Boolean(enrollment),
+    isPaid: allAccess,
     paidTransactionId: paidTx?.id ?? null,
+    hasAllAccess: allAccess,
+    started: Boolean(enrollment),
   };
 }
 
-/** True when the course is free (price <= 0), free courses do not require a paid tx. */
+/** True when the course is free (price <= 0). Legacy helper; access is no longer price-gated. */
 export async function isFreeCourse(courseId: string): Promise<boolean> {
   const course = await db.course.findUnique({
     where: { id: courseId },

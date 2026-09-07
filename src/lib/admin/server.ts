@@ -102,8 +102,6 @@ export function mapMentor(
     coursesCount: profile.coursesCount,
     rating: profile.rating,
     licenseLabel: profile.licenseLabel ?? undefined,
-    availableFor1on1: profile.availableFor1on1,
-    sessionPrice: profile.sessionPrice ?? undefined,
   };
 }
 
@@ -237,7 +235,7 @@ export async function buildRevenueReport(): Promise<AdminRevenueReport> {
         status: "COMPLETED",
         // Session rows share a synthetic bucket so the by-course view stays coherent.
         courseId: tx.course?.id ?? `session:${mentorId}`,
-        courseTitle: tx.course?.title ?? "Sesi 1-on-1",
+        courseTitle: tx.course?.title ?? "Langganan",
         mentorId,
         mentorName,
         buyerId: tx.user.id,

@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Calendar, Pencil, Plus, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 
 import { useAdminToast } from "@/components/admin/admin-toast";
 import { useAdminPanel } from "@/components/admin/admin-panel-context";
@@ -31,7 +30,6 @@ const emptyForm: MentorFormInput = {
   instruments: ["Saham"],
   yearsExperience: 1,
   verified: true,
-  availableFor1on1: false,
 };
 
 export default function AdminMentorsPage() {
@@ -75,8 +73,6 @@ export default function AdminMentorsPage() {
       yearsExperience: mentor.yearsExperience,
       licenseLabel: mentor.licenseLabel,
       verified: mentor.verified,
-      availableFor1on1: mentor.availableFor1on1,
-      sessionPrice: mentor.sessionPrice,
     });
     setModalOpen(true);
   }
@@ -175,10 +171,6 @@ export default function AdminMentorsPage() {
       header: "Aksi",
       render: (row) => (
         <div className="flex items-center gap-1">
-          <Button size="xs" variant="outline" render={<Link href={`/admin/mentors/${row.id}/sesi`} />}>
-            <Calendar className="size-3" />
-            Jadwal
-          </Button>
           {!readOnly && (
             <>
               <Button
@@ -339,25 +331,6 @@ export default function AdminMentorsPage() {
             />
             Terverifikasi
           </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={form.availableFor1on1}
-              onChange={(e) => setForm({ ...form, availableFor1on1: e.target.checked })}
-            />
-            Tersedia 1-on-1
-          </label>
-          {form.availableFor1on1 && (
-            <label className="space-y-1 text-sm sm:col-span-2">
-              <span>Harga sesi (tampilan)</span>
-              <input
-                value={form.sessionPrice ?? ""}
-                onChange={(e) => setForm({ ...form, sessionPrice: e.target.value })}
-                placeholder="Contoh demo: Rp750.000 / 45 menit"
-                className="w-full rounded-lg border border-border bg-background px-3 py-2"
-              />
-            </label>
-          )}
         </form>
       </FormModal>
 

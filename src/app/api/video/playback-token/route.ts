@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { db } from "@/lib/db";
+import { hasAllAccess, startCourseEnrollment } from "@/lib/subscription/access";
 import { resolveSignedPlaybackUrl } from "@/lib/video/bunny";
 import { issuePlaybackHeartbeatToken } from "@/lib/video/playback-heartbeat";
 import { generatePlaybackToken } from "@/lib/video/protection";
@@ -35,16 +36,6 @@ async function getLessonContext(courseSlug: string, lessonId: string) {
       },
     },
   });
-}
-
-async function hasDbEnrollment(userId: string, courseId: string): Promise<boolean> {
-  const enrollment = await db.enrollment.findUnique({
-    where: {
-      userId_courseId: { userId, courseId },
-    },
-    select: { id: true },
-  });
-  return Boolean(enrollment);
 }
 
 function isServerFreePreview(lesson: {
@@ -88,19 +79,20 @@ export async function POST(request: Request) {
       });
       if (!user) {
         return NextResponse.json(
-          { error: "Masuk diperlukan untuk mengakses konten berbayar." },
+          { error: "Masuk diperlukan untuk menonton pelajaran ini." },
           { status: 401 }
         );
       }
 
-      const enrolled = await hasDbEnrollment(user.id, lesson.module.course.id);
-      if (!enrolled) {
+      const allAccess = await hasAllAccess(user.id);
+      if (!allAccess) {
         return NextResponse.json(
-          { error: "Anda belum terdaftar di kelas ini." },
+          { error: "Akses katalog memerlukan akun yang aktif." },
           { status: 403 }
         );
       }
 
+      await startCourseEnrollment(user.id, lesson.module.course.id);
       viewerId = user.id;
     }
 
@@ -113,8 +105,6 @@ export async function POST(request: Request) {
           userId: "guest",
         };
 
-    // Enrolled viewers also get a signed heartbeat token so watch time can be verified
-    // server-side (completion gate, QC-20260719-46). Guests/previews don't accrue watch time.
     const heartbeat = viewerId
       ? issuePlaybackHeartbeatToken(viewerId, lessonId)
       : null;

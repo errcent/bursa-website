@@ -25,8 +25,6 @@ const mentorListingSelect = {
   studentsCount: true,
   coursesCount: true,
   rating: true,
-  availableFor1on1: true,
-  sessionPrice: true,
   user: { select: { nama: true } },
 } as const;
 
@@ -82,8 +80,7 @@ function mapCatalogMentor(profile: DbMentorDetail | DbMentorListing): Mentor {
     bio: profile.bio,
     philosophy: "philosophy" in profile ? profile.philosophy : "",
     trackRecord: "trackRecord" in profile ? ((profile.trackRecord as number[]) ?? []) : [],
-    availableFor1on1: profile.availableFor1on1,
-    sessionPrice: profile.sessionPrice ?? undefined,
+    availableFor1on1: false,
   };
 }
 
@@ -94,7 +91,7 @@ function mapCatalogCourse(course: DbCourseDetail): Course {
     mentorSlug: course.mentor.slug,
     instrument: instrumentToUi(course.instrument),
     level: levelToUi(course.level),
-    price: course.price,
+    price: 0,
     rating: course.rating,
     ratingCount: course.ratingCount,
     studentsCount: course.studentsCount,
@@ -126,7 +123,7 @@ function mapCatalogListingCourse(course: DbCourseListing): Course {
     mentorSlug: course.mentor.slug,
     instrument: instrumentToUi(course.instrument),
     level: levelToUi(course.level),
-    price: course.price,
+    price: 0,
     rating: course.rating,
     ratingCount: course.ratingCount,
     bayesianRating: course.bayesianRating,

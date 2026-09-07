@@ -25,8 +25,6 @@ export async function PATCH(request: Request, context: RouteContext) {
         instruments: input.instruments,
         licenseLabel: input.licenseLabel,
         yearsExperience: input.yearsExperience,
-        availableFor1on1: input.availableFor1on1,
-        sessionPrice: input.sessionPrice,
         verificationStatus:
           input.verified === undefined
             ? undefined

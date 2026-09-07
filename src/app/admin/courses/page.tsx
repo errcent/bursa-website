@@ -23,7 +23,6 @@ import {
 import { defaultCourseThumbnailPath } from "@/lib/courses/thumbnails";
 import type { AdminCourse, AdminMentor, CourseFormInput } from "@/lib/admin/types";
 import type { Instrument, Level } from "@/lib/types";
-import { formatRupiah } from "@/lib/mock-data";
 
 const LEVELS: Level[] = ["Pemula", "Menengah", "Mahir"];
 const INSTRUMENTS: Instrument[] = ["Saham", "Crypto", "Forex"];
@@ -31,7 +30,7 @@ const INSTRUMENTS: Instrument[] = ["Saham", "Crypto", "Forex"];
 const emptyForm: CourseFormInput = {
   title: "",
   shortDescription: "",
-  price: 499000,
+  price: 0,
   level: "Pemula",
   instrument: "Saham",
   mentorId: "",
@@ -190,12 +189,6 @@ export default function AdminCoursesPage() {
     },
     { key: "mentorName", header: "Mentor", sortable: true, render: (row) => row.mentorName },
     {
-      key: "price",
-      header: "Harga",
-      sortable: true,
-      render: (row) => formatRupiah(row.price),
-    },
-    {
       key: "isPublished",
       header: "Status",
       render: (row) => (
@@ -319,16 +312,6 @@ export default function AdminCoursesPage() {
                   </option>
                 ))}
               </select>
-            </label>
-            <label className="space-y-1 text-sm">
-              <span>Harga (IDR)</span>
-              <input
-                required
-                type="number"
-                value={form.price}
-                onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
-                className="w-full rounded-lg border border-border bg-background px-3 py-2"
-              />
             </label>
             <label className="space-y-1 text-sm">
               <span>Level</span>

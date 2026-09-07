@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 
-import { useAuth } from "@/components/auth-provider";
 import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
 import { LessonPreviewThumb } from "@/components/video/lesson-preview-thumb";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
@@ -28,9 +27,7 @@ export function CourseCurriculumCards({
   hideBookmark = false,
 }: CourseCurriculumCardsProps) {
   const { enrolled } = useCourseEnrollment(course.slug);
-  const { session } = useAuth();
-  const checkoutHref = `/checkout/${course.slug}`;
-  const lockedHref = session ? checkoutHref : buildLoginHref(checkoutHref);
+  const lockedHref = buildLoginHref(`/kelas/${course.slug}`);
 
   const flatVideos = course.modules.flatMap((module, moduleIndex) =>
     module.lessons.map((lesson, lessonIndex) => ({

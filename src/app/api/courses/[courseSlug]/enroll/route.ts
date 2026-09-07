@@ -2,11 +2,9 @@ import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { resolveAuthenticatedUser, resolveTrustedEmail } from "@/lib/auth/request-identity";
-import { isPrototypeMode } from "@/lib/auth/prototype";
 import { db } from "@/lib/db";
 import { resolveRequestUser } from "@/lib/lesson-qa/server";
-import { createCommissionRecordForTransaction } from "@/lib/mentor/commission";
-import { recalculateStatsForCourse } from "@/lib/stats/server";
+import { hasAllAccess, startCourseEnrollment } from "@/lib/subscription/access";
 
 type RouteContext = {
   params: Promise<{ courseSlug: string }>;
@@ -17,7 +15,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const { courseSlug } = await context.params;
     const email = await resolveTrustedEmail(request);
     if (!email) {
-      return jsonOk({ enrolled: false });
+      return jsonOk({ enrolled: false, hasAllAccess: false });
     }
 
     const user = await resolveRequestUser(
@@ -25,7 +23,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       { createIfMissing: false }
     );
     if (!user) {
-      return jsonOk({ enrolled: false });
+      return jsonOk({ enrolled: false, hasAllAccess: false });
     }
 
     const course = await db.course.findUnique({
@@ -36,15 +34,20 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return jsonError("Kelas tidak ditemukan.", 404);
     }
 
-    const enrollment = await db.enrollment.findUnique({
-      where: {
-        userId_courseId: { userId: user.id, courseId: course.id },
-      },
-      select: { id: true },
-    });
+    const [enrollment, allAccess] = await Promise.all([
+      db.enrollment.findUnique({
+        where: {
+          userId_courseId: { userId: user.id, courseId: course.id },
+        },
+        select: { id: true },
+      }),
+      hasAllAccess(user.id),
+    ]);
 
     return jsonOk({
-      enrolled: Boolean(enrollment),
+      enrolled: allAccess,
+      hasAllAccess: allAccess,
+      started: Boolean(enrollment),
       enrollmentId: enrollment?.id ?? null,
       hubRoomId: null,
     });
@@ -68,86 +71,27 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return jsonError("Autentikasi diperlukan.", 401);
     }
 
+    const allAccess = await hasAllAccess(user.id);
+    if (!allAccess) {
+      return jsonError("Akses katalog memerlukan akun yang aktif.", 403);
+    }
+
     const course = await db.course.findUnique({
       where: { slug: courseSlug },
-      select: { id: true, mentorId: true, title: true, price: true },
+      select: { id: true },
     });
     if (!course) {
       return jsonError("Kelas tidak ditemukan.", 404);
     }
 
-    const isFreeCourse = course.price <= 0;
-    if (!isPrototypeMode() && !isFreeCourse) {
-      return jsonError(
-        "Enrollment berbayar memerlukan pembayaran melalui checkout.",
-        402
-      );
-    }
-
-    const existing = await db.enrollment.findUnique({
-      where: {
-        userId_courseId: { userId: user.id, courseId: course.id },
-      },
-    });
-
-    const isPaidEnrollment = course.price > 0;
-
-    // Atomic: enrollment + transaction + commission written together so a mid-way
-    // failure cannot leave an enrollment without a matching ledger entry (QC-20260719-36).
-    const enrollment = await db.$transaction(async (tx) => {
-      const enrollmentRow = await tx.enrollment.upsert({
-        where: {
-          userId_courseId: { userId: user.id, courseId: course.id },
-        },
-        create: { userId: user.id, courseId: course.id, isPaid: isPaidEnrollment },
-        update: isPaidEnrollment ? { isPaid: true } : {},
-      });
-
-      if (!existing) {
-        // Idempotency guard against duplicate COMPLETED transactions on retry (QC-20260719-30).
-        const idempotencyKey = `enroll:${user.id}:${course.id}`;
-        const alreadyBooked = await tx.transaction.findUnique({
-          where: { idempotencyKey },
-          select: { id: true },
-        });
-
-        if (!alreadyBooked) {
-          const transaction = await tx.transaction.create({
-            data: {
-              userId: user.id,
-              courseId: course.id,
-              amount: course.price,
-              status: "COMPLETED",
-              idempotencyKey,
-            },
-          });
-
-          // Commission ledger is created atomically with the transaction (QC-20260719-13).
-          if (isPaidEnrollment) {
-            await createCommissionRecordForTransaction(
-              {
-                transactionId: transaction.id,
-                mentorId: course.mentorId,
-                grossAmount: course.price,
-              },
-              tx
-            );
-          }
-        }
-      }
-
-      return enrollmentRow;
-    });
-
-    if (!existing) {
-      await recalculateStatsForCourse(course.id);
-    }
+    const enrollment = await startCourseEnrollment(user.id, course.id);
 
     return jsonOk({
       enrollmentId: enrollment.id,
       courseId: course.id,
       hubRoomId: null,
       enrolled: true,
+      hasAllAccess: true,
     });
   } catch (error) {
     return handleApiError(error);

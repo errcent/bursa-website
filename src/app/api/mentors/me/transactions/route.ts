@@ -47,9 +47,8 @@ export async function GET(request: NextRequest) {
         id: row.id,
         transactionId: row.transactionId,
         createdAt: row.createdAt.toISOString(),
-        // Session-payment ledger rows (kind=SESSION) have no course (QC-20260719-47).
         kind: row.transaction.kind,
-        courseTitle: row.transaction.course?.title ?? "Sesi 1-on-1",
+        courseTitle: row.transaction.course?.title ?? "Langganan",
         courseSlug: row.transaction.course?.slug ?? null,
         learnerInitials: maskLearnerInitials(row.transaction.user.nama),
         grossAmount: row.grossAmount,
