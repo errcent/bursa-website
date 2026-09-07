@@ -1655,6 +1655,25 @@
   }
 
   @media (min-width: 768px) {
+    .catalog-page .catalog-row-bleed {
+      width: 100%;
+      max-width: 100%;
+      margin-inline: 0;
+    }
+
+    .catalog-page .catalog-scroll-carousel {
+      scroll-snap-type: none;
+      scroll-padding-inline: 0;
+    }
+
+    .catalog-page .catalog-scroll-carousel-item {
+      scroll-snap-align: unset;
+    }
+
+    .catalog-page .catalog-scroll-carousel .carousel-scroll-track {
+      padding-inline: 0;
+    }
+
     .catalog-scroll-carousel {
       scroll-snap-type: none;
     }

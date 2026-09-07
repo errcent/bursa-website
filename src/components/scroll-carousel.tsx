@@ -227,7 +227,16 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
         return;
       }
 
-      const containerWidth = el.clientWidth;
+      const track = el.querySelector<HTMLElement>(".carousel-scroll-track");
+      let horizontalInset = 0;
+      if (track) {
+        const cs = getComputedStyle(track);
+        horizontalInset =
+          (parseFloat(cs.paddingInlineStart) || 0) +
+          (parseFloat(cs.paddingInlineEnd) || 0);
+      }
+
+      const containerWidth = Math.max(0, el.clientWidth - horizontalInset);
       const perView = getPerView(containerWidth);
       const width =
         perView === 1
