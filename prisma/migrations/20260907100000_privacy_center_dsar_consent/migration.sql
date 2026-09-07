@@ -1,4 +1,4 @@
-﻿-- CreateEnum
+-- CreateEnum
 CREATE TYPE "DataSubjectType" AS ENUM ('ACCOUNT', 'NON_ACCOUNT', 'MENTOR_APPLICANT');
 
 -- AlterTable
