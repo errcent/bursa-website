@@ -35,7 +35,7 @@ export function PrivacyActionBar({ locale = "id" }: { locale?: LegalLocale }) {
         type="button"
         variant="outline"
         size="sm"
-        className="privacy-action-secondary h-9"
+        className="h-9"
         onClick={() => router.push(hrefs.dsarStatus)}
       >
         {t.viewRequests}
@@ -43,7 +43,7 @@ export function PrivacyActionBar({ locale = "id" }: { locale?: LegalLocale }) {
       <Button
         type="button"
         size="sm"
-        className="privacy-action-primary h-9 border-0"
+        className="h-9"
         onClick={() => openModal("select-subject")}
       >
         {t.makeRequest}

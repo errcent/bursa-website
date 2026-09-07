@@ -283,7 +283,7 @@ export function DsarWizardModal({ locale = "id" }: { locale?: LegalLocale }) {
                     className="flex flex-col gap-2 rounded-xl border border-border p-4 text-left transition-colors hover:border-primary/40 hover:bg-accent-soft/30"
                     onClick={() => pickAction(card.type)}
                   >
-                    <Icon className="size-5 text-[#6b3344]" aria-hidden />
+                    <Icon className="size-5 text-primary" aria-hidden />
                     <span className="text-sm font-medium">{copy.title}</span>
                     <span className="text-xs text-muted-foreground">{copy.desc}</span>
                   </button>

@@ -148,11 +148,7 @@ export function DsarRequestForm({ locale = "id" }: { locale?: LegalLocale }) {
           </>
         )}
         <div className="mt-4 flex flex-wrap gap-2">
-          <Button
-            type="button"
-            className="privacy-action-primary border-0"
-            render={<a href={hrefs.dsarStatus} />}
-          >
+          <Button type="button" render={<a href={hrefs.dsarStatus} />}>
             {t.track}
           </Button>
           <Button

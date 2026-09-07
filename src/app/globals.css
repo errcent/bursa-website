@@ -3626,178 +3626,63 @@ img.ai-thumbnail__media {
   }
 }
 
-/* ── Privacy Portal (light compliance workspace) ───────────────────────── */
+/* ── Privacy Portal (native Bursa dark — layout/structure only) ─────────── */
 [data-portal-surface="privacy"] {
-  --background: #fafaf8;
-  --foreground: #1a1a1a;
-  --card: #ffffff;
-  --card-foreground: #1a1a1a;
-  --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
-  --primary: #5c6478;
-  --primary-foreground: #ffffff;
-  --secondary: #f0f0ec;
-  --secondary-foreground: #3f3f46;
-  --muted: #f4f4f0;
-  --muted-foreground: #52525b;
-  --accent: #5c6478;
-  --accent-foreground: #ffffff;
-  --accent-soft: rgba(92, 100, 120, 0.08);
-  --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
-  --border: rgba(26, 26, 26, 0.1);
-  --input: rgba(26, 26, 26, 0.08);
-  --ring: rgba(92, 100, 120, 0.25);
-  --surface: #ffffff;
-  --surface-2: #f4f4f0;
-  --glow: rgba(92, 100, 120, 0.04);
-  --glow-strong: rgba(92, 100, 120, 0.08);
-  color-scheme: light;
-}
-
-[data-portal-surface="privacy"] .text-gradient {
-  background: linear-gradient(135deg, #1a1a1a 0%, #3f3f46 55%, #52525b 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-[data-portal-surface="privacy"] .privacy-hero {
-  background:
-    radial-gradient(ellipse 80% 60% at 70% 0%, rgba(92, 100, 120, 0.07), transparent 55%),
-    linear-gradient(180deg, #f0f0ec 0%, #fafaf8 100%);
-  border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+  color-scheme: dark;
 }
 
 [data-portal-surface="privacy"] .privacy-policy-card {
-  @apply relative -mt-8 rounded-2xl border border-border bg-card shadow-[0_8px_40px_rgba(26,26,26,0.06)] sm:-mt-12;
+  @apply surface-card relative -mt-8 sm:-mt-12;
 }
 
 [data-portal-surface="privacy"] .privacy-sidebar-toc button[aria-current="true"] {
   @apply border-l-2 border-primary bg-accent-soft/60 font-medium text-foreground;
 }
 
-[data-portal-surface="privacy"] .privacy-action-primary {
-  @apply bg-[#6b3344] text-white hover:bg-[#5a2b39];
-}
-
-[data-portal-surface="privacy"] .privacy-action-secondary {
-  @apply border border-border bg-muted/50 text-foreground hover:bg-muted;
-}
-
-[data-portal-surface="privacy"] .prose-trust h2.section-title {
-  @apply text-[#6b3344];
-}
-
 [data-portal-surface="privacy"] .privacy-skip-link {
   @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-card focus:px-3 focus:py-2 focus:text-sm focus:shadow-md;
 }
 
-/* ── Trust Center (public security register — not homepage, not privacy) ─ */
+/* ── Trust Center (native Bursa dark theme) ────────────────────────────── */
 [data-portal-surface="trust"] {
-  --background: #101820;
-  --foreground: #e8e4d8;
-  --card: #1a2430;
-  --card-foreground: #e8e4d8;
-  --popover: #1a2430;
-  --popover-foreground: #e8e4d8;
-  --primary: #c4a574;
-  --primary-foreground: #101820;
-  --secondary: #243040;
-  --secondary-foreground: #c9c3b4;
-  --muted: #1c2633;
-  --muted-foreground: #9a9386;
-  --accent: #c4a574;
-  --accent-foreground: #101820;
-  --accent-soft: rgba(196, 165, 116, 0.12);
-  --destructive: #d46a6a;
-  --destructive-foreground: #101820;
-  --border: rgba(232, 228, 216, 0.12);
-  --input: rgba(232, 228, 216, 0.1);
-  --ring: rgba(196, 165, 116, 0.4);
-  --surface: #1a2430;
-  --surface-2: #151e28;
-  --glow: rgba(196, 165, 116, 0.06);
-  --glow-strong: rgba(196, 165, 116, 0.12);
-  --brand: #c4a574;
-  --hero-grain-opacity: 0;
-  --font-heading: var(--font-trust-serif), "Source Serif 4", Georgia, serif;
-  --font-mono: var(--font-trust-mono), "IBM Plex Mono", ui-monospace, monospace;
-  --trust-brass: #c4a574;
-  --trust-forest: #2e7d5b;
-  --trust-ink: #101820;
   color-scheme: dark;
 }
 
-html[data-portal-surface="trust"] body::before,
-html[data-portal-surface="trust"] body::after {
-  display: none !important;
-}
-
-[data-portal-surface="trust"] .hero-cinematic,
-[data-portal-surface="trust"] .hero-cinematic::before,
-[data-portal-surface="trust"] .hero-cinematic::after {
-  background: none;
-  animation: none;
-}
-
-[data-portal-surface="trust"] .trust-hero {
-  background:
-    linear-gradient(180deg, #16202b 0%, #101820 100%);
-  border-bottom: 1px solid rgba(196, 165, 116, 0.18);
-}
-
-[data-portal-surface="trust"] .trust-serif {
-  font-family: var(--font-trust-serif), "Source Serif 4", Georgia, serif;
-}
-
-[data-portal-surface="trust"] .trust-mono {
-  font-family: var(--font-trust-mono), "IBM Plex Mono", ui-monospace, monospace;
-}
-
 [data-portal-surface="trust"] .trust-stamp {
-  @apply inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em];
+  @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-heading text-[10px] font-semibold uppercase tracking-[0.12em];
 }
 
 [data-portal-surface="trust"] .trust-stamp-done {
-  border-color: rgba(46, 125, 91, 0.45);
-  background: rgba(46, 125, 91, 0.14);
-  color: #7dcea0;
+  border-color: color-mix(in srgb, var(--profit) 40%, transparent);
+  background: color-mix(in srgb, var(--profit) 12%, transparent);
+  color: var(--profit);
 }
 
 [data-portal-surface="trust"] .trust-stamp-partial {
-  border-color: rgba(196, 165, 116, 0.4);
-  background: rgba(196, 165, 116, 0.1);
-  color: #c4a574;
+  border-color: color-mix(in srgb, var(--amber) 40%, transparent);
+  background: color-mix(in srgb, var(--amber) 12%, transparent);
+  color: var(--amber);
 }
 
 [data-portal-surface="trust"] .trust-stamp-planned {
-  border-color: rgba(232, 228, 216, 0.16);
-  background: rgba(232, 228, 216, 0.04);
-  color: #9a9386;
+  border-color: var(--border);
+  background: var(--muted);
+  color: var(--muted-foreground);
 }
 
 [data-portal-surface="trust"] .trust-card {
-  @apply rounded-sm border border-border bg-card;
+  @apply surface-card;
 }
 
 [data-portal-surface="trust"] .trust-tab[aria-current="page"] {
-  border-bottom-color: #c4a574;
-  color: #e8e4d8;
+  border-bottom-color: var(--primary);
+  color: var(--foreground);
 }
 
 [data-portal-surface="trust"] .trust-skip-link {
-  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-sm focus:bg-card focus:px-3 focus:py-2 focus:text-sm focus:shadow-md;
+  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-card focus:px-3 focus:py-2 focus:text-sm focus:shadow-md;
 }
 
-[data-portal-surface="trust"] .prose-trust h2 {
-  font-family: var(--font-trust-serif), Georgia, serif;
-  color: #e8e4d8;
-}
-
-[data-portal-surface="trust"] .text-gradient {
-  background: none;
-  -webkit-background-clip: unset;
-  background-clip: unset;
-  color: #e8e4d8;
+[data-portal-surface="trust"] .trust-action {
+  @apply inline-flex items-center justify-center rounded-full bg-primary px-4 py-1.5 font-heading text-xs font-semibold tracking-tight text-primary-foreground transition-colors hover:bg-primary/85;
 }

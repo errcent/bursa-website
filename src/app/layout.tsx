@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, IBM_Plex_Mono, Inter, Montserrat_Alternates, Source_Serif_4 } from "next/font/google";
+import { DM_Sans, Inter, Montserrat_Alternates } from "next/font/google";
 import { headers } from "next/headers";
 import Script from "next/script";
 
@@ -49,22 +49,6 @@ const fontMontAlt = Montserrat_Alternates({
   display: "swap",
 });
 
-/** Trust Center register headlines */
-const fontTrustSerif = Source_Serif_4({
-  variable: "--font-trust-serif",
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  display: "swap",
-});
-
-/** Trust Center metadata / stamps */
-const fontTrustMono = IBM_Plex_Mono({
-  variable: "--font-trust-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
-});
-
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -99,7 +83,7 @@ export default async function RootLayout({
   return (
     <html
       lang="id"
-      className={`${fontSans.variable} ${fontHeading.variable} ${fontMontAlt.variable} ${fontTrustSerif.variable} ${fontTrustMono.variable} ${privacySurface ? "" : "dark"} h-full antialiased`}
+      className={`${fontSans.variable} ${fontHeading.variable} ${fontMontAlt.variable} dark h-full antialiased`}
       data-scroll-behavior="smooth"
       data-note-surface={noteSurface ? "1" : undefined}
       data-portal-surface={privacySurface ? "privacy" : trustSurface ? "trust" : undefined}

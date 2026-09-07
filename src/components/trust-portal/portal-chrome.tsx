@@ -75,11 +75,7 @@ export function PortalChrome({
   return (
     <header
       id="privacy-nav"
-      className={
-        variant === "privacy"
-          ? "border-b border-border/80 bg-card/95 backdrop-blur-sm"
-          : "border-b border-border/70 bg-background/90 backdrop-blur-md"
-      }
+      className="border-b border-border/70 bg-background/90 backdrop-blur-md"
     >
       <div className="container-page flex h-14 items-center justify-between gap-4">
         <Link href={originFor("apex")} className="flex items-center gap-2" aria-label="Bursa">

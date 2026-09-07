@@ -50,13 +50,11 @@ export function PrivacyPortalHero({
   const eyebrow = locale === "en" ? "Privacy Center" : "Pusat Privasi";
 
   return (
-    <div className="privacy-hero page-header-strip">
-      <div className="container-page py-10 sm:py-14">
-        <p className="eyebrow mb-3 text-muted-foreground">{eyebrow}</p>
-        <h1 className="page-hero-title max-w-3xl text-balance text-2xl font-semibold tracking-tight sm:text-3xl">
-          {title}
-        </h1>
-        <p className="section-copy mt-3 max-w-2xl text-pretty">{description}</p>
+    <div className="hero-cinematic page-header-strip border-b border-border/40">
+      <div className="container-page py-12 sm:py-16">
+        <p className="eyebrow mb-3">{eyebrow}</p>
+        <h1 className="page-hero-title max-w-3xl text-balance text-gradient">{title}</h1>
+        <p className="section-copy mt-4 max-w-2xl text-pretty">{description}</p>
         <Link
           href={hrefs.privacyAbout}
           className="link-muted mt-4 inline-flex text-sm font-medium text-foreground"
