@@ -177,6 +177,7 @@ export async function renderPortalPage(
   const idHref = publicPathFor(portalSlug, internalSlug, "id");
   const enHref = publicPathFor(portalSlug, internalSlug, "en");
   const governing = locale === "en" ? GOVERNING_LANGUAGE_EN : GOVERNING_LANGUAGE_ID;
+  const backLabel = locale === "en" ? "Back to Bursanalar" : "Kembali ke Bursanalar";
 
   const isPrivacy = portalSlug === "privasi";
   const chromeVariant = isPrivacy ? "privacy" : "default";

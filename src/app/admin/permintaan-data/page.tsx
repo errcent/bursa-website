@@ -80,25 +80,37 @@ export default function AdminDsarPage() {
   }
 
   const columns: DataTableColumn<DsarRow>[] = [
-    { key: "referenceCode", header: "Referensi", cell: (r) => <span className="font-mono text-xs">{r.referenceCode}</span> },
-    { key: "fullName", header: "Nama", cell: (r) => r.fullName },
-    { key: "email", header: "Email", cell: (r) => r.email },
-    { key: "requestType", header: "Jenis", cell: (r) => r.requestType },
+    {
+      key: "referenceCode",
+      header: "Referensi",
+      render: (row) => <span className="font-mono text-xs">{row.referenceCode}</span>,
+    },
+    { key: "fullName", header: "Nama", render: (row) => row.fullName },
+    { key: "email", header: "Email", render: (row) => row.email },
+    { key: "requestType", header: "Jenis", render: (row) => row.requestType },
     {
       key: "status",
       header: "Status",
-      cell: (r) => <Badge variant={STATUS_VARIANT[r.status] ?? "secondary"}>{r.status}</Badge>,
+      render: (row) => <Badge variant={STATUS_VARIANT[row.status] ?? "secondary"}>{row.status}</Badge>,
     },
     {
       key: "createdAt",
       header: "Diajukan",
-      cell: (r) => new Date(r.createdAt).toLocaleString("id-ID"),
+      render: (row) => new Date(row.createdAt).toLocaleString("id-ID"),
     },
     {
       key: "actions",
       header: "",
-      cell: (r) => (
-        <Button type="button" size="sm" variant="outline" onClick={() => { setSelected(r); setNotes(r.adminNotes ?? ""); }}>
+      render: (row) => (
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => {
+            setSelected(row);
+            setNotes(row.adminNotes ?? "");
+          }}
+        >
           Detail
         </Button>
       ),
@@ -112,7 +124,16 @@ export default function AdminDsarPage() {
         <p className="mt-1 text-sm text-muted-foreground">Antrian permintaan hak subjek data dari Pusat Privasi.</p>
       </div>
 
-      {loading ? <Skeleton className="h-64 w-full" /> : <DataTable columns={columns} data={rows} emptyMessage="Belum ada permintaan." />}
+      {loading ? (
+        <Skeleton className="h-64 w-full" />
+      ) : (
+        <DataTable
+          columns={columns}
+          data={rows}
+          emptyMessage="Belum ada permintaan."
+          getRowId={(row) => row.id}
+        />
+      )}
 
       {selected && (
         <div className="rounded-xl border border-border bg-card p-5">
