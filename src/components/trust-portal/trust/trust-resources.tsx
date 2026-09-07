@@ -29,7 +29,7 @@ export function TrustResources({
         {items.map((item) => (
           <Link key={item.hrefKey} href={hrefs[item.hrefKey]} className="trust-card group p-5 transition-colors hover:border-primary/40">
             <div className="flex items-start justify-between gap-3">
-              <h3 className="trust-serif text-lg font-semibold">
+              <h3 className="font-heading text-lg font-semibold tracking-tight">
                 {locale === "en" ? item.enTitle : item.idTitle}
               </h3>
               <ArrowUpRight className="size-4 shrink-0 text-muted-foreground group-hover:text-primary" aria-hidden />
@@ -43,7 +43,7 @@ export function TrustResources({
       {!preview && (
         <>
           <section>
-            <h3 className="trust-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+            <h3 className="eyebrow">
               {locale === "en" ? "Legal & privacy" : "Legal & privasi"}
             </h3>
             <ul className="mt-3 flex flex-col gap-2">

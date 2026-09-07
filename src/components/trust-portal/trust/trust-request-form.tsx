@@ -65,12 +65,12 @@ export function TrustRequestForm({ locale }: { locale: LegalLocale }) {
   }
 
   const fieldClass =
-    "mt-1 w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring";
+    "mt-1 w-full rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
   return (
     <section id="request" className="trust-card scroll-mt-28 p-5 sm:p-6">
-      <h2 className="trust-serif text-xl font-semibold">{t.requestTitle}</h2>
-      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">{t.requestLead}</p>
+      <h2 className="font-heading text-xl font-semibold tracking-tight">{t.requestTitle}</h2>
+      <p className="section-copy mt-2 max-w-2xl">{t.requestLead}</p>
       <form className="mt-5 grid gap-4 sm:grid-cols-2" onSubmit={onSubmit}>
         <label className="block text-xs text-muted-foreground">
           {labels.name}
@@ -112,7 +112,7 @@ export function TrustRequestForm({ locale }: { locale: LegalLocale }) {
         <div className="sm:col-span-2">
           <button
             type="submit"
-            className="trust-mono rounded-sm bg-primary px-4 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-primary-foreground hover:bg-[#d4b88a]"
+            className="trust-action"
           >
             {labels.submit}
           </button>

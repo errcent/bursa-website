@@ -23,7 +23,7 @@ export function TrustOverview({ locale }: { locale: LegalLocale }) {
       </section>
 
       <section>
-        <h2 className="trust-serif text-2xl font-semibold">{t.commitmentsTitle}</h2>
+        <h2 className="font-heading text-2xl font-semibold tracking-tight">{t.commitmentsTitle}</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           {COMMITMENTS.map((item) => (
             <article key={item.id} className="border-t border-border/70 pt-4">
@@ -42,10 +42,10 @@ export function TrustOverview({ locale }: { locale: LegalLocale }) {
         <section>
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
-              <h2 className="trust-serif text-2xl font-semibold">{t.frameworksTitle}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{t.frameworksLead}</p>
+              <h2 className="font-heading text-2xl font-semibold tracking-tight">{t.frameworksTitle}</h2>
+              <p className="section-copy mt-1">{t.frameworksLead}</p>
             </div>
-            <Link href={hrefs.compliance} className="trust-mono text-[11px] uppercase tracking-[0.14em] text-primary hover:text-[#d4b88a]">
+            <Link href={hrefs.compliance} className="link-muted font-heading text-xs font-semibold">
               {t.viewAll}
             </Link>
           </div>
@@ -69,10 +69,10 @@ export function TrustOverview({ locale }: { locale: LegalLocale }) {
         <section>
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
-              <h2 className="trust-serif text-2xl font-semibold">{t.controls}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{t.controlsLead}</p>
+              <h2 className="font-heading text-2xl font-semibold tracking-tight">{t.controls}</h2>
+              <p className="section-copy mt-1">{t.controlsLead}</p>
             </div>
-            <Link href={hrefs.controls} className="trust-mono text-[11px] uppercase tracking-[0.14em] text-primary hover:text-[#d4b88a]">
+            <Link href={hrefs.controls} className="link-muted font-heading text-xs font-semibold">
               {t.viewAll}
             </Link>
           </div>
@@ -83,10 +83,10 @@ export function TrustOverview({ locale }: { locale: LegalLocale }) {
       <section>
         <div className="mb-4 flex items-end justify-between gap-3">
           <div>
-            <h2 className="trust-serif text-2xl font-semibold">{t.resources}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{t.resourcesLead}</p>
+            <h2 className="font-heading text-2xl font-semibold tracking-tight">{t.resources}</h2>
+            <p className="section-copy mt-1">{t.resourcesLead}</p>
           </div>
-          <Link href={hrefs.resources} className="trust-mono text-[11px] uppercase tracking-[0.14em] text-primary hover:text-[#d4b88a]">
+          <Link href={hrefs.resources} className="link-muted font-heading text-xs font-semibold">
             {t.viewAll}
           </Link>
         </div>

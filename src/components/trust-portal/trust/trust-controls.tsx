@@ -24,7 +24,7 @@ export function TrustControls({
       <div className="grid gap-5 lg:grid-cols-2">
         {groups.map((group) => (
           <section key={group.id} className="trust-card p-5">
-            <h3 className="trust-serif text-lg font-semibold">
+            <h3 className="font-heading text-lg font-semibold tracking-tight">
               {locale === "en" ? group.enTitle : group.idTitle}
             </h3>
             <ul className="mt-4 flex flex-col gap-3">

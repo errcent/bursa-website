@@ -25,7 +25,7 @@ export function TrustFooter({ locale }: { locale: LegalLocale }) {
     <footer className="mt-auto border-t border-border/70">
       <div className="container-page flex flex-col gap-3 py-8 text-sm text-muted-foreground sm:flex-row sm:items-start sm:justify-between">
         <div className="flex max-w-lg flex-col gap-1">
-          <p className="trust-mono text-[10px] uppercase tracking-[0.16em] text-primary/90">{t.official}</p>
+          <p className="eyebrow text-primary/90">{t.official}</p>
           <p>{t.governing}</p>
           <p className="text-xs text-muted-foreground/70">
             {locale === "en" ? legalEntityCopy.en.imprintShort : legalEntityCopy.id.imprintShort}
@@ -58,13 +58,11 @@ export function TrustPageHeader({
   description?: string;
 }) {
   return (
-    <div className="trust-hero">
-      <div className="container-page py-10 sm:py-12">
-        <h1 className="trust-serif max-w-3xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-          {title}
-        </h1>
+    <div className="hero-cinematic page-header-strip trust-hero border-b border-border/40">
+      <div className="container-page py-12 sm:py-16">
+        <h1 className="page-hero-title max-w-3xl text-balance text-gradient">{title}</h1>
         {description ? (
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground text-pretty">{description}</p>
+          <p className="section-copy mt-4 max-w-2xl text-pretty">{description}</p>
         ) : null}
       </div>
     </div>

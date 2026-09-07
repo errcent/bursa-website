@@ -39,26 +39,23 @@ export function TrustChrome({
   ];
 
   return (
-    <header id="trust-nav" className="sticky top-0 z-40 border-b border-border/80 bg-[#101820]/95 backdrop-blur-sm">
+    <header id="trust-nav" className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md">
       <div className="container-page flex h-14 items-center justify-between gap-3">
         <Link href={hrefs.hub} className="flex min-w-0 items-center gap-2.5" aria-label={t.centerName}>
-          <BrandLogo variant="product" decorative className="h-5 w-auto" />
-          <span className="trust-mono hidden truncate text-[11px] uppercase tracking-[0.16em] text-muted-foreground sm:inline">
+          <BrandLogo variant="product" decorative className="h-6 w-auto" />
+          <span className="eyebrow hidden truncate sm:inline">
             {t.centerName}
           </span>
         </Link>
         <div className="flex items-center gap-2 sm:gap-3">
           <LocaleToggle locale={locale} idHref={idHref} enHref={enHref} />
-          <Link
-            href={hrefs.request}
-            className="trust-mono rounded-sm bg-primary px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-primary-foreground hover:bg-[#d4b88a]"
-          >
+          <Link href={hrefs.request} className="trust-action">
             {t.requestCta}
           </Link>
         </div>
       </div>
       <nav
-        className="container-page flex gap-6 border-t border-border/50"
+        className="container-page flex gap-6 border-t border-border/40"
         aria-label={locale === "en" ? "Trust Center sections" : "Bagian Pusat Kepercayaan"}
       >
         {tabs.map((tab) => (
@@ -67,7 +64,7 @@ export function TrustChrome({
             href={tab.href}
             aria-current={activeTab === tab.id ? "page" : undefined}
             className={cn(
-              "trust-tab trust-mono border-b-2 border-transparent py-2.5 text-[11px] uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-foreground",
+              "trust-tab border-b-2 border-transparent py-2.5 font-heading text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
               activeTab === tab.id && "text-foreground"
             )}
           >

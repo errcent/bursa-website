@@ -3632,7 +3632,7 @@ img.ai-thumbnail__media {
 }
 
 [data-portal-surface="privacy"] .privacy-policy-card {
-  @apply surface-card relative -mt-8 sm:-mt-12;
+  @apply relative -mt-8 sm:-mt-12;
 }
 
 [data-portal-surface="privacy"] .privacy-sidebar-toc button[aria-current="true"] {
@@ -3671,7 +3671,10 @@ img.ai-thumbnail__media {
 }
 
 [data-portal-surface="trust"] .trust-card {
-  @apply surface-card;
+  border-radius: var(--atom-card-radius);
+  border: 1px solid transparent;
+  background: var(--atom-card-fill) padding-box, var(--atom-card-border) border-box;
+  box-shadow: var(--atom-card-shadow);
 }
 
 [data-portal-surface="trust"] .trust-tab[aria-current="page"] {

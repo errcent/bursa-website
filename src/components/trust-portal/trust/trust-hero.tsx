@@ -8,14 +8,12 @@ export function TrustHero({ locale }: { locale: LegalLocale }) {
   const hrefs = trustPortalHrefs(locale);
 
   return (
-    <div className="trust-hero">
+    <div className="hero-cinematic page-header-strip trust-hero border-b border-border/40">
       <div className="container-page py-12 sm:py-16">
-        <p className="trust-mono mb-4 text-[11px] uppercase tracking-[0.22em] text-primary">{t.lastPublished}</p>
-        <h1 className="trust-serif max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-          {t.product}
-        </h1>
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground/90 text-pretty">{t.heroLead}</p>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground text-pretty">{t.heroBody}</p>
+        <p className="eyebrow mb-3">{t.lastPublished}</p>
+        <h1 className="page-hero-title max-w-3xl text-balance text-gradient">{t.product}</h1>
+        <p className="section-copy mt-4 max-w-2xl text-pretty">{t.heroLead}</p>
+        <p className="section-copy mt-3 max-w-2xl text-pretty">{t.heroBody}</p>
         <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
           <a
             href={`mailto:${t.securityEmail}`}
