@@ -24,7 +24,7 @@ const FIXTURES: Fixture[] = [
     width: 1280,
     height: 720,
     label: "NATIVE 16:9",
-    sublabel: "1280 × 720",
+    sublabel: "1280 �- 720",
     bg: "#1e3a5f",
   },
   {
@@ -32,7 +32,7 @@ const FIXTURES: Fixture[] = [
     width: 1280,
     height: 1280,
     label: "NON-NATIVE 1:1",
-    sublabel: "1280 × 1280 → frame 16:9",
+    sublabel: "1280 �- 1280 → frame 16:9",
     bg: "#4a1942",
   },
 ];
@@ -55,7 +55,7 @@ async function main() {
   for (const fixture of FIXTURES) {
     const dest = path.join(OUT_DIR, fixture.filename);
     await sharp(svgOverlay(fixture)).webp({ quality: 90 }).toFile(dest);
-    console.log(`✓ ${fixture.filename} (${fixture.width}×${fixture.height})`);
+    console.log(`✓ ${fixture.filename} (${fixture.width}�-${fixture.height})`);
   }
 
   console.log(`\nFixtures written to public/thumbnails-test/`);

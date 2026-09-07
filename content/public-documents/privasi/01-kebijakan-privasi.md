@@ -107,7 +107,7 @@ Untuk email waitlist, setiap pesan menyediakan tautan preference center dan berh
 
 Detail keamanan: [Pusat Kepercayaan](/kepercayaan).
 
-**Notifikasi kebocoran data:** Apabila terjadi kegagalan pelindungan data pribadi, kami akan memberitahukan secara tertulis kepada subjek data terdampak dan lembaga yang berwenang **paling lambat 3×24 jam** sejak kami mengetahui insiden, sesuai UU PDP, disertai data yang terungkap, waktu & cara kebocoran, serta langkah penanganan dan pemulihan.
+**Notifikasi kebocoran data:** Apabila terjadi kegagalan pelindungan data pribadi, kami akan memberitahukan secara tertulis kepada subjek data terdampak dan lembaga yang berwenang **paling lambat 3�-24 jam** sejak kami mengetahui insiden, sesuai UU PDP, disertai data yang terungkap, waktu & cara kebocoran, serta langkah penanganan dan pemulihan.
 
 ## Pasal 8 — Cookie & Pelacakan
 

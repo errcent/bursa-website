@@ -36,7 +36,7 @@ function experienceBaseIndex(experience: LearningGuidanceAnswers["experience"]):
   return map[experience];
 }
 
-/** Derives target level band from cross-signals (experience Ã— goal Ã— risk). */
+/** Derives target level band from cross-signals (experience Ã- goal Ã- risk). */
 export function analyzeProfile(answers: LearningGuidanceAnswers): ProfileAnalysis {
   let idealIndex = experienceBaseIndex(answers.experience);
   let minIndex = 0;

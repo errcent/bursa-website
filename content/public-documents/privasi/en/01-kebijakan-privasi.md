@@ -110,7 +110,7 @@ For waitlist email, every message includes a preference-centre and unsubscribe l
 
 Security detail: [Trust Center](https://trust.bursanalar.com/en).
 
-**Data-breach notification:** If personal-data protection fails, we will notify affected data subjects and the competent authority **no later than 3×24 hours** after we become aware of the incident, under UU PDP, including what data was exposed, when and how, and the containment and recovery steps.
+**Data-breach notification:** If personal-data protection fails, we will notify affected data subjects and the competent authority **no later than 3�-24 hours** after we become aware of the incident, under UU PDP, including what data was exposed, when and how, and the containment and recovery steps.
 
 ## Article 8 — Cookies & tracking
 

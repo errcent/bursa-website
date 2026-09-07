@@ -24,6 +24,7 @@ import {
   monthBuckets,
   summarizeJournal,
 } from "@/lib/note/stats";
+import { isPnlKind } from "@/lib/note/types";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 
 export function NoteHome() {
@@ -48,8 +49,10 @@ export function NoteHome() {
   );
   const monthPrefix = `${cursor.year}-${String(cursor.month + 1).padStart(2, "0")}-`;
   const heroEntries = useMemo(() => {
-    if (prefs.heroRange !== "month") return kindScoped;
-    return kindScoped.filter((entry) => dayKey(entry.openedAt).startsWith(monthPrefix));
+    if (prefs.heroRange !== "month") return kindScoped.filter((e) => isPnlKind(e.kind));
+    return kindScoped.filter(
+      (entry) => isPnlKind(entry.kind) && dayKey(entry.openedAt).startsWith(monthPrefix)
+    );
   }, [kindScoped, prefs.heroRange, monthPrefix]);
   const dayEntries = useMemo(
     () => (selectedDate ? filterEntries(kindScoped, { kind: "ALL", result: "ALL", date: selectedDate }) : null),
@@ -66,13 +69,13 @@ export function NoteHome() {
   const emotions = useMemo(() => groupByEmotion(heroEntries), [heroEntries]);
   const updatedIso = useMemo(() => latestActivityIso(kindScoped), [kindScoped]);
   const updated = updatedIso ? formatNoteTimestamp(updatedIso) : null;
-  const daySnap = dayEntries ? summarizeJournal(dayEntries) : null;
+  const daySnap = dayEntries ? summarizeJournal(dayEntries.filter((e) => isPnlKind(e.kind))) : null;
   const baruHref = selectedDate ? `/note/baru?date=${selectedDate}` : "/note/baru";
   const recentEntries = useMemo(() => {
     if (selectedDate) return logEntries;
     return [...logEntries]
       .sort((a, b) => Date.parse(b.openedAt) - Date.parse(a.openedAt))
-      .slice(0, 12);
+      .slice(0, 24);
   }, [logEntries, selectedDate]);
 
   if (journal.error) {
@@ -111,7 +114,7 @@ export function NoteHome() {
         }}
       />
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.9fr)] lg:items-start">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)] xl:items-start">
         <NoteCalendar
           year={cursor.year}
           monthIndex={cursor.month}
@@ -162,13 +165,21 @@ export function NoteHome() {
           ) : null}
 
           <div>
-            <h2 className="mb-3 text-[11px] text-zinc-500">
-              {selectedDate
-                ? `${copy.log} · ${selectedDate}`
-                : logEntries.length > recentEntries.length
-                  ? `${copy.terbaru} · ${recentEntries.length}`
-                  : copy.terbaru}
-            </h2>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h2 className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+                {selectedDate
+                  ? `${copy.log} · ${selectedDate}`
+                  : logEntries.length > recentEntries.length
+                    ? `${copy.terbaru} · ${recentEntries.length}`
+                    : copy.terbaru}
+              </h2>
+              <Link
+                href={baruHref}
+                className="text-xs font-medium text-zinc-300 hover:text-white"
+              >
+                + {copy.baru}
+              </Link>
+            </div>
             <NoteEntryList
               entries={recentEntries}
               colorMode={prefs.colorMode}

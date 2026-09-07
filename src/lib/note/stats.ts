@@ -1,4 +1,4 @@
-import type { JournalEntry, JournalKind, JournalResult } from "@/lib/note/types";
+import { isPnlKind, type JournalEntry, type JournalKind, type JournalResult } from "@/lib/note/types";
 
 export const NOTE_TZ = "Asia/Jakarta";
 /** Sunday-first short names. Use weekdayLabels(weekStart) for display order. */
@@ -94,7 +94,8 @@ function isClosed(entry: Pick<JournalEntry, "pnl" | "result">): boolean {
 }
 
 export function summarizeJournal(entries: JournalEntry[]): JournalSnapshot {
-  const withPnl = entries.filter(isClosed);
+  const pnlEntries = entries.filter((e) => isPnlKind(e.kind));
+  const withPnl = pnlEntries.filter(isClosed);
   const wins = withPnl.filter((e) => (e.pnl ?? 0) > 0);
   const losses = withPnl.filter((e) => (e.pnl ?? 0) < 0);
   const be = withPnl.filter((e) => (e.pnl ?? 0) === 0);
@@ -111,7 +112,7 @@ export function summarizeJournal(entries: JournalEntry[]): JournalSnapshot {
   return {
     tradeCount: entries.length,
     closedCount: withPnl.length,
-    pnlSum: entries.reduce((s, e) => s + (e.pnl ?? 0), 0),
+    pnlSum: pnlEntries.reduce((s, e) => s + (e.pnl ?? 0), 0),
     winRate: withPnl.length ? wins.length / withPnl.length : null,
     profitFactor: grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? Number.POSITIVE_INFINITY : null,
     expectancy: withPnl.length ? closedNet / withPnl.length : null,
@@ -120,7 +121,7 @@ export function summarizeJournal(entries: JournalEntry[]): JournalSnapshot {
     wins: wins.length,
     losses: losses.length,
     be: be.length,
-    open: entries.filter((e) => resolvedResult(e) === "open").length,
+    open: pnlEntries.filter((e) => resolvedResult(e) === "open").length,
     byEmotion: [...emotionMap.entries()]
       .map(([emotion, count]) => ({ emotion, count }))
       .sort((a, b) => b.count - a.count),
@@ -146,7 +147,9 @@ export function monthBuckets(entries: JournalEntry[], year: number, monthIndex: 
     const date = dayKey(entry.openedAt);
     if (!date.startsWith(prefix)) continue;
     const current = map.get(date) ?? { date, pnl: 0, count: 0, hasNote: false };
-    current.pnl += entry.pnl ?? 0;
+    if (isPnlKind(entry.kind)) {
+      current.pnl += entry.pnl ?? 0;
+    }
     current.count += 1;
     current.hasNote = current.hasNote || Boolean(entry.note?.trim());
     map.set(date, current);
@@ -209,7 +212,7 @@ function toSlice(map: Map<string, JournalEntry[]>): SliceStat[] {
 export function groupBySymbol(entries: JournalEntry[]): SliceStat[] {
   const map = new Map<string, JournalEntry[]>();
   for (const entry of entries) {
-    const key = entry.symbol.trim() || "—";
+    const key = entry.symbol.trim() || "-";
     const list = map.get(key) ?? [];
     list.push(entry);
     map.set(key, list);
@@ -248,7 +251,9 @@ export function loggingStreak(entries: JournalEntry[], nowIso = new Date().toISO
 }
 
 export function cumulativePnl(entries: JournalEntry[]): number[] {
-  const chronological = [...entries].sort((a, b) => a.openedAt.localeCompare(b.openedAt));
+  const chronological = [...entries]
+    .filter((e) => isPnlKind(e.kind))
+    .sort((a, b) => a.openedAt.localeCompare(b.openedAt));
   let run = 0;
   return chronological.map((e) => {
     run += e.pnl ?? 0;
@@ -294,7 +299,7 @@ function compactBody(abs: number, maxFraction: number): string {
 }
 
 export function formatPnl(value: number | null | undefined, opts?: FormatPnlOpts) {
-  if (value == null) return "—";
+  if (value == null) return "-";
   const maxFraction = opts?.decimals ?? (Number.isInteger(value) ? 0 : 2);
   const abs = Math.abs(value);
   const body = opts?.compact
@@ -310,12 +315,12 @@ export function formatPnl(value: number | null | undefined, opts?: FormatPnlOpts
 }
 
 export function formatPct(value: number | null) {
-  if (value == null) return "—";
+  if (value == null) return "-";
   return `${Math.round(value * 100)}%`;
 }
 
 export function formatFactor(value: number | null) {
-  if (value == null) return "—";
+  if (value == null) return "-";
   if (!Number.isFinite(value)) return "∞";
   return value.toLocaleString("id-ID", { maximumFractionDigits: 2 });
 }

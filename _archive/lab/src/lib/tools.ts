@@ -166,7 +166,7 @@ export const labTools: LabTool[] = [
     title: "Kalkulator Trade Expectancy",
     shortTitle: "Trade Expectancy",
     description:
-      "Hitung ekspektasi per trade dan jelajahi matriks win rate Ã— R:R untuk menilai kelayakan strategi.",
+      "Hitung ekspektasi per trade dan jelajahi matriks win rate Ã- R:R untuk menilai kelayakan strategi.",
     icon: Sparkles,
     tag: "Kalkulator",
     category: "performance",

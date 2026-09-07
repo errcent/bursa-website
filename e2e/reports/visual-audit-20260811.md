@@ -1,7 +1,7 @@
 # Visual Audit Report — 2026-08-11
 
 **Target:** `https://bursanalar.vercel.app` → resolves to `https://bursanalar.com`  
-**Viewports:** desktop 1440×900 · mobile 390×844  
+**Viewports:** desktop 1440�-900 · mobile 390�-844  
 **Auth:** none (`PLAYWRIGHT_AUTH_*` unset) — gated routes marked **Incomplete**  
 **Artifacts:** `e2e/screenshots/{desktop,mobile}/*.png` · `e2e/reports/meta-*.json`
 
@@ -25,7 +25,7 @@ Surface publik sudah punya arah dark minimal yang tenang, tapi **belum premium-e
 | `/syarat-dan-ketentuan` | 3 | 3 | 3 | 3 | 4 | 3 | 4 | 5 | Soft-fail | P1 |
 | `/masuk` `/daftar` | 4 | 4 | 4 | 3 | 4 | 4 | 4 | 5 | Soft-fail | P2 |
 | `/` katalog kelas | 4 | 4 | 3 | 3 | 4 | 3 | 4 | 5 | Soft-fail | P2 |
-| Lab tools ×16 | 4 | 4 | 4 | 3 | 4 | 4 | 4 | 5 | Soft-fail | P2 |
+| Lab tools �-16 | 4 | 4 | 4 | 3 | 4 | 4 | 4 | 5 | Soft-fail | P2 |
 
 \*P0* = butuh auth env untuk audit penuh; guest redirect ke `/masuk` sudah benar secara flow.
 

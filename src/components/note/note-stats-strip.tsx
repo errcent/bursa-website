@@ -64,41 +64,45 @@ export function NoteStatsStrip({
   labels: { net: string; win: string; entry: string; kurva: string; expectansi: string; diperbarui: string };
 }) {
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-end justify-between gap-6">
-        <div className="flex flex-wrap items-end gap-6">
+    <div className="note-kpi-grid space-y-3">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4">
           <Metric label={labels.net} tip="Jumlah PnL pada rentang hero (bukan hari yang diklik).">
-            <p
-              className={`font-heading text-3xl tracking-tight sm:text-4xl ${pnlTone(snapshot.pnlSum, colorMode)}`}
-            >
+            <p className={`font-heading text-2xl tracking-tight ${pnlTone(snapshot.pnlSum, colorMode)}`}>
               {formatPnl(snapshot.pnlSum, formatOpts)}
             </p>
           </Metric>
-          <Metric label={labels.kurva} tip="Kumulatif jurnal. Bukan ekuitas akun broker.">
-            <Sparkline points={equity} />
-          </Metric>
         </div>
-        <div className="flex flex-wrap gap-6 text-sm">
-          <Metric label={labels.entry} tip="Jumlah entry pada rentang hero.">
-            <span className="text-zinc-200">{snapshot.tradeCount}</span>
-          </Metric>
-          <Metric label={labels.expectansi} tip="Rata-rata PnL entry tertutup.">
-            <span className={pnlTone(snapshot.expectancy ?? 0, colorMode)}>
-              {formatPnl(snapshot.expectancy, { ...formatOpts, decimals: Math.max(formatOpts.decimals ?? 0, 2) })}
+        <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4">
+          <Metric label={labels.win} tip="Win rate entry tertutup. Tanpa R-multiple. Bukan ranking.">
+            <span className="text-xl text-zinc-200">
+              {snapshot.winRate == null ? "-" : `${Math.round(snapshot.winRate * 100)}%`}
             </span>
           </Metric>
-          <Metric label={labels.win} tip="Win rate entry tertutup. Tanpa R-multiple. Bukan ranking.">
-            <span className="text-zinc-200">
-              {snapshot.winRate == null ? "—" : `${Math.round(snapshot.winRate * 100)}%`}
+        </div>
+        <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4">
+          <Metric label={labels.entry} tip="Jumlah entry pada rentang hero.">
+            <span className="text-xl text-zinc-200">{snapshot.tradeCount}</span>
+          </Metric>
+        </div>
+        <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4">
+          <Metric label={labels.expectansi} tip="Rata-rata PnL entry tertutup.">
+            <span className={`text-xl ${pnlTone(snapshot.expectancy ?? 0, colorMode)}`}>
+              {formatPnl(snapshot.expectancy, { ...formatOpts, decimals: Math.max(formatOpts.decimals ?? 0, 2) })}
             </span>
           </Metric>
         </div>
       </div>
-      {updatedLabel ? (
-        <p className="text-[11px] text-zinc-600">
-          {labels.diperbarui} {updatedLabel}
-        </p>
-      ) : null}
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <Metric label={labels.kurva} tip="Kumulatif jurnal. Bukan ekuitas akun broker.">
+          <Sparkline points={equity} />
+        </Metric>
+        {updatedLabel ? (
+          <p className="text-[11px] text-zinc-600">
+            {labels.diperbarui} {updatedLabel}
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }

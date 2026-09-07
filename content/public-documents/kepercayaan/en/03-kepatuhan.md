@@ -24,7 +24,7 @@ Bursa is a **trading-education platform** operated under **PT Global Makmur Mada
 | Legal bases for processing | Consent, contract, legal obligation, legitimate interest |
 | Data-subject rights | Request form + privacy@bursanalar.com |
 | Data security | TLS, bcrypt, RBAC, audit log |
-| Breach notification | SOP 3Ã—24 hours to authorities + users |
+| Breach notification | SOP 3Ã-24 hours to authorities + users |
 | DPO | Internal responsible person (also compliance reviewer) |
 
 Detail: [Privacy Policy](https://privacy.bursanalar.com/en/policies).

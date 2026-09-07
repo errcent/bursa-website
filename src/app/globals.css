@@ -594,14 +594,13 @@
     top: 0;
     left: 0;
     z-index: 2147483000;
-    display: none;
+    display: block;
     width: 28px;
     height: 28px;
-    margin: -14px 0 0 -14px;
     pointer-events: none;
     isolation: isolate;
     mix-blend-mode: difference;
-    will-change: transform;
+    will-change: transform, opacity;
   }
 
   .landing-story-cursor__svg {
@@ -1175,8 +1174,7 @@
 
   @media (min-width: 769px) {
     .home-story-solution {
-      align-items: flex-start;
-      padding-top: calc(var(--site-header-offset) + clamp(2.25rem, 7vh, 4.75rem));
+      align-items: center;
     }
   }
 

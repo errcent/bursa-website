@@ -42,6 +42,8 @@ model JournalEntry {
   clinicModuleId String?
   protocol       String?
   accountLabel   String?
+  relatedCourseSlug String?
+  relatedLessonId   String?
   openedAt       DateTime
   createdAt      DateTime    @default(now())
 

@@ -131,7 +131,7 @@ export function TradeExpectancyCalculator() {
       <LabToolPanel title="Matriks expectancy">
         <div className="mb-4 md:hidden">
           <LabResultTile
-            label={`Sel kamu (${winRateNum}% Ã— ${rrNum}R)`}
+            label={`Sel kamu (${winRateNum}% Ã- ${rrNum}R)`}
             value={`${yourExpectancy >= 0 ? "+" : ""}${yourExpectancy.toFixed(2)} R`}
             tone={matrixTone === "neutral" ? "neutral" : matrixTone}
           />

@@ -60,6 +60,7 @@ export function SiteNavSearch({
 
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(initialOpen);
+  const [focused, setFocused] = useState(initialOpen);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
@@ -78,6 +79,7 @@ export function SiteNavSearch({
   );
 
   const { results } = useDebouncedSearch(value, catalogIndex, 8);
+  const expanded = open || focused;
 
   useEffect(() => {
     if (pathname === "/katalog") {
@@ -117,6 +119,7 @@ export function SiteNavSearch({
       }
       if (containerRef.current && !containerRef.current.contains(target)) {
         setOpen(false);
+        setFocused(false);
         onDismiss?.();
       }
     }
@@ -173,6 +176,7 @@ export function SiteNavSearch({
       setActiveIndex((prev) => (prev > 0 ? prev - 1 : items.length - 1));
     } else if (event.key === "Escape") {
       setOpen(false);
+      setFocused(false);
       inputRef.current?.blur();
       onDismiss?.();
     } else if (event.key === "Enter" && activeIndex >= 0 && items[activeIndex]) {
@@ -184,14 +188,21 @@ export function SiteNavSearch({
   return (
     <div
       ref={containerRef}
-      className={cn("relative", open && reveal && "z-[210]", className)}
+      className={cn(
+        "relative transition-[max-width,flex-grow] duration-300 ease-out",
+        expanded ? "min-w-[16rem] max-w-xl flex-[1_1_24rem]" : "min-w-[12rem] max-w-sm flex-[1_1_14rem]",
+        open && reveal && "z-[210]",
+        className
+      )}
       aria-hidden={!reveal}
     >
       <form
         onSubmit={handleSubmit}
         className={cn(
-          "flex items-center gap-2 rounded-full border border-border bg-white/[0.03] px-3 py-1.5 text-sm text-muted-foreground transition-[opacity,transform,border-color,background-color,box-shadow] duration-300 ease-out focus-within:border-accent/20 focus-within:bg-white/[0.05] focus-within:text-foreground focus-within:shadow-[0_0_0_3px_var(--glow)]",
-          open && reveal && "border-accent/25 bg-white/[0.05] shadow-[0_0_0_3px_var(--glow)]",
+          "flex w-full items-center gap-2 rounded-full border border-border bg-white/[0.03] px-3 py-1.5 text-sm text-muted-foreground transition-[opacity,transform,border-color,background-color,box-shadow,width] duration-300 ease-out focus-within:border-accent/20 focus-within:bg-white/[0.05] focus-within:text-foreground focus-within:shadow-[0_0_0_3px_var(--glow)]",
+          (open || focused) &&
+            reveal &&
+            "border-accent/25 bg-white/[0.05] shadow-[0_0_0_3px_var(--glow)]",
           !reveal && "pointer-events-none opacity-0"
         )}
         role="search"
@@ -206,8 +217,23 @@ export function SiteNavSearch({
             setValue(event.target.value);
             if (reveal) setOpen(true);
           }}
-          onFocus={() => reveal && openOnFocus && setOpen(true)}
-          onClick={() => reveal && setOpen(true)}
+          onFocus={() => {
+            if (!reveal) return;
+            setFocused(true);
+            if (openOnFocus) setOpen(true);
+          }}
+          onBlur={() => {
+            window.setTimeout(() => {
+              if (!containerRef.current?.contains(document.activeElement)) {
+                setFocused(false);
+              }
+            }, 120);
+          }}
+          onClick={() => {
+            if (!reveal) return;
+            setFocused(true);
+            setOpen(true);
+          }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           title={placeholder}

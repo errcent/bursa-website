@@ -44,16 +44,16 @@ Prinsip: admin **tidak boleh** melihat data privat pelajar.
 |------|-------|---------|------------|
 | Email user | ~ Masked | ~ Masked | ~ Masked |
 | Nama lengkap | ~ Partial | ~ Partial | ~ Partial |
-| No. telepon | × | × | × |
-| Password/hash | × | × | × |
-| Kartu pembayaran | × | × | × |
-| Notes pelajar | × | × | × |
-| Progress (detail) | ~ Agregat | ✓ Support | × |
-| KYC mentor | × | × | ✓ Review |
-| Transaksi metadata | ✓ | ✓ Billing | × |
-| IP log | ✓ Security | × | × |
+| No. telepon | �- | �- | �- |
+| Password/hash | �- | �- | �- |
+| Kartu pembayaran | �- | �- | �- |
+| Notes pelajar | �- | �- | �- |
+| Progress (detail) | ~ Agregat | ✓ Support | �- |
+| KYC mentor | �- | �- | ✓ Review |
+| Transaksi metadata | ✓ | ✓ Billing | �- |
+| IP log | ✓ Security | �- | �- |
 
-**Legenda:** ✓ = akses terbatas · ~ = masked/agregat · × = hard deny · — = rencana
+**Legenda:** ✓ = akses terbatas · ~ = masked/agregat · �- = hard deny · — = rencana
 
 ## Break-Glass (Pengecualian)
 

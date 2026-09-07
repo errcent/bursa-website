@@ -8,26 +8,40 @@ import { getNoteRepo } from "@/lib/note/repo";
 import { getClinicModule } from "@/lib/note/taxonomy";
 import type { CreateEntryInput, JournalKind, JournalMode, JournalResult } from "@/lib/note/types";
 
-const createSchema = z.object({
-  kind: z.enum(["TRADE", "INVEST"]),
-  mode: z.enum(["cepat", "review", "klinik"]),
-  symbol: z.string().trim().min(1).max(32),
-  side: z.string().trim().min(1).max(16),
-  qty: z.number().finite().optional().nullable(),
-  entryPrice: z.number().finite().optional().nullable(),
-  exitPrice: z.number().finite().optional().nullable(),
-  fees: z.number().finite().optional().nullable(),
-  pnl: z.number().finite().optional().nullable(),
-  result: z.enum(["win", "loss", "be", "open"]).optional().nullable(),
-  emotion: z.string().trim().max(40).optional().nullable(),
-  note: z.string().trim().max(2000).optional().nullable(),
-  ruleBroken: z.string().trim().max(400).optional().nullable(),
-  lesson: z.string().trim().max(400).optional().nullable(),
-  clinicModuleId: z.string().trim().max(64).optional().nullable(),
-  protocol: z.string().trim().max(400).optional().nullable(),
-  accountLabel: z.string().trim().max(40).optional().nullable(),
-  openedAt: z.string().trim().max(40).optional().nullable(),
-});
+const createSchema = z
+  .object({
+    kind: z.enum(["TRADE", "INVEST", "REFLEKSI"]),
+    mode: z.enum(["cepat", "review", "klinik"]),
+    symbol: z.string().trim().max(32).optional().default(""),
+    side: z.string().trim().max(16).optional().default("BUY"),
+    qty: z.number().finite().optional().nullable(),
+    entryPrice: z.number().finite().optional().nullable(),
+    exitPrice: z.number().finite().optional().nullable(),
+    fees: z.number().finite().optional().nullable(),
+    pnl: z.number().finite().optional().nullable(),
+    result: z.enum(["win", "loss", "be", "open"]).optional().nullable(),
+    emotion: z.string().trim().max(40).optional().nullable(),
+    note: z.string().trim().max(2000).optional().nullable(),
+    ruleBroken: z.string().trim().max(400).optional().nullable(),
+    lesson: z.string().trim().max(400).optional().nullable(),
+    clinicModuleId: z.string().trim().max(64).optional().nullable(),
+    protocol: z.string().trim().max(400).optional().nullable(),
+    accountLabel: z.string().trim().max(40).optional().nullable(),
+    relatedCourseSlug: z.string().trim().max(120).optional().nullable(),
+    relatedLessonId: z.string().trim().max(64).optional().nullable(),
+    openedAt: z.string().trim().max(40).optional().nullable(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.kind === "REFLEKSI") {
+      if (!data.note?.trim()) {
+        ctx.addIssue({ code: "custom", message: "Catatan wajib untuk refleksi.", path: ["note"] });
+      }
+      return;
+    }
+    if (!data.symbol?.trim()) {
+      ctx.addIssue({ code: "custom", message: "Simbol wajib.", path: ["symbol"] });
+    }
+  });
 
 export async function OPTIONS(request: NextRequest) {
   return noteCorsPreflight(request.headers.get("origin"));
@@ -81,6 +95,8 @@ export async function POST(request: NextRequest) {
 
     const input: CreateEntryInput = {
       ...parsed,
+      symbol: parsed.symbol ?? "",
+      side: parsed.side ?? "BUY",
       kind: parsed.kind as JournalKind,
       mode: parsed.mode as JournalMode,
       result: parsed.result as JournalResult | null | undefined,

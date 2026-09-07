@@ -102,7 +102,7 @@ export function NoteSidebar({ onNavigate }: { onNavigate?: () => void }) {
           <div className="space-y-2">
             <Quiet>{copy.jenis}</Quiet>
             <div
-              className="grid grid-cols-3 rounded-md border border-zinc-800 p-0.5"
+              className="grid grid-cols-2 gap-1 rounded-md border border-zinc-800 p-0.5 sm:grid-cols-4"
               role="group"
               aria-label={copy.jenis}
             >
@@ -111,6 +111,7 @@ export function NoteSidebar({ onNavigate }: { onNavigate?: () => void }) {
                   ["ALL", copy.semua],
                   ["TRADE", copy.trade],
                   ["INVEST", copy.invest],
+                  ["REFLEKSI", copy.refleksi],
                 ] as const
               ).map(([value, label]) => (
                 <button
@@ -146,6 +147,13 @@ export function NoteSidebar({ onNavigate }: { onNavigate?: () => void }) {
       ) : null}
 
       <Cluster>
+        <a
+          href={catalogHref}
+          className="block rounded-md border border-zinc-700 px-2 py-2 text-center text-sm font-medium text-zinc-200 hover:border-zinc-500 hover:bg-zinc-900"
+          onClick={go}
+        >
+          {copy.kembaliKelas}
+        </a>
         <div onClick={go}>
           <TextLink href="/note/setelan" current={onSetelan}>
             {copy.setelan}

@@ -63,7 +63,7 @@ export function subscribeNotePrefs(listener: () => void) {
 }
 
 function isKind(value: unknown): value is JournalKind {
-  return value === "TRADE" || value === "INVEST";
+  return value === "TRADE" || value === "INVEST" || value === "REFLEKSI";
 }
 
 export function parseNotePrefs(raw: unknown): NotePrefs {

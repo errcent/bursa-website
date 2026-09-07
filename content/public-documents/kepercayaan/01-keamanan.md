@@ -71,7 +71,7 @@ Pengguna → TLS → Vercel Edge → Next.js App → RBAC API → PostgreSQL (en
 
 Jika terjadi kebocoran data, kami akan:
 1. Contain & assess dalam 24 jam
-2. Notify otoritas sesuai UU PDP (3×24 jam)
+2. Notify otoritas sesuai UU PDP (3�-24 jam)
 3. Notify pengguna terdampak
 4. Post-mortem & perbaikan
 

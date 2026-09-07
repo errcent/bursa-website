@@ -59,13 +59,13 @@ const PORTAL_META: Record<
       label: "Pusat Privasi",
       heroTitle: "Data yang kami kumpulkan, bagaimana kami menggunakannya, dan dengan siapa kami membagikannya",
       heroDescription:
-        "Pelajari bagaimana Bursa mengumpulkan, menggunakan, dan melindungi data pribadimu — serta bagaimana kamu mengendalikan hak-hakmu.",
+        "Pelajari bagaimana Bursa mengumpulkan, menggunakan, dan melindungi data pribadimu - serta bagaimana kamu mengendalikan hak-hakmu.",
     },
     en: {
       label: "Privacy Center",
       heroTitle: "The data we collect, how we use it, and who we share it with",
       heroDescription:
-        "Learn how Bursa collects, uses, and protects your personal data — and how you control your rights.",
+        "Learn how Bursa collects, uses, and protects your personal data - and how you control your rights.",
     },
   },
   kepercayaan: {

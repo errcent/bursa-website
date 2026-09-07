@@ -342,7 +342,6 @@ function LockedStory() {
     target: trackRef,
     offset: ["start start", "end end"],
   });
-  const solutionY = useTransform(scrollYProgress, [0.82, 1], ["0vh", "-22vh"]);
 
   useEffect(() => {
     introRef.current?.classList.add("is-on");
@@ -410,7 +409,6 @@ function LockedStory() {
               <motion.div
                 ref={solutionRef}
                 className="home-story-solution home-story-solution--stay"
-                style={{ y: solutionY }}
               >
                 <div className="home-story-act__inner">
                   <p className="home-story-folio">03</p>
@@ -463,7 +461,6 @@ function DesktopStory() {
   const p3Mute = useTransform(scrollYProgress, [0.54, 0.56], [1, 0.48]);
 
   const solutionOpacity = useTransform(scrollYProgress, [0, 0.6, 0.66, 1], [0, 0, 1, 1]);
-  const solutionY = useTransform(scrollYProgress, [0.82, 1], ["0vh", "-22vh"]);
   const cursorProgress = useTransform(scrollYProgress, [0, 0.66], [0, 1]);
 
   const s1Opacity = useTransform(scrollYProgress, [0, 0.64, 0.68, 1], [0, 0, 1, 1]);
@@ -513,7 +510,7 @@ function DesktopStory() {
 
               <motion.div
                 className="home-story-solution home-story-solution--stay"
-                style={{ opacity: solutionOpacity, y: solutionY }}
+                style={{ opacity: solutionOpacity }}
               >
                 <div className="home-story-act__inner">
                   <p className="home-story-folio">03</p>

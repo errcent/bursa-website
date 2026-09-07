@@ -145,7 +145,7 @@ async function main() {
       );
       await new Promise((r) => setTimeout(r, 1500));
     } catch (error) {
-      console.error(`âœ— ${entry.kind}/${entry.slug}:`, error);
+      console.error(`âœ- ${entry.kind}/${entry.slug}:`, error);
     }
   }
 

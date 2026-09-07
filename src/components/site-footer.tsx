@@ -112,7 +112,6 @@ const footerColumns = [
       { label: "Tentang Kami", href: "/tentang-kami" },
       { label: "Pusat Bantuan", href: "/bantuan" },
       { label: "Bursa Note", href: "/note" },
-      { label: "Jadi Mentor", href: "/jadi-mentor" },
     ],
   },
   {

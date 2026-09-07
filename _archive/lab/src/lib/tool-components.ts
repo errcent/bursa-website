@@ -71,7 +71,7 @@ export const labToolConfigs: Record<string, LabToolConfig> = {
     component: TradeExpectancyCalculator,
     assumptions: [
       "Expectancy dihitung dalam R-multiple dan dikonversi ke nominal berdasarkan risiko per trade.",
-      "Matriks: Expectancy (R) = (Win rate × R:R) − (1 − Win rate). Nilai positif berarti strategi profitable secara matematis.",
+      "Matriks: Expectancy (R) = (Win rate �- R:R) − (1 − Win rate). Nilai positif berarti strategi profitable secara matematis.",
       "Profit factor = gross profit / gross loss.",
     ],
   },
@@ -85,7 +85,7 @@ export const labToolConfigs: Record<string, LabToolConfig> = {
   "pip-value": {
     component: PipValueCalculator,
     assumptions: [
-      "Nilai pip = pip size × lot size × contract size ÷ exchange rate.",
+      "Nilai pip = pip size �- lot size �- contract size ÷ exchange rate.",
       "Untuk pair non-USD quote, sesuaikan exchange rate.",
     ],
   },
@@ -127,7 +127,7 @@ export const labToolConfigs: Record<string, LabToolConfig> = {
   "atr-trailing-stop": {
     component: AtrTrailingStopCalculator,
     assumptions: [
-      "Stop level = Harga ± (ATR × Multiplier).",
+      "Stop level = Harga ± (ATR �- Multiplier).",
       "Trailing stop sebenarnya bergerak mengikuti harga, ini menghitung level saat ini saja.",
     ],
   },

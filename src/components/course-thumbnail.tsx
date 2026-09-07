@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 import { ThumbnailPlaceholder } from "@/components/thumbnail-placeholder";
 import {
@@ -50,7 +50,9 @@ export function AiThumbnailImage({
       alt={alt}
       width={AI_THUMBNAIL_WIDTH}
       height={AI_THUMBNAIL_HEIGHT}
-      className={cn(AI_THUMBNAIL_MEDIA_CLASS, className)}
+      draggable={false}
+      className={cn(AI_THUMBNAIL_MEDIA_CLASS, "select-none", className)}
+      style={{ WebkitUserDrag: "none" } as CSSProperties}
       loading="lazy"
       decoding="async"
       onError={() => {

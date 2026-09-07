@@ -62,6 +62,8 @@ export const postgresRepo: NoteRepository = {
         clinicModuleId: built.clinicModuleId,
         protocol: built.protocol,
         accountLabel: built.accountLabel,
+        relatedCourseSlug: built.relatedCourseSlug,
+        relatedLessonId: built.relatedLessonId,
         openedAt: new Date(built.openedAt),
         createdAt: new Date(built.createdAt),
       },
@@ -122,6 +124,8 @@ function mapRow(
     clinicModuleId: string | null;
     protocol: string | null;
     accountLabel: string | null;
+    relatedCourseSlug: string | null;
+    relatedLessonId: string | null;
     openedAt: Date;
     createdAt: Date;
   }
@@ -146,6 +150,8 @@ function mapRow(
     clinicModuleId: row.clinicModuleId,
     protocol: row.protocol,
     accountLabel: row.accountLabel,
+    relatedCourseSlug: row.relatedCourseSlug ?? null,
+    relatedLessonId: row.relatedLessonId ?? null,
     openedAt: toIso(row.openedAt),
     createdAt: toIso(row.createdAt),
   };

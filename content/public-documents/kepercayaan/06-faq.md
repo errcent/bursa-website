@@ -43,7 +43,7 @@ Infrastruktur cloud (Vercel untuk hosting, PostgreSQL cloud untuk database) dapa
 
 ## Apa yang terjadi jika ada kebocoran data?
 
-Kami akan: (1) contain insiden, (2) notify otoritas dalam 3Ã—24 jam sesuai UU PDP, (3) notify pengguna terdampak, (4) post-mortem dan perbaikan.
+Kami akan: (1) contain insiden, (2) notify otoritas dalam 3Ã-24 jam sesuai UU PDP, (3) notify pengguna terdampak, (4) post-mortem dan perbaikan.
 
 ## Apakah Bursa compliant dengan UU PDP?
 

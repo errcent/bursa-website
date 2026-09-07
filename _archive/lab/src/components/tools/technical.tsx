@@ -49,7 +49,7 @@ export function AtrTrailingStopCalculator() {
           <div className="grid gap-4 sm:grid-cols-2">
             <LabField label="Harga saat ini" id="atr-p"><LabNumberInput id="atr-p" value={price} onChange={setPrice} min={0} /></LabField>
             <LabField label="ATR" id="atr-a"><LabNumberInput id="atr-a" value={atr} onChange={setAtr} min={0} /></LabField>
-            <LabField label="Multiplier" id="atr-m" helperText="Umumnya 1,5–3× ATR"><LabNumberInput id="atr-m" value={mult} onChange={setMult} min={0} step={0.5} /></LabField>
+            <LabField label="Multiplier" id="atr-m" helperText="Umumnya 1,5–3�- ATR"><LabNumberInput id="atr-m" value={mult} onChange={setMult} min={0} step={0.5} /></LabField>
           </div>
           <div className="mt-4">
             <LabDirectionToggle value={direction} onChange={setDirection} />
@@ -64,7 +64,7 @@ export function AtrTrailingStopCalculator() {
             <LabResultTile label="Jarak %" value={`${fmt(result.distancePercent)}%`} />
           </LabResultGrid>
           <LabInterpretation className="mt-3">
-            Stop = harga {direction === "long" ? "−" : "+"} (ATR × {mult}). Ini level saat ini, trailing stop bergerak mengikuti harga.
+            Stop = harga {direction === "long" ? "−" : "+"} (ATR �- {mult}). Ini level saat ini, trailing stop bergerak mengikuti harga.
           </LabInterpretation>
         </LabOutputPanel>
       }

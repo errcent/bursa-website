@@ -46,7 +46,7 @@ Cloud infrastructure (Vercel for hosting, cloud PostgreSQL for the database) may
 
 ## What happens if there is a data leak?
 
-We will: (1) contain the incident, (2) notify authorities within 3Ã—24 hours under UU PDP, (3) notify affected users, (4) post-mortem and remediate.
+We will: (1) contain the incident, (2) notify authorities within 3Ã-24 hours under UU PDP, (3) notify affected users, (4) post-mortem and remediate.
 
 ## Is Bursa compliant with UU PDP?
 

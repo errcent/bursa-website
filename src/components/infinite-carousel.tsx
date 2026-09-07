@@ -203,6 +203,7 @@ export function useInfiniteCarousel<T>({
 
   const pausedRef = useRef(false);
   const draggingRef = useRef(false);
+  const dragDistanceRef = useRef(0);
   const tabHiddenRef = useRef(false);
   const externalPausedRef = useRef(externalPaused);
   const speedRef = useRef(0);
@@ -379,6 +380,7 @@ export function useInfiniteCarousel<T>({
 
   const handleDragStart = () => {
     draggingRef.current = true;
+    dragDistanceRef.current = 0;
     setDragging(true);
     pauseInteraction();
   };
@@ -398,6 +400,7 @@ export function useInfiniteCarousel<T>({
 
   const handleDragEnd = (_event: PointerEvent, info: PanInfo) => {
     draggingRef.current = false;
+    dragDistanceRef.current = Math.abs(info.offset.x);
     setDragging(false);
     wrapX();
 
@@ -458,6 +461,7 @@ export function useInfiniteCarousel<T>({
     pauseInteraction,
     scheduleResume,
     draggingRef,
+    dragDistanceRef,
     handleKeyDown,
     handleDragStart,
     handleDragEnd,
@@ -515,6 +519,7 @@ export function InfiniteCarouselViewport<T>({
     pauseInteraction,
     scheduleResume,
     draggingRef,
+    dragDistanceRef,
     handleKeyDown,
     handleDragStart,
     handleDragEnd,
@@ -555,6 +560,13 @@ export function InfiniteCarouselViewport<T>({
           }
         }}
         onKeyDown={handleKeyDown}
+        onClickCapture={(e) => {
+          if (dragDistanceRef.current > 5) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          dragDistanceRef.current = 0;
+        }}
         aria-roledescription="carousel"
         aria-label={ariaLabel}
       >
@@ -615,6 +627,9 @@ export function InfiniteCarouselViewport<T>({
                 (e.target as HTMLElement).closest("[data-carousel-card]")
               ) {
                 return;
+              }
+              if (allowDragFromSlides) {
+                e.preventDefault();
               }
               dragControls.start(e);
             }}

@@ -177,7 +177,7 @@ export function GenerateForm({ providers, onGenerated }: GenerateFormProps) {
               >
                 {ASPECT_PRESETS.map((item) => (
                   <option key={item.id} value={item.id}>
-                    {item.label} ({item.width}Ã—{item.height})
+                    {item.label} ({item.width}Ã-{item.height})
                   </option>
                 ))}
               </select>

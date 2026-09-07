@@ -47,16 +47,16 @@ Principle: admins **must not** see private learner data.
 |------|-------|---------|------------|
 | User email | ~ Masked | ~ Masked | ~ Masked |
 | Full name | ~ Partial | ~ Partial | ~ Partial |
-| Phone number | × | × | × |
-| Password/hash | × | × | × |
-| Payment card | × | × | × |
-| Learner Notes | × | × | × |
-| Progress (detail) | ~ Aggregate | ✓ Support | × |
-| Mentor KYC | × | × | ✓ Review |
-| Transaction metadata | ✓ | ✓ Billing | × |
-| IP log | ✓ Security | × | × |
+| Phone number | �- | �- | �- |
+| Password/hash | �- | �- | �- |
+| Payment card | �- | �- | �- |
+| Learner Notes | �- | �- | �- |
+| Progress (detail) | ~ Aggregate | ✓ Support | �- |
+| Mentor KYC | �- | �- | ✓ Review |
+| Transaction metadata | ✓ | ✓ Billing | �- |
+| IP log | ✓ Security | �- | �- |
 
-**Legend:** ✓ = limited access · ~ = masked/aggregate · × = hard deny · — = planned
+**Legend:** ✓ = limited access · ~ = masked/aggregate · �- = hard deny · — = planned
 
 ## Break-glass (exceptions)
 

@@ -9,6 +9,15 @@ import {
   KOMUNITAS_ENABLED,
 } from "@/lib/features/komunitas";
 import {
+  isLabPagePath,
+  LAB_ENABLED,
+} from "@/lib/features/lab";
+import {
+  isMentorRecruitmentApiPath,
+  isMentorRecruitmentPagePath,
+  MENTOR_RECRUITMENT_ENABLED,
+} from "@/lib/features/mentor-recruitment";
+import {
   APEX_HOST,
   ADMIN_HOST,
   LOCALE_HEADER,
@@ -322,6 +331,24 @@ export async function proxy(request: NextRequest) {
 
   if (KOMUNITAS_ENABLED) {
     return isApi ? applyMobileCors(NextResponse.next(), origin) : NextResponse.next();
+  }
+
+  if (!LAB_ENABLED && isLabPagePath(pathname)) {
+    return isApi
+      ? applyMobileCors(NextResponse.json({ error: "Not found" }, { status: 404 }), origin)
+      : new NextResponse(null, { status: 404 });
+  }
+
+  if (!MENTOR_RECRUITMENT_ENABLED) {
+    if (isMentorRecruitmentApiPath(pathname)) {
+      return applyMobileCors(
+        NextResponse.json({ error: "Mentor recruitment disabled" }, { status: 404 }),
+        origin
+      );
+    }
+    if (isMentorRecruitmentPagePath(pathname)) {
+      return new NextResponse(null, { status: 404 });
+    }
   }
 
   if (isKomunitasApiPath(pathname)) {

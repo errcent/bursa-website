@@ -21,7 +21,7 @@ Bursa adalah **platform edukasi trading** yang dinaungi **PT Global Makmur Madan
 | Dasar hukum pemrosesan | Consent, kontrak, kewajiban hukum, legitimate interest |
 | Hak subjek data | Form permintaan + email privacy@bursanalar.com |
 | Keamanan data | TLS, bcrypt, RBAC, audit log |
-| Notifikasi kebocoran | SOP 3Ã—24 jam ke otoritas + pengguna |
+| Notifikasi kebocoran | SOP 3Ã-24 jam ke otoritas + pengguna |
 | DPO | Penanggung jawab internal (dirangkap compliance reviewer) |
 
 Detail: [Kebijakan Privasi](/privasi/kebijakan).

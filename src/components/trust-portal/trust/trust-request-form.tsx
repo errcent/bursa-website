@@ -50,7 +50,7 @@ export function TrustRequestForm({ locale }: { locale: LegalLocale }) {
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const topicLabel = labels.topics.find((item) => item.value === topic)?.label ?? topic;
-    const subject = encodeURIComponent(`Vendor Security Inquiry — ${org || name}`);
+    const subject = encodeURIComponent(`Vendor Security Inquiry - ${org || name}`);
     const body = encodeURIComponent(
       [
         `${labels.name}: ${name}`,

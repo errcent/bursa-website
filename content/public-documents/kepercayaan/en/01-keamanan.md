@@ -74,7 +74,7 @@ User → TLS → Vercel Edge → Next.js App → RBAC API → PostgreSQL (encryp
 
 If a data leak occurs, we will:
 1. Contain and assess within 24 hours
-2. Notify authorities under UU PDP (3×24 hours)
+2. Notify authorities under UU PDP (3�-24 hours)
 3. Notify affected users
 4. Post-mortem and remediation
 

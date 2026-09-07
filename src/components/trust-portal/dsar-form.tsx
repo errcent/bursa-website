@@ -39,12 +39,12 @@ const COPY = {
     sending: "Mengirim…",
     alt: "Alternatif: email",
     types: {
-      ACCESS: "Akses — salinan data pribadi",
-      CORRECTION: "Koreksi — perbaiki data tidak akurat",
-      DELETION: "Penghapusan — hapus akun dan data",
+      ACCESS: "Akses - salinan data pribadi",
+      CORRECTION: "Koreksi - perbaiki data tidak akurat",
+      DELETION: "Penghapusan - hapus akun dan data",
       WITHDRAW_CONSENT: "Penarikan persetujuan pemrosesan non-esensial",
       OBJECTION: "Keberatan atas pemrosesan tertentu",
-      PORTABILITY: "Portabilitas — ekspor data dalam format terbaca mesin",
+      PORTABILITY: "Portabilitas - ekspor data dalam format terbaca mesin",
     },
   },
   en: {
@@ -69,12 +69,12 @@ const COPY = {
     sending: "Sending…",
     alt: "Alternatively, email",
     types: {
-      ACCESS: "Access — a copy of personal data",
-      CORRECTION: "Correction — rectify inaccurate data",
-      DELETION: "Erasure — delete account and data",
+      ACCESS: "Access - a copy of personal data",
+      CORRECTION: "Correction - rectify inaccurate data",
+      DELETION: "Erasure - delete account and data",
       WITHDRAW_CONSENT: "Withdraw consent for non-essential processing",
       OBJECTION: "Object to specific processing",
-      PORTABILITY: "Portability — export machine-readable data",
+      PORTABILITY: "Portability - export machine-readable data",
     },
   },
 } as const;

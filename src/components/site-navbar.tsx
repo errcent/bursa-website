@@ -40,11 +40,7 @@ const baseNavLinks: {
   label: string;
   exact?: boolean;
   prefetch?: boolean;
-}[] = [
-  { href: "/katalog", label: "Katalog", prefetch: true },
-  { href: "/lab", label: "Lab" },
-  { href: "/note", label: "Note" },
-];
+}[] = [{ href: "/katalog", label: "Katalog", prefetch: true }];
 
 const navLinks = baseNavLinks;
 
@@ -140,11 +136,11 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
               >
                 <SiteNavSearch
                   reveal={searchActive}
-                  className="w-full min-w-[12rem] max-w-none"
+                  className="w-full max-w-none"
                 />
               </div>
             ) : (
-              <SiteNavSearch className="hidden min-w-[14rem] max-w-sm flex-1 lg:flex" />
+              <SiteNavSearch className="hidden w-full max-w-none flex-1 lg:flex" />
             )}
           </Suspense>
 
