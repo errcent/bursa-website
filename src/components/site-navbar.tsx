@@ -91,7 +91,7 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
 
   const navHeaderInner = (
     <>
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
+      <div className="nav-glass-accent-line pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
       <div className="flex h-14 min-h-14 items-center justify-between gap-2 px-3 sm:h-[3.75rem] sm:gap-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-4 sm:gap-8">
             <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Bursa">

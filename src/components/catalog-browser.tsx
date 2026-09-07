@@ -9,14 +9,12 @@ import {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence } from "motion/react";
 
+import { CatalogCarouselRow } from "@/components/catalog-carousel-row";
 import { CatalogCourseRow } from "@/components/catalog-course-row";
 import { LearningGuidanceEntry } from "@/components/learning-guidance/learning-guidance-entry";
 import { MentorCard } from "@/components/mentor-card";
 import { PlaylistCard } from "@/components/playlist/playlist-card";
 import {
-  SCROLL_CAROUSEL_GAP,
-  ScrollCarousel,
-  catalogCourseGetScrollPerView,
   catalogPlaylistGetScrollPerView,
   mentorGetScrollPerView,
 } from "@/components/scroll-carousel";
@@ -56,27 +54,17 @@ function CatalogPlaylistRow({ title, playlists }: { title: string; playlists: Pl
   if (playlists.length === 0) return null;
 
   return (
-    <section className="catalog-row" aria-label={title}>
-      <h3 className="catalog-row-title">{title}</h3>
-      <div className="catalog-row-bleed md:hidden">
-        <div className="catalog-row-scroll catalog-row-scroll--playlist">
-          {playlists.map((playlist) => (
-            <PlaylistCard key={playlist.id} playlist={playlist} className="w-full" variant="catalog" />
-          ))}
-        </div>
-      </div>
-      <div className="catalog-row-bleed hidden md:block">
-        <ScrollCarousel
-          ariaLabel={title}
-          getPerView={catalogPlaylistGetScrollPerView}
-          gap={SCROLL_CAROUSEL_GAP}
-        >
-          {playlists.map((playlist) => (
-            <PlaylistCard key={playlist.id} playlist={playlist} className="w-full" variant="catalog" />
-          ))}
-        </ScrollCarousel>
-      </div>
-    </section>
+    <CatalogCarouselRow
+      title={title}
+      getPerView={catalogPlaylistGetScrollPerView}
+      mobileScrollClassName="catalog-row-scroll catalog-row-scroll--playlist"
+      prevLabel="Playlist sebelumnya"
+      nextLabel="Playlist berikutnya"
+    >
+      {playlists.map((playlist) => (
+        <PlaylistCard key={playlist.id} playlist={playlist} className="w-full" variant="catalog" />
+      ))}
+    </CatalogCarouselRow>
   );
 }
 
@@ -84,27 +72,17 @@ function CatalogMentorRow({ title, mentors }: { title: string; mentors: Mentor[]
   if (mentors.length === 0) return null;
 
   return (
-    <section className="catalog-row" aria-label={title}>
-      <h3 className="catalog-row-title">{title}</h3>
-      <div className="catalog-row-bleed md:hidden">
-        <div className="catalog-row-scroll catalog-row-scroll--mentor">
-          {mentors.map((mentor) => (
-            <MentorCard key={mentor.slug} mentor={mentor} variant="catalog" />
-          ))}
-        </div>
-      </div>
-      <div className="catalog-row-bleed hidden md:block">
-        <ScrollCarousel
-          ariaLabel={title}
-          getPerView={mentorGetScrollPerView}
-          gap={SCROLL_CAROUSEL_GAP}
-        >
-          {mentors.map((mentor) => (
-            <MentorCard key={mentor.slug} mentor={mentor} variant="catalog" className="h-full w-full" />
-          ))}
-        </ScrollCarousel>
-      </div>
-    </section>
+    <CatalogCarouselRow
+      title={title}
+      getPerView={mentorGetScrollPerView}
+      mobileScrollClassName="catalog-row-scroll catalog-row-scroll--mentor"
+      prevLabel="Mentor sebelumnya"
+      nextLabel="Mentor berikutnya"
+    >
+      {mentors.map((mentor) => (
+        <MentorCard key={mentor.slug} mentor={mentor} variant="catalog" className="h-full w-full" />
+      ))}
+    </CatalogCarouselRow>
   );
 }
 

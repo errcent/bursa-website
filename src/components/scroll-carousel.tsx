@@ -46,14 +46,21 @@ export function courseCarouselGetScrollPerView(width: number) {
 }
 
 export const landingCourseGetScrollPerView = courseCarouselGetScrollPerView;
-export const catalogCourseGetScrollPerView = courseCarouselGetScrollPerView;
 
-/** Catalog playlists: fewer cards/view so thumbnails read larger than courses. */
+/** Catalog course rows: integer cards/view, max 4 at xl (no fractional peek). */
+export function catalogCourseGetScrollPerView(width: number) {
+  if (width >= 1024) return 4;
+  if (width >= 900) return 3;
+  if (width >= 768) return 2;
+  return 2;
+}
+
+/** Catalog playlists: max 3 thumbnails fully visible at xl. */
 export function catalogPlaylistGetScrollPerView(width: number) {
-  if (width >= 1100) return 3.1;
-  if (width >= 900) return 2.5;
-  if (width >= 620) return 1.85;
-  return 1.35;
+  if (width >= 1024) return 3;
+  if (width >= 900) return 2;
+  if (width >= 768) return 2;
+  return 1;
 }
 
 /** Home discover section, slightly denser than landing/catalog, but still readable. */
@@ -132,6 +139,8 @@ interface ScrollCarouselProps {
   gap?: number;
   /** Hide built-in edge arrow buttons (e.g. when using external header controls). */
   hideArrows?: boolean;
+  /** Edge gradient fades; catalog uses "none", landing keeps "both". */
+  edgeFade?: "both" | "left" | "none";
   onActiveIndexChange?: (index: number) => void;
   onScrollStateChange?: (state: {
     canScrollLeft: boolean;
@@ -157,6 +166,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       naturalItemWidth = false,
       gap = SCROLL_CAROUSEL_GAP,
       hideArrows = false,
+      edgeFade = "both",
       onActiveIndexChange,
       onScrollStateChange,
       autoPlay = false,
@@ -364,22 +374,26 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
         hoverPausedRef.current = false;
       }}
     >
-      {canScrollAny && (
+      {canScrollAny && edgeFade !== "none" && (
         <>
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-y-0 left-0 z-10 w-[var(--carousel-fade-width,2rem)] bg-gradient-to-r from-[var(--carousel-fade-color,var(--background))] via-[color-mix(in_oklch,var(--carousel-fade-color,var(--background))_55%,transparent)] to-transparent transition-opacity duration-300 sm:w-[var(--carousel-fade-width,2.5rem)]",
-              canScrollLeft ? "opacity-100" : "opacity-0"
-            )}
-            aria-hidden
-          />
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-y-0 right-0 z-10 w-[var(--carousel-fade-width,2rem)] bg-gradient-to-l from-[var(--carousel-fade-color,var(--background))] via-[color-mix(in_oklch,var(--carousel-fade-color,var(--background))_55%,transparent)] to-transparent transition-opacity duration-300 sm:w-[var(--carousel-fade-width,2.5rem)]",
-              canScrollRight ? "opacity-100" : "opacity-0"
-            )}
-            aria-hidden
-          />
+          {(edgeFade === "both" || edgeFade === "left") && (
+            <div
+              className={cn(
+                "pointer-events-none absolute inset-y-0 left-0 z-10 w-[var(--carousel-fade-width,2rem)] bg-gradient-to-r from-[var(--carousel-fade-color,var(--background))] via-[color-mix(in_oklch,var(--carousel-fade-color,var(--background))_55%,transparent)] to-transparent transition-opacity duration-300 sm:w-[var(--carousel-fade-width,2.5rem)]",
+                canScrollLeft ? "opacity-100" : "opacity-0"
+              )}
+              aria-hidden
+            />
+          )}
+          {edgeFade === "both" && (
+            <div
+              className={cn(
+                "pointer-events-none absolute inset-y-0 right-0 z-10 w-[var(--carousel-fade-width,2rem)] bg-gradient-to-l from-[var(--carousel-fade-color,var(--background))] via-[color-mix(in_oklch,var(--carousel-fade-color,var(--background))_55%,transparent)] to-transparent transition-opacity duration-300 sm:w-[var(--carousel-fade-width,2.5rem)]",
+                canScrollRight ? "opacity-100" : "opacity-0"
+              )}
+              aria-hidden
+            />
+          )}
         </>
       )}
 
