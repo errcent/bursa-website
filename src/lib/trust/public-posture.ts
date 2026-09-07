@@ -247,7 +247,7 @@ export const CONTROL_GROUPS: {
     idTitle: "Keamanan organisasi",
     enTitle: "Organizational security",
     items: [
-      { id: "ir", idLabel: "Incident response", enLabel: "Incident response", idDetail: "SOP kebocoran 3Ã-24 jam", enDetail: "3Ã-24h breach SOP", status: "done" },
+      { id: "ir", idLabel: "Incident response", enLabel: "Incident response", idDetail: "SOP kebocoran 3â€“24 jam", enDetail: "3â€“24h breach SOP", status: "done" },
       { id: "train", idLabel: "Pelatihan keamanan", enLabel: "Security training", idDetail: "Onboarding engineer", enDetail: "Engineer onboarding", status: "done" },
       { id: "change", idLabel: "Change management", enLabel: "Change management", idDetail: "PR review untuk kode sensitif", enDetail: "PR review on sensitive code", status: "done" },
       { id: "vendor", idLabel: "Vendor assessment", enLabel: "Vendor assessment", idDetail: "Review sub-prosesor", enDetail: "Sub-processor review", status: "partial" },
@@ -262,7 +262,7 @@ export const CONTROL_GROUPS: {
     enTitle: "Admin access (public)",
     items: [
       { id: "notes", idLabel: "Notes pelajar", enLabel: "Learner Notes", idDetail: "Hard deny â€” tidak ada break-glass", enDetail: "Hard deny â€” no break-glass", status: "done" },
-      { id: "cards", idLabel: "Data kartu", enLabel: "Card data", idDetail: "Tidak disimpan; akses admin Ã-", enDetail: "Not stored; admin access denied", status: "done" },
+      { id: "cards", idLabel: "Data kartu", enLabel: "Card data", idDetail: "Tidak disimpan; akses admin ditolak", enDetail: "Not stored; admin access denied", status: "done" },
       { id: "password", idLabel: "Password / hash", enLabel: "Passwords / hashes", idDetail: "Admin tidak dapat membaca", enDetail: "Admins cannot read them", status: "done" },
       { id: "email", idLabel: "Email pengguna", enLabel: "User email", idDetail: "Masked untuk admin & support", enDetail: "Masked for admin and support", status: "partial" },
       { id: "kyc", idLabel: "KYC mentor", enLabel: "Mentor KYC", idDetail: "Hanya compliance, expiry 24 jam", enDetail: "Compliance only, 24h expiry", status: "partial" },

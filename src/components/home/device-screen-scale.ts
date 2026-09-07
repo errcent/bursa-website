@@ -6,7 +6,7 @@ import { DEVICE_SCENE_INSETS } from "@/data/device-insets";
 
 const screen = DEVICE_SCENE_INSETS.ipad.screen;
 
-/** iPad screen hole size on the 920Ã-707 design canvas (px). */
+/** iPad screen hole size on the 920Ã—707 design canvas (px). */
 export const DEVICE_SCREEN_INSET_PX = {
   width: (DEVICE_SCENE_WIDTH * screen.w) / 100,
   height: (DEVICE_SCENE_HEIGHT * screen.h) / 100,

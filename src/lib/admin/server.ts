@@ -305,7 +305,7 @@ export async function buildRevenueReport(): Promise<AdminRevenueReport> {
   return {
     commissionRatePercent,
     dataSource: "enrollment_estimate",
-    note: `Belum ada transaksi tersimpan. Angka diestimasi dari enrollment Ã- harga kelas saat ini, komisi platform ${commissionRatePercent}%.`,
+    note: `Belum ada transaksi tersimpan. Angka diestimasi dari enrollment Ã— harga kelas saat ini, komisi platform ${commissionRatePercent}%.`,
     totals,
     lines,
     byMentor,

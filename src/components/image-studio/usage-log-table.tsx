@@ -96,7 +96,7 @@ export function UsageLogTable({ items }: UsageLogTableProps) {
                     <td className="py-2 pr-3">{item.provider}</td>
                     <td className="py-2 pr-3">{item.model}</td>
                     <td className="py-2 pr-3 whitespace-nowrap">
-                      {item.width}Ã-{item.height}
+                      {item.width}Ã—{item.height}
                     </td>
                     <td className="py-2 pr-3">{item.megapixels?.toFixed(2) ?? "-"}</td>
                     <td className="py-2 pr-3">{item.creditsUsed ?? 0}</td>

@@ -1,4 +1,4 @@
-/** Native dimensions for AI-generated course/playlist thumbnails (Pollinations 1280Ã-720). */
+/** Native dimensions for AI-generated course/playlist thumbnails (Pollinations 1280Ã—720). */
 export const AI_THUMBNAIL_WIDTH = 1280;
 export const AI_THUMBNAIL_HEIGHT = 720;
 export const AI_THUMBNAIL_ASPECT_RATIO = AI_THUMBNAIL_WIDTH / AI_THUMBNAIL_HEIGHT;
