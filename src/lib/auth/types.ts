@@ -33,6 +33,7 @@ export interface LoginInput {
   /** Username, email, or phone number. */
   identifier: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export interface RegisterInput {

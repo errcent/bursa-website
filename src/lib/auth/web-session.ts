@@ -6,27 +6,35 @@ import { WEB_SESSION_COOKIE } from "@/lib/auth/web-session.constants";
 
 export { WEB_SESSION_COOKIE };
 export const WEB_SESSION_TTL_SEC = 7 * 24 * 60 * 60;
+export const WEB_SESSION_REMEMBER_TTL_SEC = 30 * 24 * 60 * 60;
+export const WEB_SESSION_SHORT_TTL_SEC = 24 * 60 * 60;
 
 function secretKey(): Uint8Array {
   return new TextEncoder().encode(getAuthSecret());
 }
 
-export function webSessionCookieOptions() {
+export function webSessionCookieOptions(rememberMe = true) {
   return {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
     path: "/",
-    maxAge: WEB_SESSION_TTL_SEC,
+    ...(rememberMe
+      ? { maxAge: WEB_SESSION_REMEMBER_TTL_SEC }
+      : { maxAge: WEB_SESSION_SHORT_TTL_SEC }),
     // Host-only on purpose. Never set Domain=.bursanalar.com — that would share
     // admin.bursanalar.com sessions with the public site (XSS blast radius).
   };
 }
 
-export async function signWebSessionToken(user: {
-  id: string;
-  email: string;
-}): Promise<string> {
+export async function signWebSessionToken(
+  user: {
+    id: string;
+    email: string;
+  },
+  rememberMe = true
+): Promise<string> {
+  const ttlSec = rememberMe ? WEB_SESSION_REMEMBER_TTL_SEC : WEB_SESSION_SHORT_TTL_SEC;
   const jti = crypto.randomUUID();
   return new SignJWT({
     sub: user.id,
@@ -36,7 +44,7 @@ export async function signWebSessionToken(user: {
     .setProtectedHeader({ alg: "HS256" })
     .setJti(jti)
     .setIssuedAt()
-    .setExpirationTime(`${WEB_SESSION_TTL_SEC}s`)
+    .setExpirationTime(`${ttlSec}s`)
     .sign(secretKey());
 }
 

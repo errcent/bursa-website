@@ -52,7 +52,14 @@ function isNavLinkActive(pathname: string, href: string, exact = false) {
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
 function SearchSkeleton({ className }: { className?: string }) {
-  return <div className={className ?? "h-9 w-full animate-pulse rounded-full bg-muted"} />;
+  return (
+    <div
+      className={
+        className ??
+        "hidden h-9 w-[9.5rem] shrink-0 animate-pulse rounded-full bg-muted lg:block"
+      }
+    />
+  );
 }
 
 function RoleLinkIcon({ href }: { href: string }) {
@@ -122,25 +129,24 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
 
           <Suspense
             fallback={
-              <SearchSkeleton className="hidden h-9 min-w-[12rem] max-w-xs flex-1 animate-pulse rounded-full bg-muted lg:flex" />
+              <SearchSkeleton className="hidden h-9 w-[9.5rem] shrink-0 animate-pulse rounded-full bg-muted lg:block" />
             }
           >
             {isHeroAnchor ? (
               <div
                 data-hero-nav-search
                 className={cn(
-                  "hero-nav-search-slot hidden min-w-[14rem] max-w-sm flex-1 lg:flex",
+                  "hero-nav-search-slot hidden min-w-0 flex-1 justify-end lg:flex",
                   searchVisible && "is-visible",
                   searchReveal && "is-interactive"
                 )}
               >
-                <SiteNavSearch
-                  reveal={searchActive}
-                  className="w-full max-w-none"
-                />
+                <SiteNavSearch reveal={searchActive} />
               </div>
             ) : (
-              <SiteNavSearch className="hidden w-full max-w-none flex-1 lg:flex" />
+              <div className="hidden min-w-0 flex-1 justify-end lg:flex">
+                <SiteNavSearch />
+              </div>
             )}
           </Suspense>
 
@@ -182,12 +188,13 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
                   <div className="fixed inset-x-0 top-0 z-[250] border-b border-border/60 bg-background/98 backdrop-blur-xl lg:hidden">
                     <div className="flex h-14 min-h-14 items-center gap-2 px-3">
                       <Suspense fallback={<SearchSkeleton className="flex-1" />}>
-                        <SiteNavSearch
-                          className="min-w-0 flex-1"
-                          initialOpen
-                          onNavigate={() => setMobileCatalogSearchOpen(false)}
-                          onDismiss={() => setMobileCatalogSearchOpen(false)}
-                        />
+                      <SiteNavSearch
+                        className="min-w-0 flex-1"
+                        variant="inline"
+                        initialOpen
+                        onNavigate={() => setMobileCatalogSearchOpen(false)}
+                        onDismiss={() => setMobileCatalogSearchOpen(false)}
+                      />
                       </Suspense>
                       <Button
                         type="button"
@@ -244,6 +251,7 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
                     {menuOpen ? (
                       <SiteNavSearch
                         className="mb-2 w-full"
+                        variant="inline"
                         openOnFocus={false}
                         onNavigate={() => setMenuOpen(false)}
                       />

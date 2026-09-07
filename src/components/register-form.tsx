@@ -134,12 +134,12 @@ export function RegisterForm() {
 
   const usernameHint =
     usernameCheck === "checking"
-      ? "Memeriksa ketersediaan username..."
+      ? "Memeriksa…"
       : usernameCheck === "available"
-        ? "Username tersedia."
+        ? "Tersedia"
         : usernameCheck === "taken"
-          ? "Username sudah dipakai."
-          : "Dipakai untuk masuk. Huruf kecil, angka, underscore (3–30 karakter).";
+          ? "Sudah dipakai"
+          : undefined;
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -159,7 +159,6 @@ export function RegisterForm() {
         label="Nama tampilan"
         id="name"
         error={fieldErrors.name}
-        helperText="Nama ini tampil di profil, chat, dan sertifikat."
       >
         <input
           id="name"
@@ -219,12 +218,7 @@ export function RegisterForm() {
         </div>
       </AuthField>
 
-      <AuthField
-        label="Email"
-        id="email"
-        error={fieldErrors.email}
-        helperText="Kami kirim update kelas penting ke email ini."
-      >
+      <AuthField label="Email" id="email" error={fieldErrors.email}>
         <input
           id="email"
           type="email"
@@ -241,12 +235,7 @@ export function RegisterForm() {
         />
       </AuthField>
 
-      <AuthField
-        label="Kata sandi"
-        id="password"
-        error={fieldErrors.password}
-        helperText="Pakai minimal 8 karakter agar akun lebih aman."
-      >
+      <AuthField label="Kata sandi" id="password" error={fieldErrors.password}>
         <input
           id="password"
           type="password"
@@ -333,10 +322,6 @@ export function RegisterForm() {
           className="font-medium text-foreground underline-offset-4 hover:underline"
         >
           Masuk
-        </Link>
-        {" · "}
-        <Link href="/lupa-password" className="link-accent text-sm font-medium">
-          Lupa kata sandi?
         </Link>
       </p>
     </form>

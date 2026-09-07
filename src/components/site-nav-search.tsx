@@ -41,6 +41,8 @@ interface SiteNavSearchProps {
   initialOpen?: boolean;
   /** Called when the dropdown closes via escape or outside click. */
   onDismiss?: () => void;
+  /** Desktop navbar: compact pill when idle, wide when focused/open. */
+  variant?: "navbar" | "inline";
 }
 
 export function SiteNavSearch({
@@ -52,6 +54,7 @@ export function SiteNavSearch({
   openOnFocus = true,
   initialOpen = false,
   onDismiss,
+  variant = "navbar",
 }: SiteNavSearchProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -79,7 +82,8 @@ export function SiteNavSearch({
   );
 
   const { results } = useDebouncedSearch(value, catalogIndex, 8);
-  const expanded = open || focused;
+  const compactCapable = variant === "navbar";
+  const expanded = !compactCapable || open || focused;
 
   useEffect(() => {
     if (pathname === "/katalog") {
@@ -188,9 +192,17 @@ export function SiteNavSearch({
   return (
     <div
       ref={containerRef}
+      data-search-expanded={expanded ? "true" : "false"}
       className={cn(
-        "relative transition-[max-width,flex-grow] duration-300 ease-out",
-        expanded ? "min-w-[16rem] max-w-xl flex-[1_1_24rem]" : "min-w-[12rem] max-w-sm flex-[1_1_14rem]",
+        "relative ease-out",
+        compactCapable
+          ? cn(
+              "transition-[width,flex-grow,max-width] duration-300",
+              expanded
+                ? "w-[min(100%,28rem)] max-w-xl flex-[1_1_28rem]"
+                : "w-[9.5rem] max-w-[9.5rem] flex-[0_0_9.5rem]"
+            )
+          : "w-full max-w-none flex-1",
         open && reveal && "z-[210]",
         className
       )}
@@ -199,15 +211,33 @@ export function SiteNavSearch({
       <form
         onSubmit={handleSubmit}
         className={cn(
-          "flex w-full items-center gap-2 rounded-full border border-border bg-white/[0.03] px-3 py-1.5 text-sm text-muted-foreground transition-[opacity,transform,border-color,background-color,box-shadow,width] duration-300 ease-out focus-within:border-accent/20 focus-within:bg-white/[0.05] focus-within:text-foreground focus-within:shadow-[0_0_0_3px_var(--glow)]",
+          "flex w-full items-center rounded-full border border-border bg-white/[0.03] text-sm text-muted-foreground transition-[gap,padding,border-color,background-color,box-shadow,transform] duration-300 ease-out focus-within:border-accent/20 focus-within:bg-white/[0.05] focus-within:text-foreground focus-within:shadow-[0_0_0_3px_var(--glow)]",
+          compactCapable
+            ? cn(
+                "overflow-hidden py-1.5",
+                expanded ? "cursor-text gap-2 px-3" : "cursor-pointer gap-1.5 px-2.5"
+              )
+            : "gap-2 px-3 py-1.5",
           (open || focused) &&
             reveal &&
             "border-accent/25 bg-white/[0.05] shadow-[0_0_0_3px_var(--glow)]",
           !reveal && "pointer-events-none opacity-0"
         )}
         role="search"
+        onMouseDown={(event) => {
+          if (!compactCapable || expanded || !reveal) return;
+          if (event.target instanceof HTMLInputElement) return;
+          event.preventDefault();
+          inputRef.current?.focus();
+        }}
       >
-        <Search className="size-4 shrink-0" aria-hidden />
+        <Search
+          className={cn(
+            "size-4 shrink-0 transition-transform duration-300",
+            compactCapable && !expanded && "opacity-80"
+          )}
+          aria-hidden
+        />
         <input
           ref={inputRef}
           type="search"
@@ -235,7 +265,7 @@ export function SiteNavSearch({
             setOpen(true);
           }}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
+          placeholder={compactCapable && !expanded ? "Cari..." : placeholder}
           title={placeholder}
           aria-label={placeholder}
           aria-expanded={open && reveal}
@@ -244,7 +274,12 @@ export function SiteNavSearch({
           autoComplete="off"
           tabIndex={reveal ? 0 : -1}
           className={cn(
-            "min-w-0 flex-1 truncate bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground sm:text-sm",
+            "min-w-0 flex-1 truncate bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground transition-[opacity,width] duration-300 ease-out sm:text-sm",
+            compactCapable &&
+              !expanded &&
+              "placeholder:text-muted-foreground/90",
+            compactCapable &&
+              (expanded ? "w-auto opacity-100" : "min-w-0 opacity-100"),
             inputClassName
           )}
         />

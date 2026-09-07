@@ -28,8 +28,8 @@ function LoginFormFallback() {
 export default function LoginPage() {
   return (
     <AuthPageShell
-      title="Selamat datang kembali"
-      description="Masuk untuk melanjutkan belajar dan mengakses dashboard."
+      title="Selamat datang"
+      description="Masuk ke akun Bursa."
       showMobileBack
     >
       <Suspense fallback={<LoginFormFallback />}>

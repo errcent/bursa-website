@@ -36,7 +36,10 @@ export async function POST(request: NextRequest) {
       return jsonError(GENERIC_LOGIN_ERROR, 401);
     }
 
-    const token = await signWebSessionToken({ id: user.id, email: user.email });
+    const token = await signWebSessionToken(
+      { id: user.id, email: user.email },
+      body.rememberMe ?? true
+    );
     const response = jsonOk({
       user: {
         id: user.id,
@@ -49,7 +52,11 @@ export async function POST(request: NextRequest) {
         bio: user.bio,
       },
     });
-    response.cookies.set(WEB_SESSION_COOKIE, token, webSessionCookieOptions());
+    response.cookies.set(
+      WEB_SESSION_COOKIE,
+      token,
+      webSessionCookieOptions(body.rememberMe ?? true)
+    );
     return response;
   } catch (error) {
     return handleApiError(error);

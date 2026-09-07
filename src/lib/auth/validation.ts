@@ -71,6 +71,7 @@ export const optionalPhoneSchema = z
 export const loginSchema = z.object({
   identifier: z.string().trim().min(1, "Username, email, atau telepon wajib diisi."),
   password: z.string().min(1, "Kata sandi wajib diisi."),
+  rememberMe: z.boolean().optional().default(true),
 });
 
 export const registerSchema = z.object({

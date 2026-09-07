@@ -24,6 +24,7 @@ export function LoginForm() {
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ identifier?: string; password?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,7 +61,7 @@ export function LoginForm() {
     }
 
     setIsSubmitting(true);
-    const result = await login({ identifier, password });
+    const result = await login({ identifier, password, rememberMe });
 
     if (!result.ok) {
       setIsSubmitting(false);
@@ -85,12 +86,7 @@ export function LoginForm() {
         </div>
       )}
 
-      <AuthField
-        label="Email atau username"
-        id="identifier"
-        error={fieldErrors.identifier}
-        helperText="Masuk dengan email atau username (@handle)."
-      >
+      <AuthField label="Email atau username" id="identifier" error={fieldErrors.identifier}>
         <input
           id="identifier"
           type="text"
@@ -103,43 +99,47 @@ export function LoginForm() {
               setFieldErrors((prev) => ({ ...prev, identifier: undefined }));
             }
           }}
-          placeholder="nama@email.com atau @username"
+          placeholder="nama@email.com"
           className={authInputClassName}
           disabled={isSubmitting}
           aria-invalid={Boolean(fieldErrors.identifier)}
         />
       </AuthField>
 
-      <AuthField
-        label="Kata sandi"
-        id="password"
-        error={fieldErrors.password}
-        helperText="Gunakan kata sandi akun yang sudah terdaftar."
-      >
-        <div className="flex flex-col gap-1.5">
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              if (fieldErrors.password) {
-                setFieldErrors((prev) => ({ ...prev, password: undefined }));
-              }
-            }}
-            placeholder="Minimal 8 karakter"
-            className={authInputClassName}
-            disabled={isSubmitting}
-            aria-invalid={Boolean(fieldErrors.password)}
-          />
-          <div className="flex justify-end">
-            <Link href="/lupa-password" className="link-accent text-xs font-medium">
-              Lupa kata sandi?
-            </Link>
-          </div>
-        </div>
+      <AuthField label="Kata sandi" id="password" error={fieldErrors.password}>
+        <input
+          id="password"
+          type="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (fieldErrors.password) {
+              setFieldErrors((prev) => ({ ...prev, password: undefined }));
+            }
+          }}
+          placeholder="••••••••"
+          className={authInputClassName}
+          disabled={isSubmitting}
+          aria-invalid={Boolean(fieldErrors.password)}
+        />
       </AuthField>
+
+      <div className="flex items-center justify-between gap-3">
+        <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            disabled={isSubmitting}
+            className="size-4 shrink-0 rounded border-border accent-primary"
+          />
+          Ingat saya
+        </label>
+        <Link href="/lupa-password" className="link-accent text-xs font-medium">
+          Lupa kata sandi?
+        </Link>
+      </div>
 
       <Button type="submit" className="h-11 w-full btn-primary" disabled={isSubmitting}>
         {isSubmitting ? (

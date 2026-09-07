@@ -1901,9 +1901,17 @@
 
   .hero-nav-search-slot.is-visible {
     flex: 1 1 0%;
-    max-width: calc(var(--search-reveal, 0) * 13rem);
+    max-width: calc(var(--search-reveal, 0) * 9.5rem);
     opacity: var(--search-reveal, 0);
     transform: translateX(calc((1 - var(--search-reveal, 0)) * 0.65rem));
+  }
+
+  .hero-nav-search-slot.is-visible.is-interactive {
+    max-width: min(28rem, 100%);
+  }
+
+  .hero-nav-search-slot.is-visible.is-interactive:has([data-search-expanded="true"]) {
+    max-width: min(36rem, 100%);
   }
 
   .hero-nav-search-slot.is-interactive {
