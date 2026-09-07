@@ -56,7 +56,7 @@ function SearchSkeleton({ className }: { className?: string }) {
     <div
       className={
         className ??
-        "hidden h-9 w-[9.5rem] shrink-0 animate-pulse rounded-full bg-muted lg:block"
+        "mx-auto hidden h-9 w-[9.5rem] shrink-0 animate-pulse rounded-full bg-muted lg:block"
       }
     />
   );
@@ -99,8 +99,8 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
   const navHeaderInner = (
     <>
       <div className="nav-glass-accent-line pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
-      <div className="flex h-14 min-h-14 items-center justify-between gap-2 px-3 sm:h-[3.75rem] sm:gap-4 sm:px-5">
-          <div className="flex min-w-0 items-center gap-4 sm:gap-8">
+      <div className="grid h-14 min-h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-3 sm:h-[3.75rem] sm:gap-4 sm:px-5">
+          <div className="flex min-w-0 items-center gap-4 justify-self-start sm:gap-8">
             <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Bursa">
               <BrandLogo variant="product" priority decorative />
             </Link>
@@ -136,7 +136,7 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
               <div
                 data-hero-nav-search
                 className={cn(
-                  "hero-nav-search-slot hidden min-w-0 flex-1 justify-end lg:flex",
+                  "hero-nav-search-slot hidden min-w-0 justify-self-center lg:flex",
                   searchVisible && "is-visible",
                   searchReveal && "is-interactive"
                 )}
@@ -144,13 +144,13 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
                 <SiteNavSearch reveal={searchActive} />
               </div>
             ) : (
-              <div className="hidden min-w-0 flex-1 justify-end lg:flex">
+              <div className="hidden min-w-0 justify-self-center lg:block">
                 <SiteNavSearch />
               </div>
             )}
           </Suspense>
 
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center justify-self-end gap-1 sm:gap-2">
             {roleLinks.length > 0 && (
               <nav
                 className="hidden items-center gap-1 border-l border-border/60 pl-2 lg:flex"

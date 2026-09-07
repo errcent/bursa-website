@@ -1524,6 +1524,20 @@
     width: 100%;
   }
 
+  .carousel-slide {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 280px;
+  }
+
+  .carousel-slide--clone {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 280px;
+  }
+
+  .content-visibility-auto {
+    content-visibility: auto;
+  }
+
   .discover-coverflow__viewport {
     overflow-x: clip;
     overflow-y: visible;
@@ -1891,27 +1905,21 @@
   }
 
   .hero-nav-search-slot {
-    overflow: hidden;
-    flex: 0 0 auto;
-    max-width: 0;
+    overflow: visible;
+    width: 0;
+    max-width: none;
     opacity: 0;
-    transform: translateX(0.65rem);
     pointer-events: none;
+    justify-self: center;
   }
 
   .hero-nav-search-slot.is-visible {
-    flex: 1 1 0%;
-    max-width: calc(var(--search-reveal, 0) * 9.5rem);
+    width: calc(var(--search-reveal, 0) * 9.5rem);
     opacity: var(--search-reveal, 0);
-    transform: translateX(calc((1 - var(--search-reveal, 0)) * 0.65rem));
   }
 
   .hero-nav-search-slot.is-visible.is-interactive {
-    max-width: min(28rem, 100%);
-  }
-
-  .hero-nav-search-slot.is-visible.is-interactive:has([data-search-expanded="true"]) {
-    max-width: min(36rem, 100%);
+    width: auto;
   }
 
   .hero-nav-search-slot.is-interactive {

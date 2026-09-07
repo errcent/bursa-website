@@ -187,6 +187,7 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
 
       <label className="flex items-start gap-2 text-left text-xs text-muted-foreground sm:text-sm">
         <input
+          id="waitlist-consent"
           type="checkbox"
           checked={consent}
           onChange={(e) => {

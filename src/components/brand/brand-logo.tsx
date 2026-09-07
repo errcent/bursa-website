@@ -42,12 +42,16 @@ export function BrandLogo({
   const mobile = brandSlot(mobileKey);
 
   const alt = decorative ? "" : "Bursa";
+  const decorativeProps = decorative
+    ? ({ "aria-hidden": true as const, role: "presentation" as const })
+    : {};
 
   if (desktopKey === mobileKey || desktop.w === mobile.w) {
     return (
       <Image
         src={desktop.src}
         alt={alt}
+        {...decorativeProps}
         width={desktop.w}
         height={desktop.h}
         priority={priority}
@@ -63,6 +67,7 @@ export function BrandLogo({
       <Image
         src={mobile.src}
         alt={alt}
+        {...decorativeProps}
         width={mobile.w}
         height={mobile.h}
         priority={priority}
@@ -73,6 +78,7 @@ export function BrandLogo({
       <Image
         src={desktop.src}
         alt={alt}
+        {...decorativeProps}
         width={desktop.w}
         height={desktop.h}
         priority={priority}

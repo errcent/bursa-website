@@ -111,7 +111,6 @@ const footerColumns = [
     links: [
       { label: "Tentang Kami", href: "/tentang-kami" },
       { label: "Pusat Bantuan", href: "/bantuan" },
-      { label: "Bursa Note", href: "/note" },
     ],
   },
   {
@@ -150,7 +149,7 @@ function FooterLinkColumns() {
     <>
       {footerColumns.map((col) => (
         <div key={col.title} className="hidden flex-col gap-3 md:flex">
-          <h4 className="font-heading text-sm font-medium">{col.title}</h4>
+          <p className="font-heading text-sm font-medium">{col.title}</p>
           <ul className="flex flex-col gap-2">
             {col.links.map((link) => {
               if (link.href === "#") {
@@ -246,7 +245,7 @@ function FooterLinkColumnsFallback() {
     <>
       {footerColumns.map((col) => (
         <div key={col.title} className="flex flex-col gap-3">
-          <h4 className="font-heading text-sm font-medium">{col.title}</h4>
+          <p className="font-heading text-sm font-medium">{col.title}</p>
           <ul className="flex flex-col gap-2">
             {col.links.map((link) => (
               <li key={link.label}>

@@ -11,25 +11,6 @@ export type AuditRoute = {
   gated?: boolean;
 };
 
-const LAB_TOOLS = [
-  "position-size",
-  "risk-reward",
-  "breakeven",
-  "kelly-criterion",
-  "monte-carlo",
-  "trade-expectancy",
-  "floating-calculator",
-  "pip-value",
-  "lot-size",
-  "margin-leverage",
-  "swap-rollover",
-  "commission-slippage",
-  "crypto-fee",
-  "atr-trailing-stop",
-  "fibonacci",
-  "r-multiple",
-] as const;
-
 const PRIVASI_SLUGS = [
   "kebijakan",
   "cookie",
@@ -67,8 +48,6 @@ export const AUDIT_ROUTES: AuditRoute[] = [
   route("/panduan-belajar/quiz"),
   route("/playlist"),
   route("/waitlist"),
-  route("/wave-lab"),
-  route("/komunitas"),
   route("/email-preferences"),
 
   // Auth
@@ -89,15 +68,11 @@ export const AUDIT_ROUTES: AuditRoute[] = [
   route("/pengaturan?tab=devices", { gated: true, slug: "pengaturan-devices" }),
   route("/pengaturan?tab=payment", { gated: true, slug: "pengaturan-payment" }),
 
-  // Lab
-  route("/lab"),
-  ...LAB_TOOLS.map((id) => route(`/lab/${id}`)),
+  // Lab — only when NEXT_PUBLIC_LAB_ENABLED=true (excluded from default audit)
 
-  // About / help / mentor apply
+  // About / help
   route("/tentang-kami"),
   route("/bantuan"),
-  route("/jadi-mentor"),
-  route("/jadi-mentor/sukses"),
 
   // Legal / trust / privacy
   route("/syarat-dan-ketentuan"),
@@ -109,10 +84,7 @@ export const AUDIT_ROUTES: AuditRoute[] = [
   // Sample dynamic (prod catalog)
   route("/kelas/fundamental-saham-untuk-pemula"),
   route("/instruktur/andra-wicaksono"),
-  route("/instruktur/andra-wicaksono/sesi"),
   route("/playlist/kesehatan-mental-trading"),
-  route("/checkout/fundamental-saham-untuk-pemula"),
-  route("/checkout/sukses"),
 ];
 
 export function screenshotName(projectName: string, slug: string): string {

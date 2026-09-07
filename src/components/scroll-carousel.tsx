@@ -442,7 +442,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
             <div
               key={child.key ?? undefined}
               data-scroll-carousel-item
-              className="catalog-scroll-carousel-item shrink-0 snap-start"
+              className="catalog-scroll-carousel-item carousel-slide shrink-0 snap-start"
               style={
                 naturalItemWidth
                   ? undefined

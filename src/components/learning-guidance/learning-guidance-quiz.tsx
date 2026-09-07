@@ -391,6 +391,7 @@ export function LearningGuidanceQuiz() {
           </div>
           <Progress
             value={progressPercent}
+            aria-label={`Progress quiz panduan belajar: langkah ${step + 1} dari ${totalSteps}`}
             className="h-1 overflow-hidden rounded-full bg-surface-2 [&_[data-slot=progress-indicator]]:bg-accent [&_[data-slot=progress-indicator]]:transition-all"
           />
         </div>

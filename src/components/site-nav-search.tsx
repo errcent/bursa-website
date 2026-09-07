@@ -16,12 +16,8 @@ import { Search } from "lucide-react";
 import { SearchDropdown } from "@/components/search/search-dropdown";
 import {
   buildCatalogSearchUrl,
-  clearRecentSearches,
-  getPopularCourses,
-  getPopularMentors,
   getRecentSearches,
   getTrendingSuggestions,
-  removeRecentSearch,
   saveRecentSearch,
 } from "@/lib/search/engine";
 import { useDebouncedSearch } from "@/lib/search/use-debounced-search";
@@ -33,15 +29,10 @@ interface SiteNavSearchProps {
   inputClassName?: string;
   placeholder?: string;
   onNavigate?: () => void;
-  /** When false, closes the dropdown and blocks interaction (hero docked nav). */
   reveal?: boolean;
-  /** When false, skip opening the dropdown on input focus (e.g. mobile sheet autofocus). */
   openOnFocus?: boolean;
-  /** Start with dropdown open and focus input (mobile overlay mount). */
   initialOpen?: boolean;
-  /** Called when the dropdown closes via escape or outside click. */
   onDismiss?: () => void;
-  /** Desktop navbar: compact pill when idle, wide when focused/open. */
   variant?: "navbar" | "inline";
 }
 
@@ -72,16 +63,7 @@ export function SiteNavSearch({
 
   const trending = useMemo(() => getTrendingSuggestions(), []);
   const { index: catalogIndex } = useCatalogIndex();
-  const popularCourses = useMemo(
-    () => (catalogIndex ? getPopularCourses(catalogIndex, 3) : []),
-    [catalogIndex]
-  );
-  const popularMentors = useMemo(
-    () => (catalogIndex ? getPopularMentors(catalogIndex, 2) : []),
-    [catalogIndex]
-  );
-
-  const { results } = useDebouncedSearch(value, catalogIndex, 8);
+  const { results } = useDebouncedSearch(value, catalogIndex, 6);
   const compactCapable = variant === "navbar";
   const expanded = !compactCapable || open || focused;
 
@@ -114,11 +96,7 @@ export function SiteNavSearch({
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Node | null;
       if (!target) return;
-      // Panel is portaled to document.body, treat it as inside the search UI
-      if (
-        target instanceof Element &&
-        target.closest("[data-search-dropdown]")
-      ) {
+      if (target instanceof Element && target.closest("[data-search-dropdown]")) {
         return;
       }
       if (containerRef.current && !containerRef.current.contains(target)) {
@@ -142,15 +120,18 @@ export function SiteNavSearch({
   );
 
   function getFlatNavigableItems() {
-    if (value.trim()) {
-      if (results.length > 0) return results.map((r) => r.href);
-      return [buildCatalogSearchUrl(value)];
+    const q = value.trim();
+    if (q) {
+      if (results.length > 0) {
+        const hrefs = results.map((r) => r.href);
+        if (results.length >= 4) {
+          hrefs.push(buildCatalogSearchUrl(q));
+        }
+        return hrefs;
+      }
+      return [buildCatalogSearchUrl(q)];
     }
-    return [
-      ...recentSearches.map((q) => buildCatalogSearchUrl(q)),
-      ...popularCourses.map((r) => r.href),
-      ...popularMentors.map((r) => r.href),
-    ];
+    return recentSearches.slice(0, 4).map((term) => buildCatalogSearchUrl(term));
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -194,15 +175,13 @@ export function SiteNavSearch({
       ref={containerRef}
       data-search-expanded={expanded ? "true" : "false"}
       className={cn(
-        "relative ease-out",
+        "relative mx-auto ease-out",
         compactCapable
           ? cn(
-              "transition-[width,flex-grow,max-width] duration-300",
-              expanded
-                ? "w-[min(100%,28rem)] max-w-xl flex-[1_1_28rem]"
-                : "w-[9.5rem] max-w-[9.5rem] flex-[0_0_9.5rem]"
+              "transition-[width] duration-300",
+              expanded ? "w-[min(100vw-12rem,28rem)] sm:w-[min(100vw-16rem,28rem)]" : "w-[9.5rem]"
             )
-          : "w-full max-w-none flex-1",
+          : "w-full max-w-none",
         open && reveal && "z-[210]",
         className
       )}
@@ -211,7 +190,7 @@ export function SiteNavSearch({
       <form
         onSubmit={handleSubmit}
         className={cn(
-          "flex w-full items-center rounded-full border border-border bg-white/[0.03] text-sm text-muted-foreground transition-[gap,padding,border-color,background-color,box-shadow,transform] duration-300 ease-out focus-within:border-accent/20 focus-within:bg-white/[0.05] focus-within:text-foreground focus-within:shadow-[0_0_0_3px_var(--glow)]",
+          "flex w-full items-center rounded-full border border-border bg-white/[0.03] text-sm text-muted-foreground transition-[gap,padding,border-color,background-color,box-shadow] duration-300 ease-out focus-within:border-accent/20 focus-within:bg-white/[0.05] focus-within:text-foreground focus-within:shadow-[0_0_0_3px_var(--glow)]",
           compactCapable
             ? cn(
                 "overflow-hidden py-1.5",
@@ -275,42 +254,27 @@ export function SiteNavSearch({
           tabIndex={reveal ? 0 : -1}
           className={cn(
             "min-w-0 flex-1 truncate bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground transition-[opacity,width] duration-300 ease-out sm:text-sm",
-            compactCapable &&
-              !expanded &&
-              "placeholder:text-muted-foreground/90",
-            compactCapable &&
-              (expanded ? "w-auto opacity-100" : "min-w-0 opacity-100"),
+            compactCapable && !expanded && "placeholder:text-muted-foreground/90",
             inputClassName
           )}
         />
       </form>
 
-      <div id={listboxId}>
-        <SearchDropdown
-          open={open && reveal}
-          query={value}
-          results={results}
-          trending={trending}
-          popularCourses={popularCourses}
-          popularMentors={popularMentors}
-          recentSearches={recentSearches}
-          activeIndex={activeIndex}
-          onSelect={navigate}
-          onTrendingClick={(q) => {
-            setValue(q);
-            navigate(buildCatalogSearchUrl(q), q);
-          }}
-          onActiveIndexChange={setActiveIndex}
-          onRemoveRecent={(q) => {
-            removeRecentSearch(q);
-            setRecentSearches(getRecentSearches());
-          }}
-          onClearRecent={() => {
-            clearRecentSearches();
-            setRecentSearches([]);
-          }}
-        />
-      </div>
+      <SearchDropdown
+        open={open && reveal}
+        query={value}
+        results={results}
+        trending={trending}
+        recentSearches={recentSearches}
+        activeIndex={activeIndex}
+        onSelect={navigate}
+        onTrendingClick={(q) => {
+          setValue(q);
+          navigate(buildCatalogSearchUrl(q), q);
+        }}
+        onActiveIndexChange={setActiveIndex}
+        anchorRef={containerRef}
+      />
     </div>
   );
 }

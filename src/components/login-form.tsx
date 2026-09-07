@@ -128,6 +128,7 @@ export function LoginForm() {
       <div className="flex items-center justify-between gap-3">
         <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
           <input
+            id="login-remember-me"
             type="checkbox"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}

@@ -90,6 +90,9 @@ export function clientIp(request: Request, env = process.env.NODE_ENV): string {
   return request.headers.get("x-real-ip")?.trim() || "unknown";
 }
 
+const SESSION_READ_PATHS = new Set(["/api/auth/session", "/api/auth/web-session-bridge"]);
+const SESSION_READ_LIMIT = 400;
+
 export async function checkApiRateLimit(request: Request): Promise<RateLimitResult> {
   const ip = clientIp(request);
   const auth = request.headers.get("authorization")?.trim();
@@ -100,6 +103,16 @@ export async function checkApiRateLimit(request: Request): Promise<RateLimitResu
   if (/bot|crawler|spider/i.test(ua)) {
     limit = BOT_UA_LIMIT;
   }
+
+  try {
+    const pathname = new URL(request.url).pathname;
+    if (request.method === "GET" && SESSION_READ_PATHS.has(pathname)) {
+      return checkRateLimit(`${key}:session-read`, SESSION_READ_LIMIT, DEFAULT_API_WINDOW_MS);
+    }
+  } catch {
+    /* ignore malformed URL */
+  }
+
   return checkRateLimit(key, limit, DEFAULT_API_WINDOW_MS);
 }
 

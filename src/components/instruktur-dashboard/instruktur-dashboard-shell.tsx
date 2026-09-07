@@ -62,7 +62,7 @@ export function InstrukturDashboardShell({ children }: { children: React.ReactNo
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="border-b border-border px-4 py-4 md:px-6">
         <p className="text-xs text-muted-foreground">Dashboard Instruktur</p>
-        <h1 className="font-heading text-lg font-semibold">{session.name}</h1>
+        <p className="font-heading text-lg font-semibold">{session.name}</p>
       </header>
 
       <div className="flex min-h-0 flex-1">

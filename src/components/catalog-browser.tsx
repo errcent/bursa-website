@@ -11,6 +11,7 @@ import { AnimatePresence } from "motion/react";
 
 import { CatalogCarouselRow } from "@/components/catalog-carousel-row";
 import { CatalogCourseRow } from "@/components/catalog-course-row";
+import { LazyWhenVisible } from "@/components/lazy-when-visible";
 import { LearningGuidanceEntry } from "@/components/learning-guidance/learning-guidance-entry";
 import { MentorCard } from "@/components/mentor-card";
 import { PlaylistCard } from "@/components/playlist/playlist-card";
@@ -191,14 +192,15 @@ export function CatalogBrowser({
               />
               <CatalogPlaylistRow title="Playlist" playlists={playlists} />
               {instrumentCourseRows.map((row) => (
-                <CatalogCourseRow
-                  key={row.title}
-                  title={row.title}
-                  courses={row.courses}
-                  enrollmentBySlug={enrollmentBySlug}
-                  mentorBySlug={mentorBySlug}
-                  cardVariant="catalog"
-                />
+                <LazyWhenVisible key={row.title} minHeight={300}>
+                  <CatalogCourseRow
+                    title={row.title}
+                    courses={row.courses}
+                    enrollmentBySlug={enrollmentBySlug}
+                    mentorBySlug={mentorBySlug}
+                    cardVariant="catalog"
+                  />
+                </LazyWhenVisible>
               ))}
             </div>
           </SnapPresence>
@@ -206,11 +208,9 @@ export function CatalogBrowser({
           <SnapPresence key="mentor" seed={19} className="relative z-0 block">
             <div className="catalog-section">
               {groupedMentorRows.map((row) => (
-                <CatalogMentorRow
-                  key={row.title}
-                  title={row.title}
-                  mentors={row.mentors}
-                />
+                <LazyWhenVisible key={row.title} minHeight={280}>
+                  <CatalogMentorRow title={row.title} mentors={row.mentors} />
+                </LazyWhenVisible>
               ))}
             </div>
           </SnapPresence>

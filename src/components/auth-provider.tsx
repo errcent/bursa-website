@@ -24,6 +24,7 @@ import type { AuthSession, LoginInput, RegisterInput } from "@/lib/auth/types";
 async function clearStaleNextAuthSession() {
   try {
     const res = await fetch("/api/auth/session", { credentials: "include" });
+    // 429 / 5xx: skip silently — SessionProvider must not cascade errors site-wide.
     if (!res.ok) return;
     const data = (await res.json()) as { user?: unknown };
     if (data?.user) {

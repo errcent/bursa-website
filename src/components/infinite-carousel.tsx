@@ -639,6 +639,7 @@ export function InfiniteCarouselViewport<T>({
             whileTap={prefersReducedMotion ? undefined : { cursor: "grabbing" }}
           >
             {duplicated.map((item, i) => {
+              const isClone = i >= items.length;
               const slideProps: InfiniteCarouselSlideProps = {
                 index: i,
                 itemWidth: layout.itemWidth,
@@ -654,7 +655,13 @@ export function InfiniteCarouselViewport<T>({
                 <div
                   key={getItemKey(item, i)}
                   data-carousel-card
-                  className={cn("shrink-0", coverflow && "discover-coverflow__slide")}
+                  aria-hidden={isClone ? true : undefined}
+                  inert={isClone ? true : undefined}
+                  className={cn(
+                    "shrink-0 carousel-slide",
+                    isClone && "carousel-slide--clone",
+                    coverflow && "discover-coverflow__slide"
+                  )}
                   style={
                     fixedItemWidth
                       ? { width: fixedItemWidth }
