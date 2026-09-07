@@ -15,6 +15,7 @@ export const PRIVACY_HOST = "privacy.bursanalar.com";
 export const NOTE_HOST = "note.bursanalar.com";
 export const NOTE_SURFACE_HEADER = "x-bursa-surface";
 export const PRIVACY_SURFACE_HEADER = "x-bursa-surface";
+export const TRUST_SURFACE_HEADER = "x-bursa-surface";
 
 export const PRODUCTION_APP_HOSTS = new Set([
   APEX_HOST,
@@ -66,6 +67,11 @@ export function isNoteLayoutSurface(host: string | null, surfaceHeader: string |
 export function isPrivacyPortalSurface(host: string | null, surfaceHeader: string | null): boolean {
   if (hostRole(host) === "privacy") return true;
   return !isProductionHostRouting() && surfaceHeader === "privacy";
+}
+
+export function isTrustPortalSurface(host: string | null, surfaceHeader: string | null): boolean {
+  if (hostRole(host) === "trust") return true;
+  return !isProductionHostRouting() && surfaceHeader === "trust";
 }
 
 /** Privacy: DB/vault slug → public path segment (empty = hub). */

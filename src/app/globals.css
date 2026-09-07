@@ -3692,3 +3692,112 @@ img.ai-thumbnail__media {
 [data-portal-surface="privacy"] .privacy-skip-link {
   @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-card focus:px-3 focus:py-2 focus:text-sm focus:shadow-md;
 }
+
+/* ── Trust Center (public security register — not homepage, not privacy) ─ */
+[data-portal-surface="trust"] {
+  --background: #101820;
+  --foreground: #e8e4d8;
+  --card: #1a2430;
+  --card-foreground: #e8e4d8;
+  --popover: #1a2430;
+  --popover-foreground: #e8e4d8;
+  --primary: #c4a574;
+  --primary-foreground: #101820;
+  --secondary: #243040;
+  --secondary-foreground: #c9c3b4;
+  --muted: #1c2633;
+  --muted-foreground: #9a9386;
+  --accent: #c4a574;
+  --accent-foreground: #101820;
+  --accent-soft: rgba(196, 165, 116, 0.12);
+  --destructive: #d46a6a;
+  --destructive-foreground: #101820;
+  --border: rgba(232, 228, 216, 0.12);
+  --input: rgba(232, 228, 216, 0.1);
+  --ring: rgba(196, 165, 116, 0.4);
+  --surface: #1a2430;
+  --surface-2: #151e28;
+  --glow: rgba(196, 165, 116, 0.06);
+  --glow-strong: rgba(196, 165, 116, 0.12);
+  --brand: #c4a574;
+  --hero-grain-opacity: 0;
+  --font-heading: var(--font-trust-serif), "Source Serif 4", Georgia, serif;
+  --font-mono: var(--font-trust-mono), "IBM Plex Mono", ui-monospace, monospace;
+  --trust-brass: #c4a574;
+  --trust-forest: #2e7d5b;
+  --trust-ink: #101820;
+  color-scheme: dark;
+}
+
+html[data-portal-surface="trust"] body::before,
+html[data-portal-surface="trust"] body::after {
+  display: none !important;
+}
+
+[data-portal-surface="trust"] .hero-cinematic,
+[data-portal-surface="trust"] .hero-cinematic::before,
+[data-portal-surface="trust"] .hero-cinematic::after {
+  background: none;
+  animation: none;
+}
+
+[data-portal-surface="trust"] .trust-hero {
+  background:
+    linear-gradient(180deg, #16202b 0%, #101820 100%);
+  border-bottom: 1px solid rgba(196, 165, 116, 0.18);
+}
+
+[data-portal-surface="trust"] .trust-serif {
+  font-family: var(--font-trust-serif), "Source Serif 4", Georgia, serif;
+}
+
+[data-portal-surface="trust"] .trust-mono {
+  font-family: var(--font-trust-mono), "IBM Plex Mono", ui-monospace, monospace;
+}
+
+[data-portal-surface="trust"] .trust-stamp {
+  @apply inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em];
+}
+
+[data-portal-surface="trust"] .trust-stamp-done {
+  border-color: rgba(46, 125, 91, 0.45);
+  background: rgba(46, 125, 91, 0.14);
+  color: #7dcea0;
+}
+
+[data-portal-surface="trust"] .trust-stamp-partial {
+  border-color: rgba(196, 165, 116, 0.4);
+  background: rgba(196, 165, 116, 0.1);
+  color: #c4a574;
+}
+
+[data-portal-surface="trust"] .trust-stamp-planned {
+  border-color: rgba(232, 228, 216, 0.16);
+  background: rgba(232, 228, 216, 0.04);
+  color: #9a9386;
+}
+
+[data-portal-surface="trust"] .trust-card {
+  @apply rounded-sm border border-border bg-card;
+}
+
+[data-portal-surface="trust"] .trust-tab[aria-current="page"] {
+  border-bottom-color: #c4a574;
+  color: #e8e4d8;
+}
+
+[data-portal-surface="trust"] .trust-skip-link {
+  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-sm focus:bg-card focus:px-3 focus:py-2 focus:text-sm focus:shadow-md;
+}
+
+[data-portal-surface="trust"] .prose-trust h2 {
+  font-family: var(--font-trust-serif), Georgia, serif;
+  color: #e8e4d8;
+}
+
+[data-portal-surface="trust"] .text-gradient {
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  color: #e8e4d8;
+}

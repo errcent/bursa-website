@@ -14,6 +14,7 @@ import {
   LOCALE_HEADER,
   PRODUCTION_APP_HOSTS,
   PRIVACY_SURFACE_HEADER,
+  TRUST_SURFACE_HEADER,
   apexNoteRedirectTarget,
   apexPrivacyRedirectTarget,
   apexTrustRedirectTarget,
@@ -71,6 +72,19 @@ function nextResponse(request: NextRequest) {
     hasHeaderOverride = true;
   }
 
+  if (
+    !isProductionHostRouting() &&
+    (pathname === "/kepercayaan" || pathname.startsWith("/kepercayaan/"))
+  ) {
+    requestHeaders.set(TRUST_SURFACE_HEADER, "trust");
+    hasHeaderOverride = true;
+  }
+
+  if (hostRole(request.headers.get("host")) === "trust") {
+    requestHeaders.set(TRUST_SURFACE_HEADER, "trust");
+    hasHeaderOverride = true;
+  }
+
   if (hasHeaderOverride) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
@@ -121,6 +135,9 @@ function rewriteWithLocale(
   url.pathname = pathname;
   const headers = new Headers(request.headers);
   headers.set(LOCALE_HEADER, locale);
+  const role = hostRole(request.headers.get("host"));
+  if (role === "privacy") headers.set(PRIVACY_SURFACE_HEADER, "privacy");
+  if (role === "trust") headers.set(TRUST_SURFACE_HEADER, "trust");
   return NextResponse.rewrite(url, { request: { headers } });
 }
 

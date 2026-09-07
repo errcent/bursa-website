@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Inter, Montserrat_Alternates } from "next/font/google";
+import { DM_Sans, IBM_Plex_Mono, Inter, Montserrat_Alternates, Source_Serif_4 } from "next/font/google";
 import { headers } from "next/headers";
 import Script from "next/script";
 
@@ -13,7 +13,14 @@ import { CookieConsentBanner } from "@/components/trust-portal/cookie-consent-ba
 import { PreviewCatalogBanner } from "@/components/preview-catalog/preview-catalog-banner";
 
 import { SearchSeoJsonLd } from "@/components/search/search-seo-jsonld";
-import { isNoteLayoutSurface, isPrivacyPortalSurface, NOTE_SURFACE_HEADER, PRIVACY_SURFACE_HEADER } from "@/lib/hosts/hosts";
+import {
+  isNoteLayoutSurface,
+  isPrivacyPortalSurface,
+  isTrustPortalSurface,
+  NOTE_SURFACE_HEADER,
+  PRIVACY_SURFACE_HEADER,
+  TRUST_SURFACE_HEADER,
+} from "@/lib/hosts/hosts";
 import { rootSiteMetadata } from "@/lib/site-metadata";
 
 import "./globals.css";
@@ -42,6 +49,22 @@ const fontMontAlt = Montserrat_Alternates({
   display: "swap",
 });
 
+/** Trust Center register headlines */
+const fontTrustSerif = Source_Serif_4({
+  variable: "--font-trust-serif",
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+});
+
+/** Trust Center metadata / stamps */
+const fontTrustMono = IBM_Plex_Mono({
+  variable: "--font-trust-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+});
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -66,15 +89,20 @@ export default async function RootLayout({
     headerList.get("host"),
     headerList.get(PRIVACY_SURFACE_HEADER)
   );
-  const minimalSurface = noteSurface || privacySurface;
+  const trustSurface = isTrustPortalSurface(
+    headerList.get("host"),
+    headerList.get(TRUST_SURFACE_HEADER)
+  );
+  const legalSurface = privacySurface || trustSurface;
+  const minimalSurface = noteSurface || legalSurface;
 
   return (
     <html
       lang="id"
-      className={`${fontSans.variable} ${fontHeading.variable} ${fontMontAlt.variable} ${privacySurface ? "" : "dark"} h-full antialiased`}
+      className={`${fontSans.variable} ${fontHeading.variable} ${fontMontAlt.variable} ${fontTrustSerif.variable} ${fontTrustMono.variable} ${privacySurface ? "" : "dark"} h-full antialiased`}
       data-scroll-behavior="smooth"
       data-note-surface={noteSurface ? "1" : undefined}
-      data-portal-surface={privacySurface ? "privacy" : undefined}
+      data-portal-surface={privacySurface ? "privacy" : trustSurface ? "trust" : undefined}
       suppressHydrationWarning
     >
       <body
@@ -96,11 +124,11 @@ export default async function RootLayout({
             <AuthProvider>{children}</AuthProvider>
           </NextAuthProvider>
         ) : (
-          <PreloaderGate skip={privacySurface}>
-            {privacySurface ? null : <NavbarRouteTracker />}
+          <PreloaderGate skip={legalSurface}>
+            {legalSurface ? null : <NavbarRouteTracker />}
             <NextAuthProvider>
               <AuthProvider>
-                {privacySurface ? null : <PreviewCatalogBanner />}
+                {legalSurface ? null : <PreviewCatalogBanner />}
                 {children}
               </AuthProvider>
             </NextAuthProvider>

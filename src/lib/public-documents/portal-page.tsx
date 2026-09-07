@@ -16,6 +16,14 @@ import { PrivacyDocContent, PrivacyPortalExtras } from "@/components/trust-porta
 import { PrivacyPolicyShell } from "@/components/trust-portal/privacy/privacy-policy-shell";
 import { PrivacyPortalHero } from "@/components/trust-portal/privacy/privacy-portal-hero";
 import { PrivacySkipLinks } from "@/components/trust-portal/privacy/privacy-portal-hero";
+import { TrustChrome } from "@/components/trust-portal/trust/trust-chrome";
+import { TrustFooter, TrustPageHeader, TrustSkipLinks } from "@/components/trust-portal/trust/trust-shell";
+import { TrustControls } from "@/components/trust-portal/trust/trust-controls";
+import { TrustDocArticle } from "@/components/trust-portal/trust/trust-doc";
+import { TrustHero } from "@/components/trust-portal/trust/trust-hero";
+import { TrustOverview } from "@/components/trust-portal/trust/trust-overview";
+import { TrustResources } from "@/components/trust-portal/trust/trust-resources";
+import { tabForTrustSlug } from "@/lib/trust/public-posture";
 import {
   GOVERNING_LANGUAGE_EN,
   GOVERNING_LANGUAGE_ID,
@@ -180,7 +188,20 @@ export async function renderPortalPage(
   const backLabel = locale === "en" ? "Back to Bursanalar" : "Kembali ke Bursanalar";
 
   const isPrivacy = portalSlug === "privasi";
+  const isTrust = portalSlug === "kepercayaan";
   const chromeVariant = isPrivacy ? "privacy" : "default";
+
+  if (isTrust) {
+    return renderTrustPortalPage({
+      portalSlug,
+      portal,
+      docSlug,
+      locale,
+      isHub,
+      idHref,
+      enHref,
+    });
+  }
 
   if (isHub) {
     const hubDoc = await getHubDocument(portal, locale);
@@ -306,6 +327,112 @@ export async function renderPortalPage(
       </main>
       <PortalFooter locale={locale} variant={chromeVariant} />
       {isPrivacy && <PrivacyPortalExtras locale={locale} />}
+    </>
+  );
+}
+
+function trustNavHrefs(locale: LegalLocale) {
+  const resources = publicPathFor("kepercayaan", "sumber-daya", locale);
+  return {
+    hub: publicPathFor("kepercayaan", "hub", locale),
+    controls: publicPathFor("kepercayaan", "kontrol", locale),
+    resources,
+    request: `${resources}#request`,
+  };
+}
+
+async function renderTrustPortalPage({
+  portalSlug,
+  portal,
+  docSlug,
+  locale,
+  isHub,
+  idHref,
+  enHref,
+}: {
+  portalSlug: PortalSlug;
+  portal: DocumentPortal;
+  docSlug: string | undefined;
+  locale: LegalLocale;
+  isHub: boolean;
+  idHref: string;
+  enHref: string;
+}) {
+  const activeTab = tabForTrustSlug(isHub ? "hub" : docSlug);
+  const jsonLdSlug = isHub ? "hub" : docSlug ?? "hub";
+
+  if (isHub) {
+    const hubDoc = await getHubDocument(portal, locale);
+    if (!hubDoc) notFound();
+    return (
+      <>
+        <PortalJsonLd
+          portalSlug={portalSlug}
+          title={hubDoc.title}
+          description={hubDoc.description}
+          url={publicUrlFor(portalSlug, "hub", locale)}
+          locale={locale}
+        />
+        <TrustSkipLinks locale={locale} />
+        <TrustChrome
+          locale={locale}
+          idHref={idHref}
+          enHref={enHref}
+          activeTab={activeTab}
+          hrefs={trustNavHrefs(locale)}
+        />
+        <main id="trust-main" className="flex-1">
+          <TrustHero locale={locale} />
+          <div className="container-page pt-10">
+            <TrustOverview locale={locale} />
+          </div>
+        </main>
+        <TrustFooter locale={locale} />
+      </>
+    );
+  }
+
+  if (!docSlug) notFound();
+  const doc = await getPublishedDocument(portal, docSlug, locale);
+  if (!doc) notFound();
+
+  return (
+    <>
+      <PortalJsonLd
+        portalSlug={portalSlug}
+        title={doc.title}
+        description={doc.description}
+        url={publicUrlFor(portalSlug, jsonLdSlug, locale)}
+        locale={locale}
+      />
+      <TrustSkipLinks locale={locale} />
+      <TrustChrome
+        locale={locale}
+        idHref={idHref}
+        enHref={enHref}
+        activeTab={activeTab}
+        hrefs={trustNavHrefs(locale)}
+      />
+      <main id="trust-main" className="flex-1">
+        {docSlug === "kontrol" ? (
+          <>
+            <TrustPageHeader title={doc.title} description={doc.description} />
+            <div className="container-page pb-16 pt-8">
+              <TrustControls locale={locale} />
+            </div>
+          </>
+        ) : docSlug === "sumber-daya" ? (
+          <>
+            <TrustPageHeader title={doc.title} description={doc.description} />
+            <div className="container-page pb-16 pt-8">
+              <TrustResources locale={locale} />
+            </div>
+          </>
+        ) : (
+          <TrustDocArticle doc={doc} locale={locale} />
+        )}
+      </main>
+      <TrustFooter locale={locale} />
     </>
   );
 }
