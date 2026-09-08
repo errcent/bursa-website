@@ -27,7 +27,7 @@ export function CatalogCourseRow({
   if (courses.length === 0) return null;
 
   return (
-    <CatalogCarouselRow title={title} getPerView={catalogCourseGetScrollPerView}>
+    <CatalogCarouselRow title={title} getPerView={catalogCourseGetScrollPerView} carouselDensity="course">
       {courses.map((course) => (
         <CourseCard
           key={course.slug}

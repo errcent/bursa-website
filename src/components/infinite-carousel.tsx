@@ -24,6 +24,7 @@ import {
   type PanInfo,
 } from "motion/react";
 
+import { useCarouselClickGuard } from "@/lib/carousel-click-guard";
 import { cn } from "@/lib/utils";
 
 export const DEFAULT_CAROUSEL_GAP = 16;
@@ -398,9 +399,20 @@ export function useInfiniteCarousel<T>({
     [nudge]
   );
 
+  const handleDrag = (_event: PointerEvent, info: PanInfo) => {
+    dragDistanceRef.current = Math.max(
+      dragDistanceRef.current,
+      Math.abs(info.offset.x)
+    );
+    wrapX();
+  };
+
   const handleDragEnd = (_event: PointerEvent, info: PanInfo) => {
     draggingRef.current = false;
-    dragDistanceRef.current = Math.abs(info.offset.x);
+    dragDistanceRef.current = Math.max(
+      dragDistanceRef.current,
+      Math.abs(info.offset.x)
+    );
     setDragging(false);
     wrapX();
 
@@ -464,6 +476,7 @@ export function useInfiniteCarousel<T>({
     dragDistanceRef,
     handleKeyDown,
     handleDragStart,
+    handleDrag,
     handleDragEnd,
     wrapX,
     allowDragFromSlides,
@@ -522,10 +535,29 @@ export function InfiniteCarouselViewport<T>({
     dragDistanceRef,
     handleKeyDown,
     handleDragStart,
+    handleDrag,
     handleDragEnd,
     wrapX,
     allowDragFromSlides,
   } = carousel;
+
+  const clickGuard = useCarouselClickGuard();
+
+  const handleDragWithGuard = useCallback(
+    (event: PointerEvent, info: PanInfo) => {
+      clickGuard.noteDragTravel(Math.abs(info.offset.x));
+      handleDrag(event, info);
+    },
+    [clickGuard, handleDrag]
+  );
+
+  const handleDragEndWithGuard = useCallback(
+    (event: PointerEvent, info: PanInfo) => {
+      clickGuard.noteDragTravel(Math.abs(info.offset.x));
+      handleDragEnd(event, info);
+    },
+    [clickGuard, handleDragEnd]
+  );
 
   if (items.length === 0) return null;
 
@@ -560,13 +592,15 @@ export function InfiniteCarouselViewport<T>({
           }
         }}
         onKeyDown={handleKeyDown}
-        onClickCapture={(e) => {
-          if (dragDistanceRef.current > 5) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
+        onPointerDownCapture={clickGuard.onPointerDown}
+        onPointerMoveCapture={clickGuard.onPointerMove}
+        onPointerUpCapture={() => {
+          clickGuard.noteDragTravel(dragDistanceRef.current);
+          clickGuard.onPointerUp(0);
           dragDistanceRef.current = 0;
         }}
+        onPointerCancelCapture={clickGuard.onPointerCancel}
+        onClickCapture={clickGuard.onClickCapture}
         aria-roledescription="carousel"
         aria-label={ariaLabel}
       >
@@ -634,8 +668,8 @@ export function InfiniteCarouselViewport<T>({
               dragControls.start(e);
             }}
             onDragStart={handleDragStart}
-            onDrag={wrapX}
-            onDragEnd={handleDragEnd}
+            onDrag={handleDragWithGuard}
+            onDragEnd={handleDragEndWithGuard}
             whileTap={prefersReducedMotion ? undefined : { cursor: "grabbing" }}
           >
             {duplicated.map((item, i) => {

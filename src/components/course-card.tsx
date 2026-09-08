@@ -49,7 +49,7 @@ export function CourseCard({
   /** Hide bookmark toggle (e.g. landing page). */
   hideBookmark?: boolean;
 }) {
-  const { bySlug } = useMyLearning();
+  const { bySlug, isAuthenticated } = useMyLearning();
   const { index: catalogIndex } = useCatalogIndex();
   const enrollment =
     enrollmentProp ?? courseEnrollmentFromLearning(bySlug.get(course.slug));
@@ -69,6 +69,7 @@ export function CourseCard({
 
   const isFeatured = variant === "featured";
   const isCatalog = variant === "catalog";
+  const showBookmark = !hideBookmark && (!isCatalog || isAuthenticated);
   const subtitle = isFeatured
     ? null
     : mentor
@@ -107,7 +108,7 @@ export function CourseCard({
           </span>
         )}
 
-        {!hideBookmark ? (
+        {showBookmark ? (
           <div className="absolute bottom-2.5 left-2.5 z-20">
             <BookmarkToggleButton bookmarkRef={{ type: "course", slug: course.slug }} />
           </div>

@@ -58,6 +58,7 @@ function CatalogPlaylistRow({ title, playlists }: { title: string; playlists: Pl
     <CatalogCarouselRow
       title={title}
       getPerView={catalogPlaylistGetScrollPerView}
+      carouselDensity="playlist"
       mobileScrollClassName="catalog-row-scroll catalog-row-scroll--playlist"
       prevLabel="Playlist sebelumnya"
       nextLabel="Playlist berikutnya"
@@ -76,6 +77,7 @@ function CatalogMentorRow({ title, mentors }: { title: string; mentors: Mentor[]
     <CatalogCarouselRow
       title={title}
       getPerView={mentorGetScrollPerView}
+      carouselDensity="mentor"
       mobileScrollClassName="catalog-row-scroll catalog-row-scroll--mentor"
       prevLabel="Mentor sebelumnya"
       nextLabel="Mentor berikutnya"

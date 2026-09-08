@@ -17,6 +17,7 @@ import {
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useCarouselClickGuard } from "@/lib/carousel-click-guard";
 import { cn } from "@/lib/utils";
 
 export const SCROLL_CAROUSEL_GAP = 16;
@@ -118,11 +119,48 @@ export const mentorGetScrollPerView = mentorCarouselGetScrollPerView;
 export const SCROLL_CAROUSEL_AUTOPLAY_INTERVAL_MS = 4500;
 const SCROLL_CAROUSEL_AUTOPLAY_RESUME_MS = 8000;
 
+function readTrackHorizontalInset(track: HTMLElement | null) {
+  if (!track) return 0;
+  const cs = getComputedStyle(track);
+  return (
+    (parseFloat(cs.paddingInlineStart) || 0) +
+    (parseFloat(cs.paddingInlineEnd) || 0)
+  );
+}
+
+function getPageScrollMetrics(
+  el: HTMLElement,
+  gap: number,
+  getPerView: (width: number) => number
+) {
+  const items = el.querySelectorAll<HTMLElement>("[data-scroll-carousel-item]");
+  const firstItem = items[0];
+  if (!firstItem || items.length === 0) return null;
+
+  const track = el.querySelector<HTMLElement>(".carousel-scroll-track");
+  const contentWidth = Math.max(
+    0,
+    el.clientWidth - readTrackHorizontalInset(track)
+  );
+  const perView = Math.max(1, Math.floor(getPerView(contentWidth)));
+  const stride = firstItem.offsetWidth + gap;
+  const maxStartIndex = Math.max(0, items.length - perView);
+
+  return {
+    stride,
+    perView,
+    maxStartIndex,
+    maxScrollLeft: maxStartIndex * stride,
+  };
+}
+
 export type ScrollCarouselHandle = {
   scrollByStep: (direction: -1 | 1) => void;
   scrollToIndex: (index: number) => void;
   pauseAutoPlay: () => void;
 };
+
+export type CatalogCarouselDensity = "course" | "playlist" | "mentor";
 
 interface ScrollCarouselProps {
   children: ReactNode;
@@ -153,6 +191,9 @@ interface ScrollCarouselProps {
   autoPlayPaused?: boolean;
   /** When true, arrow/step scroll moves by floor(getPerView) items and clamps at edges. */
   pageScroll?: boolean;
+  /** Size items with CSS container queries (catalog rows) instead of inline JS width. */
+  containerSized?: boolean;
+  carouselDensity?: CatalogCarouselDensity;
 }
 
 export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselProps>(
@@ -175,6 +216,8 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       autoPlayInterval = SCROLL_CAROUSEL_AUTOPLAY_INTERVAL_MS,
       autoPlayPaused = false,
       pageScroll = false,
+      containerSized = false,
+      carouselDensity,
     },
     ref
   ) {
@@ -187,6 +230,8 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
   const interactionPausedRef = useRef(false);
   const hoverPausedRef = useRef(false);
   const resumeTimerRef = useRef<number | null>(null);
+  const scrollStartRef = useRef(0);
+  const clickGuard = useCarouselClickGuard();
 
   canScrollRightRef.current = canScrollRight;
   autoPlayPausedRef.current = autoPlayPaused;
@@ -199,8 +244,12 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
     const el = viewportRef.current;
     if (!el) return;
     const { scrollLeft, scrollWidth, clientWidth } = el;
+
+    const pageMetrics = pageScroll ? getPageScrollMetrics(el, gap, getPerView) : null;
     const nextCanScrollLeft = scrollLeft > 2;
-    const nextCanScrollRight = scrollLeft < scrollWidth - clientWidth - 2;
+    const nextCanScrollRight = pageMetrics
+      ? scrollLeft < pageMetrics.maxScrollLeft - 2
+      : scrollLeft < scrollWidth - clientWidth - 2;
     setCanScrollLeft(nextCanScrollLeft);
     setCanScrollRight(nextCanScrollRight);
     onScrollStateChange?.({
@@ -214,13 +263,19 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       const index = Math.round(scrollLeft / Math.max(stride, 1));
       onActiveIndexChange(Math.min(Math.max(index, 0), childItems.length - 1));
     }
-  }, [childItems.length, gap, onActiveIndexChange, onScrollStateChange]);
+  }, [childItems.length, gap, getPerView, onActiveIndexChange, onScrollStateChange, pageScroll]);
 
   useLayoutEffect(() => {
     const el = viewportRef.current;
     if (!el) return;
 
     const measure = () => {
+      if (containerSized) {
+        const firstItem = el.querySelector<HTMLElement>("[data-scroll-carousel-item]");
+        setItemWidth(firstItem?.offsetWidth ?? null);
+        return;
+      }
+
       if (fixedItemWidth || naturalItemWidth) {
         const firstItem = el.querySelector<HTMLElement>("[data-scroll-carousel-item]");
         setItemWidth(firstItem?.offsetWidth ?? null);
@@ -228,20 +283,15 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       }
 
       const track = el.querySelector<HTMLElement>(".carousel-scroll-track");
-      let horizontalInset = 0;
-      if (track) {
-        const cs = getComputedStyle(track);
-        horizontalInset =
-          (parseFloat(cs.paddingInlineStart) || 0) +
-          (parseFloat(cs.paddingInlineEnd) || 0);
-      }
-
-      const containerWidth = Math.max(0, el.clientWidth - horizontalInset);
+      const containerWidth = Math.max(
+        0,
+        el.clientWidth - readTrackHorizontalInset(track)
+      );
       const perView = getPerView(containerWidth);
       const width =
         perView === 1
           ? containerWidth * mobilePeekRatio
-          : (containerWidth - gap * (perView - 1)) / perView;
+          : Math.floor((containerWidth - gap * (perView - 1)) / perView);
       setItemWidth(width);
     };
 
@@ -258,6 +308,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
     getPerView,
     mobilePeekRatio,
     naturalItemWidth,
+    containerSized,
     updateScrollState,
     childItems.length,
   ]);
@@ -285,13 +336,19 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth);
 
       if (pageScroll) {
-        const stepItems = Math.max(1, Math.floor(getPerView(el.clientWidth)));
-        const pageStride = itemStride * stepItems;
-        const target =
+        const metrics = getPageScrollMetrics(el, gap, getPerView);
+        if (!metrics) return;
+
+        const currentStart = Math.min(
+          metrics.maxStartIndex,
+          Math.round(el.scrollLeft / Math.max(metrics.stride, 1))
+        );
+        const nextStart =
           direction === 1
-            ? Math.min(el.scrollLeft + pageStride, maxScroll)
-            : Math.max(el.scrollLeft - pageStride, 0);
-        el.scrollTo({ left: target, behavior: "smooth" });
+            ? Math.min(currentStart + metrics.perView, metrics.maxStartIndex)
+            : Math.max(currentStart - metrics.perView, 0);
+
+        el.scrollTo({ left: nextStart * metrics.stride, behavior: "smooth" });
         return;
       }
 
@@ -402,6 +459,19 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
       onPointerLeave={() => {
         hoverPausedRef.current = false;
       }}
+      onPointerDownCapture={(e) => {
+        scrollStartRef.current = viewportRef.current?.scrollLeft ?? 0;
+        clickGuard.onPointerDown(e);
+      }}
+      onPointerMoveCapture={clickGuard.onPointerMove}
+      onPointerUpCapture={() => {
+        const el = viewportRef.current;
+        const scrollDelta =
+          el != null ? Math.abs(el.scrollLeft - scrollStartRef.current) : 0;
+        clickGuard.onPointerUp(scrollDelta);
+      }}
+      onPointerCancelCapture={clickGuard.onPointerCancel}
+      onClickCapture={clickGuard.onClickCapture}
     >
       {canScrollAny && edgeFade !== "none" && (
         <>
@@ -457,14 +527,21 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
         tabIndex={0}
         onKeyDown={handleKeyDown}
         onPointerDown={pauseAutoPlayForInteraction}
-        onTouchStart={pauseAutoPlayForInteraction}
+        onTouchStart={() => {
+          scrollStartRef.current = viewportRef.current?.scrollLeft ?? 0;
+          pauseAutoPlayForInteraction();
+        }}
         aria-roledescription="carousel"
         aria-label={ariaLabel}
         className={cn(
           "catalog-scroll-carousel w-full min-w-0 max-w-full outline-none",
+          containerSized && "catalog-scroll-carousel--container-sized",
           "focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           viewportClassName
         )}
+        {...(containerSized && carouselDensity
+          ? { "data-density": carouselDensity }
+          : {})}
       >
         <div className="carousel-scroll-track flex pb-1" style={{ gap }}>
           {childItems.map((child) => (
@@ -473,7 +550,7 @@ export const ScrollCarousel = forwardRef<ScrollCarouselHandle, ScrollCarouselPro
               data-scroll-carousel-item
               className="catalog-scroll-carousel-item carousel-slide shrink-0 snap-start"
               style={
-                naturalItemWidth
+                containerSized || naturalItemWidth
                   ? undefined
                   : {
                       width: fixedItemWidth ?? (itemWidth !== null ? itemWidth : undefined),

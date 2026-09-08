@@ -6,13 +6,17 @@ import { CarouselNavButtons } from "@/components/carousel-nav-buttons";
 import {
   SCROLL_CAROUSEL_GAP,
   ScrollCarousel,
+  type CatalogCarouselDensity,
   type ScrollCarouselHandle,
 } from "@/components/scroll-carousel";
+
+export type { CatalogCarouselDensity };
 
 export type CatalogCarouselRowProps = {
   title: string;
   ariaLabel?: string;
   getPerView: (width: number) => number;
+  carouselDensity: CatalogCarouselDensity;
   mobileScrollClassName?: string;
   children: ReactNode;
   prevLabel?: string;
@@ -23,6 +27,7 @@ export function CatalogCarouselRow({
   title,
   ariaLabel,
   getPerView,
+  carouselDensity,
   mobileScrollClassName = "catalog-row-scroll",
   children,
   prevLabel = "Gulir ke kiri",
@@ -72,6 +77,8 @@ export function CatalogCarouselRow({
           hideArrows
           edgeFade="none"
           pageScroll
+          containerSized
+          carouselDensity={carouselDensity}
           onScrollStateChange={applyScrollState}
         >
           {children}

@@ -5,6 +5,7 @@ import { ListVideo } from "lucide-react";
 
 import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
 import { PlaylistThumbnail } from "@/components/playlist/playlist-thumbnail";
+import { useMyLearning } from "@/hooks/use-my-learning";
 import type { PlaylistSummary } from "@/lib/playlist/types";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +43,8 @@ export function PlaylistCard({
   const isCatalog = variant === "catalog";
   const isFeatured = variant === "featured";
   const isStrip = variant === "strip";
+  const { isAuthenticated } = useMyLearning();
+  const showBookmark = !hideBookmark && (!isCatalog || isAuthenticated);
   const subtitle = isFeatured || isStrip ? null : playlistSubtitle(playlist);
 
   return (
@@ -85,7 +88,7 @@ export function PlaylistCard({
           </div>
         ) : null}
 
-        {!hideBookmark ? (
+        {showBookmark ? (
           <div className="absolute bottom-2.5 left-2.5 z-20">
             <BookmarkToggleButton bookmarkRef={{ type: "playlist", slug: playlist.slug }} />
           </div>

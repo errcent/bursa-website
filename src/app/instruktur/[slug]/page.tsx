@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Calendar, GraduationCap, Users } from "lucide-react";
+import { Calendar, GraduationCap } from "lucide-react";
 
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
@@ -49,7 +49,6 @@ export default async function MentorProfilePage({
   const mentorCourses = await getCoursesByMentor(mentor.slug);
 
   const statCards = [
-    { icon: Users, label: "Total Siswa", value: mentor.studentsCount.toLocaleString("id-ID") },
     { icon: GraduationCap, label: "Jumlah Kelas", value: String(mentor.coursesCount) },
     { icon: Calendar, label: "Pengalaman", value: `${mentor.yearsExperience} tahun` },
   ];
