@@ -42,7 +42,7 @@ export const mentors: Mentor[] = [
     studentsCount: 6210,
     coursesCount: 2,
     rating: 4.8,
-    bio: "Trader aktif sejak siklus bull-run 2017, kini fokus riset on-chain data dan manajemen risiko portofolio kripto. Vokal soal edukasi anti-FOMO di komunitas kripto Indonesia.",
+    bio: "Trader aktif sejak siklus bull-run 2017, kini fokus riset on-chain data dan manajemen risiko portofolio kripto. Vokal soal edukasi anti-FOMO di kalangan kripto Indonesia.",
     philosophy:
       "\"Crypto itu volatil, tapi keputusan kamu nggak harus ikut-ikutan volatil. Manajemen risiko dulu, baru bicara cuan.\"",
     trackRecord: [8, 14, 10, 20, 17, 26, 21, 29, 25, 33, 30, 37],
@@ -79,7 +79,7 @@ export const mentors: Mentor[] = [
     studentsCount: 5390,
     coursesCount: 2,
     rating: 4.8,
-    bio: "Praktisi swing trading harian dengan gaya mengajar yang runtut dan sabar untuk pemula. Membangun komunitas belajar teknikal terbesar di platform ini.",
+    bio: "Praktisi swing trading harian dengan gaya mengajar yang runtut dan sabar untuk pemula. Memimpin kelompok belajar teknikal terbesar di platform ini.",
     philosophy:
       "\"Chart itu bahasa, bukan ramalan. Begitu kamu fasih membacanya, kamu berhenti menebak dan mulai membuat keputusan.\"",
     trackRecord: [10, 16, 14, 19, 23, 21, 27, 24, 31, 28, 33, 35],
@@ -474,7 +474,7 @@ export const courses: Course[] = [
       {
         title: "Modul 1: Dasar Dividen BEI",
         lessons: [
-          { id: "l1", title: "Jenis Dividen & Timeline Pembayaran", durationMinutes: 14, preview: true },
+          { id: "l1", title: "Jenis Dividen & Jadwal Distribusi", durationMinutes: 14, preview: true },
           { id: "l2", title: "Yield vs Growth: Pilih Fokus Portofolio", durationMinutes: 17 },
         ],
       },

@@ -6,6 +6,7 @@ import { verifyWebSessionTokenEdge } from "@/lib/auth/web-session-edge";
 import { WEB_SESSION_COOKIE } from "@/lib/auth/web-session.constants";
 import {
   isKomunitasApiPath,
+  isKomunitasPagePath,
   KOMUNITAS_ENABLED,
 } from "@/lib/features/komunitas";
 import {
@@ -356,6 +357,12 @@ export async function proxy(request: NextRequest) {
       NextResponse.json({ error: "Komunitas feature disabled" }, { status: 404 }),
       origin
     );
+  }
+
+  if (!KOMUNITAS_ENABLED && isKomunitasPagePath(pathname)) {
+    return isApi
+      ? applyMobileCors(NextResponse.json({ error: "Not found" }, { status: 404 }), origin)
+      : new NextResponse(null, { status: 404 });
   }
 
   return isApi ? applyMobileCors(NextResponse.next(), origin) : NextResponse.next();
