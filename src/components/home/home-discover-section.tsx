@@ -6,6 +6,8 @@ import { ArrowRight } from "lucide-react";
 import { PlaylistCarousel } from "@/components/playlist/playlist-carousel";
 import { WordReveal } from "@/components/motion/word-reveal";
 import { Button } from "@/components/ui/button";
+import { PREVIEW_CATALOG_COPY } from "@/lib/preview-catalog/copy";
+import { isPreviewCatalogActive } from "@/lib/preview-catalog/visibility";
 import type { PlaylistSummary } from "@/lib/playlist/types";
 import { cn } from "@/lib/utils";
 
@@ -41,6 +43,11 @@ export function HomeDiscoverSection({
 
           <div className="discover-filmstrip">
             <PlaylistCarousel playlists={playlists} hideBookmark discoverMode />
+            {isPreviewCatalogActive() ? (
+              <p className="mx-auto mt-3 max-w-lg px-4 text-center text-xs text-muted-foreground">
+                {PREVIEW_CATALOG_COPY.bannerShort}
+              </p>
+            ) : null}
           </div>
 
           <div className="container-page">

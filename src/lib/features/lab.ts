@@ -1,6 +1,6 @@
 /**
  * Bursa Lab calculators feature flag.
- * Disabled by default — set NEXT_PUBLIC_LAB_ENABLED=true to restore.
+ * Disabled by default  -  set NEXT_PUBLIC_LAB_ENABLED=true to restore.
  */
 
 export const LAB_ENABLED =

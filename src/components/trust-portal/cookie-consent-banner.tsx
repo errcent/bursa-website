@@ -12,7 +12,8 @@ import {
   CONSENT_EVENT,
   CONSENT_POLICY_VERSION,
   CONSENT_STORAGE_KEY,
-  legacyFromCategories,
+  readStoredCategories,
+  serializeConsentCategories,
   VISITOR_ID_KEY,
   type CookieConsentCategories,
 } from "@/lib/privacy/consent";
@@ -32,11 +33,7 @@ function ensureVisitorId(): string {
 
 function readCategories(): CookieConsentCategories | null {
   try {
-    const raw = localStorage.getItem(CONSENT_STORAGE_KEY);
-    if (!raw) return null;
-    if (raw === "accepted") return { essential: true, functional: true, analytics: true };
-    if (raw === "essential-only") return { essential: true, functional: false, analytics: false };
-    return null;
+    return readStoredCategories(localStorage.getItem(CONSENT_STORAGE_KEY));
   } catch {
     return null;
   }
@@ -91,10 +88,10 @@ export function CookieConsentBanner() {
   }, []);
 
   async function persist(categories: CookieConsentCategories) {
-    const legacy = legacyFromCategories(categories);
+    const serialized = serializeConsentCategories(categories);
     try {
-      localStorage.setItem(CONSENT_STORAGE_KEY, legacy);
-      window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: legacy }));
+      localStorage.setItem(CONSENT_STORAGE_KEY, serialized);
+      window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: serialized }));
       void fetch("/api/privacy/consent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

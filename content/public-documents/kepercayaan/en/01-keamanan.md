@@ -4,7 +4,7 @@ slug: keamanan
 locale: en
 title: Security program
 eyebrow: Trust Center
-description: Summary of Bursa’s information-security program — principles, architecture, and operational practice.
+description: Summary of Bursa’s information-security program - principles, architecture, and operational practice.
 sortOrder: 1
 ---
 
@@ -37,24 +37,24 @@ User → TLS → Vercel Edge → Next.js App → RBAC API → PostgreSQL (encryp
 ### Authentication
 - Passwords hashed with **bcrypt** (cost ≥ 12)
 - Password reset: hashed token, single-use, 30-minute expiry
-- Optional Google OAuth — minimal scope (email + public profile)
+- Optional Google OAuth - minimal scope (email + public profile)
 - Rate limiting on auth and sensitive API endpoints
 
 ### Payments
-- **No card data stored** — fully delegated to Midtrans/Xendit
+- **No card data stored** - fully delegated to Midtrans/Xendit
 - Minimal PCI scope (SAQ A) when hosted payment page is active
 
 ### Video & content
-- Video access is enrolment-based — not a public URL
+- Video access is enrolment-based - not a public URL
 - Content protection: redistribution forbidden (Terms)
 
 ## Specially protected data
 
 | Data | Protection |
 |------|--------------|
-| Learner Notes | 100% private — admins cannot access |
+| Learner Notes | 100% private - admins cannot access |
 | Mentor KYC | Encrypted at rest, compliance-only access |
-| Password | bcrypt hash — never plaintext |
+| Password | bcrypt hash - never plaintext |
 | Session tokens | HttpOnly cookies (production target) |
 | Payment card | Never stored |
 
@@ -67,14 +67,14 @@ User → TLS → Vercel Edge → Next.js App → RBAC API → PostgreSQL (encryp
 | Admin RBAC | ✓ Active |
 | Admin PII masking | ~ Partial |
 | KYC field encryption | ~ Planned |
-| Admin MFA | — Roadmap |
-| Penetration test | — Pre-launch |
+| Admin MFA | - Roadmap |
+| Penetration test | - Pre-launch |
 
 ## Incidents & response
 
 If a data leak occurs, we will:
 1. Contain and assess within 24 hours
-2. Notify authorities under UU PDP (3�-24 hours)
+2. Notify authorities under UU PDP (3�-24 hours)
 3. Notify affected users
 4. Post-mortem and remediation
 

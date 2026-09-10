@@ -3,7 +3,7 @@ portal: PRIVACY
 slug: hub
 title: Pusat Privasi
 eyebrow: Privasi
-description: Pusat informasi privasi Bursa — kebijakan data, cookie, sub-prosesor, dan cara mengajukan permintaan hak subjek data.
+description: Pusat informasi privasi Bursa  -  kebijakan data, cookie, sub-prosesor, dan cara mengajukan permintaan hak subjek data.
 sortOrder: 0
 ---
 
@@ -17,10 +17,10 @@ Selamat datang di Pusat Privasi Bursa. Di sini kamu bisa mempelajari bagaimana k
 
 ## Prinsip Privasi Kami
 
-- **Minimisasi data** — kami hanya mengumpulkan data yang diperlukan untuk layanan edukasi dan pembayaran.
-- **Tidak menjual data** — data pribadimu tidak pernah dijual ke pihak ketiga untuk pemasaran.
-- **Transparansi** — kamu berhak tahu data apa yang kami simpan dan mengapa.
-- **Keamanan by design** — kontrol teknis dan organisasional diterapkan sejak awal.
+- **Minimisasi data**  -  kami hanya mengumpulkan data yang diperlukan untuk layanan edukasi dan pembayaran.
+- **Tidak menjual data**  -  data pribadimu tidak pernah dijual ke pihak ketiga untuk pemasaran.
+- **Transparansi**  -  kamu berhak tahu data apa yang kami simpan dan mengapa.
+- **Keamanan by design**  -  kontrol teknis dan organisasional diterapkan sejak awal.
 
 ## Kontak
 

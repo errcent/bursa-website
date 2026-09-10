@@ -32,7 +32,7 @@ export function HomeFaqSection() {
               className="btn-primary mt-6 h-11 rounded-md px-7 text-sm"
               render={<Link href="/bantuan" />}
             >
-              Hubungi Support
+              Buka Pusat Bantuan
             </Button>
           </Reveal>
 

@@ -8,7 +8,7 @@ export interface EnrollmentAccess {
   /** The COMPLETED paid Transaction id, when one exists. */
   paidTransactionId: string | null;
   hasAllAccess: boolean;
-  /** Enrollment row exists — learner has started this course. */
+  /** Enrollment row exists  -  learner has started this course. */
   started: boolean;
 }
 

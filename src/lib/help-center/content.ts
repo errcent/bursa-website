@@ -30,7 +30,7 @@ export const helpFaqs: HelpFaq[] = [
     category: "Akun",
     question: "Bagaimana cara mendaftar akun Bursa?",
     answer:
-      "Klik Daftar di navbar, isi nama, email, dan kata sandi. Setelah verifikasi email, kamu bisa mengakses katalog kelas, dashboard, dan komunitas sesuai langganan.",
+      "Buka /daftar (atau tombol Masuk di navbar), lalu buat akun. Setelah masuk, kamu bisa menjelajahi katalog. Pembayaran dan komunitas belum dibuka.",
   },
   {
     id: "akun-lupa-password",
@@ -44,7 +44,7 @@ export const helpFaqs: HelpFaq[] = [
     category: "Akun",
     question: "Bisakah saya menghapus akun secara permanen?",
     answer:
-      "Ya. Buka Pengaturan → Akun → Hapus akun. Proses irreversible; progres kelas dan data akun akan dihapus sesuai kebijakan retensi data.",
+      "Hapus akun dari aplikasi belum tersedia. Kirim permintaan ke privacy@bursanalar.com untuk hak akses atau penghapusan data.",
   },
   {
     id: "bayar-metode",
@@ -93,7 +93,7 @@ export const helpFaqs: HelpFaq[] = [
     category: "Belajar",
     question: "Apakah Bursa hanya untuk trader, atau juga untuk investasi jangka panjang?",
     answer:
-      "Keduanya. Katalog mencakup trading vs. investing — dari horizon pendek sampai alokasi jangka panjang. Bursa tetap platform edukasi, bukan penasihat investasi.",
+      "Keduanya. Katalog mencakup trading dan investasi, dari horizon pendek sampai alokasi jangka panjang. Bursa tetap platform edukasi, bukan penasihat investasi.",
   },
   {
     id: "note-apa",
@@ -128,14 +128,14 @@ export const helpFaqs: HelpFaq[] = [
     category: "Mentor",
     question: "Bagaimana cara mendaftar sebagai mentor?",
     answer:
-      "Kunjungi halaman Jadi Mentor, baca persyaratan, lalu isi formulir pendaftaran. Tim kurasi meninjau dalam 3–5 hari kerja. Setelah lolos kurasi, profil bisa mempublikasikan kelas dan ruang komunitas.",
+      "Pendaftaran publik belum dibuka. Jika diundang kurasi, tim Bursa mengirim tautan privat. Bursa mencari praktisi profesional terverifikasi, bukan finfluencer.",
   },
   {
     id: "mentor-komisi",
     category: "Mentor",
     question: "Berapa komisi platform untuk mentor?",
     answer:
-      "Working model (indikatif): komisi platform ~25% dari setiap transaksi kelas. Sisanya masuk ke payout mentor sesuai jadwal di dashboard. Rincian final tampil sebelum murid konfirmasi pembayaran.",
+      "Skema bayar mentor belum dibuka di publik. Angka komisi yang beredar bersifat indikatif, bukan penawaran hidup.",
   },
   {
     id: "mentor-konten",

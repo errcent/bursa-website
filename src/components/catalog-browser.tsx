@@ -36,8 +36,8 @@ interface CatalogBrowserProps {
 
 const INSTRUMENT_ROW_LABELS: Record<Instrument, string> = {
   Saham: "Saham",
-  Crypto: "Cryptocurrency",
-  Forex: "Foreign Exchange",
+  Crypto: "Kripto",
+  Forex: "Valas/Forex",
 };
 
 function parseViewParam(value: string | null): ViewMode {
@@ -174,8 +174,8 @@ export function CatalogBrowser({
     return [
       { title: "Mentor Terbaik", mentors: topRated },
       { title: "Saham", mentors: byInstrument("Saham") },
-      { title: "Crypto", mentors: byInstrument("Crypto") },
-      { title: "Forex", mentors: byInstrument("Forex") },
+      { title: "Kripto", mentors: byInstrument("Crypto") },
+      { title: "Valas/Forex", mentors: byInstrument("Forex") },
     ].filter((row) => row.mentors.length > 0);
   }, [mentors]);
 

@@ -33,7 +33,7 @@ export function LoginForm() {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-10">
         <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />
-        <p className="text-sm text-muted-foreground">Menyelesaikan login…</p>
+        <p className="text-sm text-muted-foreground">Menyelesaikan masuk…</p>
       </div>
     );
   }

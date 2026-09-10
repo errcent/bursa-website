@@ -1,4 +1,4 @@
-/** Public legal imprint — SSOT vault: Documentation/Legal/Kontrak/06 - Identitas Badan Hukum Bursanalar (PT GMM).md */
+/** Public legal imprint  -  SSOT vault: Documentation/Legal/Kontrak/06 - Identitas Badan Hukum Bursanalar (PT GMM).md */
 
 export const LEGAL_ENTITY = {
   legalName: "PT Global Makmur Madani",

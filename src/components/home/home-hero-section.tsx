@@ -24,6 +24,32 @@ import { Button } from "@/components/ui/button";
 
 const HERO_SUBCOPY = "Kurikulum runut, bersama praktisi & mentor profesional";
 
+function HeroCtaButtons() {
+  return (
+    <div className="mt-[var(--hero-cta-gap)] flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
+      <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+        <Button
+          size="lg"
+          variant="inverse"
+          className="h-12 min-h-12 w-full rounded-md px-8 sm:w-auto"
+          render={<Link href="/waitlist" />}
+        >
+          <ArrowUpRight className="size-4" />
+          Gabung Waitlist
+        </Button>
+      </motion.div>
+      <Button
+        size="lg"
+        variant="outline"
+        className="h-12 min-h-12 w-full rounded-md border-border/70 bg-card/40 px-7 text-sm text-foreground no-underline hover:text-foreground visited:text-foreground sm:h-11 sm:w-auto"
+        render={<Link href="/katalog" />}
+      >
+        Jelajahi Katalog
+      </Button>
+    </div>
+  );
+}
+
 function resolveSubcopyDelay(): number {
   const totalWords = HERO_HEADLINE_REVEAL_LINES.reduce(
     (sum, line) => sum + tokenizeForReveal(line).length,
@@ -43,8 +69,8 @@ export function HomeHeroSection() {
 
       <div aria-hidden className="hero-text-scrim pointer-events-none absolute inset-0 z-[1]" />
 
-      <div className="container-page relative z-10 flex flex-1 flex-col justify-center px-5 pb-24 pt-[calc(var(--site-header-offset)+1.25rem)] sm:px-8 sm:py-20 sm:pb-10 lg:py-24 lg:pb-12">
-        <div className="hero-home-copy mx-auto flex w-full max-w-5xl flex-col items-center text-center">
+      <div className="container-page relative z-10 flex flex-1 flex-col justify-center px-5 pb-20 pt-[calc(var(--site-header-offset)+0.75rem)] sm:px-8 sm:py-20 sm:pb-10 lg:py-24 lg:pb-12">
+        <div className="hero-home-copy mx-auto flex w-full max-w-4xl flex-col items-center text-center">
           <HeroRotatingTitle className="mx-auto w-full max-w-5xl" />
           {introReady ? (
             <WordReveal
@@ -58,39 +84,16 @@ export function HomeHeroSection() {
               trigger="immediate"
             />
           ) : (
-            <p
-              className="section-copy mx-auto mt-[var(--hero-sub-gap)] max-w-xl opacity-0 sm:text-base"
-              aria-hidden
-            >
+            <p className="section-copy mx-auto mt-[var(--hero-sub-gap)] max-w-xl sm:text-base">
               {HERO_SUBCOPY}
             </p>
           )}
           {introReady ? (
             <RevealText delay={ctaDelay}>
-              <div className="mt-[var(--hero-cta-gap)] flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
-                <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button
-                    size="lg"
-                    variant="inverse"
-                    className="h-12 min-h-12 w-full rounded-md px-8 sm:w-auto"
-                    render={<Link href="/waitlist" />}
-                  >
-                    <ArrowUpRight className="size-4" />
-                    Gabung Waitlist
-                  </Button>
-                </motion.div>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 min-h-12 w-full rounded-md border-border/70 bg-card/40 px-7 text-sm text-foreground no-underline hover:text-foreground visited:text-foreground sm:h-11 sm:w-auto"
-                  render={<Link href="/katalog" />}
-                >
-                  Jelajahi Katalog
-                </Button>
-              </div>
+              <HeroCtaButtons />
             </RevealText>
           ) : (
-            <div className="mt-[var(--hero-cta-gap)] h-12 opacity-0" aria-hidden />
+            <HeroCtaButtons />
           )}
         </div>
       </div>

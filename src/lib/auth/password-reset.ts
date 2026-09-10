@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 
 import { db } from "@/lib/db";
 
-/** Token valid for 30 minutes (within 15–60 min security guideline). */
+/** Token valid for 30 minutes (within 15-60 min security guideline). */
 export const RESET_TOKEN_TTL_MS = 30 * 60 * 1000;
 
 export function hashResetToken(token: string): string {

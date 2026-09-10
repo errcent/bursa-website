@@ -80,7 +80,7 @@ export function HeroNavSlot({ children }: { children: React.ReactNode }) {
 
       const heroRect = hero.getBoundingClientRect();
       const heroHeight = frozenHeroHeightRef.current || heroRect.height;
-      // Frozen px height — not heroRect.bottom — so iOS dvh chrome resize does not move the dock.
+      // Frozen px height  -  not heroRect.bottom  -  so iOS dvh chrome resize does not move the dock.
       const dockTop = heroRect.top + heroHeight - navHeight;
       const nextPinned = dockTop <= 0;
 

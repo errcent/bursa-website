@@ -24,8 +24,36 @@ export function categoriesFromLegacy(value: string | null): CookieConsentCategor
   return { essential: true, functional: false, analytics: false };
 }
 
+export function readStoredCategories(value: string | null): CookieConsentCategories | null {
+  if (!value) return null;
+  if (value === "accepted" || value === "essential-only") {
+    return categoriesFromLegacy(value);
+  }
+  try {
+    const parsed = JSON.parse(value) as Partial<CookieConsentCategories>;
+    if (typeof parsed.analytics === "boolean") {
+      return {
+        essential: true,
+        functional: parsed.functional === true,
+        analytics: parsed.analytics,
+      };
+    }
+  } catch {
+    /* ignore malformed storage */
+  }
+  return null;
+}
+
+export function serializeConsentCategories(categories: CookieConsentCategories): string {
+  return JSON.stringify({
+    essential: true,
+    functional: categories.functional,
+    analytics: categories.analytics,
+  });
+}
+
 export function legacyFromCategories(categories: CookieConsentCategories): "accepted" | "essential-only" {
-  if (categories.analytics || categories.functional) return "accepted";
+  if (categories.analytics) return "accepted";
   return "essential-only";
 }
 

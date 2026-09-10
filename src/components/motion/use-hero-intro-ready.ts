@@ -1,27 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import {
   getHeroIntroReady,
-  INTRO_EXIT_START_EVENT,
+  notifyIntroExitStart,
+  subscribeHeroIntroReady,
 } from "@/components/motion/hero-intro-timing";
 
-/** False on SSR + first paint; true after intro skip/exit so hero motion does not cut behind the plate. */
+const INTRO_READY_FAILSAFE_MS = 3500;
+
+/** False on SSR; syncs with intro gate so hero copy never stays permanently hidden. */
 export function useHeroIntroReady() {
-  const [ready, setReady] = useState(false);
+  const ready = useSyncExternalStore(
+    subscribeHeroIntroReady,
+    getHeroIntroReady,
+    () => false
+  );
 
   useEffect(() => {
-    if (getHeroIntroReady()) {
-      setReady(true);
-      return;
-    }
-
-    const onExit = () => setReady(true);
-    window.addEventListener(INTRO_EXIT_START_EVENT, onExit);
-    if (getHeroIntroReady()) setReady(true);
-    return () => window.removeEventListener(INTRO_EXIT_START_EVENT, onExit);
-  }, []);
+    if (ready) return;
+    const id = window.setTimeout(() => {
+      notifyIntroExitStart();
+    }, INTRO_READY_FAILSAFE_MS);
+    return () => window.clearTimeout(id);
+  }, [ready]);
 
   return ready;
 }

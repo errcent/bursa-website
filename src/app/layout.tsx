@@ -41,7 +41,7 @@ const fontHeading = DM_Sans({
   display: "swap",
 });
 
-/** Product wordmark "bursa" — matches logo_product_bursa_navbar */
+/** Product wordmark "bursa"  -  matches logo_product_bursa_navbar */
 const fontMontAlt = Montserrat_Alternates({
   variable: "--font-mont-alt",
   subsets: ["latin"],

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
 import { HERO_HEADLINE_BASE_DELAY } from "@/components/motion/hero-intro-timing";
@@ -11,6 +11,7 @@ import {
   wordRevealTotalDuration,
   WordReveal,
 } from "@/components/motion/word-reveal";
+import { useMobileLayout } from "@/hooks/use-mobile-layout";
 import { cn } from "@/lib/utils";
 
 /**
@@ -21,20 +22,34 @@ import { cn } from "@/lib/utils";
  * crossfade (no mode="wait") so phrases blend instead of cutting.
  */
 
-export const LINE1_PHRASES = [
+export const MOBILE_LINE1_PHRASES = [
+  "Belajar trading & investasi",
+  "Mendalami trading & investasi",
+] as const;
+
+export const DESKTOP_LINE1_PHRASES = [
   "Mulai belajar trading & investasi",
   "Mendalami trading & investasi",
 ] as const;
 
 export const LINE2_PHRASES = [
-  "dengan nyaman & terstruktur",
+  "dengan nyaman dan terstruktur",
   "dengan sistem yang jelas",
 ] as const;
 
-export const HERO_HEADLINE_REVEAL_LINES = [LINE1_PHRASES[0], LINE2_PHRASES[0]] as const;
+/** @deprecated Use mobile/desktop sets; kept for delay helpers. */
+export const LINE1_PHRASES = DESKTOP_LINE1_PHRASES;
 
-const LINE1_SIZER = LINE1_PHRASES[0];
-const LINE2_SIZER = LINE2_PHRASES[0];
+export const HERO_HEADLINE_REVEAL_LINES = [
+  MOBILE_LINE1_PHRASES[0],
+  LINE2_PHRASES[0],
+] as const;
+
+function longestPhrase(phrases: readonly string[]) {
+  return phrases.reduce((longest, phrase) =>
+    phrase.length > longest.length ? phrase : longest
+  );
+}
 
 /** step → [line1 index, line2 index] */
 const CYCLE = [
@@ -48,24 +63,31 @@ const POST_REVEAL_HOLD_MS = 2800;
 const LINE_GAP_MS = 200;
 const PAIR_HOLD_MS = 2800;
 const CROSSFADE = {
-  duration: 1.4,
+  duration: 0.95,
   ease: [0.22, 1, 0.36, 1] as const,
 };
 const CROSSFADE_MS = Math.round(CROSSFADE.duration * 1000);
 
-function phrasesForStep(step: number) {
+function phrasesForStep(
+  step: number,
+  line1Phrases: readonly [string, string]
+) {
   const [i1, i2] = CYCLE[step % CYCLE.length];
-  return { line1: LINE1_PHRASES[i1], line2: LINE2_PHRASES[i2] };
+  return { line1: line1Phrases[i1], line2: LINE2_PHRASES[i2] };
 }
 
-function resolveLine2Delay(headlineDelay: number): number {
-  const line1WordCount = LINE1_PHRASES[0].split(/\s+/).filter(Boolean).length;
+function resolveLine2Delay(headlineDelay: number, line1Reveal: string): number {
+  const line1WordCount = line1Reveal.split(/\s+/).filter(Boolean).length;
   return headlineDelay + line1WordCount * WORD_REVEAL_STAGGER;
 }
 
-function resolveInitialRevealEndMs(headlineDelay: number): number {
-  const line2Delay = resolveLine2Delay(headlineDelay);
-  const endSec = wordRevealTotalDuration(LINE2_PHRASES[0], {
+function resolveInitialRevealEndMs(
+  headlineDelay: number,
+  line1Reveal: string,
+  line2Reveal: string
+): number {
+  const line2Delay = resolveLine2Delay(headlineDelay, line1Reveal);
+  const endSec = wordRevealTotalDuration(line2Reveal, {
     delay: line2Delay,
     stagger: WORD_REVEAL_STAGGER,
     duration: WORD_REVEAL_DURATION,
@@ -86,13 +108,13 @@ function HeadlineLine({ sizer, children }: { sizer: string; children: ReactNode 
 
 function PhraseCrossfade({ phrase }: { phrase: string }) {
   return (
-    <AnimatePresence initial={false}>
+    <AnimatePresence mode="sync" initial={false}>
       <motion.span
         key={phrase}
         className="text-gradient absolute inset-x-0 top-0 block text-center"
-        initial={{ opacity: 0, filter: "blur(12px)", y: 8 }}
-        animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-        exit={{ opacity: 0, filter: "blur(12px)", y: -8 }}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
         transition={CROSSFADE}
       >
         {phrase}
@@ -103,9 +125,16 @@ function PhraseCrossfade({ phrase }: { phrase: string }) {
 
 export function HeroRotatingTitle({ className }: { className?: string }) {
   const introReady = useHeroIntroReady();
+  const isMobile = useMobileLayout();
   const [step, setStep] = useState(0);
   const [crossfadeReady, setCrossfadeReady] = useState(false);
   const headlineDelay = HERO_HEADLINE_BASE_DELAY;
+
+  const line1Phrases = isMobile ? MOBILE_LINE1_PHRASES : DESKTOP_LINE1_PHRASES;
+  const line1Sizer = useMemo(() => longestPhrase(line1Phrases), [line1Phrases]);
+  const line2Sizer = useMemo(() => longestPhrase(LINE2_PHRASES), []);
+  const line1Reveal = line1Phrases[0];
+  const line2Reveal = LINE2_PHRASES[0];
 
   useEffect(() => {
     if (!introReady) return;
@@ -114,13 +143,21 @@ export function HeroRotatingTitle({ className }: { className?: string }) {
       return () => window.clearTimeout(reduceTimer);
     }
 
-    const revealEndMs = resolveInitialRevealEndMs(headlineDelay);
+    const revealEndMs = resolveInitialRevealEndMs(
+      headlineDelay,
+      line1Reveal,
+      line2Reveal
+    );
     const revealTimer = window.setTimeout(() => {
       setCrossfadeReady(true);
     }, revealEndMs);
 
     return () => window.clearTimeout(revealTimer);
-  }, [introReady, headlineDelay]);
+  }, [introReady, headlineDelay, line1Reveal, line2Reveal]);
+
+  useEffect(() => {
+    setStep(0);
+  }, [isMobile]);
 
   useEffect(() => {
     if (!crossfadeReady) return;
@@ -153,24 +190,24 @@ export function HeroRotatingTitle({ className }: { className?: string }) {
     };
   }, [crossfadeReady]);
 
-  const line2Delay = resolveLine2Delay(headlineDelay);
+  const line2Delay = resolveLine2Delay(headlineDelay, line1Reveal);
   const showWordReveal = introReady && !crossfadeReady;
-  const { line1, line2 } = phrasesForStep(step);
+  const { line1, line2 } = phrasesForStep(step, line1Phrases);
 
   return (
     <h1
       className={cn("page-hero-title hero-home-title", className)}
       aria-label={`${line1} ${line2}`}
     >
-      <HeadlineLine sizer={LINE1_SIZER}>
+      <HeadlineLine sizer={line1Sizer}>
         {!introReady ? (
-          <span className="text-gradient block opacity-0" aria-hidden>
-            {LINE1_PHRASES[0]}
+          <span className="text-gradient block">
+            {line1Reveal}
           </span>
         ) : showWordReveal ? (
           <WordReveal
             as="span"
-            text={LINE1_PHRASES[0]}
+            text={line1Reveal}
             className="block"
             wordClassName="text-gradient"
             delay={headlineDelay}
@@ -183,15 +220,15 @@ export function HeroRotatingTitle({ className }: { className?: string }) {
           <PhraseCrossfade phrase={line1} />
         )}
       </HeadlineLine>{" "}
-      <HeadlineLine sizer={LINE2_SIZER}>
+      <HeadlineLine sizer={line2Sizer}>
         {!introReady ? (
-          <span className="text-gradient block opacity-0" aria-hidden>
-            {LINE2_PHRASES[0]}
+          <span className="text-gradient block">
+            {line2Reveal}
           </span>
         ) : showWordReveal ? (
           <WordReveal
             as="span"
-            text={LINE2_PHRASES[0]}
+            text={line2Reveal}
             className="block"
             wordClassName="text-gradient"
             delay={line2Delay}

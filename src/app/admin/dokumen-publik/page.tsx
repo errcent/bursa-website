@@ -168,7 +168,7 @@ export default function AdminPublicDocumentsPage() {
         <div>
           <h1 className="font-heading text-2xl font-semibold">Dokumen Publik</h1>
           <p className="text-sm text-muted-foreground">
-            Kelola Privacy, Trust, dan Terms — sync dari vault, edit, publish.
+            Kelola Privacy, Trust, dan Terms  -  sync dari vault, edit, publish.
           </p>
         </div>
         <div className="flex gap-2">

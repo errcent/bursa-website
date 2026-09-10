@@ -95,7 +95,7 @@ function demoSeedForEmail(email: string): SavedPaymentMethod[] {
   return [];
 }
 
-/** Muat metode tersimpan; seed 0–2 demo untuk akun demo bila belum ada data. */
+/** Muat metode tersimpan; seed 0-2 demo untuk akun demo bila belum ada data. */
 export function getSavedPaymentMethods(userId: string, email?: string): SavedPaymentMethod[] {
   const existing = readRaw(userId);
   if (existing.length > 0) return existing;

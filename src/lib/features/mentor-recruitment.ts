@@ -1,6 +1,6 @@
 /**
  * Public mentor recruitment (L1 self-apply) feature flag.
- * Disabled by default — set NEXT_PUBLIC_MENTOR_RECRUITMENT_ENABLED=true to restore.
+ * Disabled by default  -  set NEXT_PUBLIC_MENTOR_RECRUITMENT_ENABLED=true to restore.
  */
 
 export const MENTOR_RECRUITMENT_ENABLED =

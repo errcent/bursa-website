@@ -58,9 +58,9 @@ Data sensitif (token autentikasi) disimpan dengan kontrol keamanan yang sesuai.
 
 ## Cara Mengelola Cookie
 
-1. **Preferensi cookie** — atur kategori esensial, fungsional, dan analitik di [Pusat Privasi](/cookies#manage) atau via banner saat kunjungan pertama di bursanalar.com.
-2. **Pengaturan browser** — blokir/hapus cookie via Chrome, Firefox, Safari, dll.
-3. **Google OAuth** — cabut akses pihak ketiga via [Google Account Security](https://myaccount.google.com/permissions).
+1. **Preferensi cookie**  -  atur kategori esensial, fungsional, dan analitik di [Pusat Privasi](/cookies#manage) atau via banner saat kunjungan pertama di bursanalar.com.
+2. **Pengaturan browser**  -  blokir/hapus cookie via Chrome, Firefox, Safari, dll.
+3. **Google OAuth**  -  cabut akses pihak ketiga via [Google Account Security](https://myaccount.google.com/permissions).
 
 Menonaktifkan cookie esensial dapat memengaruhi fungsi login dan checkout.
 

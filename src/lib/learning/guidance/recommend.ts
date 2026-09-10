@@ -203,9 +203,9 @@ function buildPathNarrative(
     answers.goal === "basics"
       ? "Fondasi"
       : answers.goal === "side_income"
-        ? "Side income"
+        ? "Belajar di sela kerja"
         : answers.goal === "wealth"
-          ? "Wealth building"
+          ? "Bangun kekayaan"
           : "Pensiun";
 
   const riskLabel =

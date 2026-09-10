@@ -264,7 +264,7 @@ function useFrozenStoryPinHeight(trackRef: RefObject<HTMLElement | null>) {
 
 /**
  * iOS sticky compositor jitter: pin with absolute/fixed/absolute.
- * Pin min-height already reserves scroll room — no spacer toggle (that made Discover jump).
+ * Pin min-height already reserves scroll room  -  no spacer toggle (that made Discover jump).
  * Hysteresis stops fixed↔released thrash at the overlap with Discover.
  */
 function useMobileStoryPin(

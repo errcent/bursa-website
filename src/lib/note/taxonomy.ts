@@ -46,7 +46,7 @@ export const CLINIC_MODULES: ClinicModule[] = [
       { id: "q3", prompt: "Pemenang mana yang kamu jual lebih cepat dari rencana?" },
       { id: "q4", prompt: "Apa kriteria objektif untuk keluar yang sudah kamu tulis sebelumnya?" },
     ],
-    why: "Disposition effect (Shefrin–Statman) + mental accounting (Kahneman ch.32).",
+    why: "Disposition effect (Shefrin-Statman) + mental accounting (Kahneman ch.32).",
   },
   {
     id: "sering-cek",
@@ -61,7 +61,7 @@ export const CLINIC_MODULES: ClinicModule[] = [
       { id: "q3", prompt: "Cek terakhir mengubah keputusan atau hanya menaikkan cemas?" },
       { id: "q4", prompt: "Apa yang terjadi jika kamu tidak cek sampai jadwal berikutnya?" },
     ],
-    why: "Myopic loss aversion (Benartzi–Thaler).",
+    why: "Myopic loss aversion (Benartzi-Thaler).",
   },
   {
     id: "overtrade",
@@ -76,7 +76,7 @@ export const CLINIC_MODULES: ClinicModule[] = [
       { id: "q3", prompt: "Tanpa trade ini, apakah harimu tetap sesuai rencana?" },
       { id: "q4", prompt: "Apa bukti edge-mu selain perasaan?" },
     ],
-    why: "Illusion of skill (Kahneman; Barber–Odean).",
+    why: "Illusion of skill (Kahneman; Barber-Odean).",
   },
   {
     id: "ikut-ramai",
@@ -116,7 +116,7 @@ export const CLINIC_MODULES: ClinicModule[] = [
     plusOnly: false,
     protocol: "Tulis thesis 3 kalimat di hari beli. Review hanya terhadap teks itu. Jika beda, itu exit signal.",
     questions: [
-      { id: "q1", prompt: "Thesis asli saat beli — masih sama kata-katanya?" },
+      { id: "q1", prompt: "Thesis asli saat beli  -  masih sama kata-katanya?" },
       { id: "q2", prompt: "Alasan hold hari ini: data baru atau harga sudah masuk?" },
       { id: "q3", prompt: "Apa yang akan membuatmu salah (pre-mortem)?" },
       { id: "q4", prompt: "Sudah berapa kali thesis ini kamu rewrite diam-diam?" },
@@ -126,7 +126,7 @@ export const CLINIC_MODULES: ClinicModule[] = [
   {
     id: "banjir-info",
     name: "Banjir informasi",
-    summary: "Terlalu banyak indikator, channel, dan opini — keputusan jadi kabur.",
+    summary: "Terlalu banyak indikator, channel, dan opini  -  keputusan jadi kabur.",
     kindHint: "BOTH",
     plusOnly: false,
     protocol: "Pakai maksimal 3 sumber. Hapus 1 indikator atau 1 channel minggu ini. Jangan menambah.",

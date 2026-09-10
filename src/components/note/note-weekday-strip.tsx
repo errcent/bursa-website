@@ -47,7 +47,7 @@ export function NoteWeekdayStrip({
             />
             <span className="text-[10px] text-zinc-500">{labels[i]}</span>
             <span className={`text-[10px] tabular-nums ${pnlTone(cell.net, colorMode)}`}>
-              {cell.count ? formatPnl(cell.net, formatOpts) : "—"}
+              {cell.count ? formatPnl(cell.net, formatOpts) : " - "}
             </span>
           </div>
         );

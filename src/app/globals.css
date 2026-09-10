@@ -229,23 +229,25 @@
   }
   /* Home-only: fluid scale so the longer rotating lines wrap cleanly. */
   .page-hero-title.hero-home-title {
-    font-size: clamp(1.625rem, 6.5vw, 2rem);
-    line-height: 1.18;
+    font-size: clamp(1.75rem, 7.4vw, 2.05rem);
+    line-height: 1.14;
     overflow-wrap: break-word;
     word-break: normal;
+    text-wrap: balance;
+    letter-spacing: -0.035em;
   }
   .hero-home-copy {
-    --hero-sub-gap: 1.25rem;
-    --hero-cta-gap: 2rem;
+    --hero-sub-gap: 1rem;
+    --hero-cta-gap: 1.5rem;
   }
   @media (max-height: 700px) and (max-width: 768px) {
     .page-hero-title.hero-home-title {
-      font-size: clamp(1.5rem, 6.4vw, 1.75rem);
-      line-height: 1.16;
+      font-size: clamp(1.625rem, 6.8vw, 1.875rem);
+      line-height: 1.12;
     }
     .hero-home-copy {
-      --hero-sub-gap: 0.75rem;
-      --hero-cta-gap: 1.25rem;
+      --hero-sub-gap: 0.625rem;
+      --hero-cta-gap: 1rem;
     }
   }
   @media (min-width: 640px) {
@@ -572,7 +574,7 @@
   }
 
   @media (max-width: 768px) {
-    /* Frozen on mount via HeroNavSlot — stops dock jitter when iOS chrome resizes dvh. */
+    /* Frozen on mount via HeroNavSlot  -  stops dock jitter when iOS chrome resizes dvh. */
     .hero-home-viewport {
       min-height: var(--hero-vh, 100svh);
       height: var(--hero-vh, auto);
@@ -1350,7 +1352,7 @@
       min-height: 360vh;
     }
 
-    /* Soft act fades on mobile — pin is JS-fixed so opacity transitions are safe again. */
+    /* Soft act fades on mobile  -  pin is JS-fixed so opacity transitions are safe again. */
     .home-story-sticky--locked .home-story-intro,
     .home-story-sticky--locked .home-story-problems,
     .home-story-sticky--locked .home-story-solution {
@@ -1365,7 +1367,7 @@
       transition: color 0.35s ease, background-size 0.4s ease;
     }
 
-    /* Freeze Discover sticky height — live 100dvh jitters with iOS chrome in the overlap. */
+    /* Freeze Discover sticky height  -  live 100dvh jitters with iOS chrome in the overlap. */
     .discover-solo-sticky {
       min-height: calc(100svh - var(--site-header-offset));
       max-height: none;
@@ -1696,7 +1698,7 @@
     margin-inline: calc(-1 * var(--catalog-container-px));
   }
 
-  /** Mobile only: bleed into container padding (not full viewport — avoids clip). */
+  /** Mobile only: bleed into container padding (not full viewport  -  avoids clip). */
   @media (max-width: 767px) {
     .carousel-bleed-shell,
     .landing-carousel-bleed,
@@ -1731,7 +1733,7 @@
   }
 
   /*
-   * Catalog desktop: item width from viewport container (100cqw), not JS floats —
+   * Catalog desktop: item width from viewport container (100cqw), not JS floats  - 
    * guarantees N visible cards + gaps never exceed the viewport (no edge crop).
    */
   @media (min-width: 768px) {
@@ -3789,7 +3791,7 @@ img.ai-thumbnail__media {
   }
 }
 
-/* ── Privacy Portal (native Bursa dark — layout/structure only) ─────────── */
+/* ── Privacy Portal (native Bursa dark  -  layout/structure only) ─────────── */
 [data-portal-surface="privacy"] {
   color-scheme: dark;
 }

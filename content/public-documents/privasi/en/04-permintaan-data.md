@@ -4,7 +4,7 @@ slug: permintaan-data
 locale: en
 title: Data requests
 eyebrow: Privacy Center
-description: Submit data-subject requests — access, correction, deletion, or objection — under the PDP Law.
+description: Submit data-subject requests  -  access, correction, deletion, or objection  -  under the PDP Law.
 sortOrder: 4
 ---
 
@@ -32,12 +32,12 @@ Fill in the form below or email [privacy@bursanalar.com](mailto:privacy@bursanal
 1. **Full name** as on the account
 2. **Email** registered at Bursa
 3. **Request type** (from the table above)
-4. **Request detail** — be specific about what you need
-5. **Identity verification** — we may ask for extra confirmation to protect your account
+4. **Request detail**  -  be specific about what you need
+5. **Identity verification**  -  we may ask for extra confirmation to protect your account
 
 ## Response time
 
-We respond within **14 working days**. Complex requests may take longer — we will tell you.
+We respond within **14 working days**. Complex requests may take longer  -  we will tell you.
 
 ## Exceptions
 

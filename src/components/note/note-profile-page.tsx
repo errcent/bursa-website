@@ -41,7 +41,7 @@ export function NoteProfilePage() {
         </div>
         <div>
           <dt className="text-[11px] text-zinc-500">{prefs.locale === "en" ? "Name" : "Nama"}</dt>
-          <dd className="text-zinc-100">{session.name || "—"}</dd>
+          <dd className="text-zinc-100">{session.name || " - "}</dd>
         </div>
       </dl>
       <div className="flex flex-wrap gap-3 text-sm">

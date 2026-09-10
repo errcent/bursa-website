@@ -21,7 +21,7 @@ Sub-prosesor adalah pihak ketiga yang memproses data pribadi **atas nama Bursa**
 | **Midtrans / Xendit** | Payment gateway | Data transaksi, token pembayaran | Indonesia | Direncanakan |
 | **Resend** | Email transaksional dan lifecycle waitlist | Email, nama (bila tersedia), preferensi topik, event delivery | AS | Aktif |
 | **Cloudflare Email Routing** | Penerusan email masuk `@bursanalar.com` ke mailbox yang dipantau | Alamat, metadata SMTP, isi pesan saat di-forward | Global | Aktif (Path B2) |
-| **Brevo** | Pengiriman surat manusia From `@bursanalar.com` (bukan blast waitlist) | Alamat, isi pesan keluar | EU / global | Direncanakan — aktif setelah domain terautentikasi |
+| **Brevo** | Pengiriman surat manusia From `@bursanalar.com` (bukan blast waitlist) | Alamat, isi pesan keluar | EU / global | Direncanakan  -  aktif setelah domain terautentikasi |
 | **PostHog** | Analitik produk | Data perilaku pseudonim/agregat | EU/US | Direncanakan |
 | **Bunny.net / Mux** | Video streaming CDN | Metadata streaming, IP | EU/US | Direncanakan |
 
@@ -31,10 +31,10 @@ Sub-prosesor adalah pihak ketiga yang memproses data pribadi **atas nama Bursa**
 Vercel dan penyedia database cloud menjalankan aplikasi Bursa. Data disimpan terenkripsi dengan kontrol akses ketat.
 
 ### Autentikasi
-Google OAuth memproses login opsional. Kami hanya menerima email dan profil publik — bukan data Google lainnya.
+Google OAuth memproses login opsional. Kami hanya menerima email dan profil publik  -  bukan data Google lainnya.
 
 ### Pembayaran
-Payment gateway memproses transaksi. **Bursa tidak menyimpan nomor kartu** — semua data kartu ditangani oleh gateway bersertifikasi PCI-DSS.
+Payment gateway memproses transaksi. **Bursa tidak menyimpan nomor kartu**  -  semua data kartu ditangani oleh gateway bersertifikasi PCI-DSS.
 
 ### Komunikasi
 Resend mengirim notifikasi transaksional (misalnya reset password) dan lifecycle waitlist sesuai persetujuan eksplisit. Status opt-out, bounce, dan complaint disinkronkan agar kiriman berikutnya dihentikan. Email marketing waitlist dikelola terpisah dari email keamanan dan transaksi akun.
@@ -42,7 +42,7 @@ Resend mengirim notifikasi transaksional (misalnya reset password) dan lifecycle
 Mailbox manusia (`esakaisar@`, `support@`, `privacy@`, `security@`) masuk via **Cloudflare Email Routing** ke inbox yang dipantau, dan keluar via SMTP terautentikasi (**Brevo**) agar From brand lolos DMARC. Stream ini terpisah dari Resend.
 
 ### Analitik
-Data analitik dipseudonimkan/agregatkan untuk meningkatkan produk — bukan untuk profil individu yang dijual.
+Data analitik dipseudonimkan/agregatkan untuk meningkatkan produk  -  bukan untuk profil individu yang dijual.
 
 ## Perubahan Sub-prosesor
 
@@ -52,4 +52,4 @@ Untuk keberatan atas sub-prosesor baru, hubungi [privacy@bursanalar.com](mailto:
 
 ## Hubungan dengan Trust Center
 
-Detail kontrol keamanan sub-prosesor: [Pusat Kepercayaan — Keamanan](/kepercayaan/keamanan).
+Detail kontrol keamanan sub-prosesor: [Pusat Kepercayaan  -  Keamanan](/kepercayaan/keamanan).

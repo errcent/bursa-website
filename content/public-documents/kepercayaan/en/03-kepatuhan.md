@@ -14,9 +14,9 @@ If the Indonesian and English versions differ, **the Indonesian version governs.
 
 ## Platform regulatory position
 
-Bursa is a **trading-education platform** operated under **PT Global Makmur Madani** — not a financial-services provider (PUJK), broker, or investment adviser. We provide learning infrastructure, not trade execution or personalised investment recommendations. Day-to-day management of Bursanalar is by Raden Mohammad Kaisar Khan and Fakhri Muzakki.
+Bursa is a **trading-education platform** operated under **PT Global Makmur Madani** - not a financial-services provider (PUJK), broker, or investment adviser. We provide learning infrastructure, not trade execution or personalised investment recommendations. Day-to-day management of Bursanalar is by Raden Mohammad Kaisar Khan and Fakhri Muzakki.
 
-## Law No. 27/2022 — Personal Data Protection
+## Law No. 27/2022 - Personal Data Protection
 
 | Aspect | Bursa implementation |
 |-------|-------------------|
@@ -24,12 +24,12 @@ Bursa is a **trading-education platform** operated under **PT Global Makmur Mada
 | Legal bases for processing | Consent, contract, legal obligation, legitimate interest |
 | Data-subject rights | Request form + privacy@bursanalar.com |
 | Data security | TLS, bcrypt, RBAC, audit log |
-| Breach notification | SOP 3�-24 hours to authorities + users |
+| Breach notification | SOP 3�-24 hours to authorities + users |
 | DPO | Internal responsible person (also compliance reviewer) |
 
 Detail: [Privacy Policy](https://privacy.bursanalar.com/en/policies).
 
-## POJK No. 6/2026 — Finfluencers & financial education
+## POJK No. 6/2026 - Finfluencers & financial education
 
 | Duty | Implementation |
 |-----------|--------------|
@@ -38,9 +38,9 @@ Detail: [Privacy Policy](https://privacy.bursanalar.com/en/policies).
 | Mentor verification | KYC + OJK/Bappebti licences checked before going live |
 | Content compliance | Curriculum review before publication |
 
-The Platform **does not require** an OJK PUJK licence because it is not a financial-services offering — but it must still comply as a publisher of financial-education information.
+The Platform **does not require** an OJK PUJK licence because it is not a financial-services offering - but it must still comply as a publisher of financial-education information.
 
-## POJK No. 13/2025 — Securities recommendations
+## POJK No. 13/2025 - Securities recommendations
 
 Specific buy/sell recommendations require an active Investment Adviser (PI) licence. Bursa:
 - **Does not** provide platform-level investment recommendations

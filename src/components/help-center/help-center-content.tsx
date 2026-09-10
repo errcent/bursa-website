@@ -19,15 +19,16 @@ import {
 } from "@/lib/help-center/content";
 import { cn } from "@/lib/utils";
 
-const helpCategories = allHelpCategories.filter((c) => c !== "Komunitas");
-const helpFaqs = allHelpFaqs.filter((f) => f.category !== "Komunitas");
+const HIDDEN_HELP_CATEGORIES = new Set<HelpCategory>(["Pembayaran", "Komunitas"]);
+const helpCategories = allHelpCategories.filter((c) => !HIDDEN_HELP_CATEGORIES.has(c));
+const helpFaqs = allHelpFaqs.filter((f) => !HIDDEN_HELP_CATEGORIES.has(f.category));
 
 export function HelpCenterContent() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<HelpCategory | "Semua">("Semua");
 
   const filteredFaqs = useMemo(() => {
-    let results = searchHelpFaqs(query);
+    let results = searchHelpFaqs(query).filter((f) => !HIDDEN_HELP_CATEGORIES.has(f.category));
     if (activeCategory !== "Semua") {
       results = results.filter((f) => f.category === activeCategory);
     }
@@ -138,8 +139,8 @@ export function HelpCenterContent() {
             <p className="eyebrow">Dukungan</p>
             <h2 className="section-title">Hubungi tim support</h2>
             <p className="section-copy max-w-lg">
-              Respons dalam 1–2 hari kerja. Sertakan email akun dan screenshot jika terkait
-              pembayaran atau akses kelas.
+              Respons dalam 1-2 hari kerja. Sertakan email akun dan screenshot jika terkait
+              akses kelas atau akun.
             </p>
           </div>
           <Button className="btn-primary shrink-0" render={<a href="mailto:support@bursanalar.com" />}>

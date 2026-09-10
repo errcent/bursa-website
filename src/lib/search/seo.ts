@@ -13,7 +13,7 @@ export async function buildSearchMetadata(query?: string): Promise<Metadata> {
     return {
       title: "Katalog Kelas & Mentor Trading & Investasi",
       description:
-        "Jelajahi katalog kelas trading dan investasi saham, crypto, dan forex dari mentor yang melalui proses kurasi. Cari berdasarkan instrumen, level, atau nama mentor.",
+        "Jelajahi katalog kelas trading dan investasi saham, crypto, dan forex dari praktisi profesional terverifikasi. Cari berdasarkan instrumen, level, atau nama mentor.",
       keywords: [
         "kelas trading Indonesia",
         "belajar investasi",
@@ -58,18 +58,18 @@ export async function buildSearchMetadata(query?: string): Promise<Metadata> {
       "edukasi trading dan investasi Indonesia",
     ],
     alternates: {
-      canonical: `${SITE_URL}/katalog?q=${encodeURIComponent(trimmed)}`,
+      canonical: `${SITE_URL}/katalog`,
     },
     openGraph: {
       title: `${title} · Bursa`,
       description,
-      url: `${SITE_URL}/katalog?q=${encodeURIComponent(trimmed)}`,
+      url: `${SITE_URL}/katalog`,
       type: "website",
       locale: "id_ID",
       images: [DEFAULT_OG],
     },
     robots: {
-      index: true,
+      index: false,
       follow: true,
     },
   };
@@ -84,14 +84,6 @@ export function buildWebsiteSearchJsonLd() {
     description:
       "Platform edukasi trading dan investasi dengan katalog mentor dan kelas saham, crypto, serta forex.",
     inLanguage: "id-ID",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/katalog?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
 }
 
@@ -130,7 +122,11 @@ export function buildOrganizationJsonLd() {
       addressLocality: LEGAL_ENTITY.city,
       addressCountry: LEGAL_ENTITY.country,
     },
-    sameAs: [],
+    sameAs: [
+      "https://www.instagram.com/bursanalar/",
+      "https://www.linkedin.com/company/bursanalar",
+      "https://x.com/BursaNalar",
+    ],
   };
 }
 
@@ -194,11 +190,10 @@ export async function getSitemapEntries() {
   const staticPages = [
     { url: "", priority: 1, changeFrequency: "weekly" as const },
     { url: "/katalog", priority: 0.9, changeFrequency: "daily" as const },
-    { url: "/jadi-mentor", priority: 0.7, changeFrequency: "monthly" as const },
+    { url: "/tentang-kami", priority: 0.6, changeFrequency: "monthly" as const },
+    { url: "/panduan-belajar", priority: 0.55, changeFrequency: "monthly" as const },
     { url: "/waitlist", priority: 0.85, changeFrequency: "weekly" as const },
     { url: "/bantuan", priority: 0.5, changeFrequency: "monthly" as const },
-    { url: "/masuk", priority: 0.3, changeFrequency: "monthly" as const },
-    { url: "/daftar", priority: 0.4, changeFrequency: "monthly" as const },
   ];
 
   const coursePages = courses.map((c) => ({
@@ -213,19 +208,5 @@ export async function getSitemapEntries() {
     changeFrequency: "weekly" as const,
   }));
 
-  const searchPages = [
-    "fundamental saham",
-    "swing trading",
-    "crypto pemula",
-    "belajar investasi",
-    "forex trading",
-    "analisis teknikal",
-    "laporan keuangan",
-  ].map((q) => ({
-    url: `/katalog?q=${encodeURIComponent(q)}`,
-    priority: 0.6,
-    changeFrequency: "weekly" as const,
-  }));
-
-  return [...staticPages, ...legalPages, ...coursePages, ...mentorPages, ...searchPages];
+  return [...staticPages, ...legalPages, ...coursePages, ...mentorPages];
 }

@@ -16,7 +16,7 @@ function Column({
     <div>
       <h3 className="mb-2 text-[11px] text-zinc-500">{title}</h3>
       {rows.length === 0 ? (
-        <p className="text-xs text-zinc-600">—</p>
+        <p className="text-xs text-zinc-600"> - </p>
       ) : (
         <ul className="space-y-1">
           {rows.slice(0, 8).map((row) => (

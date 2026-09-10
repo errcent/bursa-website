@@ -45,7 +45,7 @@ const COPY = {
     heroLead:
       "Register publik keamanan dan kepatuhan PT Global Makmur Madani. Bukan broker. Bukan janji sertifikasi.",
     heroBody:
-      "Kami menampilkan kontrol yang benar-benar berjalan, yang masih parsial, dan yang masih di roadmap. Tidak ada stempel SOC 2 atau ISO 27001 di sini — karena kami belum memilikinya.",
+      "Kami menampilkan kontrol yang benar-benar berjalan, yang masih parsial, dan yang masih di roadmap. Tidak ada stempel SOC 2 atau ISO 27001 di sini  -  karena kami belum memilikinya.",
     privacyStatement:
       "PT Global Makmur Madani adalah pengendali data. Notes pelajar bersifat privat (admin tidak dapat membaca). Permintaan hak subjek data melalui Pusat Privasi. Laporkan kerentanan ke security@bursanalar.com.",
     lastPublished: "Diterbitkan 22 Juli 2026",
@@ -60,7 +60,7 @@ const COPY = {
     viewAll: "Lihat semua",
     commitmentsTitle: "Komitmen yang bisa dicek",
     frameworksTitle: "Status kerangka",
-    frameworksLead: "Status jujur — bukan lencana pemasaran.",
+    frameworksLead: "Status jujur  -  bukan lencana pemasaran.",
     controlsLead: "Matriks publik. Detail internal tidak dipublikasikan.",
     resourcesLead: "Dokumen yang bisa dibuka tanpa NDA. Laporan audit belum ada.",
     requestTitle: "Minta paket keamanan",
@@ -77,7 +77,7 @@ const COPY = {
     heroLead:
       "Public security and compliance register of PT Global Makmur Madani. Not a broker. No certification theatre.",
     heroBody:
-      "We show controls that are live, partial, or still on the roadmap. There is no SOC 2 or ISO 27001 seal here — we do not hold those certifications.",
+      "We show controls that are live, partial, or still on the roadmap. There is no SOC 2 or ISO 27001 seal here  -  we do not hold those certifications.",
     privacyStatement:
       "PT Global Makmur Madani is the data controller. Learner Notes are private (admins cannot read them). Data-subject requests go through the Privacy Center. Report vulnerabilities to security@bursanalar.com.",
     lastPublished: "Published 22 July 2026",
@@ -92,7 +92,7 @@ const COPY = {
     viewAll: "View all",
     commitmentsTitle: "Commitments you can inspect",
     frameworksTitle: "Framework status",
-    frameworksLead: "Honest status — not marketing badges.",
+    frameworksLead: "Honest status  -  not marketing badges.",
     controlsLead: "Public matrix. Internal detail is withheld.",
     resourcesLead: "Documents you can open without an NDA. No audit report exists yet.",
     requestTitle: "Request a security pack",
@@ -230,7 +230,7 @@ export const CONTROL_GROUPS: {
     idTitle: "Keamanan teknis",
     enTitle: "Technical security",
     items: [
-      { id: "tls", idLabel: "TLS 1.2+", enLabel: "TLS 1.2+", idDetail: "Enkripsi semua komunikasi client–server", enDetail: "Encryption for all client–server traffic", status: "done" },
+      { id: "tls", idLabel: "TLS 1.2+", enLabel: "TLS 1.2+", idDetail: "Enkripsi semua komunikasi client-server", enDetail: "Encryption for all client-server traffic", status: "done" },
       { id: "bcrypt", idLabel: "bcrypt password", enLabel: "bcrypt passwords", idDetail: "Hash kata sandi cost ≥ 12", enDetail: "Password hashes at cost ≥ 12", status: "done" },
       { id: "rbac", idLabel: "RBAC", enLabel: "RBAC", idDetail: "Kontrol akses berbasis peran di API & admin", enDetail: "Role-based access on API and admin", status: "done" },
       { id: "rate", idLabel: "Rate limiting", enLabel: "Rate limiting", idDetail: "Throttle endpoint auth & API", enDetail: "Throttles on auth and API endpoints", status: "done" },
@@ -239,7 +239,7 @@ export const CONTROL_GROUPS: {
       { id: "xss", idLabel: "Pencegahan XSS", enLabel: "XSS prevention", idDetail: "React auto-escape + DOMPurify", enDetail: "React auto-escape + DOMPurify", status: "done" },
       { id: "csrf", idLabel: "CSRF", enLabel: "CSRF", idDetail: "Token pada form sensitif", enDetail: "Tokens on sensitive forms", status: "partial" },
       { id: "audit", idLabel: "Audit logging", enLabel: "Audit logging", idDetail: "Log akses data sensitif", enDetail: "Logs for sensitive data access", status: "partial" },
-      { id: "field", idLabel: "Enkripsi field KYC", enLabel: "KYC field encryption", idDetail: "Kolom KYC/bank at-rest — belum", enDetail: "KYC/bank columns at rest — not yet", status: "planned" },
+      { id: "field", idLabel: "Enkripsi field KYC", enLabel: "KYC field encryption", idDetail: "Kolom KYC/bank at-rest  -  belum", enDetail: "KYC/bank columns at rest  -  not yet", status: "planned" },
     ],
   },
   {
@@ -247,12 +247,12 @@ export const CONTROL_GROUPS: {
     idTitle: "Keamanan organisasi",
     enTitle: "Organizational security",
     items: [
-      { id: "ir", idLabel: "Incident response", enLabel: "Incident response", idDetail: "SOP kebocoran 3–24 jam", enDetail: "3–24h breach SOP", status: "done" },
+      { id: "ir", idLabel: "Incident response", enLabel: "Incident response", idDetail: "SOP kebocoran 3-24 jam", enDetail: "3-24h breach SOP", status: "done" },
       { id: "train", idLabel: "Pelatihan keamanan", enLabel: "Security training", idDetail: "Onboarding engineer", enDetail: "Engineer onboarding", status: "done" },
       { id: "change", idLabel: "Change management", enLabel: "Change management", idDetail: "PR review untuk kode sensitif", enDetail: "PR review on sensitive code", status: "done" },
       { id: "vendor", idLabel: "Vendor assessment", enLabel: "Vendor assessment", idDetail: "Review sub-prosesor", enDetail: "Sub-processor review", status: "partial" },
       { id: "access", idLabel: "Access review", enLabel: "Access review", idDetail: "Review akses admin berkala", enDetail: "Periodic admin access review", status: "planned" },
-      { id: "mfa", idLabel: "MFA admin", enLabel: "Admin MFA", idDetail: "Wajib MFA admin — Q3 2026", enDetail: "Mandatory admin MFA — Q3 2026", status: "planned" },
+      { id: "mfa", idLabel: "MFA admin", enLabel: "Admin MFA", idDetail: "Wajib MFA admin  -  Q3 2026", enDetail: "Mandatory admin MFA  -  Q3 2026", status: "planned" },
       { id: "pentest", idLabel: "Pentest eksternal", enLabel: "External pentest", idDetail: "Direncanakan pra-peluncuran", enDetail: "Planned pre-launch", status: "planned" },
     ],
   },
@@ -261,7 +261,7 @@ export const CONTROL_GROUPS: {
     idTitle: "Akses admin (publik)",
     enTitle: "Admin access (public)",
     items: [
-      { id: "notes", idLabel: "Notes pelajar", enLabel: "Learner Notes", idDetail: "Hard deny — tidak ada break-glass", enDetail: "Hard deny — no break-glass", status: "done" },
+      { id: "notes", idLabel: "Notes pelajar", enLabel: "Learner Notes", idDetail: "Hard deny  -  tidak ada break-glass", enDetail: "Hard deny  -  no break-glass", status: "done" },
       { id: "cards", idLabel: "Data kartu", enLabel: "Card data", idDetail: "Tidak disimpan; akses admin ditolak", enDetail: "Not stored; admin access denied", status: "done" },
       { id: "password", idLabel: "Password / hash", enLabel: "Passwords / hashes", idDetail: "Admin tidak dapat membaca", enDetail: "Admins cannot read them", status: "done" },
       { id: "email", idLabel: "Email pengguna", enLabel: "User email", idDetail: "Masked untuk admin & support", enDetail: "Masked for admin and support", status: "partial" },

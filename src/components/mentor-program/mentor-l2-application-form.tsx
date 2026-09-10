@@ -208,7 +208,7 @@ export function MentorL2ApplicationForm({ token }: { token: string }) {
         ) : null}
         {asString(l1.l1_professional_background) ? (
           <p className="mt-3 text-sm">
-            <span className="text-xs text-muted-foreground">Latar L1 — diperhalus di capaian di bawah. </span>
+            <span className="text-xs text-muted-foreground">Latar L1  -  diperhalus di capaian di bawah. </span>
             {asString(l1.l1_professional_background)}
           </p>
         ) : null}
@@ -637,7 +637,7 @@ export function MentorL2ApplicationForm({ token }: { token: string }) {
 
       {section === "sample" ? (
         <AuthField
-          label="Tautan sampel mengajar (5–10 menit, unlisted/Loom/Drive)"
+          label="Tautan sampel mengajar (5-10 menit, unlisted/Loom/Drive)"
           id="l2_teaching_sample_url"
         >
           <input
@@ -705,7 +705,7 @@ export function MentorL2ApplicationForm({ token }: { token: string }) {
               }
             />
           </AuthField>
-          <AuthField label="Outcome konkret (3–5)" id="l2_learning_outcomes">
+          <AuthField label="Outcome konkret (3-5)" id="l2_learning_outcomes">
             <textarea
               id="l2_learning_outcomes"
               disabled={disabled}

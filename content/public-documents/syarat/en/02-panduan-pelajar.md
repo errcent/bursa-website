@@ -4,7 +4,7 @@ slug: learner-guidelines
 locale: en
 title: Learner Guidelines
 eyebrow: Legal
-description: Conduct rules for learners on Bursa — accounts, community, reviews, and content. These supplement the Terms of Service; violations can lead to mute or ban.
+description: Conduct rules for learners on Bursa  -  accounts, community, reviews, and content. These supplement the Terms of Service; violations can lead to mute or ban.
 sortOrder: 2
 ---
 
@@ -34,7 +34,7 @@ Course access is **lifetime after a one-time payment**. Sharing an account is fr
 
 ## 3. Respect others
 
-Harassment, hate speech, doxxing, threats, or disclosing another learner’s or mentor’s personal data is forbidden. Other people’s learning Notes are not yours — and admins must not read them either.
+Harassment, hate speech, doxxing, threats, or disclosing another learner’s or mentor’s personal data is forbidden. Other people’s learning Notes are not yours  -  and admins must not read them either.
 
 ## 4. Honest reviews
 

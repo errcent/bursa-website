@@ -114,7 +114,7 @@ export default function AdminMentorApplicationsPage() {
         <div>
           <h1 className="font-heading text-2xl font-semibold">Aplikasi mentor</h1>
           <p className="text-sm text-muted-foreground">
-            Antrian screening. Jawaban L1 lengkap ada di halaman kandidat — klik nama, bukan menu
+            Antrian screening. Jawaban L1 lengkap ada di halaman kandidat  -  klik nama, bukan menu
             Mentor (profil live).
           </p>
         </div>

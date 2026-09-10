@@ -4,7 +4,7 @@ slug: pelaporan
 locale: en
 title: Vulnerability reporting
 eyebrow: Trust Center
-description: Bursa’s responsible-disclosure policy — how to report a security issue safely.
+description: Bursa’s responsible-disclosure policy  -  how to report a security issue safely.
 sortOrder: 4
 ---
 
@@ -33,11 +33,11 @@ We value the security community’s help in keeping Bursa safe. If you find a se
 
 Email **[security@bursanalar.com](mailto:security@bursanalar.com)** with:
 
-1. **Vulnerability description** — in detail
-2. **Reproduction steps** — step-by-step so we can verify
-3. **Potential impact** — which data/functions are affected
-4. **Proof of concept** — screenshot or PoC (do not exploit real user data)
-5. **Your contact** — for follow-up
+1. **Vulnerability description**  -  in detail
+2. **Reproduction steps**  -  step-by-step so we can verify
+3. **Potential impact**  -  which data/functions are affected
+4. **Proof of concept**  -  screenshot or PoC (do not exploit real user data)
+5. **Your contact**  -  for follow-up
 
 ## What we promise
 

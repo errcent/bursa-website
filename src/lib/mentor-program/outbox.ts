@@ -53,7 +53,7 @@ function renderTemplate(
       };
     case EmailOutboxTemplate.APPLICATION_TALENT_POOL:
       return {
-        subject: "Aplikasi mentor Bursanalar — kami simpan untuk nanti",
+        subject: "Aplikasi mentor Bursanalar  -  kami simpan untuk nanti",
         text: `Halo ${String(payload.fullName ?? "")},\n\nKami menyimpan profilmu di talent pool dan mungkin menghubungi lagi jika ada kebutuhan yang cocok.${noteText}\n`,
         html: `<p>Halo ${name},</p><p>Kami menyimpan profilmu di talent pool dan mungkin menghubungi lagi jika ada kebutuhan yang cocok.</p>${noteHtml}`,
       };

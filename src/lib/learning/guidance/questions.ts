@@ -43,7 +43,7 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
   },
   {
     id: "experience",
-    title: "Sejauh mana pengalaman tradingmu?",
+    title: "Sejauh mana pengalaman trading dan investasimu?",
     subtitle: "Jujur di sini, kami akan mulai dari level yang tepat, bukan yang terlalu cepat.",
     options: [
       {
@@ -63,8 +63,8 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
       },
       {
         value: "profitable",
-        label: "Sudah profitable konsisten",
-        description: "Butuh pendalaman & optimasi lanjutan.",
+        label: "Sudah punya proses sendiri",
+        description: "Butuh pendalaman dan evaluasi lanjutan.",
       },
     ],
   },
@@ -107,8 +107,8 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
       },
       {
         value: "side_income",
-        label: "Penghasilan tambahan",
-        description: "Trading sebagai sampingan di sela pekerjaan.",
+        label: "Pahami pasar di sela pekerjaan",
+        description: "Belajar trading dan investasi tanpa mengubah pekerjaan utama.",
       },
       {
         value: "wealth",
@@ -157,7 +157,7 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
       },
       {
         value: "part_time",
-        label: "3–7 jam",
+        label: "3-7 jam",
         description: "Rutinitas belajar terjadwal.",
       },
       {
@@ -181,12 +181,12 @@ export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
       },
       {
         value: "5_20m",
-        label: "Rp 5–20 juta",
+        label: "Rp 5-20 juta",
         description: "Modal pemula yang umum di Indonesia.",
       },
       {
         value: "20_50m",
-        label: "Rp 20–50 juta",
+        label: "Rp 20-50 juta",
         description: "Modal menengah dengan ruang eksperimen.",
       },
       {

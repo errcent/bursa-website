@@ -42,12 +42,12 @@ Cloud infrastructure (Vercel, PostgreSQL database) may be located outside Indone
 
 ## Does Bursa use cookies?
 
-Yes — essential cookies for login and platform function, plus optional analytics cookies (with consent). Detail: [Cookie Policy](/en/cookies).
+Yes  -  essential cookies for login and platform function, plus optional analytics cookies (with consent). Detail: [Cookie Policy](/en/cookies).
 
 ## How long is data kept?
 
-It varies by category — identity while the account is active, technical logs 90–180 days, transactions per tax duty. Full table: [Privacy Policy Article 6](/en/policies).
+It varies by category  -  identity while the account is active, technical logs 90-180 days, transactions per tax duty. Full table: [Privacy Policy Article 6](/en/policies).
 
 ## Who can I contact with privacy questions?
 
-Email [privacy@bursanalar.com](mailto:privacy@bursanalar.com) — response within 14 working days.
+Email [privacy@bursanalar.com](mailto:privacy@bursanalar.com)  -  response within 14 working days.

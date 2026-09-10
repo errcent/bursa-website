@@ -26,12 +26,12 @@ These Terms are governed by the laws of the Republic of Indonesia, including the
 
 ## 1. Definitions
 
-- **Platform** — Bursa’s website, applications, and digital services.
-- **User** — a learner, mentor, or visitor.
-- **Learner** — a user who creates an account to study.
-- **Mentor / Instructor** — an independent verified third party who publishes courses.
-- **Content** — video, text, quizzes, signals/analysis, comments, and community material.
-- **User Content** — material you upload or submit.
+- **Platform**  -  Bursa’s website, applications, and digital services.
+- **User**  -  a learner, mentor, or visitor.
+- **Learner**  -  a user who creates an account to study.
+- **Mentor / Instructor**  -  an independent verified third party who publishes courses.
+- **Content**  -  video, text, quizzes, signals/analysis, comments, and community material.
+- **User Content**  -  material you upload or submit.
 
 ## 2. Scope of services
 
@@ -39,7 +39,7 @@ Bursa provides education and technology infrastructure. Bursa is **not** a secur
 
 Materials are educational. Mentors are responsible for their own content according to their capacity and licences, not in Bursa’s name.
 
-Services include the course catalogue, a protected classroom, private notes, watchlists, and (if enabled) community spaces. Course purchases use a Platform–Mentor commission split.
+Services include the course catalogue, a protected classroom, private notes, watchlists, and (if enabled) community spaces. Course purchases use a Platform-Mentor commission split.
 
 ## 3. Eligibility & accounts
 
@@ -100,7 +100,7 @@ If community/signal features are active, they are educational tools. Mentor anal
 
 Content is **not** advice, a recommendation, or a solicitation to transact in securities, crypto, or other instruments. Trading can lose capital. Past performance does not guarantee results. Decisions are entirely yours.
 
-## 12–14. Warranty, limitation of liability, indemnity
+## 12-14. Warranty, limitation of liability, indemnity
 
 Services are provided “as is”. To the extent permitted by law, Bursa is not liable for indirect loss or trading decisions. Total liability is limited to amounts you paid Bursa for the related product in the last 12 months, without reducing mandatory consumer rights and not applying to wilful misconduct or gross negligence.
 
@@ -110,7 +110,7 @@ You indemnify Bursa against claims arising from your breach of these Terms.
 
 Bursa may suspend accounts that materially violate these Terms. For non-severe violations we try to give notice. You may request account deletion at any time.
 
-## 16–18. Third parties, communications, force majeure
+## 16-18. Third parties, communications, force majeure
 
 Third-party links are outside Bursa’s control. You agree to receive electronic communications about your account, transactions, and security. Bursa is not liable for failures caused by circumstances beyond reasonable control.
 

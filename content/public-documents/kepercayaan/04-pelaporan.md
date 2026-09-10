@@ -3,7 +3,7 @@ portal: TRUST
 slug: pelaporan
 title: Pelaporan Kerentanan
 eyebrow: Pusat Kepercayaan
-description: Kebijakan responsible disclosure Bursa — cara melaporkan celah keamanan secara aman.
+description: Kebijakan responsible disclosure Bursa  -  cara melaporkan celah keamanan secara aman.
 sortOrder: 4
 ---
 
@@ -30,11 +30,11 @@ Kami menghargai kontribusi komunitas keamanan dalam menjaga platform Bursa aman.
 
 Kirim email ke **[security@bursanalar.com](mailto:security@bursanalar.com)** dengan:
 
-1. **Deskripsi kerentanan** — jelaskan secara detail
-2. **Langkah reproduksi** — step-by-step agar kami bisa verifikasi
-3. **Dampak potensial** — data/fungsi apa yang terpengaruh
-4. **Proof of concept** — screenshot atau PoC (jangan exploit data user nyata)
-5. **Kontak kamu** — untuk follow-up
+1. **Deskripsi kerentanan**  -  jelaskan secara detail
+2. **Langkah reproduksi**  -  step-by-step agar kami bisa verifikasi
+3. **Dampak potensial**  -  data/fungsi apa yang terpengaruh
+4. **Proof of concept**  -  screenshot atau PoC (jangan exploit data user nyata)
+5. **Kontak kamu**  -  untuk follow-up
 
 ## Apa yang Kami Janjikan
 

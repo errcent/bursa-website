@@ -175,7 +175,7 @@ function passwordFor(email: string): string {
   return passwordByEmail.get(email) ?? "";
 }
 
-/** Profile fields only — password material must never reach localStorage. */
+/** Profile fields only  -  password material must never reach localStorage. */
 type PersistedUser = Omit<StoredUser, "password">;
 
 function persistableUsers(users: StoredUser[]): PersistedUser[] {

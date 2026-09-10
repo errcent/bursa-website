@@ -4,7 +4,7 @@ slug: hub
 locale: en
 title: Privacy Center
 eyebrow: Privacy
-description: Bursa’s privacy information centre — data policy, cookies, subprocessors, and how to submit data-subject requests.
+description: Bursa’s privacy information centre  -  data policy, cookies, subprocessors, and how to submit data-subject requests.
 sortOrder: 0
 ---
 
@@ -18,10 +18,10 @@ Welcome to Bursa’s Privacy Center. Here you can learn how we collect, use, and
 
 ## Our privacy principles
 
-- **Data minimisation** — we collect only what is needed for education and payment.
-- **No sale of data** — your personal data is never sold to third parties for marketing.
-- **Transparency** — you have the right to know what we store and why.
-- **Security by design** — technical and organisational controls from the start.
+- **Data minimisation**  -  we collect only what is needed for education and payment.
+- **No sale of data**  -  your personal data is never sold to third parties for marketing.
+- **Transparency**  -  you have the right to know what we store and why.
+- **Security by design**  -  technical and organisational controls from the start.
 
 ## Contact
 

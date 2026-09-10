@@ -9,7 +9,7 @@ export const homeFaqs: HomeFaq[] = [
     id: "uniqueness",
     question: "Apa yang membuat Bursa berbeda dari platform edukasi trading dan investasi lain?",
     answer:
-      "Edukasi terstruktur dengan mentor yang melalui proses kurasi, bukan konten acak atau sinyal tanpa konteks.",
+      "Kurikulum berjenjang, runut, terkurasi, bersama praktisi profesional terverifikasi. Bukan tumpukan video, bukan sinyal, bukan broker.",
   },
   {
     id: "not-broker",
@@ -27,7 +27,7 @@ export const homeFaqs: HomeFaq[] = [
     id: "beginners",
     question: "Apakah Bursa cocok untuk pemula yang belum pernah trading vs. investing?",
     answer:
-      "Ya. Banyak kelas berlevel Pemula. Katalog mencakup trading vs. investing — dari horizon pendek sampai alokasi jangka panjang. Filter berdasarkan level dan instrumen.",
+      "Ya. Banyak kelas berlevel Pemula. Katalog mencakup trading dan investasi, dari horizon pendek sampai alokasi jangka panjang. Filter berdasarkan level dan instrumen supaya kamu menemukan kelas yang cocok.",
   },
   {
     id: "instruments",

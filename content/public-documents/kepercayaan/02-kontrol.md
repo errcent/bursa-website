@@ -9,7 +9,7 @@ sortOrder: 2
 
 _Berlaku efektif: 22 Juli 2026_
 
-Matriks ini versi publik â€” detail teknis internal tidak dipublikasikan demi keamanan.
+Matriks ini versi publik - detail teknis internal tidak dipublikasikan demi keamanan.
 
 ## Kontrol Teknis
 
@@ -24,13 +24,13 @@ Matriks ini versi publik â€” detail teknis internal tidak dipublikasikan demi ke
 | **SQL injection prevention** | Prisma ORM parameterized queries | âœ“ |
 | **XSS prevention** | React auto-escape + DOMPurify | âœ“ |
 | **Audit logging** | Log akses data sensitif | ~ |
-| **Field encryption** | KYC/bank columns at-rest | â€” |
+| **Field encryption** | KYC/bank columns at-rest | - |
 
 ## Kontrol Organisasional
 
 | Kontrol | Deskripsi | Status |
 |---------|-----------|--------|
-| **Access review** | Review akses admin berkala | â€” |
+| **Access review** | Review akses admin berkala | - |
 | **Incident response plan** | SOP kebocoran data | âœ“ (internal) |
 | **Vendor assessment** | Review sub-prosesor | ~ |
 | **Security training** | Onboarding engineer | âœ“ |
@@ -44,16 +44,16 @@ Prinsip: admin **tidak boleh** melihat data privat pelajar.
 |------|-------|---------|------------|
 | Email user | ~ Masked | ~ Masked | ~ Masked |
 | Nama lengkap | ~ Partial | ~ Partial | ~ Partial |
-| No. telepon | Ã- | Ã- | Ã- |
-| Password/hash | Ã- | Ã- | Ã- |
-| Kartu pembayaran | Ã- | Ã- | Ã- |
-| Notes pelajar | Ã- | Ã- | Ã- |
-| Progress (detail) | ~ Agregat | âœ“ Support | Ã- |
-| KYC mentor | Ã- | Ã- | âœ“ Review |
-| Transaksi metadata | âœ“ | âœ“ Billing | Ã- |
-| IP log | âœ“ Security | Ã- | Ã- |
+| No. telepon | ï¿½- | ï¿½- | ï¿½- |
+| Password/hash | ï¿½- | ï¿½- | ï¿½- |
+| Kartu pembayaran | ï¿½- | ï¿½- | ï¿½- |
+| Notes pelajar | ï¿½- | ï¿½- | ï¿½- |
+| Progress (detail) | ~ Agregat | âœ“ Support | ï¿½- |
+| KYC mentor | ï¿½- | ï¿½- | âœ“ Review |
+| Transaksi metadata | âœ“ | âœ“ Billing | ï¿½- |
+| IP log | âœ“ Security | ï¿½- | ï¿½- |
 
-**Legenda:** âœ“ = akses terbatas Â· ~ = masked/agregat Â· Ã- = hard deny Â· â€” = rencana
+**Legenda:** âœ“ = akses terbatas Â· ~ = masked/agregat Â· ï¿½- = hard deny Â· - = rencana
 
 ## Break-Glass (Pengecualian)
 

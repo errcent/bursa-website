@@ -42,7 +42,7 @@ export function PreviewCatalogBanner() {
     >
       <div className="container-page flex items-center gap-3">
         <span className="shrink-0 rounded-md border border-border/80 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          Preview
+          Pratinjau
         </span>
         <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground sm:text-[13px]">
           {PREVIEW_CATALOG_COPY.bannerShort}

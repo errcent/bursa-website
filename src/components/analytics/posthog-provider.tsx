@@ -3,14 +3,20 @@
 import { useEffect } from "react";
 
 import { initPostHog } from "@/lib/analytics/posthog";
+import {
+  CONSENT_EVENT,
+  CONSENT_STORAGE_KEY,
+  hasAnalyticsConsent,
+  readStoredCategories,
+} from "@/lib/privacy/consent";
 
-const CONSENT_KEY = "bursa-cookie-consent";
-const CONSENT_EVENT = "bursa-cookie-consent";
-
-function hasAnalyticsConsent(): boolean {
+function storageAllowsAnalytics(): boolean {
   try {
-    const raw = localStorage.getItem(CONSENT_KEY);
-    return raw === "accepted";
+    return hasAnalyticsConsent(readStoredCategories(localStorage.getItem(CONSENT_STORAGE_KEY)) ?? {
+      essential: true,
+      functional: false,
+      analytics: false,
+    });
   } catch {
     return false;
   }
@@ -21,7 +27,7 @@ export function PostHogProvider() {
     if (!process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim()) return;
 
     function maybeInit() {
-      if (hasAnalyticsConsent()) {
+      if (storageAllowsAnalytics()) {
         void initPostHog();
       }
     }
@@ -30,7 +36,8 @@ export function PostHogProvider() {
 
     function onConsent(event: Event) {
       const detail = (event as CustomEvent<string>).detail;
-      if (detail === "accepted") {
+      const categories = readStoredCategories(typeof detail === "string" ? detail : null);
+      if (categories && hasAnalyticsConsent(categories)) {
         void initPostHog();
       }
     }

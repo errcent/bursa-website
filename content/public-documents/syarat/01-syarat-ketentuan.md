@@ -26,12 +26,12 @@ S&K ini tunduk pada hukum Republik Indonesia, termasuk UU PDP (UU No. 27/2022), 
 
 ## 1. Definisi
 
-- **Platform** — situs, aplikasi, dan layanan digital Bursa.
-- **Pengguna** — pelajar, mentor, atau pengunjung.
-- **Pelajar** — pengguna yang membuat akun untuk belajar.
-- **Mentor / Instruktur** — pihak ketiga independen terverifikasi yang mempublikasikan kelas.
-- **Konten** — video, teks, kuis, sinyal/analisis, komentar, dan materi komunitas.
-- **Konten Pengguna** — materi yang kamu unggah atau kirim.
+- **Platform**  -  situs, aplikasi, dan layanan digital Bursa.
+- **Pengguna**  -  pelajar, mentor, atau pengunjung.
+- **Pelajar**  -  pengguna yang membuat akun untuk belajar.
+- **Mentor / Instruktur**  -  pihak ketiga independen terverifikasi yang mempublikasikan kelas.
+- **Konten**  -  video, teks, kuis, sinyal/analisis, komentar, dan materi komunitas.
+- **Konten Pengguna**  -  materi yang kamu unggah atau kirim.
 
 ## 2. Ruang Lingkup Layanan
 
@@ -39,7 +39,7 @@ Bursa menyediakan infrastruktur edukasi dan teknologi. Bursa **bukan** perusahaa
 
 Materi bersifat edukatif. Tanggung jawab konten Mentor ada pada Mentor sesuai kapasitas dan lisensinya, bukan atas nama Bursa.
 
-Layanan mencakup katalog kelas, ruang belajar berproteksi, catatan pribadi, watchlist, dan (jika diaktifkan) ruang komunitas. Pembelian kelas memakai pembagian komisi Platform–Mentor.
+Layanan mencakup katalog kelas, ruang belajar berproteksi, catatan pribadi, watchlist, dan (jika diaktifkan) ruang komunitas. Pembelian kelas memakai pembagian komisi Platform-Mentor.
 
 ## 3. Kelayakan & Akun
 
@@ -100,7 +100,7 @@ Jika fitur komunitas/sinyal aktif, itu sarana edukasi. Analisis Mentor adalah pe
 
 Konten **bukan** nasihat, rekomendasi, atau ajakan transaksi atas efek, kripto, atau instrumen lain. Trading berisiko kehilangan modal. Kinerja masa lalu tidak menjamin hasil. Keputusan sepenuhnya tanggung jawabmu.
 
-## 12–14. Jaminan, Batasan Tanggung Jawab, Ganti Rugi
+## 12-14. Jaminan, Batasan Tanggung Jawab, Ganti Rugi
 
 Layanan disediakan "sebagaimana adanya". Sepanjang diizinkan hukum, Bursa tidak bertanggung jawab atas kerugian tidak langsung atau keputusan trading. Tanggung jawab total dibatasi jumlah yang kamu bayarkan ke Bursa untuk produk terkait dalam 12 bulan terakhir, tanpa mengurangi hak konsumen memaksa dan tidak berlaku untuk kesengajaan atau kelalaian berat.
 
@@ -110,7 +110,7 @@ Kamu mengganti kerugian Bursa atas klaim yang timbul dari pelanggaranmu terhadap
 
 Bursa boleh menangguhkan akun yang melanggar secara material. Untuk pelanggaran non-berat kami mengupayakan pemberitahuan. Kamu boleh minta penghapusan akun kapan saja.
 
-## 16–18. Pihak Ketiga, Komunikasi, Force Majeure
+## 16-18. Pihak Ketiga, Komunikasi, Force Majeure
 
 Tautan pihak ketiga di luar kendali Bursa. Kamu setuju menerima komunikasi elektronik terkait akun, transaksi, dan keamanan. Bursa tidak bertanggung jawab atas kegagalan karena keadaan di luar kendali wajar.
 

@@ -321,7 +321,7 @@ export function ProfileEditor() {
     if (normalizedUsername && !USERNAME_PATTERN.test(normalizedUsername)) {
       setMessage({
         type: "err",
-        text: "Username 3–30 karakter, huruf kecil, angka, dan underscore.",
+        text: "Username 3-30 karakter, huruf kecil, angka, dan underscore.",
       });
       return;
     }

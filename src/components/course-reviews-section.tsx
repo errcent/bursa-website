@@ -18,7 +18,9 @@ export function CourseReviewsSection({ reviews }: CourseReviewsSectionProps) {
     <section>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="section-title">Ulasan Siswa</h2>
+          <h2 className="section-title">
+            {showPreviewLabel ? "Ulasan contoh" : "Ulasan Siswa"}
+          </h2>
           {showPreviewLabel ? (
             <p className="mt-1.5 text-xs text-muted-foreground">{PREVIEW_CATALOG_COPY.reviewsLabel}</p>
           ) : null}

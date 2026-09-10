@@ -17,6 +17,7 @@ import {
 } from "@/lib/catalog/server";
 import { resolveMentorAvatarUrl } from "@/lib/mentors/avatar";
 import { PreviewCatalogNotice } from "@/components/preview-catalog/preview-catalog-notice";
+import { isPreviewCatalogActive } from "@/lib/preview-catalog/visibility";
 
 export async function generateStaticParams() {
   const slugs = await getCatalogMentorSlugs();
@@ -137,7 +138,11 @@ export default async function MentorProfilePage({
                   <li className="rounded-lg border border-border/60 bg-surface/40 p-3">
                     <p className="text-xs text-muted-foreground">Status verifikasi</p>
                     <p className="mt-1 text-sm font-medium">
-                      {mentor.verified ? "Terverifikasi tim compliance" : "Dalam proses review tim"}
+                      {isPreviewCatalogActive()
+                        ? "Contoh profil, bukan data resmi"
+                        : mentor.verified
+                          ? "Praktisi profesional terverifikasi"
+                          : "Dalam proses kurasi"}
                     </p>
                   </li>
                 </ul>
@@ -193,8 +198,13 @@ export default async function MentorProfilePage({
               <h3 className="text-sm font-medium">Status review tim</h3>
               <div className="mt-3">
                 <VerifiedBadge
-                  verified={mentor.verified}
-                  label={mentor.licenseLabel ?? (mentor.verified ? "Dipublikasikan" : "Review Tim")}
+                  verified={isPreviewCatalogActive() ? false : mentor.verified}
+                  label={
+                    isPreviewCatalogActive()
+                      ? "Contoh profil"
+                      : mentor.licenseLabel ??
+                        (mentor.verified ? "Praktisi profesional" : "Dalam proses kurasi")
+                  }
                 />
               </div>
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">

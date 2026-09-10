@@ -28,7 +28,7 @@ type BlockNode =
   | { type: "blockquote"; inlines: InlineNode[] }
   | { type: "code-block"; text: string };
 
-/** Single-pass entity decode — avoids chained &amp; → & double-unescape (js/double-escaping). */
+/** Single-pass entity decode  -  avoids chained &amp; → & double-unescape (js/double-escaping). */
 const NAMED_HTML_ENTITIES: Record<string, string> = {
   amp: "&",
   lt: "<",

@@ -5,6 +5,7 @@ import { ChevronLeft } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { LearningWorkspace } from "@/components/learning-workspace";
+import { requireSession } from "@/lib/auth/server-page-guard";
 import { getCatalogCourseSlugs, getCourseBySlug, getMentorBySlug } from "@/lib/catalog/server";
 
 export async function generateStaticParams() {
@@ -39,6 +40,7 @@ export default async function LearningPage({
   params: Promise<{ courseId: string; lessonId: string }>;
 }) {
   const { courseId, lessonId } = await params;
+  await requireSession(`/belajar/${courseId}/${lessonId}`);
   const course = await getCourseBySlug(courseId);
   if (!course) notFound();
 
@@ -54,8 +56,9 @@ export default async function LearningPage({
         <Link
           href={`/kelas/${course.slug}`}
           className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          aria-label="Kembali ke kelas"
         >
-          <ChevronLeft className="size-4" />
+          <ChevronLeft className="size-4" aria-hidden />
           <span className="hidden sm:inline">Kembali</span>
         </Link>
         <Link href="/" className="shrink-0 truncate" aria-label="Bursa">

@@ -18,11 +18,11 @@ If the Indonesian and English versions differ, **the Indonesian version governs.
 
 ## Is Bursa safe for my personal data?
 
-We apply encryption in transit (TLS), password hashing (bcrypt), role-based access control, and privacy by design. Further controls (admin MFA, full field encryption) are still being improved — see [Security controls](/en/controls) for current status.
+We apply encryption in transit (TLS), password hashing (bcrypt), role-based access control, and privacy by design. Further controls (admin MFA, full field encryption) are still being improved - see [Security controls](/en/controls) for current status.
 
 ## Can Bursa admins see my learning notes?
 
-**No.** Learner Notes/private notes are 100% private — not accessible by admins, mentors, or anyone else. See [Security controls](/en/controls).
+**No.** Learner Notes/private notes are 100% private - not accessible by admins, mentors, or anyone else. See [Security controls](/en/controls).
 
 ## How does Bursa protect payment data?
 
@@ -46,11 +46,11 @@ Cloud infrastructure (Vercel for hosting, cloud PostgreSQL for the database) may
 
 ## What happens if there is a data leak?
 
-We will: (1) contain the incident, (2) notify authorities within 3�-24 hours under UU PDP, (3) notify affected users, (4) post-mortem and remediate.
+We will: (1) contain the incident, (2) notify authorities within 3�-24 hours under UU PDP, (3) notify affected users, (4) post-mortem and remediate.
 
 ## Is Bursa compliant with UU PDP?
 
-We are in full implementation — baseline controls are already active (TLS, bcrypt, RBAC, privacy policy). Data export/delete endpoints and a formal DPO are planned pre-launch. Detail: [Compliance](/en/compliance).
+We are in full implementation - baseline controls are already active (TLS, bcrypt, RBAC, privacy policy). Data export/delete endpoints and a formal DPO are planned pre-launch. Detail: [Compliance](/en/compliance).
 
 ## Who are Bursa’s subprocessors?
 
@@ -58,4 +58,4 @@ Vercel (hosting), cloud PostgreSQL (database), Google (OAuth), and a payment gat
 
 ## How are mentors verified?
 
-Mentors go through KYC — ID card, tax ID, and OJK/Bappebti licences. KYC documents are encrypted and accessible only to the compliance reviewer. Curriculum is reviewed by the team before going live.
+Mentors go through KYC - ID card, tax ID, and OJK/Bappebti licences. KYC documents are encrypted and accessible only to the compliance reviewer. Curriculum is reviewed by the team before going live.

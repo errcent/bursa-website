@@ -121,7 +121,7 @@ export function MentorProfileEditor() {
         </div>
 
         <label className="block space-y-1.5">
-          <span className="text-xs font-medium text-muted-foreground">Bio (100–800 karakter)</span>
+          <span className="text-xs font-medium text-muted-foreground">Bio (100-800 karakter)</span>
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}

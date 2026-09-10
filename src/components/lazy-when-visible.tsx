@@ -12,7 +12,7 @@ type LazyWhenVisibleProps = {
   rootMargin?: string;
 };
 
-/** Mount children only when near the viewport — cuts initial DOM on long catalog pages. */
+/** Mount children only when near the viewport  -  cuts initial DOM on long catalog pages. */
 export function LazyWhenVisible({
   children,
   className,

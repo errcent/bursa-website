@@ -20,9 +20,9 @@ export type L1ExpertiseValue = (typeof L1_EXPERTISE_OPTIONS)[number]["value"];
 
 export const L1_YEARS_OPTIONS = [
   { value: "lt_1", label: "Kurang dari 1 tahun" },
-  { value: "1_3", label: "1–3 tahun" },
-  { value: "3_5", label: "3–5 tahun" },
-  { value: "5_10", label: "5–10 tahun" },
+  { value: "1_3", label: "1-3 tahun" },
+  { value: "3_5", label: "3-5 tahun" },
+  { value: "5_10", label: "5-10 tahun" },
   { value: "10_plus", label: "10+ tahun" },
 ] as const;
 

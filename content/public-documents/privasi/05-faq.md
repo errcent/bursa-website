@@ -39,12 +39,12 @@ Infrastruktur cloud (Vercel, database PostgreSQL) dapat berlokasi di luar Indone
 
 ## Apakah Bursa menggunakan cookie?
 
-Ya — cookie esensial untuk login dan fungsi platform, plus cookie analitik opsional (dengan persetujuan). Detail: [Kebijakan Cookie](/privasi/cookie).
+Ya  -  cookie esensial untuk login dan fungsi platform, plus cookie analitik opsional (dengan persetujuan). Detail: [Kebijakan Cookie](/privasi/cookie).
 
 ## Berapa lama data disimpan?
 
-Bervariasi per kategori — identitas selama akun aktif, log teknis 90–180 hari, transaksi sesuai kewajiban pajak. Tabel lengkap: [Kebijakan Privasi Pasal 6](/privasi/kebijakan).
+Bervariasi per kategori  -  identitas selama akun aktif, log teknis 90-180 hari, transaksi sesuai kewajiban pajak. Tabel lengkap: [Kebijakan Privasi Pasal 6](/privasi/kebijakan).
 
 ## Siapa yang bisa dihubungi untuk pertanyaan privasi?
 
-Email [privacy@bursanalar.com](mailto:privacy@bursanalar.com) — respons maksimal 14 hari kerja.
+Email [privacy@bursanalar.com](mailto:privacy@bursanalar.com)  -  respons maksimal 14 hari kerja.

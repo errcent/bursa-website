@@ -15,11 +15,11 @@ _Berlaku efektif: 22 Juli 2026_
 
 ## Apakah Bursa aman untuk data pribadiku?
 
-Kami menerapkan enkripsi transit (TLS), hashing password (bcrypt), kontrol akses berbasis peran, dan prinsip privacy by design. Kontrol lanjutan (MFA admin, field encryption penuh) terus kami tingkatkan — lihat [Kontrol Keamanan](/kepercayaan/kontrol) untuk status terkini.
+Kami menerapkan enkripsi transit (TLS), hashing password (bcrypt), kontrol akses berbasis peran, dan prinsip privacy by design. Kontrol lanjutan (MFA admin, field encryption penuh) terus kami tingkatkan - lihat [Kontrol Keamanan](/kepercayaan/kontrol) untuk status terkini.
 
 ## Apakah admin Bursa bisa melihat catatan belajarku?
 
-**Tidak.** Notes/catatan pribadi pelajar 100% privat — tidak accessible oleh admin, mentor, atau pihak manapun. Lihat [Kontrol Keamanan](/kepercayaan/kontrol).
+**Tidak.** Notes/catatan pribadi pelajar 100% privat - tidak accessible oleh admin, mentor, atau pihak manapun. Lihat [Kontrol Keamanan](/kepercayaan/kontrol).
 
 ## Bagaimana Bursa melindungi data pembayaran?
 
@@ -43,11 +43,11 @@ Infrastruktur cloud (Vercel untuk hosting, PostgreSQL cloud untuk database) dapa
 
 ## Apa yang terjadi jika ada kebocoran data?
 
-Kami akan: (1) contain insiden, (2) notify otoritas dalam 3�-24 jam sesuai UU PDP, (3) notify pengguna terdampak, (4) post-mortem dan perbaikan.
+Kami akan: (1) contain insiden, (2) notify otoritas dalam 3�-24 jam sesuai UU PDP, (3) notify pengguna terdampak, (4) post-mortem dan perbaikan.
 
 ## Apakah Bursa compliant dengan UU PDP?
 
-Kami dalam proses implementasi penuh — kontrol dasar sudah aktif (TLS, bcrypt, RBAC, privacy policy). Endpoint export/delete data dan DPO formal direncanakan pre-launch. Detail: [Kepatuhan](/kepercayaan/kepatuhan).
+Kami dalam proses implementasi penuh - kontrol dasar sudah aktif (TLS, bcrypt, RBAC, privacy policy). Endpoint export/delete data dan DPO formal direncanakan pre-launch. Detail: [Kepatuhan](/kepercayaan/kepatuhan).
 
 ## Siapa sub-prosesor Bursa?
 
@@ -55,4 +55,4 @@ Vercel (hosting), PostgreSQL cloud (database), Google (OAuth), dan payment gatew
 
 ## Bagaimana mentor diverifikasi?
 
-Mentor melalui KYC — verifikasi KTP, NPWP, dan lisensi OJK/Bappebti. Dokumen KYC dienkripsi dan hanya accessible compliance reviewer. Kurikulum ditinjau tim sebelum tayang.
+Mentor melalui KYC - verifikasi KTP, NPWP, dan lisensi OJK/Bappebti. Dokumen KYC dienkripsi dan hanya accessible compliance reviewer. Kurikulum ditinjau tim sebelum tayang.

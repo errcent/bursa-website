@@ -53,7 +53,7 @@ export function RegisterForm() {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-10">
         <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />
-        <p className="text-sm text-muted-foreground">Menyelesaikan login…</p>
+        <p className="text-sm text-muted-foreground">Menyelesaikan masuk…</p>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export function RegisterForm() {
       errors.username = "Username wajib diisi.";
     } else if (!USERNAME_PATTERN.test(normalizedUsername)) {
       errors.username =
-        "Username 3–30 karakter, huruf kecil, angka, dan underscore.";
+        "Username 3-30 karakter, huruf kecil, angka, dan underscore.";
     } else if (usernameCheck === "taken") {
       errors.username = "Username sudah dipakai. Pilih username lain.";
     }

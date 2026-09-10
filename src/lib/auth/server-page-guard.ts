@@ -5,6 +5,11 @@ import type { UserRole } from "@prisma/client";
 import { db } from "@/lib/db";
 import { verifyWebSessionToken, WEB_SESSION_COOKIE } from "@/lib/auth/web-session";
 
+/** Any authenticated user (learner, mentor, admin, developer). */
+export async function requireSession(nextPath: string) {
+  return requireServerSession(["LEARNER", "MENTOR", "ADMIN", "DEVELOPER"], nextPath);
+}
+
 export async function requireServerSession(allowedRoles: UserRole[], nextPath: string) {
   const cookieStore = await cookies();
   const token = cookieStore.get(WEB_SESSION_COOKIE)?.value;

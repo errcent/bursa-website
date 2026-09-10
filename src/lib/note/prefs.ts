@@ -16,7 +16,7 @@ export type NoteTheme = "system" | "dark" | "light";
 
 /**
  * Local journal prefs. Future AI may read `{ entries, prefs, log-vs-pnl timestamps }`
- * to suggest defaults — this pass stores the contract only, no model UI.
+ * to suggest defaults  -  this pass stores the contract only, no model UI.
  * No logging streak: daily-trade pressure is a harmful default.
  */
 export type NotePrefs = {

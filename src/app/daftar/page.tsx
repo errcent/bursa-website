@@ -6,6 +6,7 @@ import { RegisterForm } from "@/components/register-form";
 export const metadata = {
   title: "Daftar",
   description: "Buat akun Bursa.",
+  robots: { index: false, follow: false },
 };
 
 function RegisterFormFallback() {

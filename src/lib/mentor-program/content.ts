@@ -117,13 +117,13 @@ export const mentorProcessSteps: MentorProcessStep[] = [
     title: "Aplikasi penuh (L2)",
     description:
       "Portal privat lewat tautan email: bukti, sampel mengajar (URL), usulan kursus, pengungkapan konflik.",
-    duration: "15–30 menit",
+    duration: "15-30 menit",
   },
   {
     step: "04",
     title: "Review & assessment",
     description:
-      "Review manusia. Assessment (wawancara/sample) disesuaikan kandidat — bukan formulir otomatis.",
+      "Review manusia. Assessment (wawancara/sample) disesuaikan kandidat  -  bukan formulir otomatis.",
     duration: "bergantung kandidat",
   },
   {

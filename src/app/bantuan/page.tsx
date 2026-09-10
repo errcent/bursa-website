@@ -8,7 +8,7 @@ import { SiteNavbar } from "@/components/site-navbar";
 export const metadata: Metadata = {
   title: "Pusat Bantuan",
   description:
-    "FAQ dan panduan Bursa · akun, pembayaran, belajar, komunitas, dan program mentor. Hubungi support jika pertanyaanmu belum terjawab.",
+    "FAQ dan panduan Bursa: akun, belajar, Note, dan program mentor. Hubungi support jika pertanyaanmu belum terjawab.",
 };
 
 export default function BantuanPage() {
@@ -19,7 +19,7 @@ export default function BantuanPage() {
         <InfoPageHero
           eyebrow="Dukungan"
           title="Pusat Bantuan"
-          description="Jawaban cepat seputar akun, pembayaran, proses belajar, komunitas, dan program mentor. Tidak menemukan jawaban? Tim kami siap membantu."
+          description="Jawaban cepat seputar akun, proses belajar, Note, dan program mentor. Tidak menemukan jawaban? Tim kami siap membantu."
         />
 
         <div className="container-page section-spacious">

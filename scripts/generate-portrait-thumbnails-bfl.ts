@@ -52,7 +52,7 @@ async function main() {
     const prompt = MASTERCLASS_PORTRAIT_PROMPTS[slug];
     const seed = MASTERCLASS_PORTRAIT_SEEDS[slug];
     if (!prompt || !seed) {
-      console.error(`âœ- ${slug}: tidak ada prompt/seed`);
+      console.error(`ï¿½- ${slug}: tidak ada prompt/seed`);
       continue;
     }
 
@@ -77,7 +77,7 @@ async function main() {
         `âœ“ ${dest} (${result.billingMode}, ${result.creditsUsed} credits)`
       );
     } catch (error) {
-      console.error(`âœ- ${slug}:`, error);
+      console.error(`ï¿½- ${slug}:`, error);
     }
   }
 }

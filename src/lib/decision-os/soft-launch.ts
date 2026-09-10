@@ -1,6 +1,6 @@
 /**
  * Soft-launch / Decision OS public surface rules.
- * Sync with Research `data/gates.yaml` phases P0–P1.
+ * Sync with Research `data/gates.yaml` phases P0-P1.
  * Do NOT treat these as calibrated market locks.
  * Honesty pricing stays in Decision OS / internal docs - not a public /harga page.
  */

@@ -504,7 +504,7 @@ export const courses: Course[] = [
       "Mengenali struktur trend dan titik balik (change of character)",
       "Menentukan zona entry berdasarkan price action murni",
       "Menggabungkan timeframe harian dan 4 jam untuk konfirmasi",
-      "Menyusun rencana hold 3–10 hari dengan stop loss objektif",
+      "Menyusun rencana hold 3-10 hari dengan stop loss objektif",
     ],
     modules: [
       {
@@ -561,7 +561,7 @@ export const courses: Course[] = [
         lessons: [
           { id: "l3", title: "Likuiditas Global & Aliran Dana Institusi", durationMinutes: 20 },
           { id: "l4", title: "Metrik On-Chain untuk Deteksi Fase", durationMinutes: 22 },
-          { id: "l5", title: "Studi Kasus Siklus 2020–2024", durationMinutes: 26 },
+          { id: "l5", title: "Studi Kasus Siklus 2020-2024", durationMinutes: 26 },
         ],
       },
     ],
@@ -786,7 +786,7 @@ export const courses: Course[] = [
         title: "Modul 2: Metrik & Studi Kasus",
         lessons: [
           { id: "l3", title: "TVL, Active Addresses, GitHub Activity", durationMinutes: 19 },
-          { id: "l4", title: "Studi Kasus Narrative 2024–2025", durationMinutes: 23 },
+          { id: "l4", title: "Studi Kasus Narrative 2024-2025", durationMinutes: 23 },
         ],
       },
       {

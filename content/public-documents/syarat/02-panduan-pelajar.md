@@ -4,7 +4,7 @@ slug: learner-guidelines
 locale: id
 title: Panduan Pelajar
 eyebrow: Legal
-description: Aturan perilaku pelajar di Bursa — akun, komunitas, ulasan, dan konten. Melengkapi Syarat & Ketentuan; pelanggaran dapat berujung mute atau ban.
+description: Aturan perilaku pelajar di Bursa  -  akun, komunitas, ulasan, dan konten. Melengkapi Syarat & Ketentuan; pelanggaran dapat berujung mute atau ban.
 sortOrder: 2
 ---
 
@@ -34,7 +34,7 @@ Akses kelas bersifat **lifetime setelah sekali bayar**. Berbagi akun = free-ride
 
 ## 3. Hormati orang lain
 
-Dilarang pelecehan, ujaran kebencian, doxxing, ancaman, atau pengungkapan data pribadi pelajar/mentor lain. Catatan belajar (Notes) orang lain bukan hakmu — dan admin pun tidak boleh membacanya.
+Dilarang pelecehan, ujaran kebencian, doxxing, ancaman, atau pengungkapan data pribadi pelajar/mentor lain. Catatan belajar (Notes) orang lain bukan hakmu  -  dan admin pun tidak boleh membacanya.
 
 ## 4. Ulasan yang jujur
 

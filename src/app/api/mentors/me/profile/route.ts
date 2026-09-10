@@ -71,7 +71,7 @@ export async function PATCH(request: Request) {
       const len = body.bio.trim().length;
       if (len < 100 || len > 800) {
         return NextResponse.json(
-          { error: "Bio harus 100–800 karakter." },
+          { error: "Bio harus 100-800 karakter." },
           { status: 422 }
         );
       }

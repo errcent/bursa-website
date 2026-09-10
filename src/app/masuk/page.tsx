@@ -6,6 +6,7 @@ import { LoginForm } from "@/components/login-form";
 export const metadata = {
   title: "Masuk",
   description: "Masuk ke akun Bursa.",
+  robots: { index: false, follow: false },
 };
 
 function LoginFormFallback() {

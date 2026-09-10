@@ -161,7 +161,7 @@ export function monthBuckets(entries: JournalEntry[], year: number, monthIndex: 
   });
 }
 
-/** Sunday-first weekday 0–6 for a YYYY-MM-DD calendar date. */
+/** Sunday-first weekday 0-6 for a YYYY-MM-DD calendar date. */
 export function sundayIndex(date: string): number {
   const [y, m, d] = date.split("-").map(Number);
   return new Date(Date.UTC(y, m - 1, d)).getUTCDay();

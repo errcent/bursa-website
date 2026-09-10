@@ -11,9 +11,9 @@ _Berlaku efektif: 22 Juli 2026_
 
 ## Posisi Regulasi Platform
 
-Bursa adalah **platform edukasi trading** yang dinaungi **PT Global Makmur Madani** — bukan Penyedia Jasa Keuangan (PUJK), broker, atau penasihat investasi. Kami menyediakan infrastruktur belajar, bukan eksekusi trading atau rekomendasi investasi personal. Pengurusan kegiatan usaha Bursanalar dijalankan oleh Raden Mohammad Kaisar Khan dan Fakhri Muzakki.
+Bursa adalah **platform edukasi trading** yang dinaungi **PT Global Makmur Madani** - bukan Penyedia Jasa Keuangan (PUJK), broker, atau penasihat investasi. Kami menyediakan infrastruktur belajar, bukan eksekusi trading atau rekomendasi investasi personal. Pengurusan kegiatan usaha Bursanalar dijalankan oleh Raden Mohammad Kaisar Khan dan Fakhri Muzakki.
 
-## UU No. 27/2022 — Pelindungan Data Pribadi
+## UU No. 27/2022 - Pelindungan Data Pribadi
 
 | Aspek | Implementasi Bursa |
 |-------|-------------------|
@@ -21,12 +21,12 @@ Bursa adalah **platform edukasi trading** yang dinaungi **PT Global Makmur Madan
 | Dasar hukum pemrosesan | Consent, kontrak, kewajiban hukum, legitimate interest |
 | Hak subjek data | Form permintaan + email privacy@bursanalar.com |
 | Keamanan data | TLS, bcrypt, RBAC, audit log |
-| Notifikasi kebocoran | SOP 3�-24 jam ke otoritas + pengguna |
+| Notifikasi kebocoran | SOP 3�-24 jam ke otoritas + pengguna |
 | DPO | Penanggung jawab internal (dirangkap compliance reviewer) |
 
 Detail: [Kebijakan Privasi](/privasi/kebijakan).
 
-## POJK No. 6/2026 — Finfluencer & Edukasi Keuangan
+## POJK No. 6/2026 - Finfluencer & Edukasi Keuangan
 
 | Kewajiban | Implementasi |
 |-----------|--------------|
@@ -35,9 +35,9 @@ Detail: [Kebijakan Privasi](/privasi/kebijakan).
 | Verifikasi mentor | KYC + lisensi OJK/Bappebti dicek sebelum tayang |
 | Konten compliance | Tim review kurikulum sebelum publikasi |
 
-Platform **tidak memerlukan** izin PUJK OJK karena bukan layanan jasa keuangan — namun wajib patuh sebagai penyampai informasi edukasi keuangan.
+Platform **tidak memerlukan** izin PUJK OJK karena bukan layanan jasa keuangan - namun wajib patuh sebagai penyampai informasi edukasi keuangan.
 
-## POJK No. 13/2025 — Rekomendasi Saham
+## POJK No. 13/2025 - Rekomendasi Saham
 
 Rekomendasi spesifik buy/sell memerlukan lisensi Penasihat Investasi (PI) aktif. Bursa:
 - **Tidak** menyediakan rekomendasi investasi platform-level

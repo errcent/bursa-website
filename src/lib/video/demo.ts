@@ -9,7 +9,7 @@ const BLOCKED_DEMO_HOSTS = new Set(["interactive-examples.mdn.mozilla.net"]);
 
 function hostnameOfAbsoluteUrl(candidate: string): string | null {
   try {
-    // Exact hostname compare — substring checks are spoofable
+    // Exact hostname compare  -  substring checks are spoofable
     // (js/incomplete-url-substring-sanitization).
     // Base covers protocol-relative `//host/...` candidates.
     return new URL(candidate, "https://invalid.example").hostname.toLowerCase();

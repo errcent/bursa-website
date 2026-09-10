@@ -13,7 +13,7 @@ _Berlaku efektif: 4 Agustus 2026 · Versi 2.1_
 
 Dalam konteks UU PDP, **PT Global Makmur Madani** bertindak sebagai **Pengendali Data Pribadi** dan menggunakan **Prosesor Data Pribadi** pihak ketiga (hosting, payment gateway, email) sebagaimana dijelaskan pada Pasal 4. Kebijakan ini merupakan bagian tidak terpisahkan dari [Syarat & Ketentuan](/syarat-dan-ketentuan).
 
-## Pasal 1 — Data yang Kami Kumpulkan
+## Pasal 1 - Data yang Kami Kumpulkan
 
 | Kategori | Contoh Data | Sumber |
 |----------|-------------|--------|
@@ -25,17 +25,17 @@ Dalam konteks UU PDP, **PT Global Makmur Madani** bertindak sebagai **Pengendali
 | **Komunikasi** | Komentar, pesan diskusi, tiket dukungan | Input pengguna |
 | **Teknis** | IP, perangkat, browser, cookie, log aktivitas | Otomatis |
 
-Login Google (opsional): email, nama tampilan, URL foto profil publik — kami tidak mengakses Gmail, kontak, atau kalender.
+Login Google (opsional): email, nama tampilan, URL foto profil publik - kami tidak mengakses Gmail, kontak, atau kalender.
 
 **Data pribadi bersifat spesifik.** Kami tidak secara sengaja mengumpulkan data pribadi yang bersifat spesifik (mis. data kesehatan, biometrik, keuangan pribadi di luar yang diperlukan transaksi, atau pandangan politik). Mohon tidak mengunggah data semacam ini ke ruang komunitas atau catatan.
 
-## Pasal 2 — Tujuan Pengumpulan Data
+## Pasal 2 - Tujuan Pengumpulan Data
 
 | Kategori | Tujuan |
 |----------|--------|
 | Identitas dasar | Akun, autentikasi, komunikasi transaksional |
 | Waitlist & preferensi email | Konfirmasi pendaftaran, onboarding edukasi, update produk, dan informasi peluncuran sesuai pilihan |
-| KYC mentor | Verifikasi kelayakan mentor — **bukan untuk pemasaran** tanpa persetujuan terpisah |
+| KYC mentor | Verifikasi kelayakan mentor - **bukan untuk pemasaran** tanpa persetujuan terpisah |
 | Transaksi | Pembayaran, komisi/payout, pelaporan pajak |
 | Perilaku belajar | Personalisasi rekomendasi, peningkatan kurikulum |
 | Komunikasi | Moderasi, dukungan pelanggan |
@@ -45,16 +45,16 @@ Kami hanya memproses data untuk tujuan di atas dan tidak menggunakannya di luar 
 
 **Catatan:** Notes/catatan pribadimu **privat secara default** dan tidak dibagikan ke mentor atau pihak lain tanpa izin eksplisit.
 
-## Pasal 3 — Dasar Hukum Pemrosesan
+## Pasal 3 - Dasar Hukum Pemrosesan
 
 Sesuai UU PDP, kami memproses data berdasarkan salah satu dasar hukum berikut:
 
-1. **Persetujuan eksplisit** — registrasi akun dan penerimaan email lifecycle waitlist (checkbox terpisah, tidak pre-checked, dapat ditarik kapan saja).
-2. **Pelaksanaan kontrak** — pemrosesan transaksi pembelian kelas.
-3. **Kewajiban hukum** — retensi data transaksi untuk pelaporan pajak.
-4. **Kepentingan sah** — deteksi penipuan dan keamanan sistem, seimbang dengan hakmu.
+1. **Persetujuan eksplisit** - registrasi akun dan penerimaan email lifecycle waitlist (checkbox terpisah, tidak pre-checked, dapat ditarik kapan saja).
+2. **Pelaksanaan kontrak** - pemrosesan transaksi pembelian kelas.
+3. **Kewajiban hukum** - retensi data transaksi untuk pelaporan pajak.
+4. **Kepentingan sah** - deteksi penipuan dan keamanan sistem, seimbang dengan hakmu.
 
-## Pasal 4 — Berbagi Data dengan Pihak Ketiga
+## Pasal 4 - Berbagi Data dengan Pihak Ketiga
 
 Kami **tidak menjual** data pribadimu. Data dibagikan terbatas kepada:
 
@@ -64,54 +64,54 @@ Kami **tidak menjual** data pribadimu. Data dibagikan terbatas kepada:
 | Hosting (Vercel) & database cloud | Data akun terenkripsi | Infrastruktur aplikasi |
 | Google OAuth | Email, profil publik | Login opsional |
 | Penyedia email (Resend) | Email, nama (bila tersedia), preferensi topik, dan event delivery | Notifikasi transaksional serta lifecycle waitlist berdasarkan persetujuan |
-| Analitik (PostHog — rencana) | Data agregat/pseudonim | Peningkatan produk |
+| Analitik (PostHog - rencana) | Data agregat/pseudonim | Peningkatan produk |
 | Otoritas berwenang | Sesuai permintaan hukum sah | Kepatuhan regulasi |
 
 Setiap prosesor pihak ketiga terikat kewajiban kontraktual untuk menjaga kerahasiaan dan keamanan data setara komitmen kami. Detail lengkap sub-prosesor: [Daftar Sub-prosesor](/privasi/sub-prosesor).
 
-## Pasal 5 — Hak Subjek Data
+## Pasal 5 - Hak Subjek Data
 
 Sesuai UU PDP, kamu berhak:
 
-1. **Informasi** — kejelasan identitas, dasar hukum, tujuan pemrosesan.
-2. **Akses** — salinan data pribadi (JSON/PDF).
-3. **Koreksi** — perbaiki data tidak akurat via profil.
-4. **Penghapusan** — hapus akun (dengan pengecualian data wajib retensi hukum).
-5. **Portabilitas** — menerima datamu dalam format terbaca dan memindahkannya.
-6. **Tarik persetujuan** — untuk pemrosesan non-esensial.
-7. **Keberatan** — atas pemrosesan tertentu, termasuk keputusan yang dibuat secara otomatis (mis. personalisasi algoritmik) yang berdampak signifikan bagimu.
-8. **Pengaduan** — ke Platform maupun ke lembaga yang menyelenggarakan pelindungan data pribadi sesuai UU PDP.
+1. **Informasi** - kejelasan identitas, dasar hukum, tujuan pemrosesan.
+2. **Akses** - salinan data pribadi (JSON/PDF).
+3. **Koreksi** - perbaiki data tidak akurat via profil.
+4. **Penghapusan** - hapus akun (dengan pengecualian data wajib retensi hukum).
+5. **Portabilitas** - menerima datamu dalam format terbaca dan memindahkannya.
+6. **Tarik persetujuan** - untuk pemrosesan non-esensial.
+7. **Keberatan** - atas pemrosesan tertentu, termasuk keputusan yang dibuat secara otomatis (mis. personalisasi algoritmik) yang berdampak signifikan bagimu.
+8. **Pengaduan** - ke Platform maupun ke lembaga yang menyelenggarakan pelindungan data pribadi sesuai UU PDP.
 
 Ajukan permintaan via [Form Permintaan Data](/privasi/permintaan-data) atau email [privacy@bursanalar.com](mailto:privacy@bursanalar.com). Respons maksimal **14 hari kerja**.
 
 Untuk email waitlist, setiap pesan menyediakan tautan preference center dan berhenti berlangganan. Penarikan persetujuan berlaku segera untuk email marketing waitlist dan tidak menghentikan email keamanan, autentikasi, atau transaksi akun yang diperlukan.
 
-## Pasal 6 — Retensi Data
+## Pasal 6 - Retensi Data
 
 | Kategori | Retensi | Setelah Hapus Akun |
 |----------|---------|-------------------|
-| Identitas dasar | Selama akun aktif | Dihapus/dianonimkan 30–90 hari |
-| Waitlist & preferensi email | Selama persetujuan aktif; ditinjau setelah 24 bulan tanpa interaksi | Dihapus/dianonimkan 30–90 hari setelah penarikan, kecuali email minimal pada suppression list untuk menghormati opt-out |
+| Identitas dasar | Selama akun aktif | Dihapus/dianonimkan 30-90 hari |
+| Waitlist & preferensi email | Selama persetujuan aktif; ditinjau setelah 24 bulan tanpa interaksi | Dihapus/dianonimkan 30-90 hari setelah penarikan, kecuali email minimal pada suppression list untuk menghormati opt-out |
 | KYC mentor | Masa kemitraan + kewajiban hukum | Diarsipkan sesuai hukum |
 | Transaksi | Kewajiban pajak (~10 tahun) | Dianonimkan setelah periode |
 | Notes & progress | Selama akun aktif | Dihapus permanen |
-| Log teknis | 90–180 hari | Dihapus otomatis |
+| Log teknis | 90-180 hari | Dihapus otomatis |
 
-## Pasal 7 — Keamanan Data
+## Pasal 7 - Keamanan Data
 
 - Enkripsi transit (TLS) dan at-rest untuk data sensitif
-- RBAC — akses berbasis peran
+- RBAC - akses berbasis peran
 - Audit log untuk akses data sensitif
 - Kata sandi di-hash bcrypt (cost ≥ 12)
-- **Tidak menyimpan data kartu** — delegasi ke payment gateway PCI-DSS
+- **Tidak menyimpan data kartu** - delegasi ke payment gateway PCI-DSS
 
 Detail keamanan: [Pusat Kepercayaan](/kepercayaan).
 
-**Notifikasi kebocoran data:** Apabila terjadi kegagalan pelindungan data pribadi, kami akan memberitahukan secara tertulis kepada subjek data terdampak dan lembaga yang berwenang **paling lambat 3�-24 jam** sejak kami mengetahui insiden, sesuai UU PDP, disertai data yang terungkap, waktu & cara kebocoran, serta langkah penanganan dan pemulihan.
+**Notifikasi kebocoran data:** Apabila terjadi kegagalan pelindungan data pribadi, kami akan memberitahukan secara tertulis kepada subjek data terdampak dan lembaga yang berwenang **paling lambat 3�-24 jam** sejak kami mengetahui insiden, sesuai UU PDP, disertai data yang terungkap, waktu & cara kebocoran, serta langkah penanganan dan pemulihan.
 
-## Pasal 8 — Cookie & Pelacakan
+## Pasal 8 - Cookie & Pelacakan
 
-Ringkasan — detail lengkap di [Kebijakan Cookie](/privasi/cookie):
+Ringkasan - detail lengkap di [Kebijakan Cookie](/privasi/cookie):
 
 | Jenis | Fungsi | Bisa Dinonaktifkan? |
 |-------|--------|---------------------|
@@ -119,19 +119,19 @@ Ringkasan — detail lengkap di [Kebijakan Cookie](/privasi/cookie):
 | Analitik | Penggunaan fitur | Ya |
 | Marketing | Kampanye iklan | Ya |
 
-## Pasal 9 — Transfer Data Lintas Batas
+## Pasal 9 - Transfer Data Lintas Batas
 
 Sebagian infrastruktur (Vercel, database cloud) dapat berlokasi di luar Indonesia (mis. AS, Singapura). Sesuai **Pasal 56 UU PDP**, transfer data pribadi ke luar wilayah Indonesia hanya kami lakukan dengan memastikan salah satu dari: (a) negara tujuan memiliki tingkat pelindungan data yang setara atau lebih tinggi; (b) terdapat pelindungan data yang memadai dan mengikat melalui perjanjian dengan sub-prosesor (mis. standard contractual clauses); atau (c) terdapat persetujuan dari subjek data.
 
-## Pasal 10 — Data Anak
+## Pasal 10 - Data Anak
 
 Platform ditujukan untuk usia **18+**. Pengumpulan dan pemrosesan data pribadi anak (jika ada) memerlukan persetujuan dari orang tua/wali yang sah sesuai UU PDP. Jika kami mengetahui data anak dikumpulkan tanpa persetujuan wali, data akan dihapus segera.
 
-## Pasal 11 — Perubahan Kebijakan
+## Pasal 11 - Perubahan Kebijakan
 
 Perubahan material diberitahukan via email/notifikasi sebelum berlaku. Penggunaan berkelanjutan = persetujuan.
 
-## Pasal 12 — Kontak & Penanggung Jawab Perlindungan Data
+## Pasal 12 - Kontak & Penanggung Jawab Perlindungan Data
 
 - **Pengendali Data Pribadi:** PT Global Makmur Madani (merek Bursa / Bursanalar, bursanalar.com)
 - **Alamat:** Gedung Menara 165 Lantai 4, Jalan TB Simatupang Kav. 1, Jakarta Selatan
@@ -141,7 +141,7 @@ Perubahan material diberitahukan via email/notifikasi sebelum berlaku. Penggunaa
 
 Kami akan merespons pertanyaan atau permintaan hak subjek data dalam waktu maksimal **14 hari kerja**.
 
-## Pasal 13 — Data Komunitas & AI (jika fitur aktif)
+## Pasal 13 - Data Komunitas & AI (jika fitur aktif)
 
 Jika fitur komunitas/chat atau asisten AI diaktifkan:
 
@@ -153,7 +153,7 @@ Jika fitur komunitas/chat atau asisten AI diaktifkan:
 
 Kami **tidak** menggunakan isi Notes pribadi atau data belajar untuk melatih model AI eksternal tanpa persetujuan eksplisit terpisah.
 
-## Pasal 14 — Pembaruan & Pemberitahuan
+## Pasal 14 - Pembaruan & Pemberitahuan
 
 Perubahan material terhadap kebijakan ini akan diberitahukan melalui:
 

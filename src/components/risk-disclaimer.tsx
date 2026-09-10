@@ -7,7 +7,7 @@ const DISCLAIMER_COPY =
   "Bursa adalah platform edukasi, bukan broker atau aplikasi eksekusi trading. Materi membantu kamu memahami riset dan manajemen risiko. Keputusan investasi sepenuhnya ada pada kamu, dan trading tetap berisiko kehilangan modal.";
 
 const DISCLAIMER_COPY_COMPACT =
-  "Segala bentuk trading mengandung risiko kehilangan modal. Bursa tidak bertanggung jawab atas keputusan investasi yang diambil pengguna.";
+  "Trading dan investasi mengandung risiko kehilangan modal. Bursa tidak bertanggung jawab atas keputusan yang diambil pengguna.";
 
 /**
  * Single source of truth for the platform's risk/compliance disclaimer copy.

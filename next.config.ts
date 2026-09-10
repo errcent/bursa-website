@@ -77,9 +77,9 @@ const nextConfig: NextConfig = {
         destination: "/terms",
         permanent: true,
       },
-      { source: "/lab/backtester", destination: "/lab", permanent: true },
-      { source: "/lab/portfolio-var", destination: "/lab", permanent: true },
-      { source: "/lab/volatility", destination: "/lab", permanent: true },
+      { source: "/jadi-mentor", destination: "/bantuan", permanent: true },
+      { source: "/lab", destination: "/katalog", permanent: true },
+      { source: "/lab/:path*", destination: "/katalog", permanent: true },
     ];
   },
 };

@@ -45,7 +45,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       const len = body.title.trim().length;
       if (len < 10 || len > 120) {
         return NextResponse.json(
-          { error: "Judul kelas harus 10–120 karakter." },
+          { error: "Judul kelas harus 10-120 karakter." },
           { status: 422 }
         );
       }
@@ -55,7 +55,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       const len = body.shortDescription.trim().length;
       if (len < 50 || len > 500) {
         return NextResponse.json(
-          { error: "Deskripsi singkat harus 50–500 karakter." },
+          { error: "Deskripsi singkat harus 50-500 karakter." },
           { status: 422 }
         );
       }
