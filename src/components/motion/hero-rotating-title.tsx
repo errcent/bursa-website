@@ -24,25 +24,33 @@ import { cn } from "@/lib/utils";
 
 export const MOBILE_LINE1_PHRASES = [
   "Belajar trading & investasi",
-  "Mendalami trading & investasi",
+  "Mendalami pasar keuangan",
 ] as const;
 
 export const DESKTOP_LINE1_PHRASES = [
   "Mulai belajar trading & investasi",
-  "Mendalami trading & investasi",
+  "Mendalami pasar keuangan",
 ] as const;
 
-export const LINE2_PHRASES = [
+export const MOBILE_LINE2_PHRASES = [
+  "dengan nyaman & terstruktur",
+  "dengan sistem yang jelas",
+] as const;
+
+export const DESKTOP_LINE2_PHRASES = [
   "dengan nyaman dan terstruktur",
   "dengan sistem yang jelas",
 ] as const;
+
+/** @deprecated Use mobile/desktop sets; kept for delay helpers. */
+export const LINE2_PHRASES = DESKTOP_LINE2_PHRASES;
 
 /** @deprecated Use mobile/desktop sets; kept for delay helpers. */
 export const LINE1_PHRASES = DESKTOP_LINE1_PHRASES;
 
 export const HERO_HEADLINE_REVEAL_LINES = [
   MOBILE_LINE1_PHRASES[0],
-  LINE2_PHRASES[0],
+  MOBILE_LINE2_PHRASES[0],
 ] as const;
 
 function longestPhrase(phrases: readonly string[]) {
@@ -70,10 +78,11 @@ const CROSSFADE_MS = Math.round(CROSSFADE.duration * 1000);
 
 function phrasesForStep(
   step: number,
-  line1Phrases: readonly [string, string]
+  line1Phrases: readonly [string, string],
+  line2Phrases: readonly [string, string]
 ) {
   const [i1, i2] = CYCLE[step % CYCLE.length];
-  return { line1: line1Phrases[i1], line2: LINE2_PHRASES[i2] };
+  return { line1: line1Phrases[i1], line2: line2Phrases[i2] };
 }
 
 function resolveLine2Delay(headlineDelay: number, line1Reveal: string): number {
@@ -97,11 +106,11 @@ function resolveInitialRevealEndMs(
 
 function HeadlineLine({ sizer, children }: { sizer: string; children: ReactNode }) {
   return (
-    <span className="relative block">
-      <span className="invisible block" aria-hidden>
+    <span className="hero-line relative block">
+      <span className="invisible block whitespace-nowrap" aria-hidden>
         {sizer}
       </span>
-      <span className="absolute inset-x-0 top-0 block">{children}</span>
+      <span className="absolute inset-x-0 top-0 block whitespace-nowrap">{children}</span>
     </span>
   );
 }
@@ -131,10 +140,11 @@ export function HeroRotatingTitle({ className }: { className?: string }) {
   const headlineDelay = HERO_HEADLINE_BASE_DELAY;
 
   const line1Phrases = isMobile ? MOBILE_LINE1_PHRASES : DESKTOP_LINE1_PHRASES;
+  const line2Phrases = isMobile ? MOBILE_LINE2_PHRASES : DESKTOP_LINE2_PHRASES;
   const line1Sizer = useMemo(() => longestPhrase(line1Phrases), [line1Phrases]);
-  const line2Sizer = useMemo(() => longestPhrase(LINE2_PHRASES), []);
+  const line2Sizer = useMemo(() => longestPhrase(line2Phrases), [line2Phrases]);
   const line1Reveal = line1Phrases[0];
-  const line2Reveal = LINE2_PHRASES[0];
+  const line2Reveal = line2Phrases[0];
 
   useEffect(() => {
     if (!introReady) return;
@@ -192,7 +202,7 @@ export function HeroRotatingTitle({ className }: { className?: string }) {
 
   const line2Delay = resolveLine2Delay(headlineDelay, line1Reveal);
   const showWordReveal = introReady && !crossfadeReady;
-  const { line1, line2 } = phrasesForStep(step, line1Phrases);
+  const { line1, line2 } = phrasesForStep(step, line1Phrases, line2Phrases);
 
   return (
     <h1

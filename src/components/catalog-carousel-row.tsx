@@ -50,20 +50,25 @@ export function CatalogCarouselRow({
   }, []);
 
   const label = ariaLabel ?? title;
+  // Hide the desktop nav buttons when every thumbnail already fits in view
+  // (item count <= max visible per view), i.e. there is nothing to scroll.
+  const canScrollAny = canScrollLeft || canScrollRight;
 
   return (
     <section className="catalog-row" aria-label={label}>
       <div className="catalog-row-header">
         <h3 className="catalog-row-title min-w-0 truncate">{title}</h3>
-        <CarouselNavButtons
-          className="hidden md:flex"
-          canScrollLeft={canScrollLeft}
-          canScrollRight={canScrollRight}
-          onPrev={() => scrollByStep(-1)}
-          onNext={() => scrollByStep(1)}
-          prevLabel={prevLabel}
-          nextLabel={nextLabel}
-        />
+        {canScrollAny ? (
+          <CarouselNavButtons
+            className="hidden md:flex"
+            canScrollLeft={canScrollLeft}
+            canScrollRight={canScrollRight}
+            onPrev={() => scrollByStep(-1)}
+            onNext={() => scrollByStep(1)}
+            prevLabel={prevLabel}
+            nextLabel={nextLabel}
+          />
+        ) : null}
       </div>
       <div className="catalog-row-bleed md:hidden">
         <div className={mobileScrollClassName}>{children}</div>

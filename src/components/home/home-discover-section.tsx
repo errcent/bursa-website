@@ -44,7 +44,7 @@ export function HomeDiscoverSection({
           <div className="discover-filmstrip">
             <PlaylistCarousel playlists={playlists} hideBookmark discoverMode />
             {isPreviewCatalogActive() ? (
-              <p className="mx-auto mt-3 max-w-lg px-4 text-center text-xs text-muted-foreground">
+              <p className="discover-preview-note mx-auto mt-2 max-w-[42ch] px-6 text-center text-[11px] font-normal leading-snug text-balance text-muted-foreground/55 sm:mt-2.5 sm:max-w-xl sm:px-4 sm:text-[11px]">
                 {PREVIEW_CATALOG_COPY.bannerShort}
               </p>
             ) : null}
