@@ -1,15 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
 
 import { AccountMenuPanel } from "@/components/account-menu-panel";
 import { useAuth } from "@/components/auth-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { buildLoginHref, POST_AUTH_HOME } from "@/lib/auth/redirect";
-import { EXISTING_ACCOUNT_PROMPT } from "@/lib/features/registration-copy";
 import { getRoleNavLinks } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
 
@@ -32,12 +29,6 @@ type SiteNavAuthProps = {
 
 export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
   const { session, isLoading } = useAuth();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const currentPathWithQuery = searchParams.toString()
-    ? `${pathname}?${searchParams.toString()}`
-    : pathname;
-  const loginHref = buildLoginHref(currentPathWithQuery || POST_AUTH_HOME);
   const roleLinks = getRoleNavLinks(session?.role);
 
   if (isLoading) {
@@ -62,36 +53,21 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
             </span>
             {GUEST_PRIMARY_LABEL}
           </Button>
-          <p className="text-center text-xs text-muted-foreground">
-            {EXISTING_ACCOUNT_PROMPT}{" "}
-            <Link href={loginHref} className="link-accent font-medium">
-              Masuk
-            </Link>
-          </p>
         </div>
       );
     }
 
     return (
-      <div className="hidden items-center gap-2 sm:flex">
-        <Button
-          size="sm"
-          className="btn-primary h-auto min-h-8 flex-col gap-0 px-3 py-1.5"
-          render={<Link href={GUEST_PRIMARY_HREF} title={`${GUEST_PRIMARY_HINT} — early access terbatas`} />}
-        >
-          <span className="text-[9px] font-normal uppercase leading-none tracking-wide opacity-80">
-            {GUEST_PRIMARY_HINT}
-          </span>
-          <span className="text-xs leading-tight">{GUEST_PRIMARY_LABEL}</span>
-        </Button>
-        <Link
-          href={loginHref}
-          className="hidden text-xs text-muted-foreground hover:text-foreground md:inline"
-        >
-          {EXISTING_ACCOUNT_PROMPT}{" "}
-          <span className="font-medium text-foreground">Masuk</span>
-        </Link>
-      </div>
+      <Button
+        size="sm"
+        className="btn-primary hidden h-auto min-h-8 flex-col gap-0 px-3 py-1.5 sm:flex"
+        render={<Link href={GUEST_PRIMARY_HREF} title={`${GUEST_PRIMARY_HINT} — demo publik`} />}
+      >
+        <span className="text-[9px] font-normal uppercase leading-none tracking-wide opacity-80">
+          {GUEST_PRIMARY_HINT}
+        </span>
+        <span className="text-xs leading-tight">{GUEST_PRIMARY_LABEL}</span>
+      </Button>
     );
   }
 

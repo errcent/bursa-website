@@ -15,8 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getSession } from "@/lib/auth/client";
-import { buildLoginHref, buildRegisterHref } from "@/lib/auth/redirect";
-import { EXISTING_ACCOUNT_PROMPT } from "@/lib/features/registration-copy";
+import { buildRegisterHref } from "@/lib/auth/redirect";
 import { formatRupiah } from "@/lib/mock-data";
 import { enrollUser } from "@/lib/video/protection";
 import type { Course, Mentor } from "@/lib/types";
@@ -32,7 +31,6 @@ export function CheckoutSuccessClient({
   const searchParams = useSearchParams();
   const slug = course.slug || searchParams.get("course") || "";
   const successPath = slug ? `/checkout/sukses?course=${encodeURIComponent(slug)}` : "/checkout/sukses";
-  const loginHref = buildLoginHref(successPath);
 
   useEffect(() => {
     const active = session ?? getSession();
@@ -85,15 +83,9 @@ export function CheckoutSuccessClient({
                 <span className="text-foreground/90">{course.title}</span>.
               </p>
               <div className="mt-8 flex w-full max-w-xs flex-col gap-3">
-                <Button className="w-full btn-primary" render={<Link href={buildRegisterHref(loginHref)} />}>
+                <Button className="w-full btn-primary" render={<Link href={buildRegisterHref(successPath)} />}>
                   Gabung waitlist
                 </Button>
-                <p className="text-sm text-muted-foreground">
-                  {EXISTING_ACCOUNT_PROMPT}{" "}
-                  <Link href={loginHref} className="link-accent font-medium">
-                    Masuk
-                  </Link>
-                </p>
               </div>
             </div>
           </div>

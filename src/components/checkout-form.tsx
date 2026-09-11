@@ -20,8 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/components/auth-provider";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
 import { captureAnalyticsEvent } from "@/lib/analytics/posthog";
-import { buildLoginHref, buildRegisterHref } from "@/lib/auth/redirect";
-import { EXISTING_ACCOUNT_PROMPT } from "@/lib/features/registration-copy";
+import { buildRegisterHref } from "@/lib/auth/redirect";
 import { SOFT_LAUNCH } from "@/lib/decision-os/soft-launch";
 import { formatRupiah } from "@/lib/mock-data";
 import type { Course, Mentor } from "@/lib/types";
@@ -44,7 +43,6 @@ export function CheckoutForm({
   const { session, isLoading: authLoading } = useAuth();
   const { enrolled, loading: enrollmentLoading } = useCourseEnrollment(course.slug);
   const checkoutPath = `/checkout/${course.slug}`;
-  const loginHref = buildLoginHref(checkoutPath);
   const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<(typeof paymentMethods)[number]["id"]>("gopay");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -97,16 +95,10 @@ export function CheckoutForm({
             <span className="text-foreground/90">{course.title}</span> dan kelas lainnya.
           </p>
         </div>
-        <div className="flex flex-col gap-3 border-t border-border/60 px-6 py-5">
-          <Button className="w-full btn-primary" render={<Link href={buildRegisterHref(loginHref)} />}>
+        <div className="border-t border-border/60 px-6 py-5">
+          <Button className="w-full btn-primary" render={<Link href={buildRegisterHref(checkoutPath)} />}>
             Gabung waitlist
           </Button>
-          <p className="text-center text-sm text-muted-foreground">
-            {EXISTING_ACCOUNT_PROMPT}{" "}
-            <Link href={loginHref} className="link-accent font-medium">
-              Masuk
-            </Link>
-          </p>
         </div>
       </div>
     );

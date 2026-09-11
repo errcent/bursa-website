@@ -72,11 +72,7 @@ export function GuidanceResults({
               <Link href="/waitlist?next=/panduan-belajar/quiz" className="link-accent">
                 Gabung waitlist
               </Link>{" "}
-              untuk simpan permanen, atau{" "}
-              <Link href="/masuk?next=/panduan-belajar/quiz" className="link-accent">
-                masuk
-              </Link>{" "}
-              jika sudah punya akun early access.
+              untuk kabar peluncuran dan simpan hasil nanti.
             </p>
           ) : saved ? (
             <p className="text-xs font-medium text-accent">Tersimpan di akunmu.</p>

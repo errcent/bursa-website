@@ -1,23 +1,20 @@
 /**
- * Guest Access Matrix v2 — copy SSOT (GT Freeze 2026-09-11).
- * Progressive identity: Guest → Lite (P1) → Full.
+ * Public demo SSOT — single-decision funnel (GT /decide 2026-09-11).
+ * Guest surfaces: consume demo → waitlist. No tier theater on UI.
  */
 
 export type AuthSurfaceState =
   | "guest_preview_ok"
   | "guest_locked_content"
-  | "guest_tier1_feature"
+  | "guest_feature_waitlist"
   | "logged_in_no_entitlement"
   | "logged_in_full";
 
 export const AUTH_CTA = {
   primaryWaitlist: "Gabung waitlist",
-  secondaryExistingAccount: "Sudah punya akun early access?",
-  secondarySignIn: "Masuk",
   previewWatch: "Tonton preview",
   previewOther: "Preview lesson lain",
   backWaitlist: "Kembali ke waitlist",
-  syncProgress: "Sinkronkan progress",
 } as const;
 
 export const AUTH_SURFACE_COPY: Record<
@@ -27,54 +24,44 @@ export const AUTH_SURFACE_COPY: Record<
     sub: string;
     primaryCta: string;
     secondaryCta: string;
-    showGoogle: boolean;
   }
 > = {
   guest_preview_ok: {
-    headline: "Mulai belajar dari preview",
-    sub: "Sebagian konten bisa diakses tanpa akun.",
+    headline: "Mulai dari preview",
+    sub: "Jelajahi demo tanpa akun.",
     primaryCta: AUTH_CTA.previewWatch,
     secondaryCta: AUTH_CTA.primaryWaitlist,
-    showGoogle: false,
   },
   guest_locked_content: {
-    headline: "Konten penuh terkunci",
-    sub: "Tonton preview atau gabung early access.",
+    headline: "Lesson ini bagian dari demo",
+    sub: "Tonton preview gratis atau gabung waitlist untuk kabar peluncuran.",
     primaryCta: AUTH_CTA.previewOther,
     secondaryCta: AUTH_CTA.primaryWaitlist,
-    showGoogle: false,
   },
-  guest_tier1_feature: {
-    headline: "Fitur ini untuk early access",
-    sub: "Gabung waitlist — kami undang secara bertahap saat sistem siap.",
+  guest_feature_waitlist: {
+    headline: "Fitur ini belum dibuka",
+    sub: "Platform masih dalam demo publik. Gabung waitlist untuk early access.",
     primaryCta: AUTH_CTA.primaryWaitlist,
-    secondaryCta: AUTH_CTA.secondarySignIn,
-    showGoogle: false,
+    secondaryCta: AUTH_CTA.backWaitlist,
   },
   logged_in_no_entitlement: {
     headline: "Akses terbatas saat ini",
     sub: "Konten lengkap akan dibuka setelah peluncuran batch pertama.",
     primaryCta: AUTH_CTA.primaryWaitlist,
     secondaryCta: AUTH_CTA.previewWatch,
-    showGoogle: true,
   },
   logged_in_full: {
     headline: "Lanjutkan belajar",
     sub: "",
     primaryCta: "Lanjutkan",
     secondaryCta: "",
-    showGoogle: true,
   },
 };
 
-/** GT-17 / GT-18 — canonical locked-lesson line */
-export const LOCKED_LESSON_LINE = "Konten penuh membutuhkan early access";
+/** Locked overlay line on lesson player */
+export const LOCKED_LESSON_LINE = "Preview demo — konten penuh setelah peluncuran";
 
-/** GT-09 / HOLD-05 B — guest progress localStorage 30 hari */
-export const GUEST_PROGRESS_BANNER =
-  "Progress tersimpan di perangkat ini (30 hari). Gabung waitlist untuk sinkron permanen.";
-
-/** GT-05 — /daftar → waitlist explainer */
+/** /daftar → waitlist explainer */
 export const DAFTAR_CLOSED_EXPLAINER = {
   headline: "Pendaftaran belum dibuka",
   sub: "Kami sedang mengundang pengguna secara bertahap selama fase early access.",
@@ -82,22 +69,9 @@ export const DAFTAR_CLOSED_EXPLAINER = {
   secondaryCta: "Lihat katalog",
 } as const;
 
-/** GT-15 — tier explainer for signed-out dashboard */
-export const ACCESS_TIER_EXPLAINER = {
-  headline: "Cara kerja akses Bursanalar",
-  sub: "Guest → Early Access → Pembelajaran penuh",
-  tiers: [
-    {
-      name: "Guest",
-      detail: "Jelajahi katalog, tonton preview, ikuti quiz.",
-    },
-    {
-      name: "Early access",
-      detail: "Simpan progress, catatan, dan profil belajar.",
-    },
-    {
-      name: "Penuh",
-      detail: "Semua lesson — setelah peluncuran batch pertama.",
-    },
-  ],
+/** Signed-out settings / pengaturan — waitlist-only, no tier ladder */
+export const DEMO_WAITLIST_EXPLAINER = {
+  headline: "Demo publik Bursanalar",
+  sub: "Jelajahi katalog, preview lesson, dan quiz tanpa akun. Gabung waitlist untuk kabar early access.",
+  primaryCta: AUTH_CTA.primaryWaitlist,
 } as const;

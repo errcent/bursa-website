@@ -5,7 +5,6 @@ import Link from "next/link";
 import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
 import { LessonPreviewThumb } from "@/components/video/lesson-preview-thumb";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
-import { buildLoginHref } from "@/lib/auth/redirect";
 import type { Course } from "@/lib/types";
 import { isLessonFreePreview } from "@/lib/video/lesson-access";
 import { cn } from "@/lib/utils";
@@ -27,7 +26,6 @@ export function CourseCurriculumCards({
   hideBookmark = false,
 }: CourseCurriculumCardsProps) {
   const { enrolled } = useCourseEnrollment(course.slug);
-  const lockedHref = buildLoginHref(`/kelas/${course.slug}`);
 
   const flatVideos = course.modules.flatMap((module, moduleIndex) =>
     module.lessons.map((lesson, lessonIndex) => ({
@@ -43,9 +41,7 @@ export function CourseCurriculumCards({
         {flatVideos.map(({ lesson, moduleIndex, lessonIndex }) => {
           const isFree = isLessonFreePreview(lesson, moduleIndex, lessonIndex);
           const isPlayable = enrolled || isFree;
-          const href = isPlayable
-            ? `/belajar/${course.slug}/${lesson.id}`
-            : lockedHref;
+          const href = `/belajar/${course.slug}/${lesson.id}`;
 
           return (
             <div

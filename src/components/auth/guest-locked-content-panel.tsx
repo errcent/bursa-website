@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { AUTH_CTA, AUTH_SURFACE_COPY } from "@/lib/features/auth-surface-copy";
-import { buildLoginHref, buildRegisterHref } from "@/lib/auth/redirect";
+import { buildRegisterHref } from "@/lib/auth/redirect";
 
 const copy = AUTH_SURFACE_COPY.guest_locked_content;
 
@@ -27,9 +27,6 @@ export function GuestLockedContentPanel({
           {AUTH_CTA.primaryWaitlist}
         </Button>
       </div>
-      <Link href={buildLoginHref(returnPath)} className="text-xs text-muted-foreground hover:text-foreground">
-        {AUTH_CTA.secondaryExistingAccount} {AUTH_CTA.secondarySignIn}
-      </Link>
     </div>
   );
 }

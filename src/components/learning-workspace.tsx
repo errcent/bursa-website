@@ -24,7 +24,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { notifyLearningChange } from "@/lib/learning/events";
 import { loadGuestProgress, saveGuestProgress } from "@/lib/learning/guest-progress-storage";
-import { GUEST_PROGRESS_BANNER } from "@/lib/features/auth-surface-copy";
 import { computeProgressPercent } from "@/lib/learning/progress";
 import { cn } from "@/lib/utils";
 import type { Course, Mentor } from "@/lib/types";
@@ -66,7 +65,6 @@ export function LearningWorkspace({
   const completedRef = useRef(completed);
   completedRef.current = completed;
   const [sidebarTab, setSidebarTab] = useState<"video" | "catatan">("video");
-  const [moduleCompleteBanner, setModuleCompleteBanner] = useState<string | null>(null);
   const progressApi = `/api/courses/${course.slug}/progress`;
   const enrollApi = `/api/courses/${course.slug}/enroll`;
 
@@ -261,7 +259,6 @@ export function LearningWorkspace({
 
     if (!session?.userId && !session?.email) {
       saveGuestProgress(course.slug, next);
-      setModuleCompleteBanner(GUEST_PROGRESS_BANNER);
       return;
     }
 
@@ -296,17 +293,6 @@ export function LearningWorkspace({
         | undefined;
       const completedModulesNow = (data.completedModules as number | undefined) ?? 0;
 
-      if (
-        nextCompleted &&
-        completedModulesNow > completedModulesBeforeRef.current &&
-        modules
-      ) {
-        const completeModules = modules.filter((module) => module.isComplete);
-        const bannerModule = completeModules[completeModules.length - 1];
-        if (bannerModule) {
-          setModuleCompleteBanner("Lanjutkan ke video berikutnya.");
-        }
-      }
       completedModulesBeforeRef.current = completedModulesNow;
       notifyLearningChange();
     } catch {
@@ -585,12 +571,6 @@ export function LearningWorkspace({
             </Button>
           ) : null}
         </div>
-
-        {moduleCompleteBanner && (
-          <div className="mx-auto w-full max-w-5xl rounded-lg border border-emerald/20 bg-emerald/5 px-4 py-3 text-xs text-muted-foreground">
-            {moduleCompleteBanner}
-          </div>
-        )}
 
         {hasMaterials ? (
           <div className="mx-auto mt-2 w-full max-w-5xl">
