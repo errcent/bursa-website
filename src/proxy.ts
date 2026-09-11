@@ -112,6 +112,8 @@ function needsRequestGuard(pathname: string): boolean {
     pathname.startsWith("/admin") ||
     pathname.startsWith("/developer") ||
     pathname.startsWith("/mentor") ||
+    pathname === "/daftar" ||
+    pathname.startsWith("/daftar/") ||
     pathname === "/komunitas" ||
     pathname.startsWith("/komunitas/")
   );
