@@ -3,7 +3,7 @@
 export const REGISTRATION_CLOSED_LEAD =
   "Akses akun saat ini hanya untuk pengguna undangan.";
 
-/** Hidden /masuk route — no signup affordance */
+/** Hidden /masuk route: no signup affordance */
 export const REGISTRATION_CLOSED_LOGIN_HINT =
   "Demo publik tersedia tanpa login. Belum diundang? Gabung waitlist.";
 

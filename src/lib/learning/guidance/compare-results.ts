@@ -1,11 +1,10 @@
+import { guidancePickKey } from "@/lib/learning/guidance/pick-presenters";
 import type { LearningGuidanceResult } from "@/lib/learning/guidance/types";
 
 function recommendationKey(result: LearningGuidanceResult): string {
-  const courseSlugs = result.courses.map(({ course }) => course.slug).join("\0");
-  const playlistSlugs = (result.playlists ?? [])
-    .map(({ playlist }) => playlist.slug)
-    .join("\0");
-  return `${courseSlugs}::${playlistSlugs}`;
+  const primary = (result.primary ?? []).map(guidancePickKey).join("\0");
+  const supporting = (result.supporting ?? []).map(guidancePickKey).join("\0");
+  return `${primary}::${supporting}`;
 }
 
 /** True when recommended courses and playlists are identical (order-sensitive). */

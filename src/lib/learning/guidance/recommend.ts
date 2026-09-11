@@ -12,13 +12,17 @@ import type { LearningExperience } from "@prisma/client";
 
 import { instrumentFromUi, instrumentToUi } from "@/lib/admin/server";
 import { getCatalogCourses, getCatalogMentors } from "@/lib/catalog/server";
+import { archetypeNarrativeHint, deriveGuidanceArchetype } from "@/lib/learning/guidance/archetype";
+import { evaluatePlaylistCoherence } from "@/lib/learning/guidance/coherence";
+import { mergeGuidancePicks, splitGuidancePicks } from "@/lib/learning/guidance/picks";
 import {
   analyzeProfile,
   scoreCourseForGuidance,
-  selectCourseRecommendations,
 } from "@/lib/learning/guidance/scoring";
+import { profileTimeBand, resolvePlaylistTags } from "@/lib/learning/guidance/tags";
 import type {
   LearningGuidanceAnswers,
+  LearningGuidanceGap,
   LearningGuidanceProfileRecord,
   LearningGuidanceResult,
   ScoredCourse,
@@ -190,44 +194,117 @@ function buildPathNarrative(
   profileTags: string[];
   pathSteps: string[];
 } {
-  const styleLabel =
-    answers.tradingStyle === "scalping"
-      ? "Scalping"
-      : answers.tradingStyle === "day_trading"
-        ? "Day trading"
-        : answers.tradingStyle === "swing"
-          ? "Swing"
-          : "Jangka panjang";
+  const stylePhrase: Record<LearningGuidanceAnswers["tradingStyle"], string> = {
+    scalping: "ritme cepat (scalping)",
+    day_trading: "day trading",
+    swing: "swing trading",
+    long_term: "investasi jangka panjang",
+  };
 
-  const goalLabel =
-    answers.goal === "basics"
-      ? "Fondasi"
-      : answers.goal === "side_income"
-        ? "Belajar di sela kerja"
-        : answers.goal === "wealth"
-          ? "Bangun kekayaan"
-          : "Pensiun";
+  const goalPhrase: Record<LearningGuidanceAnswers["goal"], string> = {
+    basics: "membangun fondasi",
+    side_income: "penghasilan sampingan",
+    wealth: "membangun kekayaan",
+    retirement: "persiapan pensiun",
+  };
 
-  const riskLabel =
-    answers.riskTolerance === "conservative"
-      ? "Konservatif"
-      : answers.riskTolerance === "aggressive"
-        ? "Agresif"
-        : "Seimbang";
+  const timePhrase: Record<LearningGuidanceAnswers["timeAvailability"], string> = {
+    minimal: "waktu belajar terbatas",
+    part_time: "belajar di sela rutinitas",
+    dedicated: "komitmen belajar yang intensif",
+  };
 
-  const timeLabel =
-    answers.timeAvailability === "minimal"
-      ? "Sesi singkat"
-      : answers.timeAvailability === "dedicated"
-        ? "Intensif"
-        : "Part-time";
+  const instrument = answers.instrument.toLowerCase();
+  const level = profile.idealLevelUi.toLowerCase();
+  const gapPhrase: Record<LearningGuidanceGap, string> = {
+    no_foundation: "Kami mulai dari fondasi yang jelas",
+    emotional_control: "Kami prioritaskan disiplin dan mindset dulu",
+    inconsistent_execution: "Kami fokus ke struktur yang bisa langsung dipraktikkan",
+    ready_for_depth: "Kami arahkan ke pendalaman yang sesuai levelmu",
+  };
+
+  const archetype = deriveGuidanceArchetype(answers, profile);
+  const hint = archetypeNarrativeHint(archetype);
+  const intro = [
+    `Kamu ingin belajar ${instrument} dengan ritme ${stylePhrase[answers.tradingStyle]}, fokus ${goalPhrase[answers.goal]}, dan ${timePhrase[answers.timeAvailability]}.`,
+    `${gapPhrase[answers.learningGap]}.`,
+    hint,
+    `Berikut kurasi kelas dan playlist yang paling selaras, level ${level}.`,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return {
     pathTitle: `${answers.instrument} · ${profile.idealLevelUi}`,
-    summary: `${styleLabel} · fokus ${goalLabel.toLowerCase()}.`,
-    profileTags: [styleLabel, goalLabel, riskLabel, timeLabel],
+    summary: intro,
+    profileTags: [],
     pathSteps: [],
   };
+}
+
+function scoreExperienceFitForPlaylist(
+  answers: LearningGuidanceAnswers,
+  tags: ReturnType<typeof resolvePlaylistTags>
+): { points: number; reason?: string } {
+  const isBeginner = answers.experience === "never" || answers.experience === "demo";
+  if (isBeginner && tags.level === "beginner") {
+    return { points: 22, reason: "Cocok untuk pemula" };
+  }
+  if (answers.experience === "regular" && tags.level !== "advanced") {
+    return { points: 16, reason: "Langkah lanjutan yang terstruktur" };
+  }
+  if (answers.experience === "profitable" && tags.level === "intermediate") {
+    return { points: 14, reason: "Pendalaman untuk trader berpengalaman" };
+  }
+  if (isBeginner && tags.level === "advanced") {
+    return { points: -30 };
+  }
+  return { points: 8 };
+}
+
+function scoreStyleFitForPlaylist(
+  answers: LearningGuidanceAnswers,
+  tags: ReturnType<typeof resolvePlaylistTags>
+): { points: number; reason?: string } {
+  if (tags.styles.includes(answers.tradingStyle)) {
+    const styleLabel: Record<LearningGuidanceAnswers["tradingStyle"], string> = {
+      scalping: "scalping",
+      day_trading: "day trading",
+      swing: "swing",
+      long_term: "investasi jangka panjang",
+    };
+    return { points: 18, reason: `Cocok untuk ${styleLabel[answers.tradingStyle]}` };
+  }
+  return { points: 0 };
+}
+
+function scoreGoalFitForPlaylist(
+  answers: LearningGuidanceAnswers,
+  tags: ReturnType<typeof resolvePlaylistTags>
+): { points: number; reason?: string } {
+  if (tags.goals.includes(answers.goal)) {
+    if (answers.goal === "basics") return { points: 14, reason: "Membangun fondasi" };
+    if (answers.goal === "retirement") return { points: 12, reason: "Pendekatan stabil jangka panjang" };
+    return { points: 10 };
+  }
+  return { points: 0 };
+}
+
+function scoreTimeFitForPlaylist(
+  answers: LearningGuidanceAnswers,
+  tags: ReturnType<typeof resolvePlaylistTags>
+): { points: number; reason?: string } {
+  const band = profileTimeBand(answers.timeAvailability);
+  if (band === "low" && tags.compactFriendly) {
+    return { points: 10, reason: "Ringkas untuk waktu terbatas" };
+  }
+  if (band === "high" && tags.deepFriendly) {
+    return { points: 8 };
+  }
+  if (tags.timeBands.includes(band)) {
+    return { points: 6 };
+  }
+  return { points: 0 };
 }
 
 function scorePlaylistForGuidance(
@@ -237,48 +314,47 @@ function scorePlaylistForGuidance(
   playlistCourseSlugs: string[]
 ): { score: number; reasons: string[] } {
   const meta = CURATED_PLAYLIST_META.find((entry) => entry.slug === playlist.slug);
-  let score = 0;
+  const tags = resolvePlaylistTags(playlist.slug, playlist.title);
   const reasons: string[] = [];
+  let score = 0;
 
-  if (meta?.instruments.includes(answers.instrument)) {
-    score += 48;
-    reasons.push(`Selaras: ${answers.instrument}`);
-  } else if (meta && meta.instruments.length > 1) {
-    score += 12;
+  if (!meta?.instruments.includes(answers.instrument)) {
+    return { score: 0, reasons: [] };
+  }
+
+  score += 40;
+
+  const dimensions = [
+    scoreExperienceFitForPlaylist(answers, tags),
+    scoreStyleFitForPlaylist(answers, tags),
+    scoreGoalFitForPlaylist(answers, tags),
+    scoreTimeFitForPlaylist(answers, tags),
+  ];
+
+  for (const dim of dimensions) {
+    score += dim.points;
+    if (dim.reason && dim.points > 0 && !reasons.includes(dim.reason)) {
+      reasons.push(dim.reason);
+    }
   }
 
   const overlap = playlistCourseSlugs.filter((slug) => recommendedCourseSlugs.has(slug)).length;
   if (overlap > 0) {
-    score += Math.min(overlap * 14, 28);
+    score += Math.min(overlap * 12, 24);
     reasons.push("Berisi kelas rekomendasi");
   }
 
-  const haystack = `${playlist.slug} ${playlist.title}`.toLowerCase();
-  if (answers.tradingStyle === "swing" && haystack.includes("swing")) {
-    score += 18;
-    reasons.push("Cocok untuk swing");
+  const coherence = evaluatePlaylistCoherence(answers, tags);
+  if (coherence.excluded) {
+    return { score: 0, reasons: [] };
   }
-  if (answers.experience === "never" || answers.experience === "demo") {
-    if (haystack.includes("pemula") || haystack.includes("nol") || haystack.includes("fundasi")) {
-      score += 14;
-      reasons.push("Cocok untuk pemula");
-    }
-  }
-  if (answers.goal === "basics" && (haystack.includes("fundasi") || haystack.includes("dasar"))) {
-    score += 10;
+
+  score = Math.round(score * coherence.multiplier + coherence.bonus);
+  for (const reason of coherence.reasons) {
+    if (!reasons.includes(reason)) reasons.push(reason);
   }
 
   return { score, reasons: reasons.slice(0, 2) };
-}
-
-function selectPlaylistRecommendations(
-  scored: ScoredPlaylist[],
-  limit = 4
-): ScoredPlaylist[] {
-  return [...scored]
-    .filter((entry) => entry.score > 0)
-    .sort((a, b) => b.score - a.score || a.playlist.title.localeCompare(b.playlist.title))
-    .slice(0, limit);
 }
 
 export async function computeLearningGuidance(
@@ -311,11 +387,16 @@ export async function computeLearningGuidance(
       return { course, score, reasons };
     });
 
-  const scoredCourses: ScoredCourse[] = selectCourseRecommendations(allScoredCourses);
-  const recommendedCourseSlugs = new Set(scoredCourses.map((entry) => entry.course.slug));
+  const courseRankPool = [...allScoredCourses]
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score || a.course.title.localeCompare(b.course.title));
 
-  const scoredPlaylists: ScoredPlaylist[] = selectPlaylistRecommendations(
-    curatedPlaylists.map((raw) => {
+  const recommendedCourseSlugs = new Set(
+    courseRankPool.slice(0, 8).map((entry) => entry.course.slug)
+  );
+
+  const scoredPlaylists: ScoredPlaylist[] = curatedPlaylists
+    .map((raw) => {
       const playlist = serializePlaylistSummary(raw);
       const courseSlugs = raw.items
         .map((item) => item.lesson?.module.course.slug ?? item.course?.slug ?? null)
@@ -328,13 +409,21 @@ export async function computeLearningGuidance(
       );
       return { playlist, score, reasons };
     })
-  );
+    .filter((entry) => entry.score > 0)
+    .sort(
+      (a, b) => b.score - a.score || a.playlist.title.localeCompare(b.playlist.title)
+    );
+
+  const merged = mergeGuidancePicks(courseRankPool, scoredPlaylists);
+  const { primary, supporting } = splitGuidancePicks(merged);
 
   const narrative = buildPathNarrative(resolvedAnswers, profileAnalysis);
 
   return {
     ...narrative,
-    courses: scoredCourses,
+    primary,
+    supporting,
+    courses: courseRankPool,
     playlists: scoredPlaylists,
     mentors: [],
     profile:
@@ -344,6 +433,22 @@ export async function computeLearningGuidance(
         completedAt: new Date(),
       }),
   };
+}
+
+function inferLearningGapFromProfile(
+  profile: LearningGuidanceProfileRecord,
+  experience: LearningGuidanceAnswers["experience"]
+): LearningGuidanceGap {
+  if (profile.goal === LearningGoal.LEARN_BASICS || experience === "never" || experience === "demo") {
+    return "no_foundation";
+  }
+  if (experience === "profitable") {
+    return "ready_for_depth";
+  }
+  if (profile.riskTolerance === LearningRiskTolerance.CONSERVATIVE) {
+    return "emotional_control";
+  }
+  return "inconsistent_execution";
 }
 
 export function answersFromProfileRecord(
@@ -401,6 +506,7 @@ export function answersFromProfileRecord(
     goal: goalMap[profile.goal],
     riskTolerance: riskMap[profile.riskTolerance],
     timeAvailability: timeMap[profile.timeAvailability],
+    learningGap: inferLearningGapFromProfile(profile, experience),
     capitalRange: profile.capitalRange ? capitalMap[profile.capitalRange] : undefined,
     learningFormat: formatMap[profile.learningFormat],
   };

@@ -417,6 +417,12 @@ export const learningGuidanceAnswersSchema = z.object({
   goal: z.enum(["side_income", "wealth", "basics", "retirement"]),
   riskTolerance: z.enum(["conservative", "moderate", "aggressive"]),
   timeAvailability: z.enum(["minimal", "part_time", "dedicated"]),
+  learningGap: z.enum([
+    "no_foundation",
+    "emotional_control",
+    "inconsistent_execution",
+    "ready_for_depth",
+  ]),
   capitalRange: z
     .enum(["under_5m", "5_20m", "20_50m", "above_50m", "prefer_not_say"])
     .optional(),

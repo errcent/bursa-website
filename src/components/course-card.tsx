@@ -122,6 +122,7 @@ export function CourseCard({
               <h3
                 className={cn(
                   "line-clamp-2 font-heading font-semibold leading-tight text-white",
+                  (isFeatured || isGuidance) && "text-balance",
                   isFeatured || isGuidance
                     ? "text-base @[280px]:text-lg"
                     : "text-sm @[280px]:text-[15px]"

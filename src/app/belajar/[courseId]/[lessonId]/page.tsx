@@ -5,7 +5,6 @@ import { ChevronLeft } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { LearningWorkspace } from "@/components/learning-workspace";
-import { requireSession } from "@/lib/auth/server-page-guard";
 import { getCatalogCourseSlugs, getCourseBySlug, getMentorBySlug } from "@/lib/catalog/server";
 
 export async function generateStaticParams() {
@@ -40,7 +39,6 @@ export default async function LearningPage({
   params: Promise<{ courseId: string; lessonId: string }>;
 }) {
   const { courseId, lessonId } = await params;
-  await requireSession(`/belajar/${courseId}/${lessonId}`);
   const course = await getCourseBySlug(courseId);
   if (!course) notFound();
 

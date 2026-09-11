@@ -1,7 +1,7 @@
-import type { LearningGuidanceAnswers } from "@/lib/learning/guidance/types";
+import type { GuidanceQuizQuestionId, LearningGuidanceAnswers } from "@/lib/learning/guidance/types";
 import type { Instrument } from "@/lib/types";
 
-export type GuidanceQuestionId = keyof LearningGuidanceAnswers;
+export type GuidanceQuestionId = GuidanceQuizQuestionId;
 
 export interface GuidanceOption<T extends string = string> {
   value: T;
@@ -17,188 +17,183 @@ export interface GuidanceQuestion {
   options: GuidanceOption[];
 }
 
+/**
+ * Psych flow: anchor → experience → motivation → loss scenario → monitor horizon
+ * → time budget → primary gap (always answered).
+ */
 export const GUIDANCE_QUESTIONS: GuidanceQuestion[] = [
   {
     id: "instrument",
     title: "Instrumen apa yang ingin kamu fokuskan?",
-    subtitle:
-      "Pilih pasar yang paling relevan dengan tujuanmu. Kamu bisa eksplorasi instrumen lain nanti.",
+    subtitle: "Rekomendasi di akhir quiz akan difilter ke pasar ini dulu.",
     options: [
       {
         value: "Saham",
         label: "Saham Indonesia",
-        description: "IDX, analisis fundamental & teknikal emiten lokal.",
+        description: "BEI: fundamental, teknikal, dan dividen emiten lokal.",
       },
       {
         value: "Crypto",
-        label: "Aset Kripto",
-        description: "Bitcoin, altcoin, dan dinamika pasar 24/7.",
+        label: "Aset kripto",
+        description: "Bitcoin, altcoin, pasar 24/7 dengan volatilitas tinggi.",
       },
       {
         value: "Forex",
         label: "Forex",
-        description: "Pasangan mata uang global dengan leverage tinggi.",
+        description: "Pasangan mata uang global; butuh disiplin risiko ketat.",
       },
     ] satisfies GuidanceOption<Instrument>[],
   },
   {
     id: "experience",
-    title: "Sejauh mana pengalaman trading dan investasimu?",
-    subtitle: "Jujur di sini, kami akan mulai dari level yang tepat, bukan yang terlalu cepat.",
+    title: "Sejauh mana kamu sudah terlibat di pasar?",
+    subtitle: "Tidak ada jawaban benar. Yang penting level materi pas, tidak terlalu cepat.",
     options: [
       {
         value: "never",
-        label: "Belum pernah trading",
-        description: "Baru dengar istilah candlestick & order.",
+        label: "Baru mulai, belum pernah transaksi",
+        description: "Masih memahami istilah dasar seperti order dan candlestick.",
       },
       {
         value: "demo",
-        label: "Sudah coba akun demo",
-        description: "Pernah buka chart tapi belum pakai uang riil.",
+        label: "Sudah coba akun demo / paper trading",
+        description: "Pernah buka chart, belum rutin pakai uang riil.",
       },
       {
         value: "regular",
-        label: "Sudah trading rutin",
-        description: "Punya strategi dasar, masih mencari konsistensi.",
+        label: "Sudah transaksi rutin",
+        description: "Punya pendekatan dasar, masih mencari konsistensi.",
       },
       {
         value: "profitable",
-        label: "Sudah punya proses sendiri",
-        description: "Butuh pendalaman dan evaluasi lanjutan.",
-      },
-    ],
-  },
-  {
-    id: "tradingStyle",
-    title: "Gaya trading apa yang paling cocok untukmu?",
-    subtitle: "Ini membantu kami merekomendasikan durasi kelas yang sesuai ritmemu.",
-    options: [
-      {
-        value: "scalping",
-        label: "Scalping",
-        description: "Entry cepat, menit hingga beberapa jam.",
-      },
-      {
-        value: "day_trading",
-        label: "Day trading",
-        description: "Posisi dibuka-tutup dalam hari yang sama, beberapa jam hingga satu hari.",
-      },
-      {
-        value: "swing",
-        label: "Swing trading",
-        description: "Posisi beberapa hari hingga minggu.",
-      },
-      {
-        value: "long_term",
-        label: "Investasi jangka panjang",
-        description: "Hold berminggu-minggu hingga bulan.",
+        label: "Sudah punya proses yang berjalan",
+        description: "Butuh evaluasi lanjutan atau spesialisasi lebih dalam.",
       },
     ],
   },
   {
     id: "goal",
-    title: "Apa tujuan utama belajarmu?",
-    subtitle: "Tujuan yang jelas membantu memilih kelas dan playlist yang fokus pada outcome yang kamu inginkan.",
+    title: "Apa yang paling ingin kamu capai dari belajar?",
+    subtitle: "Satu fokus utama. Kami prioritaskan kelas yang mendukung outcome ini.",
     options: [
       {
         value: "basics",
-        label: "Pahami dasar dulu",
-        description: "Bangun fondasi sebelum pakai modal besar.",
+        label: "Paham cara kerja pasar dulu",
+        description: "Fondasi sebelum modal besar atau strategi rumit.",
       },
       {
         value: "side_income",
-        label: "Pahami pasar di sela pekerjaan",
-        description: "Belajar trading dan investasi tanpa mengubah pekerjaan utama.",
+        label: "Belajar tanpa mengganggu pekerjaan utama",
+        description: "Materi praktis yang muat di sela waktu.",
       },
       {
         value: "wealth",
-        label: "Bangun kekayaan",
-        description: "Akumulasi aset jangka menengah-panjang.",
+        label: "Bangun aset jangka menengah-panjang",
+        description: "Akumulasi terukur, bukan cari cuan cepat.",
       },
       {
         value: "retirement",
-        label: "Persiapan pensiun",
-        description: "Portofolio stabil untuk masa depan.",
+        label: "Siapkan portofolio untuk masa depan",
+        description: "Pendekatan stabil dan berkelanjutan.",
       },
     ],
   },
   {
     id: "riskTolerance",
-    title: "Bagaimana toleransi risikomu?",
-    subtitle:
-      "Di Indonesia, banyak trader baru kehilangan modal karena terlalu agresif. Pilih yang paling jujur.",
+    title: "Bayangkan posisimu turun sekitar 10% minggu ini. Apa reaksimu?",
+    subtitle: "Pilih yang paling jujur. Ini membantu selaraskan intensitas materi, bukan menilai kamu.",
     options: [
       {
         value: "conservative",
-        label: "Konservatif",
-        description: "Prioritas lindungi modal, risiko kecil, target realistis.",
+        label: "Review rencana, kurangi exposure atau pause dulu",
+        description: "Prioritas lindungi modal; tidak lanjut asal-asalan.",
       },
       {
         value: "moderate",
-        label: "Seimbang",
-        description: "Risiko terukur dengan potensi yang wajar.",
+        label: "Tahan jika alasan entry masih valid",
+        description: "Risiko terukur, tidak panik tapi juga tidak acuh.",
       },
       {
         value: "aggressive",
-        label: "Agresif",
-        description: "Siap ambil risiko tinggi demi potensi besar.",
+        label: "Cari peluang tambah / re-entry dengan aturan jelas",
+        description: "Nyaman volatilitas, asal ada risk management.",
+      },
+    ],
+  },
+  {
+    id: "tradingStyle",
+    title: "Seberapa sering kamu realistis bisa pantau pasar?",
+    subtitle: "Bukan gaya ideal, melainkan yang kamu sanggup jalankan minggu ini.",
+    options: [
+      {
+        value: "scalping",
+        label: "Hampir tiap jam saat sesi buka",
+        description: "Butuh materi ringkas & eksekusi cepat (menit-jam).",
+      },
+      {
+        value: "day_trading",
+        label: "Beberapa kali sehari",
+        description: "Posisi dibuka-tutup dalam hari yang sama.",
+      },
+      {
+        value: "swing",
+        label: "Beberapa kali seminggu",
+        description: "Hold beberapa hari sampai minggu; tidak perlu pantau terus.",
+      },
+      {
+        value: "long_term",
+        label: "Sesekali, fokus horizon bulanan",
+        description: "Analisis mendalam, jarang eksekusi.",
       },
     ],
   },
   {
     id: "timeAvailability",
-    title: "Berapa waktu yang bisa kamu luangkan per minggu?",
-    subtitle: "Kami akan menyesuaikan rekomendasi kelas berdasarkan komitmen waktumu.",
+    title: "Berapa jam per minggu yang bisa kamu sisihkan untuk belajar?",
+    subtitle: "Termasuk menonton video, catatan, dan latihan, bukan hanya buka chart.",
     options: [
       {
         value: "minimal",
         label: "Kurang dari 3 jam",
-        description: "Belajar ringan di sela aktivitas.",
+        description: "Belajar ringkas di sela rutinitas.",
       },
       {
         value: "part_time",
         label: "3-7 jam",
-        description: "Rutinitas belajar terjadwal.",
+        description: "Jadwal belajar terencana.",
       },
       {
         value: "dedicated",
         label: "Lebih dari 7 jam",
-        description: "Fokus serius, siap deep dive.",
+        description: "Siap program yang lebih panjang dan mendalam.",
       },
     ],
   },
   {
-    id: "capitalRange",
-    title: "Kisaran modal yang siap kamu alokasikan? (opsional)",
-    subtitle:
-      "Opsional, jika diisi, kami sesuaikan level kelas dan ekspektasi risiko. Bisa dilewati kapan saja.",
-    optional: true,
+    id: "learningGap",
+    title: "Apa hambatan terbesarmu saat ini?",
+    subtitle: "Jawaban ini paling memengaruhi kelas dan playlist pertama yang kami pilih.",
     options: [
       {
-        value: "under_5m",
-        label: "Di bawah Rp 5 juta",
-        description: "Mulai kecil, fokus belajar dulu.",
+        value: "no_foundation",
+        label: "Belum punya fondasi, bingung mulai dari mana",
+        description: "Butuh peta belajar dari nol.",
       },
       {
-        value: "5_20m",
-        label: "Rp 5-20 juta",
-        description: "Modal pemula yang umum di Indonesia.",
+        value: "emotional_control",
+        label: "Emosi/FOMO sering mengganggu keputusan",
+        description: "Butuh disiplin & mindset sebelum strategi baru.",
       },
       {
-        value: "20_50m",
-        label: "Rp 20-50 juta",
-        description: "Modal menengah dengan ruang eksperimen.",
+        value: "inconsistent_execution",
+        label: "Sudah paham teori, eksekusi belum konsisten",
+        description: "Butuh struktur latihan & checklist praktis.",
       },
       {
-        value: "above_50m",
-        label: "Di atas Rp 50 juta",
-        description: "Modal signifikan, butuh disiplin risiko ketat.",
+        value: "ready_for_depth",
+        label: "Siap naik level: analisis & strategi lebih dalam",
+        description: "Fondasi ada, cari pendalaman.",
       },
-      {
-        value: "prefer_not_say",
-        label: "Lebih baik tidak menyebutkan",
-        description: "Lewati pertanyaan ini.",
-      },
-    ],
+    ] satisfies GuidanceOption<LearningGuidanceAnswers["learningGap"]>[],
   },
 ];

@@ -1,5 +1,5 @@
 /**
- * Public demo SSOT — single-decision funnel (GT /decide 2026-09-11).
+ * Public demo SSOT: single-decision funnel (GT /decide 2026-09-11).
  * Guest surfaces: consume demo → waitlist. No tier theater on UI.
  */
 
@@ -59,7 +59,7 @@ export const AUTH_SURFACE_COPY: Record<
 };
 
 /** Locked overlay line on lesson player */
-export const LOCKED_LESSON_LINE = "Preview demo — konten penuh setelah peluncuran";
+export const LOCKED_LESSON_LINE = "Preview demo: konten penuh setelah peluncuran";
 
 /** /daftar → waitlist explainer */
 export const DAFTAR_CLOSED_EXPLAINER = {
@@ -69,7 +69,7 @@ export const DAFTAR_CLOSED_EXPLAINER = {
   secondaryCta: "Lihat katalog",
 } as const;
 
-/** Signed-out settings / pengaturan — waitlist-only, no tier ladder */
+/** Signed-out settings / pengaturan: waitlist-only, no tier ladder */
 export const DEMO_WAITLIST_EXPLAINER = {
   headline: "Demo publik Bursanalar",
   sub: "Jelajahi katalog, preview lesson, dan quiz tanpa akun. Gabung waitlist untuk kabar early access.",

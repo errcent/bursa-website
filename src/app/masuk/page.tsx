@@ -4,7 +4,7 @@ import { AuthPageShell } from "@/components/auth-page-shell";
 import { LoginForm } from "@/components/login-form";
 
 export const metadata = {
-  title: "Masuk — undangan early access",
+  title: "Masuk: undangan early access",
   description:
     "Akses akun hanya untuk pengguna undangan. Demo publik tersedia tanpa login.",
   robots: { index: false, follow: false },
@@ -30,7 +30,7 @@ function LoginFormFallback() {
 export default function LoginPage() {
   return (
     <AuthPageShell
-      title="Akses akun — undangan saja"
+      title="Akses akun: undangan saja"
       description="Saat ini hanya untuk pengguna undangan. Jelajahi demo publik tanpa akun, atau gabung waitlist."
       showMobileBack
     >

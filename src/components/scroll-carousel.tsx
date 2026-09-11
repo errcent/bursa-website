@@ -103,6 +103,17 @@ export function discoverMentorGetScrollPerView(width: number) {
 /** Mobile peek for discover, smaller than default 0.76 but not cramped. */
 export const DISCOVER_MOBILE_PEEK_RATIO = 0.68;
 
+/** Quiz supporting tier: smaller tiles, more visible variety per row. */
+export function guidanceSupportingGetScrollPerView(width: number) {
+  if (width < 768) return 1.42;
+  if (width >= 1200) return 4.8;
+  if (width >= 1000) return 4.2;
+  if (width >= 768) return 3.4;
+  return 2.4;
+}
+
+export const GUIDANCE_SUPPORTING_MOBILE_PEEK_RATIO = 0.58;
+
 /**
  * Mentor tiles are narrower/simpler than course cards, so more fit per row:
  * ~3.2 at md, ~4.2 at lg, ~5.2 at xl. Also desktop-only, same reasoning as above.

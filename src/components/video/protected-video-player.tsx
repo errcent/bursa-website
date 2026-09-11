@@ -56,7 +56,7 @@ export interface ProtectedVideoPlayerProps {
   seekRequestSeconds?: number | null;
   onTimeUpdate?: (seconds: number) => void;
   onProtectionViolation?: (type: ProtectionViolationType, lessonId: string) => void;
-  /** Guest locked overlay — link to first preview lesson in course. */
+  /** Guest locked overlay: link to first preview lesson in course. */
   previewLessonHref?: string;
   /** Post-auth / waitlist return path for locked overlay CTAs. */
   lockedReturnPath?: string;

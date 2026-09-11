@@ -2,6 +2,8 @@ import { CourseLevel } from "@prisma/client";
 
 import { levelFromUi, levelToUi } from "@/lib/catalog/enums";
 import { courseQualityScore } from "@/lib/catalog/ranking";
+import { evaluateCourseCoherence } from "@/lib/learning/guidance/coherence";
+import { resolveCourseTags } from "@/lib/learning/guidance/tags";
 import type { LearningGuidanceAnswers } from "@/lib/learning/guidance/types";
 import type { Course, Level, Mentor } from "@/lib/types";
 
@@ -304,7 +306,6 @@ export function scoreCourseForGuidance(
   const courseLevel = levelFromUi(course.level);
   const buckets: ScoredReason[] = [];
 
-  buckets.push({ points: 12, text: `Fokus: ${answers.instrument}` });
   buckets.push(scoreLevelFit(profile, courseLevel, course.level, answers.experience));
   buckets.push(scoreGoalFit(answers, course.level));
   buckets.push(...scoreStyleAndPace(answers, profile, course));
@@ -329,8 +330,17 @@ export function scoreCourseForGuidance(
     buckets.push({ points: -15, text: "" });
   }
 
-  const score = buckets.reduce((sum, item) => sum + item.points, 0);
-  return { score, reasons: topReasons(buckets) };
+  const baseScore = buckets.reduce((sum, item) => sum + item.points, 0);
+  const tags = resolveCourseTags(course);
+  const coherence = evaluateCourseCoherence(answers, profile, tags, course);
+
+  if (coherence.excluded) {
+    return { score: 0, reasons: [] };
+  }
+
+  const adjustedScore = Math.round(baseScore * coherence.multiplier + coherence.bonus);
+  const coherenceReasons = coherence.reasons.map((text) => ({ points: 10, text }));
+  return { score: adjustedScore, reasons: topReasons([...buckets, ...coherenceReasons]) };
 }
 
 export function scoreMentorForGuidance(

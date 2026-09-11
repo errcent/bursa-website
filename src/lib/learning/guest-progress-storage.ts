@@ -1,4 +1,4 @@
-/** Guest lesson progress in localStorage — HOLD-05 B: 30-day TTL. */
+/** Guest lesson progress in localStorage (HOLD-05 B: 30-day TTL). */
 
 const TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -36,7 +36,7 @@ export function saveGuestProgress(courseSlug: string, completedLessonIds: Iterab
     };
     localStorage.setItem(storageKey(courseSlug), JSON.stringify(payload));
   } catch {
-    // Quota or private mode — ignore
+    // Quota or private mode: ignore
   }
 }
 

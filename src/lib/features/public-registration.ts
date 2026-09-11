@@ -1,6 +1,6 @@
 /**
  * Public self-serve registration (/daftar, POST /api/auth/register, new Google OAuth users).
- * Disabled by default — Founder Lock 2026-09-11: waitlist primary, curated early access.
+ * Disabled by default. Founder Lock 2026-09-11: waitlist primary, curated early access.
  * Set NEXT_PUBLIC_PUBLIC_REGISTRATION_ENABLED=true to restore open signup.
  */
 

@@ -1,17 +1,21 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 
+import { CarouselNavButtons } from "@/components/carousel-nav-buttons";
 import {
   DiscoverInfiniteCarousel,
   type InfiniteCarouselHandle,
 } from "@/components/infinite-carousel";
-import { peekGetScrollPerView } from "@/components/scroll-carousel";
+import {
+  DISCOVER_MOBILE_PEEK_RATIO,
+  SCROLL_CAROUSEL_GAP,
+  discoverCoverflowGetScrollPerView,
+} from "@/components/scroll-carousel";
+import { useMobileLayout } from "@/hooks/use-mobile-layout";
 import { cn } from "@/lib/utils";
 
-/** One landscape card + peek of the next on mobile. */
-const GUIDANCE_PICK_PEEK_RATIO = 0.56;
-const GUIDANCE_PICK_GAP = 14;
+const LANDING_MOBILE_GAP = 10;
 
 export function GuidancePickCarousel<T>({
   items,
@@ -21,6 +25,11 @@ export function GuidancePickCarousel<T>({
   renderCard,
   singleItemClassName,
   className,
+  sectionTitle,
+  sectionLink,
+  getPerView = discoverCoverflowGetScrollPerView,
+  mobilePeekRatio = DISCOVER_MOBILE_PEEK_RATIO,
+  bleedClassName = "discover-carousel-bleed",
 }: {
   items: T[];
   ariaLabel: string;
@@ -29,36 +38,72 @@ export function GuidancePickCarousel<T>({
   renderCard: (item: T) => ReactNode;
   singleItemClassName?: string;
   className?: string;
+  sectionTitle?: string;
+  sectionLink?: ReactNode;
+  getPerView?: (width: number) => number;
+  mobilePeekRatio?: number;
+  bleedClassName?: string;
 }) {
+  const isMobile = useMobileLayout();
   const carouselRef = useRef<InfiniteCarouselHandle>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const scrollByStep = useCallback((direction: -1 | 1) => {
+    carouselRef.current?.pauseInteraction();
+    carouselRef.current?.nudge(direction === 1 ? -1 : 1);
+  }, []);
+
+  const scrollToIndex = useCallback((index: number) => {
+    carouselRef.current?.pauseInteraction();
+    carouselRef.current?.goToIndex(index);
+  }, []);
 
   if (items.length === 0) return null;
 
   const activeReason = getReason(items[activeIndex]!);
+  const infiniteScroll = items.length > 1;
 
   if (items.length === 1) {
     const reason = getReason(items[0]!);
     return (
-      <div className={cn("mx-auto flex w-full max-w-xl flex-col gap-3", singleItemClassName, className)}>
+      <div className={cn("mx-auto flex w-full max-w-2xl flex-col gap-3", singleItemClassName, className)}>
         {renderCard(items[0]!)}
         {reason ? (
-          <p className="px-2 text-center text-xs leading-relaxed text-muted-foreground">{reason}</p>
+          <p className="guidance-balanced-copy mx-auto max-w-[34ch] px-2 text-center text-sm leading-relaxed text-muted-foreground">
+            {reason}
+          </p>
         ) : null}
       </div>
     );
   }
 
   return (
-    <div className={cn("relative min-w-0", className)}>
-      <div className="guidance-pick-carousel-bleed relative z-[1] min-w-0">
+    <div className={cn("course-carousel-premium relative min-w-0", className)}>
+      {sectionTitle ? (
+        <div className="relative z-[1] mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <h3 className="section-title">{sectionTitle}</h3>
+            {sectionLink}
+          </div>
+          <CarouselNavButtons
+            canScrollLeft={infiniteScroll}
+            canScrollRight={infiniteScroll}
+            onPrev={() => scrollByStep(-1)}
+            onNext={() => scrollByStep(1)}
+            prevLabel={`${ariaLabel} sebelumnya`}
+            nextLabel={`${ariaLabel} berikutnya`}
+          />
+        </div>
+      ) : null}
+
+      <div className={cn("relative z-[1] min-w-0", bleedClassName)}>
         <DiscoverInfiniteCarousel
           ref={carouselRef}
           items={items}
           ariaLabel={ariaLabel}
-          getPerView={peekGetScrollPerView}
-          gap={GUIDANCE_PICK_GAP}
-          mobilePeekRatio={GUIDANCE_PICK_PEEK_RATIO}
+          getPerView={getPerView}
+          gap={isMobile ? LANDING_MOBILE_GAP : SCROLL_CAROUSEL_GAP}
+          mobilePeekRatio={mobilePeekRatio}
           allowDragFromSlides
           coverflow
           onActiveIndexChange={setActiveIndex}
@@ -69,29 +114,31 @@ export function GuidancePickCarousel<T>({
         />
       </div>
 
-      <div className="relative z-[1] mt-3 min-h-[1.25rem] px-4">
-        {activeReason ? (
-          <p className="text-center text-xs leading-relaxed text-muted-foreground">{activeReason}</p>
-        ) : null}
-      </div>
+      {activeReason ? (
+        <p className="guidance-balanced-copy relative z-[1] mx-auto mt-5 max-w-[34ch] px-2 text-center text-sm leading-relaxed text-muted-foreground">
+          {activeReason}
+        </p>
+      ) : null}
 
-      <div
-        className="relative z-[1] mt-4 flex items-center justify-center gap-3"
-        role="tablist"
-        aria-label={`Navigasi ${ariaLabel}`}
-      >
-        {items.map((item, index) => (
-          <button
-            key={getItemKey(item)}
-            type="button"
-            role="tab"
-            aria-selected={index === activeIndex}
-            aria-current={index === activeIndex}
-            aria-label={`Item ${index + 1}`}
-            onClick={() => carouselRef.current?.goToIndex(index)}
-            className="carousel-dot"
-          />
-        ))}
+      <div className="relative z-[1] mt-6 flex items-center justify-center gap-3 sm:mt-8">
+        <div
+          className="flex items-center gap-1.5"
+          role="tablist"
+          aria-label={`Navigasi ${ariaLabel}`}
+        >
+          {items.map((item, index) => (
+            <button
+              key={getItemKey(item)}
+              type="button"
+              role="tab"
+              aria-selected={index === activeIndex}
+              aria-current={index === activeIndex}
+              aria-label={`Item ${index + 1}`}
+              onClick={() => scrollToIndex(index)}
+              className="carousel-dot"
+            />
+          ))}
+        </div>
         <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
           {activeIndex + 1}/{items.length}
         </span>

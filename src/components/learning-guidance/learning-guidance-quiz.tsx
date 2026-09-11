@@ -130,6 +130,18 @@ export function LearningGuidanceQuiz() {
   );
 
   useEffect(() => {
+    if (session?.userId || session?.email) return;
+    if (result || saveConflict) return;
+
+    const pending = readPendingGuidance();
+    if (pending) {
+      setAnswers(pending.answers);
+      setResult(pending.result);
+      setSaved(false);
+    }
+  }, [session, result, saveConflict]);
+
+  useEffect(() => {
     if (!session?.userId && !session?.email) return;
     if (result || saveConflict || hydratingRef.current) return;
 

@@ -61,7 +61,7 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
       <Button
         size="sm"
         className="btn-primary hidden h-auto min-h-8 flex-col gap-0 px-3 py-1.5 sm:flex"
-        render={<Link href={GUEST_PRIMARY_HREF} title={`${GUEST_PRIMARY_HINT} — demo publik`} />}
+        render={<Link href={GUEST_PRIMARY_HREF} title={`${GUEST_PRIMARY_HINT} (demo publik)`} />}
       >
         <span className="text-[9px] font-normal uppercase leading-none tracking-wide opacity-80">
           {GUEST_PRIMARY_HINT}

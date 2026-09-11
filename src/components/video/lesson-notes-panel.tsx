@@ -404,7 +404,7 @@ export function LessonNotesPanel({
       <div className={cn("py-4 text-center", isSidebar && "py-2")}>
         <StickyNote className="mx-auto mb-2 size-5 text-muted-foreground" />
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Catatan lesson butuh akun early access. Pendaftaran baru belum dibuka — gabung
+          Catatan lesson butuh akun early access. Pendaftaran baru belum dibuka. Gabung
           waitlist dulu.
         </p>
         <div

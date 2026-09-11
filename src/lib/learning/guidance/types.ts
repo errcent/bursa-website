@@ -13,6 +13,13 @@ import type {
 import type { PlaylistSummary } from "@/lib/playlist/types";
 import type { Course, Instrument as UiInstrument, Level, Mentor } from "@/lib/types";
 
+/** Primary learning/trading blocker (Q7); scoring-only, not persisted to Prisma yet. */
+export type LearningGuidanceGap =
+  | "no_foundation"
+  | "emotional_control"
+  | "inconsistent_execution"
+  | "ready_for_depth";
+
 /** Wire format sent from the quiz UI to the API. */
 export interface LearningGuidanceAnswers {
   instrument: UiInstrument;
@@ -21,10 +28,25 @@ export interface LearningGuidanceAnswers {
   goal: "side_income" | "wealth" | "basics" | "retirement";
   riskTolerance: "conservative" | "moderate" | "aggressive";
   timeAvailability: "minimal" | "part_time" | "dedicated";
+  /** Q7, required in quiz; drives psychology/depth coherence. */
+  learningGap: LearningGuidanceGap;
+  /** Legacy / optional; no longer asked in quiz. */
   capitalRange?: "under_5m" | "5_20m" | "20_50m" | "above_50m" | "prefer_not_say";
   /** Default `mixed` when omitted (no longer asked in quiz). */
   learningFormat?: "video" | "live" | "community" | "mixed";
 }
+
+/** Keys presented in the 7-step quiz (exactly 7). */
+export type GuidanceQuizQuestionId = Extract<
+  keyof LearningGuidanceAnswers,
+  | "instrument"
+  | "experience"
+  | "goal"
+  | "riskTolerance"
+  | "tradingStyle"
+  | "timeAvailability"
+  | "learningGap"
+>;
 
 export interface LearningGuidanceProfileRecord {
   instrument: Instrument;
@@ -57,6 +79,16 @@ export interface ScoredPlaylist {
   reasons: string[];
 }
 
+export type GuidancePickKind = "course" | "playlist";
+
+export interface ScoredGuidancePick {
+  kind: GuidancePickKind;
+  score: number;
+  reasons: string[];
+  course?: Course;
+  playlist?: PlaylistSummary;
+}
+
 export interface LearningGuidanceResult {
   /** Short path label, e.g. "Forex · Menengah". */
   pathTitle: string;
@@ -66,7 +98,13 @@ export interface LearningGuidanceResult {
   profileTags: string[];
   /** @deprecated Kept empty for older clients; narrative steps removed from UI. */
   pathSteps: string[];
+  /** Top-tier merged picks (course or playlist). */
+  primary: ScoredGuidancePick[];
+  /** Secondary-tier picks; same instrument context only. */
+  supporting: ScoredGuidancePick[];
+  /** All scored courses (score > 0), descending. */
   courses: ScoredCourse[];
+  /** All scored playlists (score > 0), descending. */
   playlists: ScoredPlaylist[];
   /** @deprecated Always empty; mentor recommendations removed from guidance. */
   mentors: ScoredMentor[];
