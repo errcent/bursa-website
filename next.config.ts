@@ -78,8 +78,8 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       { source: "/jadi-mentor", destination: "/bantuan", permanent: true },
-      { source: "/daftar", destination: "/waitlist", permanent: false },
-      { source: "/daftar/:path*", destination: "/waitlist", permanent: false },
+      { source: "/daftar", destination: "/waitlist?from=daftar", permanent: false },
+      { source: "/daftar/:path*", destination: "/waitlist?from=daftar", permanent: false },
       { source: "/lab", destination: "/katalog", permanent: true },
       { source: "/lab/:path*", destination: "/katalog", permanent: true },
     ];
