@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { isProductionHostRouting, originFor } from "@/lib/hosts/hosts";
 import { noteCopy } from "@/lib/note/copy";
 import { noteSsoStartHref } from "@/lib/note/sso-urls";
+import { courseClassHref } from "@/lib/security/safe-http-url";
 import type { JournalKind, JournalMode } from "@/lib/note/types";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
@@ -50,6 +51,7 @@ export function NoteEntryForm({ initialDate }: { initialDate?: string | null }) 
     pnlNumber != null &&
     pnlNumber < 0 &&
     !emotion;
+  const previewCourseHref = courseClassHref(catalogBase, relatedCourseSlug);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -213,9 +215,9 @@ export function NoteEntryForm({ initialDate }: { initialDate?: string | null }) 
             placeholder="slug-kelas (opsional)"
             aria-label={copy.linkKelas}
           />
-          {relatedCourseSlug.trim() ? (
+          {previewCourseHref ? (
             <a
-              href={`${catalogBase}/kelas/${relatedCourseSlug.trim()}`}
+              href={previewCourseHref}
               className="mt-1 inline-block text-xs text-zinc-400 hover:text-zinc-200"
               target="_blank"
               rel="noreferrer"
