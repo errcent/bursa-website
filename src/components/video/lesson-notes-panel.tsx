@@ -17,7 +17,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useAuth } from "@/components/auth-provider";
 import { NotesRichEditor } from "@/components/video/notes-rich-editor";
 import { Button } from "@/components/ui/button";
-import { buildLoginHref, buildRegisterHref } from "@/lib/auth/redirect";
+import { buildRegisterHref } from "@/lib/auth/redirect";
 import {
   downloadNotesExport,
   noteHasVisibleContent,
@@ -143,8 +143,7 @@ export function LessonNotesPanel({
 }: LessonNotesPanelProps) {
   const { session } = useAuth();
   const pathname = usePathname();
-  const loginHref = buildLoginHref(pathname);
-  const registerHref = useMemo(() => buildRegisterHref(pathname), [pathname]);
+  const waitlistHref = useMemo(() => buildRegisterHref(pathname), [pathname]);
 
   const [note, setNote] = useState<LessonNote | null>(null);
   const [html, setHtml] = useState("<p></p>");
@@ -407,28 +406,13 @@ export function LessonNotesPanel({
           Catatan lesson butuh akun early access. Pendaftaran baru belum dibuka. Gabung
           waitlist dulu.
         </p>
-        <div
-          className={cn(
-            "mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center",
-            isSidebar && "sm:flex-col"
-          )}
+        <Button
+          size="sm"
+          className="btn-primary mt-4 w-full sm:mx-auto sm:min-w-[7.5rem]"
+          render={<Link href={waitlistHref} />}
         >
-          <Button
-            size="sm"
-            className="btn-primary w-full sm:min-w-[7.5rem]"
-            render={<Link href={registerHref} />}
-          >
-            Gabung waitlist
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="w-full sm:min-w-[7.5rem]"
-            render={<Link href={loginHref} />}
-          >
-            Sudah punya akun
-          </Button>
-        </div>
+          Gabung waitlist
+        </Button>
       </div>
     );
   }

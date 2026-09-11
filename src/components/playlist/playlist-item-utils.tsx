@@ -1,7 +1,5 @@
-import Link from "next/link";
 import { CheckCircle2, Lock } from "lucide-react";
 
-import { buildLoginHref } from "@/lib/auth/redirect";
 import type { PlaylistItemAccessStatus, PlaylistItemView } from "@/lib/playlist/types";
 
 export function formatPlaylistDuration(minutes: number | null) {
@@ -27,13 +25,9 @@ export function isItemPlayable(status: PlaylistItemAccessStatus | undefined) {
   return status === "owned" || status === "free";
 }
 
-export function itemHref(
-  item: PlaylistItemView,
-  status: PlaylistItemAccessStatus | undefined,
-  isLoggedIn: boolean
-) {
-  if (isItemPlayable(status)) return lessonHref(item);
-  return isLoggedIn ? lessonHref(item) : buildLoginHref(lessonHref(item));
+/** Always deep-link to lesson/kelas; guest locked playback is handled in /belajar. */
+export function itemHref(item: PlaylistItemView) {
+  return lessonHref(item);
 }
 
 export function AccessBadge({ status }: { status: PlaylistItemAccessStatus | undefined }) {

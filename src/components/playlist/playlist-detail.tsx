@@ -77,8 +77,8 @@ export function PlaylistDetailView({ slug }: { slug: string }) {
     if (!playlist?.items.length) return null;
     const first = playlist.items.find((item) => isItemPlayable(item.accessStatus));
     if (!first) return null;
-    return itemHref(first, first.accessStatus, Boolean(session));
-  }, [playlist?.items, session]);
+    return itemHref(first);
+  }, [playlist?.items]);
 
   const scrollToVideos = useCallback(() => {
     videosSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });

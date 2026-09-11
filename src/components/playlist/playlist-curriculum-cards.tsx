@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { UserRound } from "lucide-react";
 
-import { useAuth } from "@/components/auth-provider";
 import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
 import {
   AccessBadge,
@@ -26,8 +25,6 @@ export function PlaylistCurriculumCards({
   className,
   hideBookmark = false,
 }: PlaylistCurriculumCardsProps) {
-  const { session } = useAuth();
-
   if (playlist.items.length === 0) {
     return (
       <div className="mx-auto max-w-3xl rounded-xl border border-dashed border-border/60 px-6 py-12 text-center">
@@ -42,7 +39,7 @@ export function PlaylistCurriculumCards({
         {playlist.items.map((item) => {
           const status = item.accessStatus;
           const playable = isItemPlayable(status);
-          const href = itemHref(item, status, Boolean(session));
+          const href = itemHref(item);
           const isFree = status === "free";
           const hasAccess = status === "owned";
           const durationMinutes = item.durationMinutes ?? 0;
