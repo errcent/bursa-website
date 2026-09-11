@@ -3,6 +3,7 @@
 import { Fragment, useMemo, useState, type ReactNode } from "react";
 
 import { isProductionHostRouting, originFor } from "@/lib/hosts/hosts";
+import { courseClassHref } from "@/lib/security/safe-http-url";
 import {
   dayKey,
   formatNoteTimestamp,
@@ -62,6 +63,9 @@ export function NoteEntryList({
             const open = openId === entry.id;
             const ts = formatNoteTimestamp(entry.openedAt);
             const isRefleksi = entry.kind === "REFLEKSI";
+            const courseHref = entry.relatedCourseSlug
+              ? courseClassHref(catalogBase, entry.relatedCourseSlug)
+              : null;
             return (
               <Fragment key={entry.id}>
                 <tr
@@ -73,9 +77,9 @@ export function NoteEntryList({
                   )}
                   <td className="px-3 py-2.5 font-medium text-zinc-200">
                     {entry.symbol}
-                    {entry.relatedCourseSlug ? (
+                    {courseHref ? (
                       <a
-                        href={`${catalogBase}/kelas/${entry.relatedCourseSlug}`}
+                        href={courseHref}
                         className="ml-2 text-[11px] font-normal text-zinc-500 hover:text-zinc-300"
                         onClick={(e) => e.stopPropagation()}
                         target="_blank"

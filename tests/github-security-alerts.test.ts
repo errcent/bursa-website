@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 
 import { decryptField, encryptField, isEncryptedField } from "@/lib/crypto/field-encryption";
 import { buildTxtExport, noteHasVisibleContent } from "@/lib/lesson-notes/export";
-import { toSafeHttpUrl } from "@/lib/security/safe-http-url";
+import { courseClassHref, toSafeCourseSlug, toSafeHttpUrl } from "@/lib/security/safe-http-url";
 import { mentorL1ApplicationSchema } from "@/lib/validations/mentor-application";
 import { DEMO_VIDEO_URL, resolvePlayableVideoUrl } from "@/lib/video/demo";
 
@@ -21,6 +21,34 @@ const l1Base = {
   l1_unique_knowledge: "z".repeat(400),
   l1_confirmation: true as const,
 };
+
+describe("courseClassHref", () => {
+  it("builds safe relative and absolute class links", () => {
+    assert.equal(courseClassHref("", "swing-trading-dasar"), "/kelas/swing-trading-dasar");
+    assert.equal(
+      courseClassHref("https://bursanalar.com", "swing-trading-dasar"),
+      "https://bursanalar.com/kelas/swing-trading-dasar",
+    );
+  });
+
+  it("rejects javascript and path traversal slugs", () => {
+    assert.equal(courseClassHref("", "javascript:alert(1)"), null);
+    assert.equal(courseClassHref("", "../admin"), null);
+    assert.equal(courseClassHref("", "foo/bar"), null);
+  });
+});
+
+describe("toSafeCourseSlug", () => {
+  it("accepts catalog-style slugs", () => {
+    assert.equal(toSafeCourseSlug("  psikologi-trading-anti-fomo  "), "psikologi-trading-anti-fomo");
+  });
+
+  it("rejects empty and unsafe values", () => {
+    assert.equal(toSafeCourseSlug(""), null);
+    assert.equal(toSafeCourseSlug("a".repeat(121)), null);
+    assert.equal(toSafeCourseSlug("<script>"), null);
+  });
+});
 
 describe("toSafeHttpUrl", () => {
   it("keeps http(s) URLs", () => {
