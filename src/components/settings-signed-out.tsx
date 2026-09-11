@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
-import { buildLoginHref } from "@/lib/auth/redirect";
+import { buildLoginHref, buildRegisterHref } from "@/lib/auth/redirect";
 
 export function SettingsSignedOut() {
   const { messages } = useLanguage();
@@ -27,9 +27,9 @@ export function SettingsSignedOut() {
         <Button
           variant="outline"
           className="h-11 border-border/70 bg-transparent"
-          render={<Link href="/daftar" />}
+          render={<Link href={buildRegisterHref("/pengaturan")} />}
         >
-          {common.signUp}
+          Gabung waitlist
         </Button>
       </div>
     </div>

@@ -14,12 +14,20 @@ import { registerSchema } from "@/lib/auth/validation";
 import { createEmailVerificationToken } from "@/lib/auth/email-verification";
 import { sendAccountVerificationEmail } from "@/lib/auth/auth-email";
 import { markWaitlistConverted } from "@/lib/waitlist/resend";
+import { PUBLIC_REGISTRATION_ENABLED } from "@/lib/features/public-registration";
 
 /** bcrypt cost ≥ 12 per security docs (folder 18). */
 const BCRYPT_COST = 12;
 
 export async function POST(request: NextRequest) {
   try {
+    if (!PUBLIC_REGISTRATION_ENABLED) {
+      return jsonError(
+        "Pendaftaran publik belum dibuka. Gabung waitlist untuk early access.",
+        403
+      );
+    }
+
     const ip = clientIp(request);
     const rate = await checkRateLimit(`register:${ip}`, 3, 60 * 60 * 1000);
     if (!rate.allowed) {

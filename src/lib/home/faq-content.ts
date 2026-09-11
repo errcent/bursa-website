@@ -45,6 +45,6 @@ export const homeFaqs: HomeFaq[] = [
     id: "pricing-model",
     question: "Bagaimana cara mengakses seluruh kelas di Bursa?",
     answer:
-      "Setelah masuk, kamu mendapat akses ke seluruh katalog. Satu akun, semua kelas. Pembayaran belum dibuka.",
+      "Platform sedang disiapkan. Saat ini kamu bisa melihat katalog, preview, dan Panduan Belajar. Gabung waitlist untuk early access saat kelas inti diluncurkan.",
   },
 ];

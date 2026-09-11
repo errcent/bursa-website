@@ -1,4 +1,5 @@
 import { rewriteNotePostAuthPath } from "@/lib/note/sso-urls";
+import { PUBLIC_REGISTRATION_ENABLED } from "@/lib/features/public-registration";
 
 /** Default landing after login/register, beranda. */
 export const POST_AUTH_HOME = "/";
@@ -52,6 +53,7 @@ export function buildLoginHref(returnPath?: string | null): string {
 }
 
 export function buildRegisterHref(returnPath?: string | null): string {
+  if (!PUBLIC_REGISTRATION_ENABLED) return "/waitlist";
   if (!returnPath) return "/daftar";
   const next = resolvePostAuthRedirect(returnPath);
   if (next === POST_AUTH_HOME) return "/daftar";

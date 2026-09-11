@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 
 const GUEST_PRIMARY_HREF = "/waitlist";
 const GUEST_PRIMARY_LABEL = "Gabung Waitlist";
+const GUEST_PRIMARY_HINT = "Segera hadir";
 
 function initials(name: string) {
   return name
@@ -53,7 +54,14 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
           <Button variant="outline" className="h-11 w-full justify-start" render={<Link href={loginHref} />}>
             Masuk
           </Button>
-          <Button size="sm" className="btn-primary h-11 w-full justify-start" render={<Link href={GUEST_PRIMARY_HREF} />}>
+          <Button
+            size="sm"
+            className="btn-primary h-auto min-h-11 w-full flex-col items-start justify-center gap-0.5 py-2"
+            render={<Link href={GUEST_PRIMARY_HREF} />}
+          >
+            <span className="text-[10px] font-normal uppercase tracking-wide opacity-80">
+              {GUEST_PRIMARY_HINT}
+            </span>
             {GUEST_PRIMARY_LABEL}
           </Button>
         </div>
@@ -65,8 +73,15 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
         <Button variant="outline" size="sm" render={<Link href={loginHref} />}>
           Masuk
         </Button>
-        <Button size="sm" className="btn-primary hidden sm:inline-flex" render={<Link href={GUEST_PRIMARY_HREF} />}>
-          {GUEST_PRIMARY_LABEL}
+        <Button
+          size="sm"
+          className="btn-primary hidden h-auto min-h-8 flex-col gap-0 px-3 py-1.5 sm:inline-flex"
+          render={<Link href={GUEST_PRIMARY_HREF} title={`${GUEST_PRIMARY_HINT} — early access terbatas`} />}
+        >
+          <span className="text-[9px] font-normal uppercase leading-none tracking-wide opacity-80">
+            {GUEST_PRIMARY_HINT}
+          </span>
+          <span className="text-xs leading-tight">{GUEST_PRIMARY_LABEL}</span>
         </Button>
       </>
     );

@@ -19,6 +19,11 @@ import {
   MENTOR_RECRUITMENT_ENABLED,
 } from "@/lib/features/mentor-recruitment";
 import {
+  isPublicRegistrationApiPath,
+  isPublicRegistrationPagePath,
+  PUBLIC_REGISTRATION_ENABLED,
+} from "@/lib/features/public-registration";
+import {
   APEX_HOST,
   ADMIN_HOST,
   LOCALE_HEADER,
@@ -363,6 +368,23 @@ export async function proxy(request: NextRequest) {
     return isApi
       ? applyMobileCors(NextResponse.json({ error: "Not found" }, { status: 404 }), origin)
       : new NextResponse(null, { status: 404 });
+  }
+
+  if (!PUBLIC_REGISTRATION_ENABLED) {
+    if (isPublicRegistrationApiPath(pathname)) {
+      return applyMobileCors(
+        NextResponse.json(
+          { error: "Pendaftaran publik belum dibuka. Gabung waitlist di /waitlist." },
+          { status: 403 }
+        ),
+        origin
+      );
+    }
+    if (isPublicRegistrationPagePath(pathname)) {
+      const waitlist = new URL("/waitlist", request.url);
+      waitlist.searchParams.set("from", "daftar");
+      return NextResponse.redirect(waitlist, 307);
+    }
   }
 
   return isApi ? applyMobileCors(NextResponse.next(), origin) : NextResponse.next();

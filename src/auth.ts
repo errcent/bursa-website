@@ -7,6 +7,8 @@ import {
   upsertGoogleOAuthUser,
 } from "@/lib/auth/google-oauth";
 import { sendWelcomeEmail } from "@/lib/auth/auth-email";
+import { PUBLIC_REGISTRATION_ENABLED } from "@/lib/features/public-registration";
+import { db } from "@/lib/db";
 
 const providers = [];
 
@@ -72,6 +74,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
 
       try {
+        if (!PUBLIC_REGISTRATION_ENABLED) {
+          const existing = await db.user.findUnique({
+            where: { email: user.email.trim().toLowerCase() },
+          });
+          if (!existing) return false;
+        }
+
         const { user: dbUser, isNew } = await upsertGoogleOAuthUser({
           email: user.email,
           name: user.name,

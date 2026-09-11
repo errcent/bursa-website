@@ -76,9 +76,7 @@ export async function retrieveChunks(
 /** Static FAQ cache, zero LLM tokens on hit. */
 const FAQ_CACHE: Record<string, string> = {
   "cara daftar":
-    "Buka /daftar, isi email dan kata sandi, atau gunakan Lanjutkan dengan Google di /masuk.",
-  komisi:
-    "Working model (indikatif): komisi platform ~25% per transaksi course. Harga mentor-set = kebijakan asumsi, belum dikunci data.",
+    "Pendaftaran publik belum dibuka. Gabung waitlist di /waitlist untuk early access. Katalog, preview, dan Panduan Belajar tetap bisa dijelajahi.",
   disclaimer:
     "Konten edukasi trading dan investasi bukan rekomendasi investasi. Keputusan dan risiko ada pada pengguna.",
 };

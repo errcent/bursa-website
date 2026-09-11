@@ -12,7 +12,7 @@ import {
   HERO_HEADLINE_REVEAL_LINES,
   HeroRotatingTitle,
 } from "@/components/motion/hero-rotating-title";
-import { RevealText } from "@/components/motion/reveal";
+import { Reveal, RevealText } from "@/components/motion/reveal";
 import {
   tokenizeForReveal,
   WORD_REVEAL_DURATION,
@@ -22,7 +22,8 @@ import {
 import { SiteNavbar } from "@/components/site-navbar";
 import { Button } from "@/components/ui/button";
 
-const HERO_SUBCOPY = "Kurikulum runut, bersama praktisi & mentor profesional";
+const HERO_SUBCOPY =
+  "Platform sedang dibangun. Kurikulum disiapkan bersama praktisi. Early access terbatas via waitlist.";
 
 function HeroCtaButtons() {
   return (
@@ -71,6 +72,13 @@ export function HomeHeroSection() {
 
       <div className="container-page relative z-10 flex flex-1 flex-col justify-center px-5 pb-20 pt-[calc(var(--site-header-offset)+0.75rem)] sm:px-8 sm:py-20 sm:pb-10 lg:py-24 lg:pb-12">
         <div className="hero-home-copy mx-auto flex w-full max-w-4xl flex-col items-center text-center">
+          {introReady ? (
+            <Reveal delay={HERO_HEADLINE_BASE_DELAY - 0.08}>
+              <p className="badge-pill mb-4 inline-flex items-center gap-2">Segera hadir</p>
+            </Reveal>
+          ) : (
+            <p className="badge-pill mb-4 inline-flex items-center gap-2">Segera hadir</p>
+          )}
           <HeroRotatingTitle className="mx-auto w-full max-w-5xl" />
           {introReady ? (
             <WordReveal

@@ -9,7 +9,12 @@ import { AuthField, authInputClassName } from "@/components/auth-field";
 import { useAuth } from "@/components/auth-provider";
 import { GoogleSignInButton } from "@/components/google-sign-in-button";
 import { Button } from "@/components/ui/button";
-import { POST_AUTH_HOME, redirectAfterAuth, resolvePostAuthRedirect } from "@/lib/auth/redirect";
+import {
+  buildRegisterHref,
+  POST_AUTH_HOME,
+  redirectAfterAuth,
+  resolvePostAuthRedirect,
+} from "@/lib/auth/redirect";
 import { useCookieConfirmedRedirect } from "@/hooks/use-cookie-confirmed-redirect";
 import { useOAuthSync } from "@/hooks/use-oauth-sync";
 
@@ -19,8 +24,7 @@ export function LoginForm() {
   const { syncing: oauthSyncing, error: oauthError } = useOAuthSync();
   const next = resolvePostAuthRedirect(searchParams.get("next"));
   const { redirecting } = useCookieConfirmedRedirect(next);
-  const registerHref =
-    next === POST_AUTH_HOME ? "/daftar" : `/daftar?next=${encodeURIComponent(next)}`;
+  const registerHref = buildRegisterHref(next === POST_AUTH_HOME ? null : next);
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -162,9 +166,9 @@ export function LoginForm() {
       <GoogleSignInButton mode="login" />
 
       <p className="text-center text-sm text-muted-foreground">
-        Belum punya akun?{" "}
+        Pendaftaran publik belum dibuka.{" "}
         <Link href={registerHref} className="link-accent text-sm font-medium">
-          Daftar gratis
+          Gabung waitlist
         </Link>
       </p>
     </form>

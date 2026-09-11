@@ -30,7 +30,7 @@ export const helpFaqs: HelpFaq[] = [
     category: "Akun",
     question: "Bagaimana cara mendaftar akun Bursa?",
     answer:
-      "Buka /daftar (atau tombol Masuk di navbar), lalu buat akun. Setelah masuk, kamu bisa menjelajahi katalog. Beberapa fitur lanjutan belum dibuka.",
+      "Pendaftaran publik belum dibuka. Gabung waitlist di /waitlist untuk early access. Kamu tetap bisa melihat katalog, preview, dan Panduan Belajar tanpa akun.",
   },
   {
     id: "akun-lupa-password",

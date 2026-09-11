@@ -17,7 +17,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useAuth } from "@/components/auth-provider";
 import { NotesRichEditor } from "@/components/video/notes-rich-editor";
 import { Button } from "@/components/ui/button";
-import { buildLoginHref, resolvePostAuthRedirect, POST_AUTH_HOME } from "@/lib/auth/redirect";
+import { buildLoginHref, buildRegisterHref } from "@/lib/auth/redirect";
 import {
   downloadNotesExport,
   noteHasVisibleContent,
@@ -144,10 +144,7 @@ export function LessonNotesPanel({
   const { session } = useAuth();
   const pathname = usePathname();
   const loginHref = buildLoginHref(pathname);
-  const registerHref = useMemo(() => {
-    const next = resolvePostAuthRedirect(pathname);
-    return next === POST_AUTH_HOME ? "/daftar" : `/daftar?next=${encodeURIComponent(next)}`;
-  }, [pathname]);
+  const registerHref = useMemo(() => buildRegisterHref(pathname), [pathname]);
 
   const [note, setNote] = useState<LessonNote | null>(null);
   const [html, setHtml] = useState("<p></p>");

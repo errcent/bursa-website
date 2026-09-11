@@ -33,7 +33,7 @@ export function ClosingCtaSection({
     : "Gabung waitlist Bursa";
   const body = showMemberExperience
     ? "Akses dashboard untuk melanjutkan progres kelas dan materi yang sudah kamu mulai."
-    : "Dapatkan kabar saat kelas dan mentor dibuka.";
+    : "Platform sedang dibangun. Dapatkan kabar saat early access dibuka.";
 
   return (
     <section ref={sectionRef} className="section-closing relative">

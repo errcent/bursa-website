@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 
+import { Reveal } from "@/components/motion/reveal";
 import { WordReveal } from "@/components/motion/word-reveal";
 
 const INTRO_EASE = [0.16, 1, 0.3, 1] as const;
@@ -32,6 +33,11 @@ export function DeviceMockupSection() {
     >
       <div className="device-mockup-sticky">
         <div className="device-mockup-sticky__inner container-page">
+          <Reveal className="mb-4 flex justify-center">
+            <span className="badge-pill inline-flex items-center gap-2">
+              Segera hadir · Aplikasi mobile
+            </span>
+          </Reveal>
           <h2 id="device-mockup-heading" className="device-mockup-heading">
             <motion.span
               className="device-mockup-line device-mockup-line--top section-display-title text-foreground"

@@ -10,13 +10,13 @@ import { WaitlistForm } from "@/components/waitlist-form";
 export const metadata: Metadata = {
   title: "Gabung Waitlist",
   description:
-    "Daftar ke waitlist Bursa dan jadi yang pertama tahu saat platform edukasi trading dan investasi kami dibuka.",
+    "Gabung waitlist Bursa. Platform edukasi trading dan investasi sedang disiapkan bersama praktisi. Early access terbatas.",
 };
 
 const perks = [
-  "Akses lebih awal ke katalog kelas & mentor yang dikurasi",
-  "Info pertama saat pendaftaran dibuka",
-  "Tanpa spam, kami hanya kirim kabar penting",
+  "Early access terbatas saat kelas inti diluncurkan",
+  "Kabar pertama saat pendaftaran akun dibuka",
+  "Tanpa spam, hanya update penting",
 ];
 
 export default function WaitlistPage() {
