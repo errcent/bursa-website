@@ -242,7 +242,7 @@ function scorePlaylistForGuidance(
 
   if (meta?.instruments.includes(answers.instrument)) {
     score += 48;
-    reasons.push(`Selaras ${answers.instrument}`);
+    reasons.push(`Selaras: ${answers.instrument}`);
   } else if (meta && meta.instruments.length > 1) {
     score += 12;
   }

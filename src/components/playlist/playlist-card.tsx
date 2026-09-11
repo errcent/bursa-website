@@ -35,16 +35,17 @@ export function PlaylistCard({
 }: {
   playlist: PlaylistSummary;
   className?: string;
-  /** "featured", cinematic overlay; "catalog", title below; "strip", flat filmstrip tile. */
-  variant?: "default" | "catalog" | "featured" | "strip";
+  /** "featured", cinematic overlay; "catalog", title below; "guidance", quiz carousel; "strip", filmstrip. */
+  variant?: "default" | "catalog" | "featured" | "guidance" | "strip";
   /** Hide bookmark toggle (e.g. landing page). */
   hideBookmark?: boolean;
 }) {
   const isCatalog = variant === "catalog";
   const isFeatured = variant === "featured";
+  const isGuidance = variant === "guidance";
   const isStrip = variant === "strip";
   const { isAuthenticated } = useMyLearning();
-  const showBookmark = !hideBookmark && (!isCatalog || isAuthenticated);
+  const showBookmark = !hideBookmark && !isGuidance && (!isCatalog || isAuthenticated);
   const subtitle = isFeatured || isStrip ? null : playlistSubtitle(playlist);
 
   return (
@@ -58,14 +59,22 @@ export function PlaylistCard({
           ? "rounded-none"
           : isFeatured
             ? "rounded-2xl shadow-lg transition-shadow duration-300 hover:shadow-xl"
-            : "rounded-xl",
+            : isGuidance
+              ? "rounded-xl shadow-md transition-shadow duration-300 hover:shadow-lg"
+              : "rounded-xl",
         className
       )}
     >
       <div
         className={cn(
           "relative aspect-video w-full min-h-0 overflow-hidden bg-surface-2",
-          isStrip ? "rounded-none" : isFeatured ? "rounded-2xl" : "rounded-xl"
+          isStrip
+            ? "rounded-none"
+            : isFeatured
+              ? "rounded-2xl"
+              : isGuidance
+                ? "rounded-xl"
+                : "rounded-xl"
         )}
       >
         <PlaylistThumbnail
@@ -100,7 +109,7 @@ export function PlaylistCard({
               <h3
                 className={cn(
                   "line-clamp-2 font-heading font-semibold leading-tight text-white",
-                  isFeatured
+                  isFeatured || isGuidance
                     ? "text-base @[280px]:text-lg"
                     : "text-sm @[280px]:text-[15px]"
                 )}

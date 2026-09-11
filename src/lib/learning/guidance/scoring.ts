@@ -119,7 +119,7 @@ function scoreLevelFit(
   }
 
   if (gap === 0) {
-    return { points: 35, text: `Level ${courseLevelUi} selaras dengan profilmu` };
+    return { points: 35, text: `Selaras level ${courseLevelUi}` };
   }
 
   if (gap === 1) {
@@ -268,7 +268,7 @@ function scoreFormatPreference(
   const format = answers.learningFormat ?? "mixed";
 
   if (format === "live") {
-    return { points: 6, text: "Kelas terstruktur untuk belajar rutin" };
+    return { points: 6, text: "Struktur untuk belajar rutin" };
   }
   if (format === "community" && course.studentsCount >= 30) {
     return { points: 6, text: "Komunitas belajar yang aktif" };
@@ -277,7 +277,7 @@ function scoreFormatPreference(
     return { points: 4, text: "Belajar mandiri dengan video terstruktur" };
   }
   if (format === "mixed") {
-    return { points: 5, text: "Format fleksibel, video, live, dan komunitas" };
+    return { points: 5, text: "Format fleksibel" };
   }
   return { points: 0, text: "" };
 }
@@ -304,7 +304,7 @@ export function scoreCourseForGuidance(
   const courseLevel = levelFromUi(course.level);
   const buckets: ScoredReason[] = [];
 
-  buckets.push({ points: 12, text: `Fokus ${answers.instrument}` });
+  buckets.push({ points: 12, text: `Fokus: ${answers.instrument}` });
   buckets.push(scoreLevelFit(profile, courseLevel, course.level, answers.experience));
   buckets.push(scoreGoalFit(answers, course.level));
   buckets.push(...scoreStyleAndPace(answers, profile, course));
@@ -313,7 +313,7 @@ export function scoreCourseForGuidance(
 
   const qualityPoints = Math.round(courseQualityScore(course, mentor) * 12);
   if (qualityPoints >= 6) {
-    buckets.push({ points: qualityPoints, text: "Kualitas kelas dan mentor terpercaya" });
+    buckets.push({ points: qualityPoints, text: "Kualitas kelas terpercaya" });
   } else if (qualityPoints > 0) {
     buckets.push({ points: qualityPoints, text: "" });
   }

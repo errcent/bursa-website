@@ -500,7 +500,8 @@
     @apply border-accent/10 bg-surface/40;
   }
 
-  .guidance-mentor-carousel-bleed {
+  .guidance-mentor-carousel-bleed,
+  .guidance-pick-carousel-bleed {
     position: relative;
     isolation: isolate;
     min-width: 0;
@@ -510,13 +511,15 @@
   }
 
   @media (max-width: 767px) {
-    .guidance-mentor-carousel-bleed {
+    .guidance-mentor-carousel-bleed,
+    .guidance-pick-carousel-bleed {
       width: 100dvw;
       max-width: 100dvw;
       margin-inline: calc(50% - 50dvw);
     }
 
-    .guidance-mentor-carousel-bleed .discover-infinite-carousel {
+    .guidance-mentor-carousel-bleed .discover-infinite-carousel,
+    .guidance-pick-carousel-bleed .discover-infinite-carousel {
       --carousel-fade-color: var(--background);
     }
   }

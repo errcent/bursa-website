@@ -44,8 +44,8 @@ export function CourseCard({
   enrollment?: CourseCardEnrollment | null;
   /** Optional mentor payload, avoids mock lookup when parent already has catalog data. */
   mentor?: Mentor | null;
-  /** "featured", cinematic overlay card for landing carousel; "catalog", title below thumbnail. */
-  variant?: "default" | "featured" | "catalog";
+  /** "featured", cinematic overlay; "catalog", title below; "guidance", quiz results carousel overlay. */
+  variant?: "default" | "featured" | "catalog" | "guidance";
   /** Hide bookmark toggle (e.g. landing page). */
   hideBookmark?: boolean;
 }) {
@@ -68,13 +68,11 @@ export function CourseCard({
       : `/kelas/${course.slug}`;
 
   const isFeatured = variant === "featured";
+  const isGuidance = variant === "guidance";
   const isCatalog = variant === "catalog";
-  const showBookmark = !hideBookmark && (!isCatalog || isAuthenticated);
-  const subtitle = isFeatured
-    ? null
-    : mentor
-      ? mentor.name
-      : course.instrument;
+  const showBookmark = !hideBookmark && !isGuidance && (!isCatalog || isAuthenticated);
+  const subtitle =
+    isFeatured ? null : mentor ? mentor.name : course.instrument;
 
   return (
     <Link
@@ -83,7 +81,11 @@ export function CourseCard({
       className={cn(
         "@container group relative block w-full outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         isCatalog ? "overflow-visible" : "overflow-hidden",
-        isFeatured ? "rounded-2xl shadow-lg transition-shadow duration-300 hover:shadow-xl" : "rounded-xl",
+        isFeatured
+          ? "rounded-2xl shadow-lg transition-shadow duration-300 hover:shadow-xl"
+          : isGuidance
+            ? "rounded-xl shadow-md transition-shadow duration-300 hover:shadow-lg"
+            : "rounded-xl",
         className
       )}
     >
@@ -120,7 +122,7 @@ export function CourseCard({
               <h3
                 className={cn(
                   "line-clamp-2 font-heading font-semibold leading-tight text-white",
-                  isFeatured
+                  isFeatured || isGuidance
                     ? "text-base @[280px]:text-lg"
                     : "text-sm @[280px]:text-[15px]"
                 )}
