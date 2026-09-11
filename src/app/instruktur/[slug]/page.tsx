@@ -1,11 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Calendar, GraduationCap } from "lucide-react";
-
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
-import { VerifiedBadge } from "@/components/verified-badge";
 import { InstrumentBadge } from "@/components/instrument-badge";
 import { CourseCard } from "@/components/course-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,7 +14,6 @@ import {
 } from "@/lib/catalog/server";
 import { resolveMentorAvatarUrl } from "@/lib/mentors/avatar";
 import { PreviewCatalogNotice } from "@/components/preview-catalog/preview-catalog-notice";
-import { isPreviewCatalogActive } from "@/lib/preview-catalog/visibility";
 
 export async function generateStaticParams() {
   const slugs = await getCatalogMentorSlugs();
@@ -49,10 +45,6 @@ export default async function MentorProfilePage({
 
   const mentorCourses = await getCoursesByMentor(mentor.slug);
 
-  const statCards = [
-    { icon: GraduationCap, label: "Jumlah Kelas", value: String(mentor.coursesCount) },
-    { icon: Calendar, label: "Pengalaman", value: `${mentor.yearsExperience} tahun` },
-  ];
   const mentorFirstName = mentor.name.split(",")[0];
   const avatarSrc = resolveMentorAvatarUrl(mentor);
 
@@ -99,120 +91,36 @@ export default async function MentorProfilePage({
           <PreviewCatalogNotice />
         </div>
 
-        <div className="container-page grid gap-10 py-14 lg:grid-cols-[2fr_1fr]">
-          <div className="flex flex-col gap-10">
-            <section>
-              <h2 className="section-title mb-3">
-                Siapa {mentorFirstName} dan cocok untuk siapa
-              </h2>
-              <p className="section-copy">{mentor.bio}</p>
-              <p className="section-copy mt-3">
-                Mentor ini biasanya paling cocok untuk pelajar yang ingin fokus pada{" "}
-                {mentor.instruments.join(" dan ")}, butuh arahan praktik yang jelas, dan ingin
-                berkembang bertahap tanpa terburu-buru.
-              </p>
-              <blockquote className="mt-4 border-l-2 border-foreground/20 pl-4 text-sm italic leading-relaxed text-foreground/80">
-                {mentor.philosophy}
-              </blockquote>
-            </section>
+        <div className="container-page flex max-w-3xl flex-col gap-10 py-14">
+          <section>
+            <h2 className="section-title mb-3">
+              Siapa {mentorFirstName} dan cocok untuk siapa
+            </h2>
+            <p className="section-copy">{mentor.bio}</p>
+            <p className="section-copy mt-3">
+              Mentor ini biasanya paling cocok untuk pelajar yang ingin fokus pada{" "}
+              {mentor.instruments.join(" dan ")}, butuh arahan praktik yang jelas, dan ingin
+              berkembang bertahap tanpa terburu-buru.
+            </p>
+            <blockquote className="mt-4 border-l-2 border-foreground/20 pl-4 text-sm italic leading-relaxed text-foreground/80">
+              {mentor.philosophy}
+            </blockquote>
+          </section>
 
-            <section>
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="section-title">Ringkasan pendekatan belajar</h2>
-                <span className="text-xs text-muted-foreground">Data profil mentor</span>
+          <section id={`kelas-${mentor.slug}`}>
+            <h2 className="section-title mb-4">
+              Kelas yang bisa kamu ambil ({mentorCourses.length})
+            </h2>
+            {mentorCourses.length > 0 ? (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {mentorCourses.map((course) => (
+                  <CourseCard key={course.slug} course={course} className="w-full" />
+                ))}
               </div>
-              <div className="surface-card p-6">
-                <ul className="grid gap-3 sm:grid-cols-2">
-                  <li className="rounded-lg border border-border/60 bg-surface/40 p-3">
-                    <p className="text-xs text-muted-foreground">Instrumen utama</p>
-                    <p className="mt-1 text-sm font-medium">{mentor.instruments.join(" · ")}</p>
-                  </li>
-                  <li className="rounded-lg border border-border/60 bg-surface/40 p-3">
-                    <p className="text-xs text-muted-foreground">Pengalaman</p>
-                    <p className="mt-1 text-sm font-medium">{mentor.yearsExperience} tahun</p>
-                  </li>
-                  <li className="rounded-lg border border-border/60 bg-surface/40 p-3">
-                    <p className="text-xs text-muted-foreground">Kelas aktif</p>
-                    <p className="mt-1 text-sm font-medium">{mentorCourses.length} kelas</p>
-                  </li>
-                  <li className="rounded-lg border border-border/60 bg-surface/40 p-3">
-                    <p className="text-xs text-muted-foreground">Status verifikasi</p>
-                    <p className="mt-1 text-sm font-medium">
-                      {isPreviewCatalogActive()
-                        ? "Contoh profil, bukan data resmi"
-                        : mentor.verified
-                          ? "Praktisi profesional terverifikasi"
-                          : "Dalam proses kurasi"}
-                    </p>
-                  </li>
-                </ul>
-                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                  Fokus utama di kelas mentor ini adalah proses: memahami konteks, latihan terarah,
-                  lalu evaluasi berkala. Halaman profil menampilkan data kapasitas mentor, bukan
-                  grafik performa trading.
-                </p>
-              </div>
-            </section>
-
-            <section id={`kelas-${mentor.slug}`}>
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <h2 className="section-title">
-                  Kelas yang bisa kamu ambil ({mentorCourses.length})
-                </h2>
-                <Button className="btn-primary" render={<Link href={`#kelas-${mentor.slug}`} />}>
-                  Lihat dan pilih kelas
-                </Button>
-              </div>
-              {mentorCourses.length > 0 ? (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {mentorCourses.map((course) => (
-                    <CourseCard key={course.slug} course={course} className="w-full" />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">Belum ada kelas yang dipublikasikan.</p>
-              )}
-            </section>
-          </div>
-
-          <aside className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
-            <div className="surface-card border-accent/25 bg-accent-soft/30 p-5 shadow-[0_0_32px_var(--glow)]">
-              <h3 className="font-heading text-base font-semibold">Mulai dari kelas mentor</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Pilih kelas sesuai levelmu, lalu mulai belajar dari silabus mentor.
-              </p>
-              <Button className="btn-primary mt-4 w-full" render={<Link href={`#kelas-${mentor.slug}`} />}>
-                Ambil Kelas {mentorFirstName}
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {statCards.map((stat) => (
-                <div key={stat.label} className="surface-card p-4">
-                  <stat.icon className="size-4 text-accent" />
-                  <p className="stat-value mt-2">{stat.value}</p>
-                  <p className="stat-label">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-            <div className="surface-card p-5">
-              <h3 className="text-sm font-medium">Status review tim</h3>
-              <div className="mt-3">
-                <VerifiedBadge
-                  verified={isPreviewCatalogActive() ? false : mentor.verified}
-                  label={
-                    isPreviewCatalogActive()
-                      ? "Contoh profil"
-                      : mentor.licenseLabel ??
-                        (mentor.verified ? "Praktisi profesional" : "Dalam proses kurasi")
-                  }
-                />
-              </div>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                Informasi ini membantu validasi profil mentor, namun keputusan belajar tetap
-                sebaiknya didasarkan pada kecocokan pendekatan dan kebutuhanmu.
-              </p>
-            </div>
-          </aside>
+            ) : (
+              <p className="text-sm text-muted-foreground">Belum ada kelas yang dipublikasikan.</p>
+            )}
+          </section>
         </div>
       </main>
       <SiteFooter />
