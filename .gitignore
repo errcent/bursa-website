@@ -84,3 +84,6 @@ playwright-audit-*.png
 /test-results/
 
 .vercel
+
+# Vault / internal ops docs — local only, never on GitHub
+/docs/
