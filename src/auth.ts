@@ -78,7 +78,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const existing = await db.user.findUnique({
             where: { email: user.email.trim().toLowerCase() },
           });
-          if (!existing) return false;
+          if (!existing) return "/masuk?reason=registration-closed";
         }
 
         const { user: dbUser, isNew } = await upsertGoogleOAuthUser({

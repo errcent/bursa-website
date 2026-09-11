@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Check,
   CheckCircle2,
@@ -22,6 +23,8 @@ import { ResizableVideoStage } from "@/components/video/resizable-video-stage";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { notifyLearningChange } from "@/lib/learning/events";
+import { loadGuestProgress, saveGuestProgress } from "@/lib/learning/guest-progress-storage";
+import { GUEST_PROGRESS_BANNER } from "@/lib/features/auth-surface-copy";
 import { computeProgressPercent } from "@/lib/learning/progress";
 import { cn } from "@/lib/utils";
 import type { Course, Mentor } from "@/lib/types";
@@ -43,6 +46,7 @@ export function LearningWorkspace({
   mentor: Mentor;
 }) {
   const { session } = useAuth();
+  const pathname = usePathname();
   const allLessons = useMemo(() => course.modules.flatMap((m) => m.lessons), [course]);
   const currentLesson =
     allLessons.find((l) => l.id === currentLessonId) ?? allLessons[0];
@@ -85,6 +89,18 @@ export function LearningWorkspace({
     () => (nextLesson ? findLessonInCourse(course, nextLesson.id) : null),
     [course, nextLesson]
   );
+  const firstPreviewLessonHref = useMemo(() => {
+    for (let moduleIndex = 0; moduleIndex < course.modules.length; moduleIndex++) {
+      const courseModule = course.modules[moduleIndex];
+      for (let lessonIndex = 0; lessonIndex < courseModule.lessons.length; lessonIndex++) {
+        const lesson = courseModule.lessons[lessonIndex];
+        if (isLessonFreePreview(lesson, moduleIndex, lessonIndex)) {
+          return `/belajar/${course.slug}/${lesson.id}`;
+        }
+      }
+    }
+    return undefined;
+  }, [course]);
   const lessonMaterials = currentLesson.materials ?? [];
   const hasMaterials = lessonMaterials.length > 0;
   const currentLessonNumber = useMemo(() => {
@@ -138,7 +154,7 @@ export function LearningWorkspace({
 
   useEffect(() => {
     if (!session?.userId && !session?.email) {
-      setCompleted(new Set());
+      setCompleted(loadGuestProgress(course.slug));
       setProgressReady(true);
       setHasCourseAccess(false);
       return;
@@ -238,16 +254,14 @@ export function LearningWorkspace({
     watchedSeconds?: number
   ) {
     const previousCompleted = new Set(completed);
-
-    setCompleted((prev) => {
-      const next = new Set(prev);
-      if (nextCompleted) next.add(id);
-      else next.delete(id);
-      return next;
-    });
+    const next = new Set(completed);
+    if (nextCompleted) next.add(id);
+    else next.delete(id);
+    setCompleted(next);
 
     if (!session?.userId && !session?.email) {
-      setModuleCompleteBanner("Masuk untuk menyimpan progres belajar.");
+      saveGuestProgress(course.slug, next);
+      setModuleCompleteBanner(GUEST_PROGRESS_BANNER);
       return;
     }
 
@@ -447,6 +461,8 @@ export function LearningWorkspace({
               hasAccess={hasCourseAccess}
               userId={session?.userId}
               userEmail={session?.email}
+              previewLessonHref={firstPreviewLessonHref}
+              lockedReturnPath={pathname || `/belajar/${course.slug}/${currentLesson.id}`}
               seekRequestSeconds={seekRequestSeconds}
               onTimeUpdate={handleVideoTimeUpdate}
               onProtectionViolation={handleProtectionViolation}
@@ -539,7 +555,7 @@ export function LearningWorkspace({
                           nextLessonContext.lessonIndex
                         )
                       ? "Preview gratis tersedia"
-                      : "Masuk untuk menonton pelajaran ini"}
+                      : "Konten penuh membutuhkan early access"}
                 </p>
               </div>
             </Link>

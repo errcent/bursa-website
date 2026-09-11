@@ -4,8 +4,9 @@ import { AuthPageShell } from "@/components/auth-page-shell";
 import { LoginForm } from "@/components/login-form";
 
 export const metadata = {
-  title: "Masuk",
-  description: "Masuk ke akun Bursa.",
+  title: "Masuk — akun early access",
+  description:
+    "Masuk untuk akun Bursa yang sudah ada. Pendaftaran akun baru via waitlist.",
   robots: { index: false, follow: false },
 };
 
@@ -29,8 +30,8 @@ function LoginFormFallback() {
 export default function LoginPage() {
   return (
     <AuthPageShell
-      title="Selamat datang"
-      description="Masuk ke akun Bursa."
+      title="Masuk ke akun early access"
+      description="Hanya untuk pengguna yang sudah terdaftar sebelumnya. Pendaftaran baru via waitlist."
       showMobileBack
     >
       <Suspense fallback={<LoginFormFallback />}>

@@ -9,6 +9,8 @@ import { signIn } from "next-auth/react";
 import { storeOAuthNext, buildOAuthCallbackUrl } from "@/lib/auth/oauth-redirect";
 import { clearLogoutFlag } from "@/lib/auth/client";
 import { resolvePostAuthRedirect } from "@/lib/auth/redirect";
+import { PUBLIC_REGISTRATION_ENABLED } from "@/lib/features/public-registration";
+import { GOOGLE_EXISTING_ONLY_LABEL } from "@/lib/features/registration-copy";
 import { Button } from "@/components/ui/button";
 
 function GoogleIcon({ className }: { className?: string }) {
@@ -114,6 +116,12 @@ export function GoogleSignInButton({ mode }: { mode: "login" | "register" }) {
         )}
       </Button>
       <p className="text-center text-xs leading-relaxed text-muted-foreground">
+        {mode === "login" && !PUBLIC_REGISTRATION_ENABLED ? (
+          <>
+            <span className="font-medium text-foreground">{GOOGLE_EXISTING_ONLY_LABEL}</span>
+            {" · "}
+          </>
+        ) : null}
         Kami hanya meminta email dan profil publik Google. Data diproses sesuai{" "}
         <Link href="/privasi/kebijakan" className="font-medium underline-offset-4 hover:underline">
           Kebijakan Privasi

@@ -68,10 +68,15 @@ export function GuidanceResults({
           ) : null}
           {!saved && !isLoggedIn ? (
             <p className="text-xs text-muted-foreground">
-              <Link href="/masuk?next=/panduan-belajar/quiz" className="link-accent">
-                Masuk
+              Hasil quiz tersedia di sesi ini.{" "}
+              <Link href="/waitlist?next=/panduan-belajar/quiz" className="link-accent">
+                Gabung waitlist
               </Link>{" "}
-              untuk menyimpan profil ini.
+              untuk simpan permanen, atau{" "}
+              <Link href="/masuk?next=/panduan-belajar/quiz" className="link-accent">
+                masuk
+              </Link>{" "}
+              jika sudah punya akun early access.
             </p>
           ) : saved ? (
             <p className="text-xs font-medium text-accent">Tersimpan di akunmu.</p>

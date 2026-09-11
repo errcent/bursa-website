@@ -17,6 +17,12 @@ import {
 } from "@/lib/auth/redirect";
 import { useCookieConfirmedRedirect } from "@/hooks/use-cookie-confirmed-redirect";
 import { useOAuthSync } from "@/hooks/use-oauth-sync";
+import { PUBLIC_REGISTRATION_ENABLED } from "@/lib/features/public-registration";
+import {
+  REGISTRATION_CLOSED_LEAD,
+  REGISTRATION_CLOSED_LOGIN_HINT,
+  REGISTRATION_CLOSED_OAUTH_HINT,
+} from "@/lib/features/registration-copy";
 
 export function LoginForm() {
   const { login } = useAuth();
@@ -25,6 +31,8 @@ export function LoginForm() {
   const next = resolvePostAuthRedirect(searchParams.get("next"));
   const { redirecting } = useCookieConfirmedRedirect(next);
   const registerHref = buildRegisterHref(next === POST_AUTH_HOME ? null : next);
+  const registrationClosedReason = searchParams.get("reason");
+  const oauthDenied = searchParams.get("error") === "AccessDenied";
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -78,6 +86,17 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      {!PUBLIC_REGISTRATION_ENABLED && (
+        <div className="rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5 text-sm leading-relaxed text-muted-foreground">
+          <p className="font-medium text-foreground">{REGISTRATION_CLOSED_LEAD}</p>
+          <p className="mt-1">{REGISTRATION_CLOSED_LOGIN_HINT}</p>
+        </div>
+      )}
+      {(registrationClosedReason === "registration-closed" || oauthDenied) && (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-100">
+          {REGISTRATION_CLOSED_OAUTH_HINT}
+        </div>
+      )}
       {oauthError && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {oauthError}
@@ -169,6 +188,10 @@ export function LoginForm() {
         Pendaftaran publik belum dibuka.{" "}
         <Link href={registerHref} className="link-accent text-sm font-medium">
           Gabung waitlist
+        </Link>
+        {" · "}
+        <Link href="/waitlist" className="link-accent text-sm font-medium">
+          Kembali ke waitlist
         </Link>
       </p>
     </form>

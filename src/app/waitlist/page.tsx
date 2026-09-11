@@ -5,6 +5,7 @@ import { HeroLivingBackground } from "@/components/hero-living-bg";
 import { Reveal } from "@/components/motion/reveal";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNavbar } from "@/components/site-navbar";
+import { DaftarClosedBanner } from "@/components/waitlist/daftar-closed-banner";
 import { WaitlistForm } from "@/components/waitlist-form";
 
 export const metadata: Metadata = {
@@ -51,6 +52,7 @@ export default function WaitlistPage() {
               </Reveal>
               <Reveal delay={0.26} className="mt-8 w-full max-w-md">
                 <Suspense fallback={<div className="h-24 animate-pulse rounded-2xl bg-muted/30" />}>
+                  <DaftarClosedBanner />
                   <WaitlistForm />
                 </Suspense>
               </Reveal>

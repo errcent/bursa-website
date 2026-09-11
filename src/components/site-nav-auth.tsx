@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { buildLoginHref, POST_AUTH_HOME } from "@/lib/auth/redirect";
+import { EXISTING_ACCOUNT_PROMPT } from "@/lib/features/registration-copy";
 import { getRoleNavLinks } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
 
@@ -51,9 +52,6 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
     if (mobileMenu) {
       return (
         <div className="flex flex-col gap-2">
-          <Button variant="outline" className="h-11 w-full justify-start" render={<Link href={loginHref} />}>
-            Masuk
-          </Button>
           <Button
             size="sm"
             className="btn-primary h-auto min-h-11 w-full flex-col items-start justify-center gap-0.5 py-2"
@@ -64,18 +62,21 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
             </span>
             {GUEST_PRIMARY_LABEL}
           </Button>
+          <p className="text-center text-xs text-muted-foreground">
+            {EXISTING_ACCOUNT_PROMPT}{" "}
+            <Link href={loginHref} className="link-accent font-medium">
+              Masuk
+            </Link>
+          </p>
         </div>
       );
     }
 
     return (
-      <>
-        <Button variant="outline" size="sm" render={<Link href={loginHref} />}>
-          Masuk
-        </Button>
+      <div className="hidden items-center gap-2 sm:flex">
         <Button
           size="sm"
-          className="btn-primary hidden h-auto min-h-8 flex-col gap-0 px-3 py-1.5 sm:inline-flex"
+          className="btn-primary h-auto min-h-8 flex-col gap-0 px-3 py-1.5"
           render={<Link href={GUEST_PRIMARY_HREF} title={`${GUEST_PRIMARY_HINT} — early access terbatas`} />}
         >
           <span className="text-[9px] font-normal uppercase leading-none tracking-wide opacity-80">
@@ -83,7 +84,14 @@ export function SiteNavAuth({ mobileMenu = false }: SiteNavAuthProps) {
           </span>
           <span className="text-xs leading-tight">{GUEST_PRIMARY_LABEL}</span>
         </Button>
-      </>
+        <Link
+          href={loginHref}
+          className="hidden text-xs text-muted-foreground hover:text-foreground md:inline"
+        >
+          {EXISTING_ACCOUNT_PROMPT}{" "}
+          <span className="font-medium text-foreground">Masuk</span>
+        </Link>
+      </div>
     );
   }
 

@@ -50,17 +50,16 @@ export function MentorCard({
           />
         ) : null}
 
-        {mentor.verified && (
-          <span
-            className={cn(
-              "absolute inline-flex items-center justify-center rounded-full bg-accent/20 text-accent backdrop-blur-sm",
-              isCompact ? "right-1.5 top-1.5 size-4" : "right-2 top-2 size-5"
-            )}
-            title="Mentor lolos kurasi (proses verifikasi)"
-          >
-            <BadgeCheck className={isCompact ? "size-2.5" : "size-3"} />
-          </span>
-        )}
+        <span
+          className={cn(
+            "absolute inline-flex items-center justify-center rounded-full bg-accent/20 text-accent backdrop-blur-sm",
+            isCompact ? "right-1.5 top-1.5 size-4" : "right-2 top-2 size-5"
+          )}
+          title="Mentor kurasi Bursanalar"
+        >
+          <BadgeCheck className={isCompact ? "size-2.5" : "size-3"} aria-hidden />
+          <span className="sr-only">Mentor kurasi</span>
+        </span>
 
         {!hideBookmark ? (
           <div

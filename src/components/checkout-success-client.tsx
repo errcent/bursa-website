@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getSession } from "@/lib/auth/client";
-import { buildLoginHref } from "@/lib/auth/redirect";
+import { buildLoginHref, buildRegisterHref } from "@/lib/auth/redirect";
+import { EXISTING_ACCOUNT_PROMPT } from "@/lib/features/registration-copy";
 import { formatRupiah } from "@/lib/mock-data";
 import { enrollUser } from "@/lib/video/protection";
 import type { Course, Mentor } from "@/lib/types";
@@ -78,18 +79,21 @@ export function CheckoutSuccessClient({
         <main className="flex-1">
           <div className="hero-cinematic page-header-strip">
             <div className="container-page flex flex-col items-center py-16 text-center sm:py-24">
-              <h1 className="font-heading text-2xl font-medium sm:text-3xl">Masuk untuk mengaktifkan akses</h1>
+              <h1 className="font-heading text-2xl font-medium sm:text-3xl">Pembelian belum dibuka</h1>
               <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                Pembayaran untuk <span className="text-foreground/90">{course.title}</span>{" "}
-                memerlukan akun agar akses kelas tersimpan.
+                Peluncuran batch pertama belum dimulai. Gabung waitlist untuk kabar tentang{" "}
+                <span className="text-foreground/90">{course.title}</span>.
               </p>
-              <div className="mt-8 flex w-full max-w-xs flex-col gap-2 sm:flex-row">
-                <Button className="flex-1 btn-primary" render={<Link href={loginHref} />}>
-                  Masuk
+              <div className="mt-8 flex w-full max-w-xs flex-col gap-3">
+                <Button className="w-full btn-primary" render={<Link href={buildRegisterHref(loginHref)} />}>
+                  Gabung waitlist
                 </Button>
-                <Button variant="outline" className="flex-1" render={<Link href="/daftar" />}>
-                  Daftar
-                </Button>
+                <p className="text-sm text-muted-foreground">
+                  {EXISTING_ACCOUNT_PROMPT}{" "}
+                  <Link href={loginHref} className="link-accent font-medium">
+                    Masuk
+                  </Link>
+                </p>
               </div>
             </div>
           </div>

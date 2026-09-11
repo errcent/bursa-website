@@ -20,7 +20,8 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/components/auth-provider";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
 import { captureAnalyticsEvent } from "@/lib/analytics/posthog";
-import { buildLoginHref } from "@/lib/auth/redirect";
+import { buildLoginHref, buildRegisterHref } from "@/lib/auth/redirect";
+import { EXISTING_ACCOUNT_PROMPT } from "@/lib/features/registration-copy";
 import { SOFT_LAUNCH } from "@/lib/decision-os/soft-launch";
 import { formatRupiah } from "@/lib/mock-data";
 import type { Course, Mentor } from "@/lib/types";
@@ -90,19 +91,22 @@ export function CheckoutForm({
     return (
       <div className="surface-card mx-auto max-w-lg overflow-hidden">
         <div className="px-6 py-8 text-center">
-          <h2 className="font-heading text-lg font-medium">Masuk untuk checkout</h2>
+          <h2 className="font-heading text-lg font-medium">Pembelian belum dibuka</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Kamu perlu masuk ke akun untuk menyelesaikan pembelian dan mengaktifkan akses kelas{" "}
-            <span className="text-foreground/90">{course.title}</span>.
+            Akan tersedia saat peluncuran batch pertama. Gabung waitlist untuk{" "}
+            <span className="text-foreground/90">{course.title}</span> dan kelas lainnya.
           </p>
         </div>
-        <div className="flex flex-col gap-2 border-t border-border/60 px-6 py-5 sm:flex-row">
-          <Button className="flex-1 btn-primary" render={<Link href={loginHref} />}>
-            Masuk
+        <div className="flex flex-col gap-3 border-t border-border/60 px-6 py-5">
+          <Button className="w-full btn-primary" render={<Link href={buildRegisterHref(loginHref)} />}>
+            Gabung waitlist
           </Button>
-          <Button variant="outline" className="flex-1" render={<Link href="/daftar" />}>
-            Daftar
-          </Button>
+          <p className="text-center text-sm text-muted-foreground">
+            {EXISTING_ACCOUNT_PROMPT}{" "}
+            <Link href={loginHref} className="link-accent font-medium">
+              Masuk
+            </Link>
+          </p>
         </div>
       </div>
     );

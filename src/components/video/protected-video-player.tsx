@@ -29,6 +29,7 @@ import {
   type ProtectionViolationType,
   watermarkConfig,
 } from "@/lib/video/protection";
+import { GuestLockedContentPanel } from "@/components/auth/guest-locked-content-panel";
 import { resolvePlayableVideoUrl } from "@/lib/video/demo";
 
 function getEffectiveDuration(video: HTMLVideoElement | null, fallback: number): number {
@@ -55,6 +56,10 @@ export interface ProtectedVideoPlayerProps {
   seekRequestSeconds?: number | null;
   onTimeUpdate?: (seconds: number) => void;
   onProtectionViolation?: (type: ProtectionViolationType, lessonId: string) => void;
+  /** Guest locked overlay — link to first preview lesson in course. */
+  previewLessonHref?: string;
+  /** Post-auth / waitlist return path for locked overlay CTAs. */
+  lockedReturnPath?: string;
   /** Device mockup, skip DRM/blur/watermark and use demo playback. */
   mockupMode?: boolean;
   /** Inset fullscreen for device mockup scroll (not browser Fullscreen API). */
@@ -79,6 +84,8 @@ export function ProtectedVideoPlayer({
   seekRequestSeconds = null,
   onTimeUpdate,
   onProtectionViolation,
+  previewLessonHref,
+  lockedReturnPath = "/katalog",
   mockupMode = false,
   simulatedFullscreen = false,
   highlightFullscreenControl = false,
@@ -149,7 +156,7 @@ export function ProtectedVideoPlayer({
 
     if (!userId) {
       setTokenReady(false);
-      setTokenError("Masuk diperlukan untuk mengakses konten berbayar.");
+      setTokenError("locked");
       return;
     }
 
@@ -497,8 +504,15 @@ export function ProtectedVideoPlayer({
 
   if (tokenError) {
     return (
-      <div className={cn(playerShellClass, "flex items-center justify-center bg-surface p-6 text-center")}>
-        <p className="text-sm text-muted-foreground">{tokenError}</p>
+      <div className={cn(playerShellClass, "flex items-center justify-center bg-surface")}>
+        {tokenError === "locked" && !userId ? (
+          <GuestLockedContentPanel
+            returnPath={lockedReturnPath}
+            previewHref={previewLessonHref}
+          />
+        ) : (
+          <p className="p-6 text-sm text-muted-foreground">{tokenError}</p>
+        )}
       </div>
     );
   }
