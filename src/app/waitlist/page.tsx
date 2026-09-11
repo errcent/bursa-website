@@ -11,63 +11,43 @@ import { WaitlistForm } from "@/components/waitlist-form";
 export const metadata: Metadata = {
   title: "Gabung Waitlist",
   description:
-    "Gabung waitlist Bursa. Platform edukasi trading dan investasi sedang disiapkan bersama praktisi. Early access terbatas.",
+    "Kabari emailmu saat Bursa dibuka: edukasi trading dan investasi terstruktur, terkurasi bersama praktisi.",
 };
-
-const perks = [
-  "Early access terbatas saat kelas inti diluncurkan",
-  "Kabar pertama saat pendaftaran akun dibuka",
-  "Tanpa spam, hanya update penting",
-];
 
 export default function WaitlistPage() {
   return (
     <>
       <SiteNavbar />
       <main className="flex-1 overflow-x-clip">
-        <section className="hero-cinematic relative">
+        <section className="hero-cinematic relative min-h-[calc(100dvh-var(--site-header-offset)-4rem)]">
           <HeroLivingBackground />
           <div
             aria-hidden
             className="hero-text-scrim pointer-events-none absolute inset-0 z-[1]"
           />
 
-          <div className="container-page relative z-10 px-4 py-20 sm:px-8 sm:py-28">
-            <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+          <div className="container-page relative z-10 flex min-h-[inherit] items-center px-4 py-16 sm:px-8 sm:py-20">
+            <div className="mx-auto flex w-full max-w-md flex-col items-center text-center">
               <Reveal>
-                <span className="badge-pill mb-6 inline-flex items-center gap-2">
-                  Segera Hadir
-                </span>
-              </Reveal>
-              <Reveal delay={0.1}>
-                <h1 className="page-hero-title text-gradient max-w-3xl">
-                  Gabung waitlist Bursa
+                <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                  Gabung waitlist
                 </h1>
               </Reveal>
-              <Reveal delay={0.18}>
-                <p className="section-copy mx-auto mt-5 max-w-xl sm:text-base">
-                  Jadi yang pertama tahu saat Bursa dibuka. Tinggalkan email kamu,
-                  kami kabari begitu kelas & mentor siap.
+              <Reveal delay={0.08}>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-[0.9375rem]">
+                  Kabari emailmu saat kelas & mentor siap dibuka.
                 </p>
               </Reveal>
-              <Reveal delay={0.26} className="mt-8 w-full max-w-md">
-                <Suspense fallback={<div className="h-24 animate-pulse rounded-2xl bg-muted/30" />}>
+              <Reveal delay={0.16} className="mt-8 w-full">
+                <Suspense fallback={<div className="h-32 animate-pulse rounded-xl bg-muted/20" />}>
                   <DaftarClosedBanner />
                   <WaitlistForm />
                 </Suspense>
               </Reveal>
-              <Reveal delay={0.34} className="mt-10 w-full max-w-md">
-                <ul className="flex flex-col gap-2 text-left">
-                  {perks.map((perk) => (
-                    <li
-                      key={perk}
-                      className="flex items-start gap-2 text-sm text-muted-foreground"
-                    >
-                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent" />
-                      {perk}
-                    </li>
-                  ))}
-                </ul>
+              <Reveal delay={0.24}>
+                <p className="mt-6 text-[11px] text-muted-foreground/70">
+                  Tanpa spam · unsubscribe kapan saja
+                </p>
               </Reveal>
             </div>
           </div>

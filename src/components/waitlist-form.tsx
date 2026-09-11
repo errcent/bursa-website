@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowUpRight, CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 
 import { captureAnalyticsEvent } from "@/lib/analytics/posthog";
 import { authInputClassName } from "@/components/auth-field";
@@ -33,7 +33,7 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [honeypot, setHoneypot] = useState("");
-  const [armTurnstile, setArmTurnstile] = useState(false);
+  const [showTurnstile, setShowTurnstile] = useState(false);
 
   const utm = useMemo(
     () => ({
@@ -56,12 +56,12 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
       return;
     }
     if (!consent) {
-      setError("Setujui kebijakan privasi untuk melanjutkan.");
+      setError("Centang persetujuan untuk melanjutkan.");
       return;
     }
     if (turnstileRequired && !turnstileToken) {
-      setArmTurnstile(true);
-      setError("Selesaikan verifikasi keamanan terlebih dahulu.");
+      setShowTurnstile(true);
+      setError("Selesaikan verifikasi singkat di bawah.");
       return;
     }
 
@@ -117,75 +117,60 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
     const submittedEmail = email.trim();
 
     return (
-      <div className="surface-card flex flex-col items-center gap-3 rounded-2xl p-6 text-center sm:p-8">
-        <CheckCircle2 className="size-10 text-emerald" strokeWidth={1.5} />
-        <h2 className="font-heading text-lg font-semibold">
-          {outcome.duplicate ? "Kamu sudah di waitlist" : "Berhasil gabung waitlist"}
+      <div className="flex flex-col items-center gap-3 py-2 text-center">
+        <CheckCircle2 className="size-9 text-emerald" strokeWidth={1.5} aria-hidden />
+        <h2 className="font-heading text-lg font-semibold tracking-tight">
+          {outcome.duplicate ? "Sudah terdaftar" : "Kamu masuk waitlist"}
         </h2>
-        <p className="section-copy max-w-sm">
+        <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
           {outcome.duplicate ? (
             <>
-              <span className="font-medium text-foreground">{submittedEmail}</span> sudah terdaftar.
-              Kami akan mengabari kamu begitu Bursa dibuka.
+              <span className="text-foreground">{submittedEmail}</span> sudah ada di daftar kami.
             </>
           ) : (
             <>
-              Terima kasih, <span className="font-medium text-foreground">{submittedEmail}</span>{" "}
-              sudah masuk waitlist. Kami akan mengabari kamu begitu platform edukasi trading dan
-              investasi Bursa siap dibuka.
+              Kami kabari <span className="text-foreground">{submittedEmail}</span> saat Bursa
+              dibuka.
             </>
           )}
         </p>
-        {outcome.confirmationEmailScheduled ? (
-          <p className="text-xs text-muted-foreground">
-            Email konfirmasi sedang dikirim. Jika belum terlihat, periksa folder spam atau promosi.
-          </p>
-        ) : null}
       </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="relative flex w-full flex-col gap-4">
-      <div className="flex w-full flex-col gap-3 sm:flex-row">
-        <div className="flex-1">
-          <label htmlFor="waitlist-email" className="sr-only">
-            Alamat email
-          </label>
-          <input
-            id="waitlist-email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (error) setError(null);
-            }}
-            onFocus={() => setArmTurnstile(true)}
-            placeholder="nama@email.com"
-            className={authInputClassName}
-            aria-invalid={Boolean(error)}
-            disabled={loading}
-          />
-        </div>
+      <div className="flex flex-col gap-3">
+        <label htmlFor="waitlist-email" className="sr-only">
+          Alamat email
+        </label>
+        <input
+          id="waitlist-email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (error) setError(null);
+          }}
+          placeholder="nama@email.com"
+          className={authInputClassName}
+          aria-invalid={Boolean(error)}
+          disabled={loading}
+        />
         <Button
           type="submit"
           size="lg"
           variant="inverse"
-          className="h-12 shrink-0 rounded-xl px-6"
+          className="h-12 w-full rounded-xl"
           disabled={loading}
         >
-          {loading ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <ArrowUpRight className="size-4" />
-          )}
-          Gabung Waitlist
+          {loading ? <Loader2 className="size-4 animate-spin" /> : "Gabung waitlist"}
         </Button>
       </div>
 
-      <label className="flex items-start gap-2 text-left text-xs text-muted-foreground sm:text-sm">
+      <label className="flex items-start justify-center gap-2.5 text-left text-[11px] leading-relaxed text-muted-foreground sm:text-xs">
         <input
           id="waitlist-consent"
           type="checkbox"
@@ -194,21 +179,17 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
             setConsent(e.target.checked);
             if (error) setError(null);
           }}
-          className="mt-0.5 size-4 shrink-0 rounded border-border accent-accent"
+          className="mt-0.5 size-3.5 shrink-0 rounded border-border accent-accent"
           disabled={loading}
         />
         <span>
-          Saya setuju menerima konfirmasi, seri onboarding edukasi singkat, serta update produk
-          dan peluncuran Bursa. Setelah onboarding, frekuensi maksimal satu email bernilai per
-          minggu. Saya dapat mengubah preferensi atau berhenti kapan saja, dan telah membaca{" "}
-          <Link href="/privasi" className="link-muted font-medium text-foreground">
-            Kebijakan Privasi
+          Setuju menerima kabar peluncuran Bursa.{" "}
+          <Link href="/privasi" className="link-muted text-foreground/80 underline-offset-2">
+            Privasi
           </Link>
-          .
         </span>
       </label>
 
-      {/* Honeypot: not focusable, not in a11y tree */}
       <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0" inert>
         <label htmlFor="waitlist-website">Website</label>
         <input
@@ -219,15 +200,18 @@ export function WaitlistForm({ source = "waitlist-page" }: WaitlistFormProps) {
           autoComplete="off"
           value={honeypot}
           onChange={(e) => setHoneypot(e.target.value)}
-          readOnly={false}
         />
       </div>
 
-      {turnstileRequired && armTurnstile ? (
-        <TurnstileWidget onToken={setTurnstileToken} className="flex justify-center sm:justify-start" />
+      {turnstileRequired && showTurnstile ? (
+        <TurnstileWidget
+          size="compact"
+          onToken={setTurnstileToken}
+          className="flex justify-center overflow-hidden rounded-lg"
+        />
       ) : null}
 
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {error ? <p className="text-center text-xs text-destructive">{error}</p> : null}
     </form>
   );
 }

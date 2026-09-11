@@ -22,8 +22,7 @@ import {
 import { SiteNavbar } from "@/components/site-navbar";
 import { Button } from "@/components/ui/button";
 
-const HERO_SUBCOPY =
-  "Platform sedang dibangun. Kurikulum disiapkan bersama praktisi. Early access terbatas via waitlist.";
+const HERO_SUBCOPY = "Kurikulum runut, bersama praktisi & mentor profesional";
 
 function HeroCtaButtons() {
   return (

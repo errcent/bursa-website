@@ -16,6 +16,7 @@ declare global {
           "expired-callback"?: () => void;
           "error-callback"?: (errorCode?: string) => void;
           theme?: "light" | "dark" | "auto";
+          size?: "normal" | "compact";
         }
       ) => string;
       reset: (widgetId: string) => void;
@@ -27,6 +28,7 @@ declare global {
 interface TurnstileWidgetProps {
   onToken: (token: string | null) => void;
   className?: string;
+  size?: "normal" | "compact";
   /** Fired with the Cloudflare error code when the widget can't run at all. */
   onFatalError?: (errorCode: string) => void;
 }
@@ -48,7 +50,12 @@ const UNRECOVERABLE_ERROR_CODES = new Set([
   "400070", // sitekey disabled
 ]);
 
-export function TurnstileWidget({ onToken, className, onFatalError }: TurnstileWidgetProps) {
+export function TurnstileWidget({
+  onToken,
+  className,
+  size = "normal",
+  onFatalError,
+}: TurnstileWidgetProps) {
   const siteKey = getTurnstileSiteKey();
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
@@ -85,11 +92,12 @@ export function TurnstileWidget({ onToken, className, onFatalError }: TurnstileW
     widgetIdRef.current = window.turnstile.render(containerRef.current, {
       sitekey: siteKey,
       theme: "dark",
+      size,
       callback: (token) => onToken(token),
       "expired-callback": () => onToken(null),
       "error-callback": handleError,
     });
-  }, [fatalErrorCode, handleError, onToken, scriptReady, siteKey]);
+  }, [fatalErrorCode, handleError, onToken, scriptReady, siteKey, size]);
 
   useEffect(() => {
     renderWidget();
