@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { Editor } from "@tiptap/react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
@@ -427,6 +427,8 @@ export function NotesRichEditor({
     "leading-relaxed text-foreground",
     mobileComfort ? "text-base" : "text-sm"
   );
+  const skipCaretScrollUntilRef = useRef(0);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -458,6 +460,7 @@ export function NotesRichEditor({
       },
       handleScrollToSelection: scrollCaretIntoView
         ? (view) => {
+            if (Date.now() < skipCaretScrollUntilRef.current) return true;
             const scrollRoot = view.dom.closest("[data-notes-scroll]") as HTMLElement | null;
             if (!scrollRoot) return false;
             const { head } = view.state.selection;
@@ -473,6 +476,12 @@ export function NotesRichEditor({
           }
         : undefined,
       handleDOMEvents: {
+        focus: () => {
+          if (scrollCaretIntoView) {
+            skipCaretScrollUntilRef.current = Date.now() + 900;
+          }
+          return false;
+        },
         blur: () => {
           onBlur?.();
           return false;
@@ -481,8 +490,9 @@ export function NotesRichEditor({
     },
     onUpdate: ({ editor: ed }) => {
       onChange(ed.getHTML());
-      if (scrollCaretIntoView) {
+      if (scrollCaretIntoView && Date.now() >= skipCaretScrollUntilRef.current) {
         requestAnimationFrame(() => {
+          if (Date.now() < skipCaretScrollUntilRef.current) return;
           ed.commands.scrollIntoView();
         });
       }
@@ -535,13 +545,15 @@ export function NotesRichEditor({
             "min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y",
             focusEndOnEmptyTap && "cursor-text"
           )}
-          onPointerDown={(e) => {
-            if (!focusEndOnEmptyTap || e.button !== 0 || !editor) return;
+          onClick={(e) => {
+            if (!focusEndOnEmptyTap || !editor) return;
             const scrollRoot = e.currentTarget;
             const prose = editor.view.dom;
             const target = e.target as Node;
+            if (target instanceof HTMLElement && target.closest("button, a, input")) {
+              return;
+            }
             const proseRect = prose.getBoundingClientRect();
-            const emptyDoc = editor.state.doc.textContent.trim().length === 0;
             const tapBelowContent = e.clientY > proseRect.bottom - 16;
             const tapOnScrollPadding =
               target === scrollRoot || !prose.contains(target);
@@ -549,13 +561,11 @@ export function NotesRichEditor({
               left: e.clientX,
               top: e.clientY,
             });
-            if (
-              emptyDoc ||
-              tapOnScrollPadding ||
-              tapBelowContent ||
-              posAtTap == null
-            ) {
-              e.preventDefault();
+            const tapOnProse = prose.contains(target) && target !== scrollRoot;
+            if (tapOnProse && posAtTap != null && !tapBelowContent) {
+              return;
+            }
+            if (tapOnScrollPadding || tapBelowContent || posAtTap == null) {
               editor.chain().focus("end").run();
             }
           }}

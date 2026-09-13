@@ -20,7 +20,6 @@ import {
 } from "@/components/learning/learning-sidebar-resize";
 import { useMobileLearningPip } from "@/components/learning/mobile-learning-pip-provider";
 import { MobileLessonMiniPlayerShell } from "@/components/learning/mobile-lesson-mini-player";
-import { useVisualViewportBottomInset } from "@/lib/hooks/use-visual-viewport-inset";
 import { resolveBelajarReturnPath } from "@/lib/learning/belajar-return-path";
 import type { VideoPlayerHandle } from "@/lib/video/video-player-handle";
 
@@ -125,7 +124,6 @@ export function LearningWorkspace({
   const playerRef = useRef<VideoPlayerHandle>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
   const mobileNotesStudio = isMobileLayout && sidebarTab === "catatan";
-  const keyboardInset = useVisualViewportBottomInset(mobileNotesStudio);
 
   useEffect(() => {
     router.prefetch(returnPath);
@@ -140,19 +138,6 @@ export function LearningWorkspace({
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  useEffect(() => {
-    if (!mobileNotesStudio || typeof document === "undefined") return;
-    const html = document.documentElement;
-    const body = document.body;
-    const prevHtml = html.style.overflow;
-    const prevBody = body.style.overflow;
-    html.style.overflow = "hidden";
-    body.style.overflow = "hidden";
-    return () => {
-      html.style.overflow = prevHtml;
-      body.style.overflow = prevBody;
-    };
-  }, [mobileNotesStudio]);
   const { width: sidebarWidth, widthRef: sidebarWidthRef, applyWidth, persist } =
     useLearningSidebarWidth(sidebarTab === "catatan");
   const progressApi = `/api/courses/${course.slug}/progress`;
@@ -1078,9 +1063,7 @@ export function LearningWorkspace({
         )}
         style={
           mobileNotesStudio
-            ? ({
-                paddingBottom: keyboardInset > 0 ? keyboardInset : undefined,
-              } as CSSProperties)
+            ? undefined
             : ({
                 opacity:
                   mobileCollapse >= 0.96
