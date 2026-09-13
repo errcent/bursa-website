@@ -255,7 +255,7 @@ export function LessonNotesPanel({
             bare
             fillHeight
             mobileComfort={mobileStudio}
-            scrollCaretIntoView={mobileStudio}
+            scrollCaretIntoView={false}
             focusEndOnEmptyTap={mobileStudio}
             placeholder="Tulis catatan…"
             ariaLabel={`Catatan untuk ${lessonTitle}`}

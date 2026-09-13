@@ -20,6 +20,7 @@ import {
 } from "@/components/learning/learning-sidebar-resize";
 import { useMobileLearningPip } from "@/components/learning/mobile-learning-pip-provider";
 import { MobileLessonMiniPlayerShell } from "@/components/learning/mobile-lesson-mini-player";
+import { useVisualViewportLayout } from "@/lib/hooks/use-visual-viewport-layout";
 import { resolveBelajarReturnPath } from "@/lib/learning/belajar-return-path";
 import type { VideoPlayerHandle } from "@/lib/video/video-player-handle";
 
@@ -124,6 +125,7 @@ export function LearningWorkspace({
   const playerRef = useRef<VideoPlayerHandle>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
   const mobileNotesStudio = isMobileLayout && sidebarTab === "catatan";
+  const mobileViewport = useVisualViewportLayout(isMobileLayout && sidebarTab === "catatan");
 
   useEffect(() => {
     router.prefetch(returnPath);
@@ -838,14 +840,32 @@ export function LearningWorkspace({
     </>
   );
 
+  const mobileNotesViewportStyle =
+    mobileNotesStudio && mobileViewport.height > 0
+      ? ({
+          height: mobileViewport.height,
+          maxHeight: mobileViewport.height,
+          transform:
+            mobileViewport.offsetTop > 0
+              ? `translateY(${mobileViewport.offsetTop}px)`
+              : undefined,
+        } as CSSProperties)
+      : undefined;
+
   return (
     <div
       ref={layoutRef}
       className={cn(
         "grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_var(--sidebar-w)]",
-        mobileNotesStudio && "max-lg:flex max-lg:h-full max-lg:min-h-0 max-lg:flex-col max-lg:overflow-hidden"
+        mobileNotesStudio &&
+          "max-lg:flex max-lg:min-h-0 max-lg:flex-col max-lg:overflow-hidden max-lg:overscroll-none"
       )}
-      style={{ "--sidebar-w": `${sidebarWidth}px` } as CSSProperties}
+      style={
+        {
+          "--sidebar-w": `${sidebarWidth}px`,
+          ...mobileNotesViewportStyle,
+        } as CSSProperties
+      }
     >
       <main
         className={cn(

@@ -49,7 +49,7 @@ export default async function LearningPage({
   if (!lessonExists) notFound();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background max-lg:h-dvh max-lg:min-h-0 max-lg:overflow-hidden">
+    <div className="flex min-h-screen flex-col bg-background max-lg:fixed max-lg:inset-0 max-lg:z-0 max-lg:h-dvh max-lg:min-h-0 max-lg:overflow-hidden max-lg:overscroll-none">
       <header className="hidden h-12 shrink-0 items-center gap-2 border-b border-border px-4 sm:px-5 lg:flex">
         <Link
           href={`/kelas/${course.slug}`}
