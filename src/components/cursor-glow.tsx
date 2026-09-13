@@ -45,7 +45,10 @@ export function CursorGlow() {
     return () => {
       window.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseleave", onLeave);
-      if (rafRef.current !== null) window.cancelAnimationFrame(rafRef.current);
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
     };
   }, [prefersReducedMotion, onLanding]);
 

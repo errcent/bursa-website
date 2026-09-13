@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-import { RiskDisclaimer } from "@/components/risk-disclaimer";
 import { AppDownloadBadges } from "@/components/app-download-badges";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import {
@@ -119,6 +118,7 @@ const footerColumns = [
       { label: "Pusat Privasi", href: "/privasi" },
       { label: "Pusat Kepercayaan", href: "/kepercayaan" },
       { label: "Syarat & Ketentuan", href: "/terms" },
+      { label: "Penyangkalan risiko", href: "/terms#risiko" },
       { label: "Panduan Pelajar", href: "/terms/learner-guidelines" },
     ],
   },
@@ -294,11 +294,10 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-border/30">
-        <div className="container-page flex flex-col gap-5 py-8 md:flex-row md:items-end md:justify-between">
+        <div className="container-page py-8">
           <p className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground/45">
             Copyright © 2026 All rights reserved.
           </p>
-          <RiskDisclaimer variant="compact" />
         </div>
       </div>
     </footer>

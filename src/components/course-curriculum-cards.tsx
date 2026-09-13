@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
 import { LessonPreviewThumb } from "@/components/video/lesson-preview-thumb";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
+import { belajarLessonHref } from "@/lib/learning/belajar-return-path";
 import type { Course } from "@/lib/types";
 import { isLessonFreePreview } from "@/lib/video/lesson-access";
 import { cn } from "@/lib/utils";
@@ -41,7 +42,9 @@ export function CourseCurriculumCards({
         {flatVideos.map(({ lesson, moduleIndex, lessonIndex }) => {
           const isFree = isLessonFreePreview(lesson, moduleIndex, lessonIndex);
           const isPlayable = enrolled || isFree;
-          const href = `/belajar/${course.slug}/${lesson.id}`;
+          const href = belajarLessonHref(course.slug, lesson.id, {
+            returnPath: `/kelas/${course.slug}`,
+          });
 
           return (
             <div
@@ -51,6 +54,7 @@ export function CourseCurriculumCards({
               <div className="relative min-w-0">
                 <Link href={href} className="block min-w-0">
                   <LessonPreviewThumb
+                    posterSrc={lesson.videoThumbnailUrl}
                     title={lesson.title}
                     isFree={isFree}
                     hasAccess={enrolled}

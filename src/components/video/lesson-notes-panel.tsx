@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AlertCircle,
   Check,
@@ -10,21 +8,20 @@ import {
   FileDown,
   FileText,
   Loader2,
-  StickyNote,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
-import { useAuth } from "@/components/auth-provider";
 import { NotesRichEditor } from "@/components/video/notes-rich-editor";
 import { Button } from "@/components/ui/button";
-import { buildRegisterHref } from "@/lib/auth/redirect";
 import {
   downloadNotesExport,
   noteHasVisibleContent,
   type NoteExportFormat,
 } from "@/lib/lesson-notes/export";
-import { mergeNotesContent, pickPrimaryNote } from "@/lib/lesson-notes/merge";
-import type { LessonNote } from "@/lib/lesson-notes/types";
+import {
+  loadLessonNoteContent,
+  saveLessonNoteContent,
+} from "@/lib/lesson-notes/local-storage";
 import { cn } from "@/lib/utils";
 
 const AUTOSAVE_DELAY_MS = 1200;
@@ -117,23 +114,6 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
   );
 }
 
-interface AuthPayload {
-  userId: string;
-  email?: string;
-  name?: string;
-  role?: string;
-}
-
-function notesAuthHeaders(
-  authPayload: AuthPayload,
-  withJson = false
-): HeadersInit {
-  return {
-    ...(withJson ? { "Content-Type": "application/json" } : {}),
-    ...(authPayload.email ? { "x-user-email": authPayload.email } : {}),
-  };
-}
-
 export function LessonNotesPanel({
   courseSlug,
   courseTitle,
@@ -141,11 +121,6 @@ export function LessonNotesPanel({
   lessonTitle,
   variant = "default",
 }: LessonNotesPanelProps) {
-  const { session } = useAuth();
-  const pathname = usePathname();
-  const waitlistHref = useMemo(() => buildRegisterHref(pathname), [pathname]);
-
-  const [note, setNote] = useState<LessonNote | null>(null);
   const [html, setHtml] = useState("<p></p>");
   const [isLoading, setIsLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
@@ -158,198 +133,56 @@ export function LessonNotesPanel({
   const savedFadeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const savingRef = useRef(false);
 
-  const apiBase = `/api/courses/${courseSlug}/lessons/${lessonId}/notes`;
-
-  const authPayload = useMemo(() => {
-    if (!session) return null;
-    return {
-      userId: session.userId,
-      email: session.email,
-      name: session.name,
-      role: session.role,
-    };
-  }, [session]);
-
-  const consolidateLegacyNotes = useCallback(
-    async (primary: LessonNote, mergedContent: string, extraNotes: LessonNote[]) => {
-      if (!authPayload || extraNotes.length === 0) return;
-
-      await fetch(`${apiBase}/${primary.id}`, {
-        method: "PATCH",
-        credentials: "include",
-        headers: notesAuthHeaders(authPayload, true),
-        body: JSON.stringify({
-          ...authPayload,
-          content: mergedContent,
-        }),
-      });
-
-      await Promise.all(
-        extraNotes.map((extra) =>
-          fetch(`${apiBase}/${extra.id}`, {
-            method: "DELETE",
-            credentials: "include",
-            headers: notesAuthHeaders(authPayload, true),
-            body: JSON.stringify(authPayload),
-          })
-        )
-      );
+  const persistLocal = useCallback(
+    (content: string) => {
+      try {
+        saveLessonNoteContent(courseSlug, lessonId, content);
+        return true;
+      } catch {
+        return false;
+      }
     },
-    [apiBase, authPayload]
+    [courseSlug, lessonId]
   );
 
   useEffect(() => {
-    let cancelled = false;
-
-    void (async () => {
-      if (!session?.userId) {
-        if (!cancelled) {
-          setNote(null);
-          setHtml("<p></p>");
-          lastSavedRef.current = "<p></p>";
-          setIsLoading(false);
-        }
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const params = new URLSearchParams({
-          userId: session.userId,
-          ...(session.email ? { email: session.email } : {}),
-        });
-        const res = await fetch(`${apiBase}?${params}`, {
-          cache: "no-store",
-          credentials: "include",
-          headers: notesAuthHeaders({
-            userId: session.userId,
-            email: session.email,
-            name: session.name,
-            role: session.role,
-          }),
-        });
-        if (cancelled) return;
-        if (res.status === 401) {
-          setNote(null);
-          setHtml("<p></p>");
-          lastSavedRef.current = "<p></p>";
-          setError(null);
-          return;
-        }
-        if (!res.ok) {
-          setNote(null);
-          setHtml("<p></p>");
-          lastSavedRef.current = "<p></p>";
-          setError("Gagal memuat catatan.");
-          return;
-        }
-
-        const data = await res.json();
-        const notes = (data.notes ?? []) as LessonNote[];
-        const primary = pickPrimaryNote(notes);
-        const mergedContent = mergeNotesContent(notes);
-
-        setNote(primary);
-        setHtml(mergedContent);
-        lastSavedRef.current = mergedContent;
-        setError(null);
-
-        if (primary && notes.length > 1) {
-          const extras = notes.filter((entry) => entry.id !== primary.id);
-          void consolidateLegacyNotes(primary, mergedContent, extras);
-        }
-      } catch {
-        if (!cancelled) {
-          setNote(null);
-          setHtml("<p></p>");
-          lastSavedRef.current = "<p></p>";
-          setError("Gagal memuat catatan.");
-        }
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    apiBase,
-    consolidateLegacyNotes,
-    session?.email,
-    session?.name,
-    session?.role,
-    session?.userId,
-  ]);
+    const loaded = loadLessonNoteContent(courseSlug, lessonId);
+    setHtml(loaded);
+    lastSavedRef.current = loaded;
+    setIsLoading(false);
+    setError(null);
+  }, [courseSlug, lessonId]);
 
   useEffect(() => {
-    if (!authPayload) return;
     if (html === lastSavedRef.current) return;
-    if (!noteHasVisibleContent(html)) return;
     if (savingRef.current) return;
 
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      void (async () => {
-        if (savingRef.current || !noteHasVisibleContent(html)) return;
-        savingRef.current = true;
-        setSaveStatus("saving");
-        setError(null);
+      if (savingRef.current || html === lastSavedRef.current) return;
+      savingRef.current = true;
+      setSaveStatus("saving");
+      setError(null);
 
-        try {
-          if (note?.id) {
-            const res = await fetch(`${apiBase}/${note.id}`, {
-              method: "PATCH",
-              credentials: "include",
-              headers: notesAuthHeaders(authPayload, true),
-              body: JSON.stringify({
-                ...authPayload,
-                content: html,
-              }),
-            });
-            if (!res.ok) {
-              setSaveStatus("error");
-              setError("Gagal memperbarui catatan.");
-              return;
-            }
-            const data = await res.json();
-            setNote(data.note as LessonNote);
-          } else {
-            const res = await fetch(apiBase, {
-              method: "POST",
-              credentials: "include",
-              headers: notesAuthHeaders(authPayload, true),
-              body: JSON.stringify({
-                ...authPayload,
-                content: html,
-              }),
-            });
-            if (!res.ok) {
-              setSaveStatus("error");
-              setError("Gagal menyimpan catatan.");
-              return;
-            }
-            const data = await res.json();
-            setNote(data.note as LessonNote);
-          }
+      const ok = persistLocal(html);
+      if (!ok) {
+        setSaveStatus("error");
+        setError("Gagal menyimpan di perangkat ini.");
+        savingRef.current = false;
+        return;
+      }
 
-          lastSavedRef.current = html;
-          setSaveStatus("saved");
-          if (savedFadeRef.current) clearTimeout(savedFadeRef.current);
-          savedFadeRef.current = setTimeout(() => setSaveStatus("idle"), 2000);
-        } catch {
-          setSaveStatus("error");
-          setError("Gagal menyimpan catatan.");
-        } finally {
-          savingRef.current = false;
-        }
-      })();
+      lastSavedRef.current = html;
+      setSaveStatus("saved");
+      if (savedFadeRef.current) clearTimeout(savedFadeRef.current);
+      savedFadeRef.current = setTimeout(() => setSaveStatus("idle"), 2000);
+      savingRef.current = false;
     }, AUTOSAVE_DELAY_MS);
 
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
-  }, [html, note?.id, apiBase, authPayload]);
+  }, [html, persistLocal]);
 
   useEffect(
     () => () => {
@@ -398,25 +231,6 @@ export function LessonNotesPanel({
   const isSidebar = variant === "sidebar";
   const canExport = noteHasVisibleContent(html);
 
-  if (!session?.userId || !authPayload) {
-    return (
-      <div className={cn("py-4 text-center", isSidebar && "py-2")}>
-        <StickyNote className="mx-auto mb-2 size-5 text-muted-foreground" />
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Catatan lesson butuh akun early access. Pendaftaran baru belum dibuka. Gabung
-          waitlist dulu.
-        </p>
-        <Button
-          size="sm"
-          className="btn-primary mt-4 w-full sm:mx-auto sm:min-w-[7.5rem]"
-          render={<Link href={waitlistHref} />}
-        >
-          Gabung waitlist
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {error && (
@@ -449,7 +263,12 @@ export function LessonNotesPanel({
               isSidebar && "pt-1.5"
             )}
           >
-            <SaveIndicator status={saveStatus} />
+            <div className="flex min-w-0 items-center gap-1.5">
+              <SaveIndicator status={saveStatus} />
+              <span className="truncate text-[10px] text-muted-foreground">
+                Hanya di perangkat ini
+              </span>
+            </div>
             <div ref={exportMenuRef} className="relative shrink-0">
               <Button
                 type="button"

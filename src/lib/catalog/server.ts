@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { listCuratedPlaylists, serializePlaylistSummary } from "@/lib/playlist/server";
 import type { PlaylistSummary } from "@/lib/playlist/types";
 import type { Course, Mentor } from "@/lib/types";
+import { resolveBunnyThumbnailUrl } from "@/lib/video/bunny";
 
 const CATALOG_CACHE_TAG = "catalog";
 const CATALOG_REVALIDATE_SECONDS = 60;
@@ -111,6 +112,8 @@ function mapCatalogCourse(course: DbCourseDetail): Course {
             description: lesson.description ?? undefined,
             durationMinutes: lesson.durationMinutes,
             preview: lesson.isPreviewGratis,
+            videoThumbnailUrl:
+              resolveBunnyThumbnailUrl(lesson.videoUrl) ?? undefined,
           })),
       })),
   };

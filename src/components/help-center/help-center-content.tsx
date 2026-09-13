@@ -12,23 +12,18 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
-  helpCategories as allHelpCategories,
-  helpFaqs as allHelpFaqs,
+  helpCategories,
   searchHelpFaqs,
   type HelpCategory,
 } from "@/lib/help-center/content";
 import { cn } from "@/lib/utils";
-
-const HIDDEN_HELP_CATEGORIES = new Set<HelpCategory>(["Pembayaran", "Komunitas"]);
-const helpCategories = allHelpCategories.filter((c) => !HIDDEN_HELP_CATEGORIES.has(c));
-const helpFaqs = allHelpFaqs.filter((f) => !HIDDEN_HELP_CATEGORIES.has(f.category));
 
 export function HelpCenterContent() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<HelpCategory | "Semua">("Semua");
 
   const filteredFaqs = useMemo(() => {
-    let results = searchHelpFaqs(query).filter((f) => !HIDDEN_HELP_CATEGORIES.has(f.category));
+    let results = searchHelpFaqs(query);
     if (activeCategory !== "Semua") {
       results = results.filter((f) => f.category === activeCategory);
     }

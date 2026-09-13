@@ -37,7 +37,7 @@ export function AiThumbnailImage({
   fallbackApiPath,
   placeholderLabel,
 }: AiThumbnailImageProps) {
-  const [src, setSrc] = useState<string | null>(primarySrc);
+  const [src, setSrc] = useState<string | null>(primarySrc ?? fallbackApiPath ?? null);
 
   if (!src) {
     return <ThumbnailPlaceholder label={placeholderLabel} />;
@@ -109,11 +109,7 @@ export function CourseThumbnail({
         kind="course"
         slug={course.slug}
         primarySrc={primarySrc}
-        fallbackApiPath={
-          isMasterclassPortraitCourse(course.slug)
-            ? null
-            : courseThumbnailFallbackApiPath(course.slug)
-        }
+        fallbackApiPath={courseThumbnailFallbackApiPath(course.slug)}
         alt={alt ?? "Thumbnail kelas"}
         className="transition-transform duration-500 ease-out group-hover:scale-[1.03]"
       />

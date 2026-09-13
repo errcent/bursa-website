@@ -4,6 +4,7 @@ import {
   buildPlaylistAccessContext,
   enrichPlaylistItemsWithAccess,
 } from "@/lib/playlist/access";
+import { completedKeysForPlaylistItems } from "@/lib/learning/shared-video-completion";
 import {
   findCuratedPlaylistBySlug,
   serializePlaylistDetail,
@@ -24,10 +25,16 @@ export async function GET(request: Request, context: RouteContext) {
     const user = await resolveAuthenticatedUser(request, { createIfMissing: false });
     const accessCtx = await buildPlaylistAccessContext(user?.id ?? null, detail.items);
 
+    const enrichedItems = enrichPlaylistItemsWithAccess(detail.items, accessCtx);
+    const completedKeys = user
+      ? [...(await completedKeysForPlaylistItems(user.id, enrichedItems))]
+      : [];
+
     return jsonOk({
       playlist: {
         ...detail,
-        items: enrichPlaylistItemsWithAccess(detail.items, accessCtx),
+        items: enrichedItems,
+        completedLessonKeys: completedKeys,
       },
     });
   } catch (error) {

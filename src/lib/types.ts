@@ -36,6 +36,8 @@ export interface Lesson {
   description?: string;
   durationMinutes: number;
   preview?: boolean;
+  /** Bunny / CDN frame for lesson row previews (catalog detail only). */
+  videoThumbnailUrl?: string;
   /** Downloadable files (PDF, template, cheat sheet) attached to this lesson. */
   materials?: LessonMaterial[];
 }

@@ -1,4 +1,7 @@
-export type HelpCategory = "Platform" | "Akun" | "Pembayaran" | "Belajar" | "Note" | "Komunitas" | "Mentor";
+import { legalEntityCopy } from "@/lib/legal/entity";
+import { PREVIEW_CATALOG_COPY } from "@/lib/preview-catalog/copy";
+
+export type HelpCategory = "Platform" | "Akun" | "Belajar" | "Note" | "Mentor";
 
 export interface HelpFaq {
   id: string;
@@ -7,37 +10,34 @@ export interface HelpFaq {
   answer: string;
 }
 
-export const helpCategories: HelpCategory[] = [
-  "Platform",
-  "Akun",
-  "Pembayaran",
-  "Belajar",
-  "Note",
-  "Komunitas",
-  "Mentor",
-];
+export const helpCategories: HelpCategory[] = ["Platform", "Akun", "Belajar", "Note", "Mentor"];
 
 export const helpFaqs: HelpFaq[] = [
   {
     id: "platform-badan-hukum",
     category: "Platform",
-    question: "Siapa yang mengoperasikan Bursa?",
+    question: legalEntityCopy.id.helpQuestion,
+    answer: legalEntityCopy.id.helpAnswer,
+  },
+  {
+    id: "platform-katalog-demo",
+    category: "Platform",
+    question: "Apakah katalog dan mentor yang tampil sudah data resmi?",
+    answer: PREVIEW_CATALOG_COPY.bannerDetail,
+  },
+  {
+    id: "platform-bukan-broker",
+    category: "Platform",
+    question: "Apakah Bursa mengelola uang atau trading saya?",
     answer:
-      "PT Global Makmur Madani menaungi merek Bursa / Bursanalar. Pengurusan kegiatan usaha Bursanalar dijalankan oleh Raden Mohammad Kaisar Khan dan Fakhri Muzakki. Bursa bukan PUJK, broker, atau penasihat investasi.",
+      "Tidak. Bursa adalah platform edukasi, bukan broker atau penasihat investasi. Kami tidak menyimpan saldo, tidak mengeksekusi order, dan tidak mengelola portofolio kamu.",
   },
   {
     id: "akun-daftar",
     category: "Akun",
     question: "Bagaimana cara mendaftar akun Bursa?",
     answer:
-      "Pendaftaran publik belum dibuka. Gabung waitlist di /waitlist untuk early access. Kamu tetap bisa melihat katalog, preview, dan Panduan Belajar tanpa akun.",
-  },
-  {
-    id: "akun-lupa-password",
-    category: "Akun",
-    question: "Saya lupa kata sandi. Apa yang harus dilakukan?",
-    answer:
-      "Di halaman Masuk, klik Lupa kata sandi dan masukkan email terdaftar. Kami kirim tautan reset yang berlaku 24 jam. Jika email tidak masuk, cek folder spam atau hubungi support@bursanalar.com.",
+      "Pendaftaran publik belum dibuka. Gabung waitlist di /waitlist untuk early access. Kamu tetap bisa melihat katalog demonstrasi, preview, dan Panduan Belajar tanpa akun.",
   },
   {
     id: "akun-hapus",
@@ -47,53 +47,32 @@ export const helpFaqs: HelpFaq[] = [
       "Hapus akun dari aplikasi belum tersedia. Kirim permintaan ke privacy@bursanalar.com untuk hak akses atau penghapusan data.",
   },
   {
-    id: "bayar-metode",
-    category: "Pembayaran",
-    question: "Metode pembayaran apa saja yang tersedia?",
-    answer:
-      "Pembayaran publik belum dibuka. Setelah masuk, kamu dapat mengakses seluruh katalog tanpa checkout.",
-  },
-  {
-    id: "bayar-refund",
-    category: "Pembayaran",
-    question: "Apakah akses kelas bisa di-refund?",
-    answer:
-      "Pembayaran belum dibuka. Jika ada masalah teknis yang membuat kelas tidak bisa diakses, hubungi support@bursanalar.com.",
-  },
-  {
-    id: "bayar-invoice",
-    category: "Pembayaran",
-    question: "Di mana saya bisa unduh invoice?",
-    answer:
-      "Riwayat transaksi (jika ada) tersedia di Pengaturan. Invoice digital akan tersedia setelah pembayaran dibuka.",
-  },
-  {
     id: "belajar-akses",
     category: "Belajar",
     question: "Berapa lama akses kelas setelah masuk?",
     answer:
-      "Selama akun aktif, kamu dapat mengakses seluruh katalog yang dipublikasikan, termasuk pembaruan materi dari mentor.",
+      "Saat ini situs dalam fase demonstrasi: preview dan katalog contoh bisa dijelajahi tanpa akun. Setelah pendaftaran publik dibuka, rencananya akses ke katalog yang dipublikasikan berlaku selama akun aktif, termasuk pembaruan materi dari mentor.",
   },
   {
     id: "belajar-progress",
     category: "Belajar",
     question: "Apakah progress belajar tersimpan antar perangkat?",
     answer:
-      "Progress belajar dan catatan lesson (Notes) tersinkron via akun Bursa · masuk dengan akun yang sama di desktop atau mobile untuk melanjutkan dari posisi terakhir. Simpanan kelas/video (bookmark) saat ini tersimpan di perangkat browser atau aplikasi; sinkron antar perangkat untuk bookmark sedang dalam rencana. Jurnal eksekusi (Bursa Note) terpisah dari catatan lesson.",
+      "Di fase demonstrasi, progress penuh memerlukan akun; fitur masuk belum dibuka untuk publik. Setelah launch, progress belajar dan catatan lesson (Notes) direncanakan tersinkron via akun Bursa di desktop atau mobile. Jurnal eksekusi (Bursa Note) terpisah dari catatan lesson.",
   },
   {
     id: "belajar-sertifikat",
     category: "Belajar",
     question: "Apakah ada sertifikat setelah menyelesaikan kelas?",
     answer:
-      "Beberapa kelas menyediakan sertifikat penyelesaian setelah semua video selesai. Badge sertifikat tampil di profil jika mentor mengaktifkan fitur tersebut untuk kelasnya.",
+      "Fitur sertifikat penyelesaian direncanakan untuk sebagian kelas setelah peluncuran penuh. Di katalog demonstrasi, badge sertifikat (jika tampil) hanya contoh antarmuka.",
   },
   {
     id: "belajar-investasi",
     category: "Belajar",
     question: "Apakah Bursa hanya untuk trader, atau juga untuk investasi jangka panjang?",
     answer:
-      "Keduanya. Katalog mencakup trading dan investasi, dari horizon pendek sampai alokasi jangka panjang. Bursa tetap platform edukasi, bukan penasihat investasi.",
+      "Keduanya. Kurikulum mencakup trading dan investasi, dari horizon pendek sampai alokasi jangka panjang. Bursa tetap platform edukasi, bukan penasihat investasi.",
   },
   {
     id: "note-apa",
@@ -108,20 +87,6 @@ export const helpFaqs: HelpFaq[] = [
     question: "Apakah mentor atau admin bisa membaca jurnal saya?",
     answer:
       "Tidak. Jurnal default privat. Mentor dan admin tidak punya akses. Berbagi entri hanya terjadi jika kamu membuat tautan berbagi yang bisa dicabut.",
-  },
-  {
-    id: "komunitas-join",
-    category: "Komunitas",
-    question: "Bagaimana cara bergabung ke ruang komunitas?",
-    answer:
-      "Ruang komunitas bisa gratis atau berlangganan, tergantung mentor. Buka halaman Komunitas, pilih ruang, lalu klik Gabung. Ruang berbayar memerlukan langganan aktif sebelum akses chat dan sinyal.",
-  },
-  {
-    id: "komunitas-aturan",
-    category: "Komunitas",
-    question: "Apa aturan utama di ruang komunitas?",
-    answer:
-      "Dilarang promosi scam, share sinyal tanpa konteks risiko, spam, dan pelecehan. Mentor dan mod berhak mute atau remove member yang melanggar. Detail lengkap ada di panduan ruang masing-masing.",
   },
   {
     id: "mentor-daftar",

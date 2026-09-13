@@ -8,7 +8,7 @@ export const LEGAL_ENTITY = {
   streetAddress: "Gedung Menara 165 Lantai 4, Jalan TB Simatupang Kav. 1",
   city: "Jakarta Selatan",
   country: "ID",
-  managers: ["Raden Mohammad Kaisar Khan", "Fakhri Muzakki"] as const,
+  managers: ["Raden Mohammad (esa) Kaisar Khan", "Fakhri Muzakki, FMVA"] as const,
 } as const;
 
 const managersId = LEGAL_ENTITY.managers.join(" dan ");
@@ -17,12 +17,12 @@ const addressLine = `${LEGAL_ENTITY.streetAddress}, ${LEGAL_ENTITY.city}`;
 
 export const legalEntityCopy = {
   id: {
-    imprintShort: `Menaungi ${LEGAL_ENTITY.productName}. Pengurusan: ${managersId}.`,
-    imprintBlock: `${LEGAL_ENTITY.productName} dinaungi oleh ${LEGAL_ENTITY.legalName}, perseroan terbatas Indonesia (nomor registrasi ${LEGAL_ENTITY.registrationNumber}), berkedudukan di ${addressLine}. Pengurusan kegiatan usaha ${LEGAL_ENTITY.productName} dijalankan oleh ${managersId}.`,
+    imprintShort: `Menaungi ${LEGAL_ENTITY.productName}. Pendiri: ${managersId}.`,
+    imprintBlock: `${LEGAL_ENTITY.productName} dinaungi oleh ${LEGAL_ENTITY.legalName}, perseroan terbatas Indonesia (nomor registrasi ${LEGAL_ENTITY.registrationNumber}), berkedudukan di ${addressLine}. ${LEGAL_ENTITY.productName} didirikan oleh ${managersId}; keduanya mengurusi kegiatan usaha platform.`,
     footerCopyright: `© ${new Date().getFullYear()} ${LEGAL_ENTITY.legalName}`,
     aboutTitle: "Badan hukum",
-    helpQuestion: "Siapa yang mengoperasikan Bursa?",
-    helpAnswer: `${LEGAL_ENTITY.legalName} menaungi merek Bursa / ${LEGAL_ENTITY.productName}. Pengurusan kegiatan usaha dijalankan oleh ${managersId}. Bukan PUJK, broker, atau penasihat investasi.`,
+    helpQuestion: "Siapa yang mendirikan dan mengoperasikan Bursa?",
+    helpAnswer: `${LEGAL_ENTITY.legalName} menaungi merek Bursa / ${LEGAL_ENTITY.productName}. Pendiri ${LEGAL_ENTITY.productName}: ${managersId}. Keduanya mengurusi kegiatan usaha platform. Bursa bukan PUJK, broker, atau penasihat investasi.`,
   },
   en: {
     imprintShort: `Operates ${LEGAL_ENTITY.productName}. Management: ${managersEn}.`,

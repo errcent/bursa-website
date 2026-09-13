@@ -7,12 +7,14 @@ export function PreviewCatalogNotice() {
   return (
     <div
       role="note"
-      className="flex items-start gap-3 rounded-xl border border-border/70 bg-white/[0.02] px-4 py-3 text-sm text-muted-foreground"
+      className="mx-auto flex max-w-3xl items-center gap-2 border-y border-border/45 py-2 text-muted-foreground sm:gap-2.5 sm:py-2.5"
     >
-      <span className="mt-0.5 shrink-0 rounded-md border border-border/80 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+      <span className="shrink-0 rounded border border-border/70 bg-white/[0.03] px-1.5 py-px text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/90 sm:text-[10px]">
         Pratinjau
       </span>
-      <p className="leading-relaxed">{PREVIEW_CATALOG_COPY.bannerDetail}</p>
+      <p className="min-w-0 flex-1 text-[11px] leading-snug text-muted-foreground/90 sm:text-xs sm:leading-normal">
+        {PREVIEW_CATALOG_COPY.bannerDetail}
+      </p>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { slugify } from "@/lib/slugify";
 import { db } from "@/lib/db";
 import type { PlaylistDetail, PlaylistItemView, PlaylistSummary } from "@/lib/playlist/types";
+import { resolveBunnyThumbnailUrl } from "@/lib/video/bunny";
 
 type PlaylistWithItems = {
   id: string;
@@ -20,6 +21,7 @@ type PlaylistWithItems = {
       legacyId: string | null;
       title: string;
       durationMinutes: number;
+      videoUrl: string | null;
       module: {
         course: {
           id: string;
@@ -44,7 +46,12 @@ export const playlistInclude = {
     orderBy: { sortOrder: "asc" as const },
     include: {
       lesson: {
-        include: {
+        select: {
+          id: true,
+          legacyId: true,
+          title: true,
+          durationMinutes: true,
+          videoUrl: true,
           module: {
             include: {
               course: {
@@ -83,6 +90,7 @@ function serializeItem(item: PlaylistWithItems["items"][number]): PlaylistItemVi
       mentorName: course.mentor.user.nama,
       mentorSlug: course.mentor.slug,
       durationMinutes: item.lesson.durationMinutes,
+      videoThumbnailUrl: resolveBunnyThumbnailUrl(item.lesson.videoUrl),
     };
   }
 

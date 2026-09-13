@@ -15,10 +15,19 @@ export function formatDurationBadge(minutes: number | null) {
   return `${minutes}:00`;
 }
 
-export function lessonHref(item: PlaylistItemView) {
+export function lessonHref(item: PlaylistItemView, playlistSlug?: string | null) {
   if (!item.courseSlug) return "/katalog";
-  if (item.lessonLegacyId) return `/belajar/${item.courseSlug}/${item.lessonLegacyId}`;
-  return `/kelas/${item.courseSlug}`;
+  let href: string;
+  if (item.lessonLegacyId) {
+    href = `/belajar/${item.courseSlug}/${item.lessonLegacyId}`;
+  } else {
+    href = `/kelas/${item.courseSlug}`;
+  }
+  if (playlistSlug && item.lessonLegacyId) {
+    const params = new URLSearchParams({ playlist: playlistSlug });
+    return `${href}?${params.toString()}`;
+  }
+  return href;
 }
 
 export function isItemPlayable(status: PlaylistItemAccessStatus | undefined) {
@@ -26,8 +35,8 @@ export function isItemPlayable(status: PlaylistItemAccessStatus | undefined) {
 }
 
 /** Always deep-link to lesson/kelas; guest locked playback is handled in /belajar. */
-export function itemHref(item: PlaylistItemView) {
-  return lessonHref(item);
+export function itemHref(item: PlaylistItemView, playlistSlug?: string | null) {
+  return lessonHref(item, playlistSlug);
 }
 
 export function AccessBadge({ status }: { status: PlaylistItemAccessStatus | undefined }) {

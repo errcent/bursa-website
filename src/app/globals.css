@@ -704,7 +704,8 @@
     pointer-events: none;
     isolation: isolate;
     mix-blend-mode: difference;
-    will-change: transform, opacity;
+    will-change: transform;
+    transform: translate3d(-80px, -80px, 0);
   }
 
   .landing-story-cursor__svg {
@@ -1755,9 +1756,13 @@
     }
 
     .catalog-page .catalog-row-bleed {
-      width: calc(100% + var(--catalog-container-px));
-      max-width: calc(100% + var(--catalog-container-px));
-      margin-inline: calc(-1 * var(--catalog-container-px)) 0;
+      width: 100dvw;
+      max-width: 100dvw;
+      margin-inline: calc(50% - 50dvw);
+    }
+
+    .catalog-page .catalog-row-title {
+      @apply text-base font-bold;
     }
   }
 
@@ -1902,10 +1907,10 @@
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
       touch-action: pan-x pan-y;
-      scroll-padding-inline-start: var(--carousel-edge-inset);
-      scroll-padding-inline-end: var(--carousel-edge-inset);
-      padding-inline-start: var(--carousel-edge-inset);
-      padding-inline-end: var(--carousel-edge-inset);
+      scroll-padding-inline-start: var(--catalog-container-px);
+      scroll-padding-inline-end: 0;
+      padding-inline-start: var(--catalog-container-px);
+      padding-inline-end: 0;
       padding-bottom: 0.125rem;
     }
     .catalog-row-scroll::-webkit-scrollbar {
@@ -2260,6 +2265,18 @@
 
   .mobile-nav-item {
     @apply flex min-h-12 w-full items-center rounded-xl px-4 text-[15px] font-medium transition-colors;
+  }
+
+  @media (max-width: 1023px) {
+    html.mobile-nav-shift {
+      overflow-x: clip;
+    }
+
+    html.mobile-nav-shift [data-app-content] {
+      transform: translate3d(calc(-1 * min(88vw, 360px)), 0, 0);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
   }
 
   .footer-accordion-trigger {
@@ -3426,6 +3443,14 @@ img.ai-thumbnail__media {
   aspect-ratio: auto;
   width: 100%;
   height: 100%;
+}
+
+/* Hero/backdrop: beats .ai-thumbnail { position:relative } so inset-0 fill works on mobile. */
+.ai-thumbnail.ai-thumbnail--slot.absolute.inset-0 {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
 }
 
 .ai-thumbnail__overlay {

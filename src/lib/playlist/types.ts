@@ -25,10 +25,13 @@ export type PlaylistItemView = {
   mentorName: string | null;
   mentorSlug: string | null;
   durationMinutes: number | null;
+  videoThumbnailUrl?: string | null;
   /** Resolved per viewer: enrolled, free preview, or locked. */
   accessStatus?: PlaylistItemAccessStatus;
 };
 
 export type PlaylistDetail = PlaylistSummary & {
   items: PlaylistItemView[];
+  /** `${courseSlug}/${lessonLegacyId}` completed for signed-in viewer (incl. shared video). */
+  completedLessonKeys?: string[];
 };

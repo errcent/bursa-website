@@ -126,7 +126,7 @@ export function VideoControlBar({
     <div
       data-video-controls
       className={cn(
-        "absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-black/95 via-black/70 to-transparent px-3 pb-2 pt-6 transition-opacity duration-300 sm:px-4",
+        "absolute inset-x-0 bottom-0 z-40 hidden bg-gradient-to-t from-black/95 via-black/70 to-transparent px-3 pb-2 pt-6 transition-opacity duration-300 sm:px-4 lg:block",
         showControls || !isPlaying ? "opacity-100" : "pointer-events-none opacity-0",
         className
       )}

@@ -1,8 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Lock, PlayCircle } from "lucide-react";
 
-import { ThumbnailPlaceholder } from "@/components/thumbnail-placeholder";
 import { cn } from "@/lib/utils";
 
 const sizeClasses = {
@@ -21,22 +21,22 @@ export function LessonPreviewThumb({
   showPlayOverlay = false,
   durationPosition = "auto",
   className,
+  posterSrc,
 }: {
   title: string;
-  /** Free-preview lesson (first of module 1 or preview flag). */
   isFree: boolean;
-  /** Enrolled / subscribed, clear thumbnail even for paid lessons. */
   hasAccess?: boolean;
   durationMinutes: number;
-  /** Override badge text (e.g. `16:00` for MasterClass-style curriculum rows). */
   durationLabel?: string;
   size?: keyof typeof sizeClasses;
-  /** Centered play affordance for curriculum-style cards (playable lessons only). */
   showPlayOverlay?: boolean;
-  /** Where to pin the duration badge; `auto` keeps legacy top-left when play overlay is on. */
   durationPosition?: "auto" | "bottom-right" | "top-left";
   className?: string;
+  /** Video frame only — no course/playlist poster fallback. */
+  posterSrc?: string | null;
 }) {
+  const [src, setSrc] = useState<string | null>(posterSrc?.trim() || null);
+
   const isLocked = !isFree && !hasAccess;
   const isPlayable = isFree || hasAccess;
   const badgeText = durationLabel ?? `${durationMinutes}m`;
@@ -49,18 +49,28 @@ export function LessonPreviewThumb({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-md border border-border bg-black",
+        "relative overflow-hidden rounded-md border border-border bg-black/40",
         sizeClasses[size],
         className
       )}
-      aria-hidden
     >
-      <ThumbnailPlaceholder />
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={src}
+          alt=""
+          draggable={false}
+          className="absolute inset-0 h-full w-full object-cover object-center"
+          loading="lazy"
+          decoding="async"
+          onError={() => setSrc(null)}
+        />
+      ) : null}
 
       {isLocked ? (
         <>
-          <div className="absolute inset-0 bg-black/35" />
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 z-[1] bg-black/35" />
+          <div className="absolute inset-0 z-[2] flex items-center justify-center">
             <div className="flex size-9 items-center justify-center rounded-md border border-white/25 bg-black/60 text-white sm:size-10">
               <Lock className="size-4 sm:size-[18px]" />
             </div>
@@ -69,14 +79,14 @@ export function LessonPreviewThumb({
       ) : null}
 
       {showPlayOverlay && isPlayable && !isLocked ? (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+        <div className="pointer-events-none absolute inset-0 z-[3] flex items-center justify-center">
           <PlayCircle className="size-8 text-white drop-shadow-lg sm:size-9" />
         </div>
       ) : null}
 
       <span
         className={cn(
-          "absolute z-20 rounded bg-black/75 px-1.5 py-0.5 font-mono text-[10px] text-white tabular-nums",
+          "absolute z-[4] rounded bg-black/75 px-1.5 py-0.5 font-mono text-[10px] text-white tabular-nums",
           badgeCorner
         )}
       >

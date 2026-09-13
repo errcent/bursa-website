@@ -39,7 +39,7 @@ export function PlaylistCurriculumCards({
         {playlist.items.map((item) => {
           const status = item.accessStatus;
           const playable = isItemPlayable(status);
-          const href = itemHref(item);
+          const href = itemHref(item, playlist.slug);
           const isFree = status === "free";
           const hasAccess = status === "owned";
           const durationMinutes = item.durationMinutes ?? 0;
@@ -52,6 +52,7 @@ export function PlaylistCurriculumCards({
               <div className="relative min-w-0">
                 <Link href={href} className="block min-w-0">
                   <LessonPreviewThumb
+                    posterSrc={item.videoThumbnailUrl}
                     title={item.lessonTitle ?? item.courseTitle ?? "Video"}
                     isFree={isFree}
                     hasAccess={hasAccess}

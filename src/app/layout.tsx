@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import Script from "next/script";
 
 import { AuthProvider } from "@/components/auth-provider";
+import { MobileLearningPipProvider } from "@/components/learning/mobile-learning-pip-provider";
 import { PostHogProvider } from "@/components/analytics/posthog-provider";
 import { NextAuthProvider } from "@/components/next-auth-provider";
 import { CursorGlow } from "@/components/cursor-glow";
@@ -112,8 +113,10 @@ export default async function RootLayout({
             {legalSurface ? null : <NavbarRouteTracker />}
             <NextAuthProvider>
               <AuthProvider>
-                {legalSurface ? null : <PreviewCatalogBanner />}
-                {children}
+                <MobileLearningPipProvider>
+                  {legalSurface ? null : <PreviewCatalogBanner />}
+                  {children}
+                </MobileLearningPipProvider>
               </AuthProvider>
             </NextAuthProvider>
           </PreloaderGate>

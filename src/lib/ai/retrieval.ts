@@ -76,7 +76,15 @@ export async function retrieveChunks(
 /** Static FAQ cache, zero LLM tokens on hit. */
 const FAQ_CACHE: Record<string, string> = {
   "cara daftar":
-    "Pendaftaran publik belum dibuka. Gabung waitlist di /waitlist untuk early access. Katalog, preview, dan Panduan Belajar tetap bisa dijelajahi.",
+    "Pendaftaran publik belum dibuka. Gabung waitlist di /waitlist untuk early access. Katalog demonstrasi, preview, dan Panduan Belajar tetap bisa dijelajahi tanpa akun.",
+  waitlist:
+    "Gabung waitlist di /waitlist untuk early access saat pendaftaran dan akses penuh dibuka. Pembayaran publik belum tersedia.",
+  katalog:
+    "Katalog demonstrasi. Nama mentor, statistik, ulasan, dan video bersifat fiktif, bukan data resmi.",
+  demo:
+    "Katalog demonstrasi. Nama mentor, statistik, ulasan, dan video bersifat fiktif, bukan data resmi.",
+  broker:
+    "Bursa adalah platform edukasi, bukan broker atau penasihat investasi. Kami tidak menyimpan saldo atau mengeksekusi order.",
   disclaimer:
     "Konten edukasi trading dan investasi bukan rekomendasi investasi. Keputusan dan risiko ada pada pengguna.",
 };

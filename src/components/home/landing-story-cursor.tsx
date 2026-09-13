@@ -17,15 +17,18 @@ const HALF = RING / 2;
 
 /**
  * Landing landasan cursor.
- * Position updates via rAF + direct DOM transform (1:1 with pointer).
+ * Position writes synchronously on pointermove (true 1:1).
  * Spring only for hover scale, scroll fill, and opacity.
+ * Failsafe: if tracking dies, restore the OS cursor.
  */
 export function LandingStoryCursor({ progress }: { progress: MotionValue<number> }) {
   const reduceMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const cursorRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number | null>(null);
-  const pendingRef = useRef({ x: -80, y: -80, visible: 0, hover: 0 });
+  const lastHoverRef = useRef(0);
+  const lastVisibleRef = useRef(0);
+  const lastMoveAtRef = useRef(0);
+  const failsafeRef = useRef<number | null>(null);
 
   const hover = useMotionValue(0);
   const visible = useMotionValue(0);
@@ -52,50 +55,75 @@ export function LandingStoryCursor({ progress }: { progress: MotionValue<number>
     if (reduceMotion) return;
     if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
 
-    document.documentElement.classList.add("landing-story-cursor-on");
+    const root = document.documentElement;
+    root.classList.add("landing-story-cursor-on");
 
-    const flush = () => {
-      rafRef.current = null;
+    const hideCustom = () => {
       const el = cursorRef.current;
-      if (!el) return;
-      const { x, y, visible: vis } = pendingRef.current;
-      el.style.transform = `translate3d(${x - HALF}px, ${y - HALF}px, 0)`;
-      el.style.opacity = vis ? "1" : "0";
-      visible.set(vis);
-      hover.set(pendingRef.current.hover);
+      if (el) el.style.opacity = "0";
+      if (lastVisibleRef.current !== 0) {
+        lastVisibleRef.current = 0;
+        visible.set(0);
+      }
     };
 
-    const schedule = () => {
-      if (rafRef.current !== null) return;
-      rafRef.current = window.requestAnimationFrame(flush);
+    const armFailsafe = () => {
+      if (failsafeRef.current !== null) window.clearInterval(failsafeRef.current);
+      failsafeRef.current = window.setInterval(() => {
+        // OS cursor hidden but custom stopped updating → unblock the user.
+        if (Date.now() - lastMoveAtRef.current > 1200 && lastVisibleRef.current === 1) {
+          root.classList.remove("landing-story-cursor-on");
+          hideCustom();
+        }
+      }, 400);
     };
 
     const onMove = (event: PointerEvent) => {
+      const el = cursorRef.current;
+      if (!el) return;
+
+      lastMoveAtRef.current = Date.now();
+      // Re-enable hide if failsafe restored the OS cursor.
+      if (!root.classList.contains("landing-story-cursor-on")) {
+        root.classList.add("landing-story-cursor-on");
+      }
+
+      // Sync write — no rAF gate (avoids lag under scroll Motion + stuck rafRef).
+      el.style.transform = `translate3d(${event.clientX - HALF}px, ${event.clientY - HALF}px, 0)`;
+      el.style.opacity = "1";
+
+      if (lastVisibleRef.current !== 1) {
+        lastVisibleRef.current = 1;
+        visible.set(1);
+      }
+
       const target = event.target;
-      pendingRef.current = {
-        x: event.clientX,
-        y: event.clientY,
-        visible: 1,
-        hover:
-          target instanceof Element &&
-          target.closest("a, button, [role='button'], input, textarea, select, label, summary")
-            ? 1
-            : 0,
-      };
-      schedule();
-    };
-    const onLeave = () => {
-      pendingRef.current.visible = 0;
-      schedule();
+      const nextHover =
+        target instanceof Element &&
+        target.closest("a, button, [role='button'], input, textarea, select, label, summary")
+          ? 1
+          : 0;
+      if (nextHover !== lastHoverRef.current) {
+        lastHoverRef.current = nextHover;
+        hover.set(nextHover);
+      }
     };
 
+    const onLeave = () => {
+      hideCustom();
+    };
+
+    armFailsafe();
     window.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("mouseleave", onLeave);
     return () => {
-      document.documentElement.classList.remove("landing-story-cursor-on");
+      root.classList.remove("landing-story-cursor-on");
       window.removeEventListener("pointermove", onMove);
       document.removeEventListener("mouseleave", onLeave);
-      if (rafRef.current !== null) window.cancelAnimationFrame(rafRef.current);
+      if (failsafeRef.current !== null) {
+        window.clearInterval(failsafeRef.current);
+        failsafeRef.current = null;
+      }
     };
   }, [hover, reduceMotion, visible]);
 

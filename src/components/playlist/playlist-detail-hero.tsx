@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Play } from "lucide-react";
 
+import { DetailAboutInfoButton, DetailAboutSheet } from "@/components/detail/detail-about-sheet";
 import { PlaylistThumbnail } from "@/components/playlist/playlist-thumbnail";
 import { Button } from "@/components/ui/button";
 import type { PlaylistDetail } from "@/lib/playlist/types";
@@ -22,109 +24,123 @@ export function PlaylistDetailHero({
   onScrollToList,
   variant = "default",
 }: PlaylistDetailHeroProps) {
+  const [aboutOpen, setAboutOpen] = useState(false);
   const ctaHref = firstPlayableHref ?? "#playlist-videos";
-  const ctaLabel = firstPlayableHref ? "Mulai Playlist" : "Lihat Daftar Video";
+  const ctaLabel = firstPlayableHref ? "Mulai Preview" : "Lihat Daftar Video";
   const isDevice = variant === "device";
+  const aboutText = playlist.description?.trim() || "Playlist kurasi Bursa — jalur belajar runut dari video terpilih.";
 
   return (
-    <section className="relative w-full overflow-hidden bg-black">
-      <div
-        className={cn(
-          "relative mx-auto w-full max-w-[1800px] overflow-hidden",
-          isDevice
-            ? "aspect-video max-h-none"
-            : "max-sm:min-h-[34rem] max-sm:aspect-auto sm:aspect-video sm:max-h-[78vh]"
-        )}
-      >
-        <PlaylistThumbnail
-          playlist={playlist}
-          fillSlot
-          className="absolute inset-0"
-        />
-
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent max-sm:via-black/35"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.5)_42%,transparent_72%)]"
-          aria-hidden
-        />
-
+    <>
+      <section className="relative w-full overflow-hidden bg-black">
         <div
           className={cn(
-            "absolute inset-0 z-10 flex flex-col",
-            isDevice ? "px-10 pb-9 pt-9" : "px-5 pb-10 sm:px-8 sm:pb-12 lg:px-10 lg:pb-14"
+            "relative mx-auto w-full max-w-[1800px] overflow-hidden",
+            isDevice
+              ? "aspect-video max-h-none"
+              : "max-sm:h-[min(24rem,52svh)] max-sm:min-h-0 max-sm:aspect-auto sm:aspect-video sm:max-h-[78vh]"
           )}
         >
-          {!isDevice ? (
-            <div className="min-h-[14rem] shrink-0 sm:min-h-[12rem] lg:min-h-[14rem]">
-              <Link
-                href="/katalog"
-                className="link-muted inline-flex items-center gap-1.5 text-sm text-white/70 transition-colors hover:text-white"
-              >
-                <ArrowLeft className="size-4" />
-                Kembali ke katalog
-              </Link>
-            </div>
-          ) : (
-            <div className="shrink-0 grow" />
-          )}
+          <PlaylistThumbnail playlist={playlist} fillSlot className="absolute inset-0 z-0" />
 
-          <div className="mr-auto w-full max-w-md sm:max-w-lg">
-            <p className="text-xs font-medium uppercase tracking-widest text-accent">
-              Playlist
-            </p>
+          <div
+            className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black via-black/50 to-transparent max-sm:via-black/35"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(105deg,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.5)_42%,transparent_72%)]"
+            aria-hidden
+          />
 
-            <h1
-              className={cn(
-                "mt-2 font-heading font-semibold leading-[1.08] tracking-[-0.04em] text-white",
-                isDevice
-                  ? "text-[2.35rem]"
-                  : "text-[clamp(1.75rem,4.2vw,2.75rem)]"
-              )}
-            >
-              {playlist.title}
-            </h1>
+          <div
+            className={cn(
+              "absolute inset-0 z-10 flex flex-col",
+              isDevice ? "px-10 pb-9 pt-9" : "px-5 pb-10 sm:px-8 sm:pb-12 lg:px-10 lg:pb-14"
+            )}
+          >
+            {!isDevice ? (
+              <div className="min-h-[14rem] shrink-0 sm:min-h-[12rem] lg:min-h-[14rem]">
+                <Link
+                  href="/katalog"
+                  className="link-muted inline-flex items-center gap-1.5 text-sm text-white/70 transition-colors hover:text-white"
+                >
+                  <ArrowLeft className="size-4" />
+                  Kembali ke katalog
+                </Link>
+              </div>
+            ) : (
+              <div className="shrink-0 grow" />
+            )}
 
-            {playlist.description ? (
-              <p
+            <div className="mr-auto w-full max-w-md sm:max-w-lg">
+              <p className="text-xs font-medium uppercase tracking-widest text-accent">Playlist</p>
+
+              <h1
                 className={cn(
-                  "section-copy mt-4 max-w-md leading-relaxed text-white/65",
-                  isDevice ? "text-sm line-clamp-2" : "text-[0.9375rem] sm:text-base"
+                  "mt-2 font-heading font-semibold leading-[1.08] tracking-[-0.04em] text-white",
+                  isDevice ? "text-[2.35rem]" : "text-[clamp(1.75rem,4.2vw,2.75rem)]"
                 )}
               >
-                {playlist.description}
-              </p>
-            ) : null}
+                {playlist.title}
+              </h1>
 
-            <div className="mt-7">
-              {firstPlayableHref ? (
-                <Button
-                  size="lg"
-                  className="h-12 gap-2.5 rounded-md bg-white px-7 text-sm font-semibold text-black shadow-lg shadow-black/25 hover:bg-white/92"
-                  render={<Link href={ctaHref} />}
-                  tabIndex={isDevice ? -1 : undefined}
+              {playlist.description ? (
+                <p
+                  className={cn(
+                    "section-copy mt-4 hidden max-w-md leading-relaxed text-white/65 sm:block",
+                    isDevice ? "text-sm line-clamp-2" : "text-[0.9375rem] sm:text-base"
+                  )}
                 >
-                  <Play className="size-4 fill-current" />
-                  {ctaLabel}
-                </Button>
-              ) : (
-                <Button
-                  size="lg"
-                  type="button"
-                  className="h-12 gap-2.5 rounded-md bg-white px-7 text-sm font-semibold text-black shadow-lg shadow-black/25 hover:bg-white/92"
-                  onClick={onScrollToList}
-                  tabIndex={isDevice ? -1 : undefined}
-                >
-                  <Play className="size-4 fill-current" />
-                  {ctaLabel}
-                </Button>
-              )}
+                  {playlist.description}
+                </p>
+              ) : null}
+
+              <div className="mt-7 flex items-center gap-3">
+                {firstPlayableHref ? (
+                  <Button
+                    size="lg"
+                    className="h-12 min-w-0 flex-1 gap-2.5 rounded-md bg-white px-5 text-sm font-semibold text-black shadow-lg shadow-black/25 hover:bg-white/92 sm:flex-none sm:px-7"
+                    render={<Link href={ctaHref} />}
+                    tabIndex={isDevice ? -1 : undefined}
+                  >
+                    <Play className="size-4 shrink-0 fill-current" />
+                    {ctaLabel}
+                  </Button>
+                ) : (
+                  <Button
+                    size="lg"
+                    type="button"
+                    className="h-12 min-w-0 flex-1 gap-2.5 rounded-md bg-white px-5 text-sm font-semibold text-black shadow-lg shadow-black/25 hover:bg-white/92 sm:flex-none sm:px-7"
+                    onClick={onScrollToList}
+                    tabIndex={isDevice ? -1 : undefined}
+                  >
+                    <Play className="size-4 shrink-0 fill-current" />
+                    {ctaLabel}
+                  </Button>
+                )}
+                {!isDevice ? (
+                  <DetailAboutInfoButton
+                    className="lg:hidden"
+                    onClick={() => setAboutOpen(true)}
+                    label="Tentang playlist"
+                  />
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {!isDevice ? (
+        <DetailAboutSheet
+          open={aboutOpen}
+          onOpenChange={setAboutOpen}
+          title="Tentang playlist"
+          subtitle={`${playlist.itemCount} video`}
+        >
+          <p>{aboutText}</p>
+        </DetailAboutSheet>
+      ) : null}
+    </>
   );
 }

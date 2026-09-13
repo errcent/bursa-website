@@ -1,3 +1,6 @@
+import { legalEntityCopy } from "@/lib/legal/entity";
+import { PREVIEW_CATALOG_COPY } from "@/lib/preview-catalog/copy";
+
 export interface HomeFaq {
   id: string;
   question: string;
@@ -9,42 +12,34 @@ export const homeFaqs: HomeFaq[] = [
     id: "uniqueness",
     question: "Apa yang membuat Bursa berbeda dari platform edukasi trading dan investasi lain?",
     answer:
-      "Kurikulum berjenjang, runut, terkurasi, bersama praktisi profesional terverifikasi. Bukan tumpukan video, bukan sinyal, bukan broker.",
+      "Kurikulum berjenjang dan terkurasi bersama praktisi profesional terverifikasi, bukan tumpukan video acak, bukan sinyal, dan bukan broker. Fokus kami edukasi terstruktur dengan konteks risiko; kami tidak menjanjikan keuntungan.",
   },
   {
     id: "not-broker",
     question: "Apakah Bursa mengelola uang atau trading saya?",
     answer:
-      "Tidak. Bursa adalah platform edukasi, bukan broker. Kami tidak menyimpan saldo, tidak mengeksekusi order, dan tidak menjanjikan keuntungan.",
+      "Tidak. Bursa adalah platform edukasi, bukan broker atau penasihat investasi. Kami tidak menyimpan saldo, tidak mengeksekusi order, dan tidak mengelola portofolio kamu.",
+  },
+  {
+    id: "preview-catalog",
+    question: "Apakah katalog dan mentor yang tampil sudah data resmi?",
+    answer: PREVIEW_CATALOG_COPY.bannerDetail,
   },
   {
     id: "legal-entity",
-    question: "Siapa yang mengoperasikan Bursa?",
-    answer:
-      "PT Global Makmur Madani menaungi merek Bursa / Bursanalar. Pengurusan kegiatan usaha Bursanalar dijalankan oleh Raden Mohammad Kaisar Khan dan Fakhri Muzakki.",
+    question: legalEntityCopy.id.helpQuestion,
+    answer: legalEntityCopy.id.helpAnswer,
   },
   {
     id: "beginners",
-    question: "Apakah Bursa cocok untuk pemula yang belum pernah trading vs. investing?",
+    question: "Apakah Bursa cocok untuk pemula dan investor jangka panjang?",
     answer:
-      "Ya. Banyak kelas berlevel Pemula. Katalog mencakup trading dan investasi, dari horizon pendek sampai alokasi jangka panjang. Filter berdasarkan level dan instrumen supaya kamu menemukan kelas yang cocok.",
+      "Ya. Kurikulum dirancang untuk berbagai level, dari pemula hingga lebih lanjut, dan mencakup trading serta investasi jangka panjang. Di katalog demonstrasi, badge level dan filter instrumen menunjukkan contoh cara menemukan kelas yang cocok; materi resmi mengikuti kurasi saat peluncuran.",
   },
   {
-    id: "instruments",
-    question: "Instrumen apa saja yang diajarkan di Bursa?",
+    id: "early-access",
+    question: "Bagaimana saya bisa mengakses seluruh kelas nanti?",
     answer:
-      "Saham, Crypto, dan Forex. Setiap instrumen punya kelas dari pemula hingga menengah dengan mentor spesialis.",
-  },
-  {
-    id: "find-class",
-    question: "Bagaimana cara menemukan kelas yang cocok?",
-    answer:
-      "Ada Panduan Belajar. Beberapa pertanyaan singkat, semacam kuis. Setelah itu kamu langsung melihat kelas yang sesuai.",
-  },
-  {
-    id: "pricing-model",
-    question: "Bagaimana cara mengakses seluruh kelas di Bursa?",
-    answer:
-      "Platform sedang disiapkan. Saat ini kamu bisa melihat katalog, preview, dan Panduan Belajar. Gabung waitlist untuk early access saat kelas inti diluncurkan.",
+      "Platform inti masih disiapkan. Pembayaran dan pendaftaran publik belum dibuka. Sekarang kamu bisa menjelajahi katalog demonstrasi, preview, dan Panduan Belajar tanpa akun. Gabung waitlist di /waitlist untuk early access saat akses penuh diluncurkan.",
   },
 ];

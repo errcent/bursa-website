@@ -15,10 +15,7 @@ export function extractHeadings(markdown: string): { id: string; text: string; l
     if (!match) continue;
     const level = match[1].length;
     const text = match[2].replace(/\*\*/g, "").trim();
-    const id = text
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "-");
+    const id = headingAnchor(text);
     headings.push({ id, text, level });
   }
   return headings;
@@ -29,6 +26,17 @@ function slugifyHeading(text: string): string {
     .toLowerCase()
     .replace(/[^\w\s-]/g, "")
     .replace(/\s+/g, "-");
+}
+
+/** Stable anchor for ToS §11 — footer links `/terms#risiko`. */
+function headingAnchor(text: string): string {
+  const cleaned = text.replace(/\*\*/g, "").trim();
+  const withoutNumber = cleaned.replace(/^\d+\.\s*/, "");
+  const normalized = withoutNumber.toLowerCase();
+  if (normalized.includes("penyangkalan risiko")) {
+    return "risiko";
+  }
+  return slugifyHeading(cleaned);
 }
 
 export function MarkdownDocument({
@@ -70,7 +78,7 @@ export function MarkdownDocument({
           components={{
             h2: ({ children }) => {
               const text = String(children);
-              const id = slugifyHeading(text.replace(/\*\*/g, ""));
+              const id = headingAnchor(text);
               return (
                 <h2 id={id} className="section-title mt-10 first:mt-0 scroll-mt-24">
                   {children}
@@ -79,7 +87,7 @@ export function MarkdownDocument({
             },
             h3: ({ children }) => {
               const text = String(children);
-              const id = slugifyHeading(text.replace(/\*\*/g, ""));
+              const id = headingAnchor(text);
               return (
                 <h3 id={id} className="mt-8 text-lg font-semibold first:mt-0 scroll-mt-24">
                   {children}

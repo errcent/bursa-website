@@ -126,6 +126,21 @@ export function formatBunnyStoredVideoId(videoId: string): string {
   return `${BUNNY_VIDEO_PREFIX}${videoId}`;
 }
 
+/** Public Bunny Stream preview frame for lesson rows (unsigned thumbnail.jpg). */
+export function resolveBunnyThumbnailUrl(
+  storedVideoUrl: string | null | undefined
+): string | null {
+  const videoId = parseBunnyVideoId(storedVideoUrl);
+  if (!videoId) return null;
+
+  const { cdnHostname } = getBunnyConfig();
+  if (cdnHostname) {
+    return `https://${cdnHostname}/${videoId}/thumbnail.jpg`;
+  }
+
+  return null;
+}
+
 export async function uploadVideoToBunny(
   file: File,
   buffer: Buffer

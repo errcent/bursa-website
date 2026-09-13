@@ -1,29 +1,50 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
+  ArrowRight,
   Check,
   CheckCircle2,
-  Circle,
   Download,
   List,
+  Maximize2,
+  Minimize2,
   StickyNote,
 } from "lucide-react";
+
+import {
+  LearningSidebarResizeHandle,
+  useLearningSidebarWidth,
+} from "@/components/learning/learning-sidebar-resize";
+import { useMobileLearningPip } from "@/components/learning/mobile-learning-pip-provider";
+import { MobileLessonMiniPlayerShell } from "@/components/learning/mobile-lesson-mini-player";
+import { resolveBelajarReturnPath } from "@/lib/learning/belajar-return-path";
+import type { VideoPlayerHandle } from "@/lib/video/video-player-handle";
 
 import { useAuth } from "@/components/auth-provider";
 import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
 import { LessonQuickActions } from "@/components/lesson-quick-actions";
 import { LessonNotesPanel } from "@/components/video/lesson-notes-panel";
 import { LessonPreviewThumb } from "@/components/video/lesson-preview-thumb";
-import { MentorVideoBar } from "@/components/video/mentor-video-bar";
 import { ProtectedVideoPlayer } from "@/components/video/protected-video-player";
-import { ResizableVideoStage } from "@/components/video/resizable-video-stage";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { notifyLearningChange } from "@/lib/learning/events";
-import { loadGuestProgress, saveGuestProgress } from "@/lib/learning/guest-progress-storage";
+import {
+  loadGlobalGuestCompletedKeys,
+  loadGuestProgress,
+  mergeCourseGuestProgress,
+  rememberGlobalGuestCompletion,
+  saveGuestProgress,
+} from "@/lib/learning/guest-progress-storage";
+import { lessonProgressKey } from "@/lib/learning/lesson-progress-key";
+import {
+  isItemPlayable,
+  itemHref,
+} from "@/components/playlist/playlist-item-utils";
+import type { PlaylistDetail } from "@/lib/playlist/types";
 import { computeProgressPercent } from "@/lib/learning/progress";
 import { cn } from "@/lib/utils";
 import type { Course, Mentor } from "@/lib/types";
@@ -46,6 +67,15 @@ export function LearningWorkspace({
 }) {
   const { session } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const playlistSlug = searchParams.get("playlist")?.trim() || null;
+  const returnPath = useMemo(
+    () => resolveBelajarReturnPath(course.slug, searchParams),
+    [course.slug, searchParams]
+  );
+  const pip = useMobileLearningPip();
+  const dockNavigatedRef = useRef(false);
   const allLessons = useMemo(() => course.modules.flatMap((m) => m.lessons), [course]);
   const currentLesson =
     allLessons.find((l) => l.id === currentLessonId) ?? allLessons[0];
@@ -53,23 +83,32 @@ export function LearningWorkspace({
     () => findLessonInCourse(course, currentLesson.id),
     [course, currentLesson.id]
   );
+  const lessonDescription =
+    currentLesson.description?.trim() || course.shortDescription?.trim() || "";
 
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [progressReady, setProgressReady] = useState(false);
   const [hasCourseAccess, setHasCourseAccess] = useState(false);
-  const [playheadSeconds, setPlayheadSeconds] = useState(0);
-  const [seekRequestSeconds, setSeekRequestSeconds] = useState<number | null>(null);
-  const seekTokenRef = useRef(0);
+  const seekRequestSeconds = null;
   const autoCompleteRef = useRef(false);
   const completedModulesBeforeRef = useRef(0);
   const completedRef = useRef(completed);
   completedRef.current = completed;
   const [sidebarTab, setSidebarTab] = useState<"video" | "catatan">("video");
+  const [theaterMode, setTheaterMode] = useState(false);
+  const [mobileCollapse, setMobileCollapse] = useState(0);
+  const [mobilePlayback, setMobilePlayback] = useState({
+    isPlaying: false,
+    currentTime: 0,
+    duration: currentLesson.durationMinutes * 60,
+  });
+  const playerRef = useRef<VideoPlayerHandle>(null);
+  const layoutRef = useRef<HTMLDivElement>(null);
+  const { width: sidebarWidth, widthRef: sidebarWidthRef, applyWidth, persist } =
+    useLearningSidebarWidth(sidebarTab === "catatan");
   const progressApi = `/api/courses/${course.slug}/progress`;
   const enrollApi = `/api/courses/${course.slug}/enroll`;
 
-  const progressPercent = computeProgressPercent(completed.size, allLessons.length);
-  const completedLessonCount = completed.size;
   const isFreePreview = currentLessonContext
     ? isLessonFreePreview(
         currentLesson,
@@ -77,15 +116,35 @@ export function LearningWorkspace({
         currentLessonContext.lessonIndex
       )
     : currentLesson.preview === true;
-  // Guests: preview-only playback. Subscribers: full access (not guest preview mode).
   const isPreview = isFreePreview && !hasCourseAccess;
+
+  const isLessonAccessible = useCallback(
+    (lessonId: string) => {
+      const ctx = findLessonInCourse(course, lessonId);
+      if (!ctx) return false;
+      return (
+        hasCourseAccess ||
+        isLessonFreePreview(ctx.lesson, ctx.moduleIndex, ctx.lessonIndex)
+      );
+    },
+    [course, hasCourseAccess]
+  );
+
+  const sanitizeCompleted = useCallback(
+    (ids: Iterable<string>) => {
+      const next = new Set<string>();
+      for (const id of ids) {
+        if (isLessonAccessible(id)) next.add(id);
+      }
+      return next;
+    },
+    [isLessonAccessible]
+  );
+
+  const canTrackProgress = isLessonAccessible(currentLesson.id);
   const nextLesson = useMemo(
     () => getNextLesson(course, currentLesson.id),
     [course, currentLesson.id]
-  );
-  const nextLessonContext = useMemo(
-    () => (nextLesson ? findLessonInCourse(course, nextLesson.id) : null),
-    [course, nextLesson]
   );
   const firstPreviewLessonHref = useMemo(() => {
     for (let moduleIndex = 0; moduleIndex < course.modules.length; moduleIndex++) {
@@ -101,23 +160,62 @@ export function LearningWorkspace({
   }, [course]);
   const lessonMaterials = currentLesson.materials ?? [];
   const hasMaterials = lessonMaterials.length > 0;
-  const currentLessonNumber = useMemo(() => {
-    const index = allLessons.findIndex((lesson) => lesson.id === currentLesson.id);
-    return index >= 0 ? index + 1 : 1;
-  }, [allLessons, currentLesson.id]);
-  const numberedLessonTitle = `${currentLessonNumber}. ${currentLesson.title}`;
-  const guidebookHref = hasMaterials
-    ? lessonMaterials[0]!.url
-    : `/kelas/${course.slug}`;
-  const guidebookExternal = guidebookHref.startsWith("http");
+  const guidebookHref = hasMaterials ? lessonMaterials[0]!.url : undefined;
+  const guidebookExternal = Boolean(guidebookHref?.startsWith("http"));
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
+  const [playlistContext, setPlaylistContext] = useState<PlaylistDetail | null>(null);
+  const [playlistCompletedKeys, setPlaylistCompletedKeys] = useState<Set<string>>(
+    () => new Set()
+  );
+
+  const playlistLessonItems = useMemo(
+    () =>
+      playlistContext?.items.filter(
+        (item) => item.courseSlug && item.lessonLegacyId && isItemPlayable(item.accessStatus)
+      ) ?? [],
+    [playlistContext?.items]
+  );
+
+  const courseLessonTotal = playlistSlug
+    ? Math.max(playlistLessonItems.length, 1)
+    : allLessons.length;
+  const completedLessonCount = playlistSlug
+    ? playlistLessonItems.filter((item) =>
+        playlistCompletedKeys.has(
+          lessonProgressKey(item.courseSlug!, item.lessonLegacyId!)
+        )
+      ).length
+    : completed.size;
+  const progressPercent = computeProgressPercent(completedLessonCount, courseLessonTotal);
+
+  const isCurrentDone =
+    canTrackProgress &&
+    (playlistSlug
+      ? playlistCompletedKeys.has(
+          lessonProgressKey(course.slug, currentLesson.id)
+        ) || completed.has(currentLesson.id)
+      : completed.has(currentLesson.id));
+
+  const nextLessonHref = nextLesson ? `/belajar/${course.slug}/${nextLesson.id}` : null;
+
+  const nextPlaylistHref = useMemo(() => {
+    if (!playlistSlug || playlistLessonItems.length === 0) return null;
+    const index = playlistLessonItems.findIndex(
+      (item) =>
+        item.courseSlug === course.slug && item.lessonLegacyId === currentLesson.id
+    );
+    if (index < 0 || index >= playlistLessonItems.length - 1) return null;
+    return itemHref(playlistLessonItems[index + 1]!, playlistSlug);
+  }, [course.slug, currentLesson.id, playlistLessonItems, playlistSlug]);
+
+  const continueHref = playlistSlug ? nextPlaylistHref : nextLessonHref;
 
   const handleShareLesson = useCallback(async () => {
     const url = window.location.href;
     try {
       if (navigator.share) {
         await navigator.share({
-          title: numberedLessonTitle,
+          title: currentLesson.title,
           text: course.title,
           url,
         });
@@ -129,7 +227,7 @@ export function LearningWorkspace({
       if (error instanceof DOMException && error.name === "AbortError") return;
       setShareFeedback(null);
     }
-  }, [course.title, numberedLessonTitle]);
+  }, [course.title, currentLesson.title]);
 
   useEffect(() => {
     if (!shareFeedback) return;
@@ -137,22 +235,54 @@ export function LearningWorkspace({
     return () => window.clearTimeout(timer);
   }, [shareFeedback]);
 
-  const seekTo = useCallback((seconds: number) => {
-    seekTokenRef.current += 1;
-    // Encode a unique token in fractional part so repeated seeks to the same
-    // second still trigger the player effect.
-    const token = (seekTokenRef.current % 1000) / 1000;
-    setSeekRequestSeconds(Math.max(0, Math.floor(seconds)) + token);
-    setPlayheadSeconds(Math.max(0, seconds));
-  }, []);
-
   useEffect(() => {
     autoCompleteRef.current = false;
   }, [currentLesson.id]);
 
   useEffect(() => {
+    if (!playlistSlug) {
+      setPlaylistContext(null);
+      return;
+    }
+    let cancelled = false;
+    async function loadPlaylist() {
+      try {
+        const res = await fetch(`/api/playlists/${encodeURIComponent(playlistSlug!)}`, {
+          cache: "no-store",
+          credentials: "include",
+          headers: session?.email ? { "x-user-email": session.email } : {},
+        });
+        if (!res.ok || cancelled) return;
+        const data = (await res.json()) as { playlist?: PlaylistDetail };
+        if (!data.playlist || cancelled) return;
+        setPlaylistContext(data.playlist);
+        const keys = new Set(data.playlist.completedLessonKeys ?? []);
+        for (const key of loadGlobalGuestCompletedKeys()) keys.add(key);
+        setPlaylistCompletedKeys(keys);
+      } catch {
+        if (!cancelled) setPlaylistContext(null);
+      }
+    }
+    void loadPlaylist();
+    return () => {
+      cancelled = true;
+    };
+  }, [playlistSlug, session?.email]);
+
+  useEffect(() => {
     if (!session?.userId && !session?.email) {
-      setCompleted(loadGuestProgress(course.slug));
+      const guest = sanitizeCompleted(
+        mergeCourseGuestProgress(
+          course.slug,
+          allLessons.map((l) => l.id),
+          loadGuestProgress(course.slug)
+        )
+      );
+      setCompleted(guest);
+      saveGuestProgress(course.slug, guest);
+      if (playlistSlug) {
+        setPlaylistCompletedKeys(loadGlobalGuestCompletedKeys());
+      }
       setProgressReady(true);
       setHasCourseAccess(false);
       return;
@@ -186,7 +316,7 @@ export function LearningWorkspace({
 
         if (!cancelled && progressRes.ok) {
           const data = await progressRes.json();
-          setCompleted(new Set(data.completedLessonIds ?? []));
+          setCompleted(sanitizeCompleted(data.completedLessonIds ?? []));
           completedModulesBeforeRef.current = data.completedModules ?? 0;
         }
 
@@ -231,7 +361,7 @@ export function LearningWorkspace({
     return () => {
       cancelled = true;
     };
-  }, [course.slug, enrollApi, progressApi, session]);
+  }, [course.slug, enrollApi, progressApi, sanitizeCompleted, session]);
 
   const handleProtectionViolation = useCallback(
     (type: ProtectionViolationType, lessonId: string) => {
@@ -251,6 +381,10 @@ export function LearningWorkspace({
     nextCompleted: boolean,
     watchedSeconds?: number
   ) {
+    if (nextCompleted && !isLessonAccessible(id)) {
+      return false;
+    }
+
     const previousCompleted = new Set(completed);
     const next = new Set(completed);
     if (nextCompleted) next.add(id);
@@ -259,7 +393,15 @@ export function LearningWorkspace({
 
     if (!session?.userId && !session?.email) {
       saveGuestProgress(course.slug, next);
-      return;
+      rememberGlobalGuestCompletion(course.slug, id);
+      setPlaylistCompletedKeys((prev) => {
+        const keys = new Set(prev);
+        const key = lessonProgressKey(course.slug, id);
+        if (nextCompleted) keys.add(key);
+        else keys.delete(key);
+        return keys;
+      });
+      return true;
     }
 
     try {
@@ -280,38 +422,47 @@ export function LearningWorkspace({
 
       if (!res.ok) {
         setCompleted(previousCompleted);
-        return;
+        return false;
       }
 
       const data = await res.json();
       if (Array.isArray(data.completedLessonIds)) {
-        setCompleted(new Set(data.completedLessonIds as string[]));
+        setCompleted(sanitizeCompleted(data.completedLessonIds as string[]));
       }
 
-      const modules = data.modules as
-        | { title: string; isComplete: boolean }[]
-        | undefined;
-      const completedModulesNow = (data.completedModules as number | undefined) ?? 0;
-
-      completedModulesBeforeRef.current = completedModulesNow;
+      completedModulesBeforeRef.current =
+        (data.completedModules as number | undefined) ?? 0;
+      setPlaylistCompletedKeys((prev) => {
+        const keys = new Set(prev);
+        const key = lessonProgressKey(course.slug, id);
+        if (nextCompleted) keys.add(key);
+        else keys.delete(key);
+        return keys;
+      });
       notifyLearningChange();
+      return true;
     } catch {
       setCompleted(previousCompleted);
+      return false;
     }
-  }
-
-  async function toggleCompleted(id: string) {
-    await syncLessonProgress(id, !completed.has(id));
   }
 
   const handleVideoTimeUpdate = useCallback(
     (seconds: number) => {
-      setPlayheadSeconds(seconds);
+      setMobilePlayback((prev) => {
+        const fromRef = playerRef.current?.getPlaybackState();
+        return {
+          isPlaying: fromRef?.isPlaying ?? prev.isPlaying,
+          currentTime: seconds,
+          duration: fromRef?.duration ?? prev.duration,
+        };
+      });
 
       if (
         autoCompleteRef.current ||
         completedRef.current.has(currentLesson.id) ||
-        !session?.email
+        !session?.email ||
+        !canTrackProgress
       ) {
         return;
       }
@@ -322,58 +473,186 @@ export function LearningWorkspace({
       autoCompleteRef.current = true;
       void syncLessonProgress(currentLesson.id, true, Math.floor(seconds));
     },
-    [currentLesson.durationMinutes, currentLesson.id, session?.email]
+    [canTrackProgress, currentLesson.durationMinutes, currentLesson.id, session?.email]
   );
 
-  const lessonList = (
-    <ul className="flex flex-col gap-1">
-      {(() => {
-        let lessonNumber = 0;
-        return course.modules.map((module, moduleIndex) =>
-          module.lessons.map((lesson, lessonIndex) => {
-            lessonNumber += 1;
-            const isActive = lesson.id === currentLesson.id;
-            const isDone = completed.has(lesson.id);
-            const isFree = isLessonFreePreview(lesson, moduleIndex, lessonIndex);
+  useEffect(() => {
+    setMobilePlayback((prev) => ({
+      ...prev,
+      duration: currentLesson.durationMinutes * 60,
+      currentTime: 0,
+    }));
+    setMobileCollapse(0);
+    dockNavigatedRef.current = false;
+    pip.dismiss();
+  }, [currentLesson.id, currentLesson.durationMinutes, pip]);
+
+  const navigateBackFromLesson = useCallback(() => {
+    if (dockNavigatedRef.current) {
+      router.replace(returnPath);
+      return;
+    }
+    dockNavigatedRef.current = true;
+
+    const query = searchParams.toString();
+    const lessonHref = query ? `${pathname}?${query}` : pathname;
+    const video = playerRef.current?.getVideoElement() ?? null;
+
+    void pip
+      .enterDetached({
+        lessonHref,
+        returnPath,
+        courseTitle: course.title,
+        video,
+      })
+      .then(() => {
+        router.replace(returnPath);
+      });
+  }, [course.title, pathname, pip, returnPath, router, searchParams]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(max-width: 1023px)").matches) return;
+
+    if (mobileCollapse < 0.96) {
+      if (mobileCollapse < 0.85) {
+        dockNavigatedRef.current = false;
+      }
+      return;
+    }
+    navigateBackFromLesson();
+  }, [mobileCollapse, navigateBackFromLesson]);
+
+  async function handleContinue() {
+    if (!canTrackProgress) return;
+    if (!isCurrentDone) {
+      const ok = await syncLessonProgress(currentLesson.id, true);
+      if (!ok) return;
+    }
+    if (continueHref) {
+      router.push(continueHref);
+    }
+  }
+
+  async function handleUncheck() {
+    if (!canTrackProgress || !isCurrentDone) return;
+    autoCompleteRef.current = false;
+    await syncLessonProgress(currentLesson.id, false);
+  }
+
+  const playlistLessonList =
+    playlistSlug && playlistContext ? (
+      <div className="flex min-w-0 flex-col gap-2">
+        <p className="px-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80">
+          Playlist
+        </p>
+        <p className="px-1 text-xs font-medium leading-snug text-foreground/90 line-clamp-2">
+          {playlistContext.title}
+        </p>
+        <ul className="mt-1 flex flex-col gap-0.5">
+          {playlistContext.items.map((item) => {
+            if (!item.courseSlug || !item.lessonLegacyId) return null;
+            const href = itemHref(item, playlistSlug);
+            const isActive =
+              item.courseSlug === course.slug && item.lessonLegacyId === currentLesson.id;
+            const key = lessonProgressKey(item.courseSlug, item.lessonLegacyId);
+            const isDone =
+              isItemPlayable(item.accessStatus) &&
+              (playlistCompletedKeys.has(key) ||
+                (item.courseSlug === course.slug && completed.has(item.lessonLegacyId)));
             return (
-              <li key={lesson.id}>
+              <li key={item.id}>
                 <Link
-                  href={`/belajar/${course.slug}/${lesson.id}`}
+                  href={href}
                   className={cn(
-                    "flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm transition-colors",
+                    "flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 text-sm transition-colors",
                     isActive
-                      ? "bg-foreground/10 text-foreground"
-                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                      ? "bg-foreground/[0.08] text-foreground"
+                      : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                   )}
                 >
                   <LessonPreviewThumb
-                    title={lesson.title}
-                    isFree={isFree}
-                    hasAccess={hasCourseAccess}
-                    durationMinutes={lesson.durationMinutes}
+                    title={item.lessonTitle ?? item.courseTitle ?? "Video"}
+                    isFree={item.accessStatus === "free"}
+                    hasAccess={item.accessStatus === "owned"}
+                    durationMinutes={item.durationMinutes ?? 0}
                     size="sm"
                   />
-                  <span className="flex-1 truncate">
-                    {lessonNumber}. {lesson.title}
+                  <span
+                    className={cn(
+                      "min-w-0 flex-1 line-clamp-2 leading-snug",
+                      isActive && "font-medium text-foreground"
+                    )}
+                  >
+                    {item.lessonTitle ?? item.courseTitle}
                   </span>
                   {isDone ? (
-                    <CheckCircle2 className="size-4 shrink-0 text-emerald" />
-                  ) : (
-                    <Circle className="size-4 shrink-0 opacity-40" />
-                  )}
+                    <CheckCircle2 className="size-4 shrink-0 text-emerald" aria-hidden />
+                  ) : null}
                 </Link>
               </li>
             );
-          })
-        );
-      })()}
-    </ul>
+          })}
+        </ul>
+      </div>
+    ) : null;
+
+  const lessonList = (
+    <div className="flex flex-col gap-4">
+      {course.modules.map((module, moduleIndex) => (
+        <div key={module.title}>
+          <p className="mb-1.5 px-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80">
+            {module.title}
+          </p>
+          <ul className="flex flex-col gap-0.5">
+            {module.lessons.map((lesson, lessonIndex) => {
+              const isActive = lesson.id === currentLesson.id;
+              const isFree = isLessonFreePreview(lesson, moduleIndex, lessonIndex);
+              const accessible = hasCourseAccess || isFree;
+              const isDone = accessible && completed.has(lesson.id);
+              return (
+                <li key={lesson.id}>
+                  <Link
+                    href={`/belajar/${course.slug}/${lesson.id}`}
+                    className={cn(
+                      "flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 text-sm transition-colors",
+                      isActive
+                        ? "bg-foreground/[0.08] text-foreground"
+                        : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                    )}
+                  >
+                    <LessonPreviewThumb
+                      title={lesson.title}
+                      isFree={isFree}
+                      hasAccess={hasCourseAccess}
+                      durationMinutes={lesson.durationMinutes}
+                      size="sm"
+                    />
+                    <span
+                      className={cn(
+                        "min-w-0 flex-1 line-clamp-2 leading-snug",
+                        isActive && "font-medium text-foreground"
+                      )}
+                    >
+                      {lesson.title}
+                    </span>
+                    {isDone ? (
+                      <CheckCircle2 className="size-4 shrink-0 text-emerald" aria-hidden />
+                    ) : null}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </div>
   );
 
   const sidebarPanel = (
     <>
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex min-w-0 flex-1 rounded-lg border border-border bg-muted/30 p-0.5">
+      <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-1 rounded-lg border border-border/70 bg-muted/20 p-0.5">
           <button
             type="button"
             onClick={() => setSidebarTab("video")}
@@ -385,7 +664,7 @@ export function LearningWorkspace({
             )}
           >
             <List className="size-3.5 shrink-0" />
-            Daftar Video
+            {playlistSlug ? "Playlist" : "Kurikulum"}
           </button>
           <button
             type="button"
@@ -401,26 +680,27 @@ export function LearningWorkspace({
             Catatan
           </button>
         </div>
-        {sidebarTab === "video" && (
-          <span className="shrink-0 text-xs text-muted-foreground">{progressPercent}%</span>
-        )}
       </div>
 
       {sidebarTab === "video" ? (
         <>
+          <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
+            <span>
+              {completedLessonCount}/{courseLessonTotal} selesai
+            </span>
+            <span className="font-mono tabular-nums">{progressPercent}%</span>
+          </div>
           <Progress
             value={progressPercent}
-            className="[&_[data-slot=progress-indicator]]:bg-foreground"
+            aria-label={`${completedLessonCount} dari ${courseLessonTotal} pelajaran selesai`}
+            className="h-1 [&_[data-slot=progress-indicator]]:bg-foreground"
           />
-          <p className="text-[11px] leading-relaxed text-muted-foreground">
-            {completedLessonCount}/{allLessons.length} video selesai.
-          </p>
-          <div className="min-h-0 max-h-[min(24rem,52vh)] overflow-y-auto lg:max-h-none lg:flex-1">
-            {lessonList}
+          <div className="min-h-0 max-h-[min(28rem,55vh)] overflow-y-auto lg:max-h-none lg:flex-1">
+            {playlistLessonList ?? lessonList}
           </div>
         </>
       ) : (
-        <div className="flex min-h-0 max-h-[min(24rem,52vh)] flex-1 flex-col overflow-hidden lg:max-h-none">
+        <div className="flex min-h-0 max-h-[min(28rem,55vh)] flex-1 flex-col overflow-hidden lg:max-h-none">
           <LessonNotesPanel
             courseSlug={course.slug}
             courseTitle={course.title}
@@ -434,11 +714,52 @@ export function LearningWorkspace({
   );
 
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] lg:grid-rows-[auto_minmax(0,1fr)]">
-      <div className="flex flex-col gap-4 border-border p-4 sm:p-6 lg:col-start-1 lg:row-start-1 lg:border-r">
-        <div className="mx-auto w-full max-w-5xl">
-          <ResizableVideoStage>
+    <div
+      ref={layoutRef}
+      className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_var(--sidebar-w)]"
+      style={{ "--sidebar-w": `${sidebarWidth}px` } as CSSProperties}
+    >
+      <main
+        className={cn(
+          "flex min-w-0 flex-col border-border max-lg:pt-0 lg:border-r lg:p-5 lg:py-6",
+          theaterMode && "lg:px-4 xl:px-6"
+        )}
+      >
+        <div
+          className={cn(
+            "w-full transition-[max-width] duration-200 ease-out",
+            theaterMode ? "mx-auto max-w-none" : "max-lg:mx-0 max-lg:max-w-none lg:mx-auto lg:max-w-3xl"
+          )}
+        >
+          <MobileLessonMiniPlayerShell
+            onCollapseProgress={setMobileCollapse}
+            onRequestExit={navigateBackFromLesson}
+            playback={mobilePlayback}
+            onTogglePlay={() => {
+              playerRef.current?.togglePlay();
+              window.setTimeout(() => {
+                const state = playerRef.current?.getPlaybackState();
+                if (state) setMobilePlayback(state);
+              }, 0);
+            }}
+          >
+            <div className="relative size-full overflow-hidden bg-black max-lg:rounded-none max-lg:border-0 lg:rounded-lg lg:border lg:border-border/80 lg:shadow-sm">
+            <button
+              type="button"
+              onClick={() => setTheaterMode((v) => !v)}
+              className="absolute right-2 top-2 z-20 hidden size-8 items-center justify-center rounded-md bg-black/55 text-white/90 backdrop-blur-sm transition-colors hover:bg-black/75 lg:inline-flex"
+              title={theaterMode ? "Ukuran standar" : "Perbesar video"}
+              aria-label={theaterMode ? "Kembalikan ukuran video standar" : "Perbesar area video"}
+              aria-pressed={theaterMode}
+            >
+              {theaterMode ? (
+                <Minimize2 className="size-4" aria-hidden />
+              ) : (
+                <Maximize2 className="size-4" aria-hidden />
+              )}
+            </button>
             <ProtectedVideoPlayer
+              ref={playerRef}
               courseId={course.slug}
               lessonId={currentLesson.id}
               lessonTitle={currentLesson.title}
@@ -452,129 +773,155 @@ export function LearningWorkspace({
               seekRequestSeconds={seekRequestSeconds}
               onTimeUpdate={handleVideoTimeUpdate}
               onProtectionViolation={handleProtectionViolation}
+              hideControlBar={mobileCollapse > 0.22}
+              className="max-lg:h-full max-lg:min-h-0 max-lg:rounded-none max-lg:border-0 max-lg:[&_.video-player-shell]:h-full max-lg:[&_.video-player-shell]:aspect-auto"
             />
-          </ResizableVideoStage>
-
-          {mentor ? <MentorVideoBar mentor={mentor} className="mt-3 hidden md:flex" /> : null}
-
-          <LessonQuickActions
-            onShare={() => void handleShareLesson()}
-            shareFeedback={shareFeedback}
-            guidebookHref={guidebookHref}
-            guidebookExternal={guidebookExternal}
-            courseSlug={course.slug}
-          />
-        </div>
-
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-1.5 text-left">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <h1 className="font-heading text-xl font-medium sm:text-2xl">{numberedLessonTitle}</h1>
-              {mentor ? (
-                <p className="mt-1 text-sm text-muted-foreground md:hidden">
-                  dengan{" "}
-                  <Link
-                    href={`/instruktur/${mentor.slug}`}
-                    className="text-foreground underline-offset-2 hover:underline"
-                  >
-                    {mentor.name}
-                  </Link>
-                </p>
-              ) : null}
             </div>
-            <BookmarkToggleButton
-              bookmarkRef={{
-                type: "lesson",
-                courseSlug: course.slug,
-                lessonId: currentLesson.id,
-              }}
-              className="hidden opacity-100 md:inline-flex"
-            />
-          </div>
-        </div>
-      </div>
+          </MobileLessonMiniPlayerShell>
 
-      <aside className="flex flex-col border-t border-border p-4 sm:p-6 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:min-h-0 lg:overflow-hidden lg:border-t-0 lg:border-l">
-        <div className="flex min-h-0 flex-1 flex-col gap-3">{sidebarPanel}</div>
-      </aside>
-
-      <div className="flex flex-col gap-4 border-border p-4 pt-0 sm:p-6 sm:pt-0 lg:col-start-1 lg:row-start-2 lg:border-r lg:pb-6">
-        {nextLesson && nextLessonContext && (
-          <section className="mx-auto w-full max-w-5xl">
-            <h2 className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Video Berikutnya
-            </h2>
-            <Link
-              href={`/belajar/${course.slug}/${nextLesson.id}`}
-              className="group flex gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:border-foreground/20 hover:bg-muted/30"
-            >
-              <LessonPreviewThumb
-                title={nextLesson.title}
-                isFree={isLessonFreePreview(
-                  nextLesson,
-                  nextLessonContext.moduleIndex,
-                  nextLessonContext.lessonIndex
-                )}
-                hasAccess={hasCourseAccess}
-                durationMinutes={nextLesson.durationMinutes}
-                size="md"
-                showPlayOverlay={
-                  hasCourseAccess ||
-                  isLessonFreePreview(
-                    nextLesson,
-                    nextLessonContext.moduleIndex,
-                    nextLessonContext.lessonIndex
-                  )
-                }
-              />
-              <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-                <p className="line-clamp-2 text-sm font-medium leading-snug">
-                  {nextLesson.title}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {nextLesson.durationMinutes} menit ·{" "}
-                  {hasCourseAccess
-                    ? "Termasuk dalam akses katalog"
-                    : isLessonFreePreview(
-                          nextLesson,
-                          nextLessonContext.moduleIndex,
-                          nextLessonContext.lessonIndex
-                        )
-                      ? "Preview gratis tersedia"
-                      : "Konten penuh membutuhkan early access"}
-                </p>
-              </div>
-            </Link>
-          </section>
-        )}
-
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-2">
-          <Button
-            size="sm"
-            className="btn-primary"
-            disabled={!progressReady}
-            onClick={() => void toggleCompleted(currentLesson.id)}
+          <div
+            className={cn(
+              "max-lg:transition-opacity max-lg:duration-300 max-lg:ease-out lg:contents"
+            )}
+            style={
+              {
+                opacity:
+                  mobileCollapse >= 0.96
+                    ? 1
+                    : mobileCollapse > 0
+                      ? 1 - mobileCollapse * 0.45
+                      : 1,
+              } as CSSProperties
+            }
           >
-            <Check className="size-4" />
-            {completed.has(currentLesson.id) ? "Selesai Ditandai" : "Tandai Selesai & Lanjut"}
-          </Button>
-          <Button size="sm" variant="outline" render={<Link href={`/kelas/${course.slug}`} />}>
-            Kembali ke Detail Kelas
-          </Button>
-          {progressReady && hasCourseAccess ? (
-            <span className="rounded-full border border-emerald/25 bg-emerald/10 px-2.5 py-1 text-[11px] font-medium text-emerald">
-              Akses aktif
-            </span>
-          ) : progressReady && !hasCourseAccess && !isFreePreview ? (
-            <Button size="sm" variant="outline" render={<Link href={`/kelas/${course.slug}`} />}>
-              Lihat detail kelas
-            </Button>
-          ) : null}
-        </div>
+          <header
+            className={cn(
+              "mt-3 border-b border-border/60 px-4 pb-4 max-lg:pt-1 lg:mt-4 lg:px-0",
+              theaterMode && "mx-auto w-full max-w-3xl"
+            )}
+          >
+            <div className="flex items-start gap-2">
+              <div className="min-w-0 flex-1 space-y-1.5">
+                <h1 className="font-heading text-base font-medium leading-snug sm:text-lg">
+                  {currentLesson.title}
+                </h1>
+                <p className="text-xs text-muted-foreground sm:text-sm">
+                  {mentor ? (
+                    <Link
+                      href={`/instruktur/${mentor.slug}`}
+                      className="text-foreground/85 hover:underline"
+                    >
+                      {mentor.name}
+                    </Link>
+                  ) : null}
+                  <span className="hidden lg:inline">
+                    {mentor ? <span aria-hidden> · </span> : null}
+                    {currentLesson.durationMinutes} menit
+                  </span>
+                </p>
+                {lessonDescription ? (
+                  <p className="section-copy pt-1 text-sm leading-relaxed text-muted-foreground max-lg:block lg:mt-2 lg:max-w-2xl">
+                    {lessonDescription}
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex shrink-0 items-center">
+                <LessonQuickActions
+                  onShare={() => void handleShareLesson()}
+                  shareFeedback={shareFeedback}
+                  guidebookHref={guidebookHref}
+                  guidebookExternal={guidebookExternal}
+                />
+                <BookmarkToggleButton
+                  bookmarkRef={{
+                    type: "lesson",
+                    courseSlug: course.slug,
+                    lessonId: currentLesson.id,
+                  }}
+                  className="size-9 shrink-0 opacity-100"
+                />
+              </div>
+            </div>
+          </header>
 
-        {hasMaterials ? (
-          <div className="mx-auto mt-2 w-full max-w-5xl">
-            <ul className="flex flex-col gap-2">
+          <div
+            className={cn(
+              "mt-3 flex flex-col gap-2 px-4 max-lg:items-end sm:flex-row sm:flex-wrap sm:items-center lg:mt-4 lg:gap-3 lg:px-0",
+              theaterMode && "mx-auto w-full max-w-3xl"
+            )}
+          >
+            {canTrackProgress ? (
+              <>
+                {continueHref ? (
+                  <Button
+                    size="sm"
+                    className="btn-primary w-full sm:w-auto max-lg:h-9 max-lg:w-9 max-lg:min-w-9 max-lg:border-transparent max-lg:bg-transparent max-lg:p-0 max-lg:text-muted-foreground/40 max-lg:shadow-none hover:max-lg:text-muted-foreground/70"
+                    disabled={!progressReady}
+                    aria-label={
+                      isCurrentDone ? "Pelajaran berikutnya" : "Selesai dan lanjut"
+                    }
+                    onClick={() => void handleContinue()}
+                  >
+                    {isCurrentDone ? (
+                      <>
+                        <span className="hidden lg:inline">Pelajaran berikutnya</span>
+                        <ArrowRight className="size-4 lg:ml-1" />
+                      </>
+                    ) : (
+                      <>
+                        <Check className="size-4" />
+                        <span className="hidden lg:inline">Selesai & lanjut</span>
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    className={cn(
+                      "w-full sm:w-auto max-lg:h-9 max-lg:w-9 max-lg:min-w-9 max-lg:border-transparent max-lg:bg-transparent max-lg:p-0 max-lg:text-muted-foreground/40 max-lg:shadow-none",
+                      !isCurrentDone && "btn-primary lg:btn-primary"
+                    )}
+                    variant={isCurrentDone ? "outline" : "default"}
+                    disabled={!progressReady || isCurrentDone}
+                    aria-label={isCurrentDone ? "Selesai" : "Tandai selesai"}
+                    onClick={() => void syncLessonProgress(currentLesson.id, true)}
+                  >
+                    <Check className="size-4" />
+                    <span className="hidden lg:inline">
+                      {isCurrentDone ? "Selesai" : "Tandai selesai"}
+                    </span>
+                  </Button>
+                )}
+                {isCurrentDone ? (
+                  <button
+                    type="button"
+                    className="hidden text-left text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline disabled:opacity-50 lg:inline"
+                    disabled={!progressReady}
+                    onClick={() => void handleUncheck()}
+                  >
+                    Belum selesai
+                  </button>
+                ) : null}
+              </>
+            ) : (
+              <Button
+                size="sm"
+                className="w-full sm:w-auto"
+                disabled={!progressReady}
+                render={<Link href={`/kelas/${course.slug}`} />}
+              >
+                Dapatkan akses kelas
+              </Button>
+            )}
+          </div>
+
+          {hasMaterials ? (
+            <ul
+              className={cn(
+                "mt-4 space-y-1 border-t border-border/60 px-4 pt-4 lg:px-0",
+                theaterMode && "mx-auto w-full max-w-3xl"
+              )}
+            >
               {lessonMaterials.map((material) => (
                 <li key={material.id}>
                   <a
@@ -582,17 +929,49 @@ export function LearningWorkspace({
                     download
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 text-sm transition-colors hover:bg-muted/30"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    <Download className="size-4 shrink-0 text-muted-foreground" />
-                    <span className="font-medium">{material.title}</span>
+                    <Download className="size-3.5 shrink-0" />
+                    {material.title}
                   </a>
                 </li>
               ))}
             </ul>
+          ) : null}
           </div>
+        </div>
+      </main>
+
+      <aside
+        className={cn(
+          "relative flex min-w-0 flex-col border-t border-border p-4 sm:p-5 lg:sticky lg:top-12 lg:max-h-[calc(100dvh-3rem)] lg:min-h-0 lg:overflow-hidden lg:border-t-0 lg:border-l lg:py-6",
+          sidebarTab === "catatan" && "lg:bg-muted/10",
+          "max-lg:transition-opacity max-lg:duration-300 max-lg:ease-out lg:opacity-100"
+        )}
+        style={
+          {
+            opacity:
+              mobileCollapse >= 0.96
+                ? 1
+                : mobileCollapse > 0
+                  ? 1 - mobileCollapse * 0.45
+                  : undefined,
+          } as CSSProperties
+        }
+      >
+        <LearningSidebarResizeHandle
+          containerRef={layoutRef}
+          widthRef={sidebarWidthRef}
+          onWidthChange={applyWidth}
+          onWidthCommit={persist}
+        />
+        {sidebarTab === "catatan" ? (
+          <p className="mb-1 hidden text-[10px] text-muted-foreground lg:block">
+            Tarik tepi kiri panel untuk melebarkan catatan.
+          </p>
         ) : null}
-      </div>
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">{sidebarPanel}</div>
+      </aside>
     </div>
   );
 }

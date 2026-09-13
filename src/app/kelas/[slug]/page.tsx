@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Check, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 import { CourseDetailHero } from "@/components/course-detail-hero";
-import { CourseInstructorSection } from "@/components/course-instructor-section";
 import { CourseCurriculumCards } from "@/components/course-curriculum-cards";
 import { CourseReviewsSection } from "@/components/course-reviews-section";
 import { CourseViewTracker } from "@/components/analytics/course-view-tracker";
@@ -42,13 +41,8 @@ export async function generateMetadata({
 
 const faqs = [
   {
-    question: "Apakah kelas ini bisa diakses sekarang?",
+    question: "Apakah katalog dan materi ini sudah data resmi?",
     answer: PREVIEW_CATALOG_COPY.faqPreviewAnswer,
-  },
-  {
-    question: "Apakah cocok untuk pemula total?",
-    answer:
-      "Lihat badge level di atas, setiap kelas dirancang untuk level pengalaman tertentu agar hasil belajarnya optimal.",
   },
 ];
 
@@ -79,35 +73,18 @@ export default async function CourseDetailPage({
           previewHref={`/belajar/${course.slug}/l1`}
         />
 
-        <div className="container-page min-w-0 py-6 sm:py-8">
+        <div className="container-page min-w-0 pt-3 pb-1 sm:pt-4 sm:pb-2">
           <PreviewCatalogNotice />
         </div>
 
         <section className="border-t border-border/40 bg-black">
-          <div className="container-page min-w-0 py-10 sm:py-14">
+          <div className="container-page min-w-0 py-8 sm:py-12">
             <CourseCurriculumCards course={course} />
           </div>
         </section>
 
         <div className="container-page min-w-0 py-12 sm:py-16">
           <div className="mx-auto flex max-w-3xl flex-col gap-12 sm:gap-14">
-            {mentor && <CourseInstructorSection mentor={mentor} />}
-
-            <section>
-              <h2 className="section-title mb-5">Setelah kelas ini, kamu akan bisa</h2>
-              <ul className="grid gap-3 sm:grid-cols-2">
-                {course.outcomes.map((outcome) => (
-                  <li
-                    key={outcome}
-                    className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 text-sm leading-relaxed text-muted-foreground"
-                  >
-                    <Check className="mt-0.5 size-4 shrink-0 text-emerald" />
-                    {outcome}
-                  </li>
-                ))}
-              </ul>
-            </section>
-
             {reviews.length > 0 && <CourseReviewsSection reviews={reviews} />}
 
             <section className="flex min-w-0 gap-4 rounded-xl border border-border bg-card p-5 sm:p-6">

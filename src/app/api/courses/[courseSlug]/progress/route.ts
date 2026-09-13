@@ -5,7 +5,8 @@ import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import { db } from "@/lib/db";
 import { getEnrollmentAccess } from "@/lib/enrollment/access";
 import { touchSession } from "@/lib/auth/session-guard";
-import { computeProgressPercent, toClientLessonId } from "@/lib/learning/progress";
+import { expandCompletedLegacyIdsBySharedVideo } from "@/lib/learning/shared-video-completion";
+import { computeProgressPercent } from "@/lib/learning/progress";
 import { findLessonByCourseAndLegacyId } from "@/lib/lesson-qa/resolve-lesson";
 import { getModuleCompletionSummaries, findCourseBySlug } from "@/lib/reviews/server";
 import { upsertLessonProgressSchema } from "@/lib/validations/api";
@@ -36,16 +37,16 @@ async function loadCompletedLessonIds(userId: string, courseSlug: string) {
   const course = await findCourseBySlug(courseSlug);
   if (!course) return null;
 
-  const lessonIds = course.modules.flatMap((m) => m.lessons.map((l) => l.id));
-  const progressRows = await db.lessonProgress.findMany({
-    where: { userId, lessonId: { in: lessonIds }, completed: true },
-    include: { lesson: { select: { legacyId: true, id: true } } },
+  const lessons = await db.lesson.findMany({
+    where: { module: { course: { slug: courseSlug } } },
+    select: { id: true, legacyId: true, videoUrl: true },
   });
 
-  const completedLessonIds = progressRows.map((row) => toClientLessonId(row.lesson));
+  const completedLegacyIds = await expandCompletedLegacyIdsBySharedVideo(userId, lessons);
+  const completedLessonIds = [...completedLegacyIds];
   const modules = await getModuleCompletionSummaries(userId, course);
 
-  return buildProgressPayload(completedLessonIds, lessonIds.length, modules);
+  return buildProgressPayload(completedLessonIds, lessons.length, modules);
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {

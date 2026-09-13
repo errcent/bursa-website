@@ -1,9 +1,9 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ChevronLeft } from "lucide-react";
 
-import { BrandLogo } from "@/components/brand/brand-logo";
 import { LearningWorkspace } from "@/components/learning-workspace";
 import { getCatalogCourseSlugs, getCourseBySlug, getMentorBySlug } from "@/lib/catalog/server";
 
@@ -50,24 +50,23 @@ export default async function LearningPage({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-6">
+      <header className="hidden h-12 shrink-0 items-center gap-2 border-b border-border px-4 sm:px-5 lg:flex">
         <Link
           href={`/kelas/${course.slug}`}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex shrink-0 items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
           aria-label="Kembali ke kelas"
         >
           <ChevronLeft className="size-4" aria-hidden />
-          <span className="hidden sm:inline">Kembali</span>
+          <span className="hidden sm:inline">Kelas</span>
         </Link>
-        <Link href="/" className="shrink-0 truncate" aria-label="Bursa">
-          <BrandLogo variant="product" decorative />
-        </Link>
-        <span className="ml-auto max-w-[45%] truncate text-xs text-muted-foreground sm:max-w-none">
+        <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground/90">
           {course.title}
         </span>
       </header>
       <div className="flex min-h-0 flex-1 flex-col">
-        <LearningWorkspace course={course} currentLessonId={lessonId} mentor={mentor} />
+        <Suspense fallback={<p className="p-6 text-sm text-muted-foreground">Memuat…</p>}>
+          <LearningWorkspace course={course} currentLessonId={lessonId} mentor={mentor} />
+        </Suspense>
       </div>
     </div>
   );

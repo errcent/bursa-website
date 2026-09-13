@@ -26,7 +26,9 @@ export function HomeFaqSection() {
             <h2 className="font-heading text-2xl font-semibold tracking-[-0.02em] sm:text-3xl md:text-4xl">
               FAQ & Dukungan
             </h2>
-            <p className="section-copy mt-3">Tidak menemukan jawaban yang kamu cari?</p>
+            <p className="section-copy mt-3">
+              Ringkasan singkat di sini. Detail akun, belajar, dan privasi ada di Pusat Bantuan.
+            </p>
             <Button
               size="lg"
               className="btn-primary mt-6 h-11 rounded-md px-7 text-sm"

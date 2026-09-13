@@ -1,14 +1,17 @@
 "use client";
 
 import {
+  forwardRef,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
 } from "react";
 import { Shield } from "lucide-react";
 
 import { ProtectionWarning } from "@/components/video/protection-warning";
+import { MobileVideoControlBar } from "@/components/video/mobile-video-control-bar";
 import {
   DEFAULT_QUALITY_OPTIONS,
   VideoControlBar,
@@ -31,6 +34,9 @@ import {
 } from "@/lib/video/protection";
 import { GuestLockedContentPanel } from "@/components/auth/guest-locked-content-panel";
 import { resolvePlayableVideoUrl } from "@/lib/video/demo";
+import type { VideoPlayerHandle } from "@/lib/video/video-player-handle";
+
+export type { VideoPlayerHandle };
 
 function getEffectiveDuration(video: HTMLVideoElement | null, fallback: number): number {
   if (video && Number.isFinite(video.duration) && video.duration > 0) {
@@ -68,9 +74,12 @@ export interface ProtectedVideoPlayerProps {
   highlightFullscreenControl?: boolean;
   /** Auto-play video in mockup demos. */
   mockupAutoPlay?: boolean;
+  /** Hide bottom control bar (e.g. mobile mini player chrome). */
+  hideControlBar?: boolean;
 }
 
-export function ProtectedVideoPlayer({
+export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideoPlayerProps>(
+  function ProtectedVideoPlayer({
   courseId,
   lessonId,
   lessonTitle,
@@ -90,7 +99,8 @@ export function ProtectedVideoPlayer({
   simulatedFullscreen = false,
   highlightFullscreenControl = false,
   mockupAutoPlay = false,
-}: ProtectedVideoPlayerProps) {
+  hideControlBar = false,
+}, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   /** Signed server heartbeat token, enables verified watch-time accrual (QC-20260719-46). */
@@ -355,6 +365,31 @@ export function ProtectedVideoPlayer({
     }
   }, [playbackError]);
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      togglePlay,
+      play: () => {
+        const video = videoRef.current;
+        if (!video) return;
+        void video.play().then(() => setIsPlaying(true), () => setIsPlaying(false));
+      },
+      pause: () => {
+        const video = videoRef.current;
+        if (!video) return;
+        video.pause();
+        setIsPlaying(false);
+      },
+      getVideoElement: () => videoRef.current,
+      getPlaybackState: () => ({
+        isPlaying,
+        currentTime,
+        duration: getEffectiveDuration(videoRef.current, duration),
+      }),
+    }),
+    [currentTime, duration, isPlaying, togglePlay]
+  );
+
   const handleVideoAreaTap = useCallback(() => {
     if (isPlaying && showControls) {
       setShowControls(false);
@@ -444,6 +479,20 @@ export function ProtectedVideoPlayer({
       revealControls();
     },
     [revealControls, seekTo]
+  );
+
+  const handleSeekBy = useCallback(
+    (deltaSeconds: number) => {
+      const video = videoRef.current;
+      if (!video) return;
+      const max = getEffectiveDuration(video, duration);
+      const next = Math.max(0, Math.min(max, video.currentTime + deltaSeconds));
+      video.currentTime = next;
+      setCurrentTime(next);
+      onTimeUpdate?.(next);
+      revealControls();
+    },
+    [duration, onTimeUpdate, revealControls]
   );
 
   const toggleMute = useCallback(() => {
@@ -589,7 +638,7 @@ export function ProtectedVideoPlayer({
 
       {isProtected && <VideoWatermark config={wmConfig} active={isProtected} />}
 
-      {isProtected && (
+      {isProtected && !hideControlBar && (
         <Badge
           variant="outline"
           className="absolute left-3 top-3 z-30 border-white/20 bg-black/50 text-white backdrop-blur-sm"
@@ -599,41 +648,69 @@ export function ProtectedVideoPlayer({
         </Badge>
       )}
 
-      <button
-        type="button"
-        onClick={handleVideoAreaTap}
-        className="absolute inset-0 z-10 cursor-default bg-transparent"
-        aria-label={isPlaying ? "Tampilkan atau sembunyikan kontrol" : "Tampilkan kontrol video"}
-      />
+      {!hideControlBar ? (
+        <>
+          <button
+            type="button"
+            onClick={handleVideoAreaTap}
+            className="video-tap-capture absolute inset-0 z-10 cursor-default bg-transparent"
+            aria-label={isPlaying ? "Tampilkan atau sembunyikan kontrol" : "Tampilkan kontrol video"}
+          />
 
-      <VideoControlBar
-        isPlaying={isPlaying}
-        showControls={controlsVisible}
-        currentTime={currentTime}
-        duration={duration}
-        volume={volume}
-        isMuted={isMuted}
-        playbackSpeed={playbackSpeed}
-        quality={quality}
-        qualityOptions={DEFAULT_QUALITY_OPTIONS.map((option) => ({
-          ...option,
-          disabled: option.value !== "Auto",
-        }))}
-        isFullscreen={simulatedFullscreen || isFullscreen}
-        subtitlesEnabled={subtitlesEnabled}
-        hasSubtitleTracks={hasSubtitleTracks}
-        chapterMarkers={chapterMarkers}
-        highlightFullscreenControl={highlightFullscreenControl}
-        onRevealControls={revealControls}
-        onTogglePlay={togglePlay}
-        onSeek={handleSeek}
-        onToggleMute={toggleMute}
-        onVolumeChange={handleVolumeChange}
-        onChangeSpeed={changeSpeed}
-        onChangeQuality={handleQualityChange}
-        onToggleSubtitles={toggleSubtitles}
-        onToggleFullscreen={toggleFullscreen}
-      />
+          <MobileVideoControlBar
+            isPlaying={isPlaying}
+            showControls={controlsVisible}
+            currentTime={currentTime}
+            duration={duration}
+            playbackSpeed={playbackSpeed}
+            quality={quality}
+            qualityOptions={DEFAULT_QUALITY_OPTIONS.map((option) => ({
+              ...option,
+              disabled: option.value !== "Auto",
+            }))}
+            isFullscreen={simulatedFullscreen || isFullscreen}
+            subtitlesEnabled={subtitlesEnabled}
+            hasSubtitleTracks={hasSubtitleTracks}
+            highlightFullscreenControl={highlightFullscreenControl}
+            onRevealControls={revealControls}
+            onTogglePlay={togglePlay}
+            onSeek={handleSeek}
+            onSeekBy={handleSeekBy}
+            onChangeSpeed={changeSpeed}
+            onChangeQuality={handleQualityChange}
+            onToggleSubtitles={toggleSubtitles}
+            onToggleFullscreen={toggleFullscreen}
+          />
+          <VideoControlBar
+            isPlaying={isPlaying}
+            showControls={controlsVisible}
+            currentTime={currentTime}
+            duration={duration}
+            volume={volume}
+            isMuted={isMuted}
+            playbackSpeed={playbackSpeed}
+            quality={quality}
+            qualityOptions={DEFAULT_QUALITY_OPTIONS.map((option) => ({
+              ...option,
+              disabled: option.value !== "Auto",
+            }))}
+            isFullscreen={simulatedFullscreen || isFullscreen}
+            subtitlesEnabled={subtitlesEnabled}
+            hasSubtitleTracks={hasSubtitleTracks}
+            chapterMarkers={chapterMarkers}
+            highlightFullscreenControl={highlightFullscreenControl}
+            onRevealControls={revealControls}
+            onTogglePlay={togglePlay}
+            onSeek={handleSeek}
+            onToggleMute={toggleMute}
+            onVolumeChange={handleVolumeChange}
+            onChangeSpeed={changeSpeed}
+            onChangeQuality={handleQualityChange}
+            onToggleSubtitles={toggleSubtitles}
+            onToggleFullscreen={toggleFullscreen}
+          />
+        </>
+      ) : null}
 
       {isProtected && (
         <ProtectionWarning open={showWarning} onDismiss={() => setShowWarning(false)} />
@@ -642,7 +719,9 @@ export function ProtectedVideoPlayer({
       <span className="sr-only">{lessonTitle}</span>
     </div>
   );
-}
+});
+
+ProtectedVideoPlayer.displayName = "ProtectedVideoPlayer";
 
 function useMemoChapterMarkers(duration: number) {
   return [

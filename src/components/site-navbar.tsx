@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { shouldPlayNavbarIntro } from "@/lib/nav/navbar-intro-state";
 import { Code2, GraduationCap, Menu, Search, Shield, X } from "lucide-react";
@@ -17,15 +18,6 @@ import { Button } from "@/components/ui/button";
 import { getRoleNavLinks } from "@/lib/auth/roles";
 import { isSameNavDestination } from "@/lib/nav/route-navbar";
 import { cn } from "@/lib/utils";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 
 function AuthSkeleton({ mobile = false }: { mobile?: boolean }) {
   if (mobile) {
@@ -77,6 +69,7 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
   const isHeroAnchor = layout === "hero-anchor";
   const searchActive = !isHeroAnchor || searchReveal;
   const [menuOpen, setMenuOpen] = useState(false);
+  const [navPortalReady, setNavPortalReady] = useState(false);
   const [mobileCatalogSearchOpen, setMobileCatalogSearchOpen] = useState(false);
   /** Deferred to mount, sessionStorage differs between SSR and client. */
   const [runIntro, setRunIntro] = useState(false);
@@ -93,14 +86,28 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
     }
   }, [pathname, prefersReducedMotion, isHeroAnchor]);
 
+  useEffect(() => {
+    setNavPortalReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.documentElement.classList.toggle("mobile-nav-shift", menuOpen);
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.documentElement.classList.remove("mobile-nav-shift");
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
   // Hero scroll glass: strength-driven modifier for full dock→pin range (pinned = strength 1).
   const navHeaderClassName = cn("nav-glass", isHeroAnchor && "nav-glass--hero-anchor");
 
   const navHeaderInner = (
     <>
       <div className="nav-glass-accent-line pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
-      <div className="grid h-14 min-h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-3 sm:h-[3.75rem] sm:gap-4 sm:px-5">
-          <div className="flex min-w-0 items-center gap-4 justify-self-start sm:gap-8">
+      <div className="flex h-14 min-h-14 items-center gap-2 px-3 sm:h-[3.75rem] sm:gap-3 sm:px-5">
+          <div className="flex min-w-0 flex-1 items-center gap-4 sm:gap-8">
             <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Bursa">
               <BrandLogo variant="product" priority decorative />
             </Link>
@@ -136,7 +143,7 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
               <div
                 data-hero-nav-search
                 className={cn(
-                  "hero-nav-search-slot hidden min-w-0 justify-self-center lg:flex",
+                  "hero-nav-search-slot hidden min-w-0 lg:flex",
                   searchVisible && "is-visible",
                   searchReveal && "is-interactive"
                 )}
@@ -144,13 +151,13 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
                 <SiteNavSearch reveal={searchActive} />
               </div>
             ) : (
-              <div className="hidden min-w-0 justify-self-center lg:block">
+              <div className="hidden min-w-0 lg:block">
                 <SiteNavSearch />
               </div>
             )}
           </Suspense>
 
-          <div className="flex items-center justify-self-end gap-1 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
             {roleLinks.length > 0 && (
               <nav
                 className="hidden items-center gap-1 border-l border-border/60 pl-2 lg:flex"
@@ -222,107 +229,97 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
                 )}
               </>
             )}
-            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-              <SheetTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-11 shrink-0 lg:hidden"
-                    aria-label="Buka menu navigasi"
-                  />
-                }
-              >
-                <Menu className="size-5" />
-              </SheetTrigger>
-              <SheetContent
-                side="right"
-                className="flex h-[100dvh] w-full max-w-none flex-col border-0 bg-background/98 p-0 backdrop-blur-xl sm:max-w-[min(100vw,400px)] lg:hidden"
-              >
-                <SheetHeader className="border-b border-border/60 px-5 py-4 text-left">
-                  <SheetTitle className="font-heading text-lg">Menu Bursa</SheetTitle>
-                  <SheetDescription className="sr-only">
-                    Navigasi utama dan aksi cepat
-                  </SheetDescription>
-                </SheetHeader>
-
-                <div className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-4">
-                  <Suspense fallback={<SearchSkeleton className="mb-2" />}>
-                    {menuOpen ? (
-                      <SiteNavSearch
-                        className="mb-2 w-full"
-                        variant="inline"
-                        openOnFocus={false}
-                        onNavigate={() => setMenuOpen(false)}
-                      />
-                    ) : (
-                      <SearchSkeleton className="mb-2" />
-                    )}
-                  </Suspense>
-
-                  {showPrimaryCta && (
-                    <div className="mb-3">
-                      <SheetClose
-                        nativeButton={false}
-                        render={
-                          <Link
-                            href={primaryCtaHref}
-                            className="btn-primary flex min-h-12 items-center justify-center rounded-xl text-[15px] font-medium"
-                          />
-                        }
-                      >
-                        {session ? "Lanjut Belajar" : "Gabung Waitlist"}
-                      </SheetClose>
-                    </div>
-                  )}
-
-                  <nav className="flex flex-col gap-1" aria-label="Navigasi mobile">
-                    {navLinks.map((link) => {
-                      const active = isNavLinkActive(pathname, link.href, link.exact);
-                      return (
-                        <SheetClose
-                          key={link.label}
-                          nativeButton={false}
-                          render={
-                            <Link
-                              href={link.href}
-                              aria-current={active ? "page" : undefined}
-                              className={cn(
-                                "mobile-nav-item",
-                                active
-                                  ? "bg-muted text-foreground"
-                                  : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                              )}
-                            />
-                          }
-                        >
-                          {link.label}
-                        </SheetClose>
-                      );
-                    })}
-                  </nav>
-
-                  {session && (
-                    <div className="mt-4 border-t border-border/60 pt-4">
-                      <AccountMenuMobileLinks
-                        roleLinks={roleLinks}
-                        onNavigate={() => setMenuOpen(false)}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {!session && (
-                  <div className="mt-auto border-t border-border/60 p-4">
-                    <Suspense fallback={<AuthSkeleton mobile />}>
-                      <SiteNavAuth mobileMenu />
-                    </Suspense>
-                  </div>
-                )}
-              </SheetContent>
-            </Sheet>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-11 shrink-0 lg:hidden"
+              aria-label={menuOpen ? "Tutup menu" : "Buka menu navigasi"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              <Menu className="size-5" />
+            </Button>
           </div>
         </div>
+    </>
+  );
+
+  const mobileNavPanel = (
+    <>
+      <div
+        className={cn(
+          "mobile-nav-backdrop fixed inset-0 z-[88] bg-black/20 transition-opacity duration-300 lg:hidden",
+          menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+        )}
+        aria-hidden={!menuOpen}
+        onClick={() => setMenuOpen(false)}
+      />
+      <aside
+        id="mobile-nav-panel"
+        aria-hidden={!menuOpen}
+        className={cn(
+          "mobile-nav-panel fixed inset-y-0 right-0 z-[90] flex w-[min(88vw,360px)] flex-col border-l border-border/70 bg-background shadow-2xl transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] lg:hidden",
+          menuOpen ? "translate-x-0" : "translate-x-full"
+        )}
+      >
+        <div className="flex h-14 shrink-0 items-center justify-between border-b border-border/60 px-4">
+          <span className="font-heading text-sm font-medium text-foreground">Menu</span>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-10"
+            aria-label="Tutup menu"
+            onClick={() => setMenuOpen(false)}
+          >
+            <X className="size-5" />
+          </Button>
+        </div>
+
+        <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5">
+          {showPrimaryCta ? (
+            <Link
+              href={primaryCtaHref}
+              onClick={() => setMenuOpen(false)}
+              className="btn-primary mb-6 flex min-h-11 items-center justify-center rounded-xl text-sm font-medium"
+            >
+              {session ? "Lanjut Belajar" : "Gabung Waitlist"}
+            </Link>
+          ) : null}
+
+          <nav className="flex flex-col gap-0.5" aria-label="Navigasi mobile">
+            {navLinks.map((link) => {
+              const active = isNavLinkActive(pathname, link.href, link.exact);
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "mobile-nav-item rounded-xl",
+                    active
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {session ? (
+            <div className="mt-6 border-t border-border/60 pt-5">
+              <AccountMenuMobileLinks
+                roleLinks={roleLinks}
+                onNavigate={() => setMenuOpen(false)}
+              />
+            </div>
+          ) : null}
+        </div>
+      </aside>
     </>
   );
 
@@ -350,6 +347,7 @@ export function SiteNavbar({ layout = "default" }: { layout?: "default" | "hero-
           {navHeaderInner}
         </motion.header>
       )}
+      {navPortalReady ? createPortal(mobileNavPanel, document.body) : null}
     </div>
   );
 }
