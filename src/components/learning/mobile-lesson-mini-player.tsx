@@ -41,6 +41,8 @@ type MobileLessonMiniPlayerShellProps = {
   onRequestExit?: () => void;
   /** In-player chrome (back chevron) follows video control visibility. */
   overlayChromeVisible?: boolean;
+  /** Notes studio: skip slot height transition (keyboard resize). */
+  suppressSlotTransition?: boolean;
   className?: string;
 };
 
@@ -53,6 +55,7 @@ export function MobileLessonMiniPlayerShell({
   onTogglePlay,
   onRequestExit,
   overlayChromeVisible = true,
+  suppressSlotTransition = false,
   className,
 }: MobileLessonMiniPlayerShellProps) {
   const [viewport, setViewport] = useState({ width: 390, height: 844 });
@@ -307,7 +310,10 @@ export function MobileLessonMiniPlayerShell({
         style={
           {
             ["--lesson-slot-h" as string]: `${placeholderHeight}px`,
-            transition: isDragging ? undefined : "height 280ms cubic-bezier(0.22, 1, 0.36, 1)",
+            transition:
+              isDragging || suppressSlotTransition
+                ? undefined
+                : "height 280ms cubic-bezier(0.22, 1, 0.36, 1)",
           } as CSSProperties
         }
       >

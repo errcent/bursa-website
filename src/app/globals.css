@@ -3660,6 +3660,36 @@ img.ai-thumbnail__media {
   animation: search-marquee 14s linear infinite;
 }
 
+/* TipTap / catatan — scroll area (avoid default light OS scrollbar) */
+[data-notes-scroll] {
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--muted-foreground) 32%, transparent)
+    transparent;
+  scrollbar-gutter: stable;
+}
+
+[data-notes-scroll]::-webkit-scrollbar {
+  width: 6px;
+}
+
+[data-notes-scroll]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-notes-scroll]::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--muted-foreground) 26%, transparent);
+  border-radius: 999px;
+}
+
+[data-notes-scroll]:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--muted-foreground) 42%, transparent);
+}
+
+[data-notes-scroll]::-webkit-scrollbar-thumb:active {
+  background: color-mix(in oklab, var(--muted-foreground) 55%, transparent);
+}
+
 /* TipTap / catatan document prose */
 .prose-notes {
   word-break: break-word;

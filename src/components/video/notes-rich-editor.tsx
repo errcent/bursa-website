@@ -187,20 +187,11 @@ function CompactFormattingToolbar({
         <ListOrdered className="size-3.5" />
       </ToolbarButton>
       <ToolbarButton
-        label="Tautan"
-        active={editor.isActive("link")}
-        onClick={() => {
-          if (editor.isActive("link")) {
-            editor.chain().focus().unsetLink().run();
-            return;
-          }
-          const previous = editor.getAttributes("link").href as string | undefined;
-          const url = window.prompt("URL tautan", previous ?? "https://");
-          if (!url) return;
-          editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-        }}
+        label="Kutipan"
+        active={editor.isActive("blockquote")}
+        onClick={() => editor.chain().focus().toggleBlockquote().run()}
       >
-        <Link2 className="size-3.5" />
+        <Quote className="size-3.5" />
       </ToolbarButton>
     </div>
   );
