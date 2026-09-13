@@ -1010,11 +1010,7 @@ export function LearningWorkspace({
                     <span className="hidden lg:inline">Pelajaran berikutnya</span>
                     <ArrowRight className="size-4 lg:ml-1" />
                   </Button>
-                ) : (
-                  <p className="hidden text-xs text-muted-foreground lg:block">
-                    Progres pelajaran tercatat otomatis saat kamu menonton.
-                  </p>
-                )}
+                ) : null}
               </>
             ) : (
               <Button

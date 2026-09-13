@@ -1,4 +1,3 @@
-import { legalEntityCopy } from "@/lib/legal/entity";
 import { PREVIEW_CATALOG_COPY } from "@/lib/preview-catalog/copy";
 
 export type HelpCategory = "Platform" | "Akun" | "Belajar" | "Note" | "Mentor";
@@ -13,12 +12,6 @@ export interface HelpFaq {
 export const helpCategories: HelpCategory[] = ["Platform", "Akun", "Belajar", "Note", "Mentor"];
 
 export const helpFaqs: HelpFaq[] = [
-  {
-    id: "platform-badan-hukum",
-    category: "Platform",
-    question: legalEntityCopy.id.helpQuestion,
-    answer: legalEntityCopy.id.helpAnswer,
-  },
   {
     id: "platform-katalog-demo",
     category: "Platform",

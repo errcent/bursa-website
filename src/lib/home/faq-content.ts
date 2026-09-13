@@ -1,4 +1,3 @@
-import { legalEntityCopy } from "@/lib/legal/entity";
 import { PREVIEW_CATALOG_COPY } from "@/lib/preview-catalog/copy";
 
 export interface HomeFaq {
@@ -24,11 +23,6 @@ export const homeFaqs: HomeFaq[] = [
     id: "preview-catalog",
     question: "Apakah katalog dan mentor yang tampil sudah data resmi?",
     answer: PREVIEW_CATALOG_COPY.bannerDetail,
-  },
-  {
-    id: "legal-entity",
-    question: legalEntityCopy.id.helpQuestion,
-    answer: legalEntityCopy.id.helpAnswer,
   },
   {
     id: "beginners",

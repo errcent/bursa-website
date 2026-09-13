@@ -3757,10 +3757,12 @@ img.ai-thumbnail__media {
 }
 
 .prose-notes blockquote {
-  border-left: 2px solid var(--border);
-  padding-left: 0.75rem;
-  margin: 0.5em 0;
-  color: var(--muted-foreground);
+  border-left: 3px solid color-mix(in oklab, var(--foreground) 42%, transparent);
+  padding: 0.35rem 0 0.35rem 0.85rem;
+  margin: 0.55em 0;
+  color: color-mix(in oklab, var(--foreground) 88%, var(--muted-foreground));
+  background: color-mix(in oklab, var(--foreground) 5%, transparent);
+  border-radius: 0 0.25rem 0.25rem 0;
 }
 
 .prose-notes code {

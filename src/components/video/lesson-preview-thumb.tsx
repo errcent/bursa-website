@@ -43,16 +43,21 @@ export function LessonPreviewThumb({
   const isLocked = !isFree && !hasAccess;
   const isPlayable = isFree || hasAccess;
   const badgeText = durationLabel ?? `${durationMinutes}m`;
-  const badgeCorner =
-    durationPosition === "bottom-right" ||
-    (durationPosition === "auto" && !(showPlayOverlay && isPlayable && !isLocked))
-      ? "bottom-2 right-2"
-      : "left-2 top-2";
 
   const progressRatio =
     watchProgress !== undefined
       ? Math.min(1, Math.max(0, watchProgress))
       : undefined;
+
+  const badgeOnBottomRight =
+    durationPosition === "bottom-right" ||
+    (durationPosition === "auto" && !(showPlayOverlay && isPlayable && !isLocked));
+
+  const badgeCorner = badgeOnBottomRight
+    ? progressRatio !== undefined && progressRatio > 0
+      ? "bottom-2 right-1"
+      : "bottom-1 right-1"
+    : "left-2 top-2";
 
   return (
     <div

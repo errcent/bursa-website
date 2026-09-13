@@ -20,7 +20,7 @@ interface CourseCurriculumCardsProps {
 }
 
 function formatDurationBadge(minutes: number): string {
-  return `${minutes}:00`;
+  return `${minutes}m`;
 }
 
 export function CourseCurriculumCards({
@@ -61,7 +61,6 @@ export function CourseCurriculumCards({
       <div className="mx-auto flex w-full max-w-3xl flex-col divide-y divide-border/35">
         {flatVideos.map(({ lesson, moduleIndex, lessonIndex }) => {
           const isFree = isLessonFreePreview(lesson, moduleIndex, lessonIndex);
-          const isPlayable = enrolled || isFree;
           const href = belajarLessonHref(course.slug, lesson.id, {
             returnPath: `/kelas/${course.slug}`,
           });
@@ -81,7 +80,6 @@ export function CourseCurriculumCards({
                     durationMinutes={lesson.durationMinutes}
                     durationLabel={formatDurationBadge(lesson.durationMinutes)}
                     size="lg"
-                    showPlayOverlay={isPlayable}
                     durationPosition="bottom-right"
                     className="rounded-md border-border"
                     watchProgress={watchByLesson[lesson.id]}
