@@ -22,6 +22,7 @@ export function LessonPreviewThumb({
   durationPosition = "auto",
   className,
   posterSrc,
+  watchProgress,
 }: {
   title: string;
   isFree: boolean;
@@ -34,6 +35,8 @@ export function LessonPreviewThumb({
   className?: string;
   /** Video frame only — no course/playlist poster fallback. */
   posterSrc?: string | null;
+  /** 0–1 watched progress for timeline bar at bottom of thumb */
+  watchProgress?: number;
 }) {
   const [src, setSrc] = useState<string | null>(posterSrc?.trim() || null);
 
@@ -45,6 +48,11 @@ export function LessonPreviewThumb({
     (durationPosition === "auto" && !(showPlayOverlay && isPlayable && !isLocked))
       ? "bottom-2 right-2"
       : "left-2 top-2";
+
+  const progressRatio =
+    watchProgress !== undefined
+      ? Math.min(1, Math.max(0, watchProgress))
+      : undefined;
 
   return (
     <div
@@ -92,6 +100,18 @@ export function LessonPreviewThumb({
       >
         {badgeText}
       </span>
+
+      {progressRatio !== undefined && progressRatio > 0 ? (
+        <div
+          className="absolute inset-x-0 bottom-0 z-[5] h-0.5 bg-white/20"
+          aria-hidden
+        >
+          <div
+            className="h-full bg-[var(--hero-accent)]"
+            style={{ width: `${progressRatio * 100}%` }}
+          />
+        </div>
+      ) : null}
 
       <span className="sr-only">{title}</span>
     </div>

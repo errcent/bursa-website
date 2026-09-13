@@ -100,17 +100,21 @@ export function MobileVideoControlBar({
     onRevealControls();
   };
 
-  const visible = showControls || !isPlaying;
+  const visible = showControls;
+  const chromeMotion = visible
+    ? "pointer-events-auto opacity-100 scale-100 duration-[320ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+    : "pointer-events-none opacity-0 scale-[0.94] duration-[560ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
 
   return (
     <div
       data-video-controls
+      data-controls-visible={visible ? "true" : "false"}
       className="pointer-events-none absolute inset-0 z-40 lg:hidden"
     >
       <div
         className={cn(
-          "pointer-events-auto absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-center justify-center gap-5 px-6 transition-opacity duration-300",
-          visible ? "opacity-100" : "opacity-0"
+          "absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-center justify-center gap-5 px-6 transition-[opacity,transform] will-change-[opacity,transform]",
+          chromeMotion
         )}
       >
         <button
@@ -155,48 +159,12 @@ export function MobileVideoControlBar({
 
       <div
         className={cn(
-          "pointer-events-auto absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-3 pb-2 pt-4 transition-opacity duration-300",
-          visible ? "opacity-100" : "opacity-0"
+          "absolute inset-x-0 bottom-0 flex flex-col bg-gradient-to-t from-black/90 via-black/55 to-transparent px-3 pb-1.5 pt-3 transition-[opacity,transform] will-change-[opacity,transform]",
+          visible
+            ? "pointer-events-auto translate-y-0 opacity-100 duration-[320ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+            : "pointer-events-none translate-y-1.5 opacity-0 duration-[560ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
         )}
       >
-        <div
-          ref={progressRef}
-          className="mb-2 flex h-4 cursor-pointer touch-none items-center"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleProgressPointer(e.clientX);
-          }}
-          onPointerDown={(e) => {
-            e.stopPropagation();
-            isScrubbingRef.current = true;
-            progressRef.current?.setPointerCapture(e.pointerId);
-            handleProgressPointer(e.clientX);
-          }}
-          onPointerMove={(e) => {
-            if (!isScrubbingRef.current) return;
-            handleProgressPointer(e.clientX);
-          }}
-          onPointerUp={(e) => {
-            isScrubbingRef.current = false;
-            progressRef.current?.releasePointerCapture(e.pointerId);
-          }}
-          onPointerCancel={() => {
-            isScrubbingRef.current = false;
-          }}
-          role="slider"
-          aria-label="Progres video"
-          aria-valuemin={0}
-          aria-valuemax={duration}
-          aria-valuenow={currentTime}
-        >
-          <div className="relative h-1 w-full rounded-full bg-white/30">
-            <div
-              className="absolute inset-y-0 left-0 rounded-full bg-white"
-              style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
-            />
-          </div>
-        </div>
-
         <div className="flex h-8 items-center justify-between gap-2">
           <span className="font-mono text-[11px] tabular-nums text-white/90">
             {formatTime(currentTime)}
@@ -280,6 +248,44 @@ export function MobileVideoControlBar({
                 <Maximize className="size-[17px]" />
               )}
             </button>
+          </div>
+        </div>
+
+        <div
+          ref={progressRef}
+          className="mt-1.5 flex h-3 cursor-pointer touch-none items-center"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleProgressPointer(e.clientX);
+          }}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            isScrubbingRef.current = true;
+            progressRef.current?.setPointerCapture(e.pointerId);
+            handleProgressPointer(e.clientX);
+          }}
+          onPointerMove={(e) => {
+            if (!isScrubbingRef.current) return;
+            handleProgressPointer(e.clientX);
+          }}
+          onPointerUp={(e) => {
+            isScrubbingRef.current = false;
+            progressRef.current?.releasePointerCapture(e.pointerId);
+          }}
+          onPointerCancel={() => {
+            isScrubbingRef.current = false;
+          }}
+          role="slider"
+          aria-label="Progres video"
+          aria-valuemin={0}
+          aria-valuemax={duration}
+          aria-valuenow={currentTime}
+        >
+          <div className="relative h-1 w-full rounded-full bg-white/30">
+            <div
+              className="absolute inset-y-0 left-0 rounded-full bg-[var(--hero-accent)]"
+              style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+            />
           </div>
         </div>
       </div>

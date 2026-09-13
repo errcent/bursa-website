@@ -53,6 +53,7 @@ const fontMontAlt = Montserrat_Alternates({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  interactiveWidget: "resizes-content",
 };
 
 /** Runs before first paint so intro-pending CSS hides content until PreloaderGate hydrates. */

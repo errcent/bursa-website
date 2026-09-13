@@ -49,6 +49,12 @@ interface NotesRichEditorProps {
   bare?: boolean;
   /** Isi parent flex; konten editor scroll di dalam area */
   fillHeight?: boolean;
+  /** ≥16px di editor (cegah zoom iOS saat fokus) */
+  mobileComfort?: boolean;
+  /** Scroll caret ke dalam area editor, bukan document */
+  scrollCaretIntoView?: boolean;
+  /** Tap area kosong di bawah teks → fokus baris terakhir (mobile studio) */
+  focusEndOnEmptyTap?: boolean;
   ariaLabel?: string;
   onBlur?: () => void;
 }
@@ -410,10 +416,17 @@ export function NotesRichEditor({
   showToolbar,
   bare = false,
   fillHeight = false,
+  mobileComfort = false,
+  scrollCaretIntoView = false,
+  focusEndOnEmptyTap = false,
   ariaLabel,
   onBlur,
 }: NotesRichEditorProps) {
   const toolbarMode = showToolbar === true ? "full" : showToolbar === false ? toolbar : toolbar;
+  const editorTextClass = cn(
+    "leading-relaxed text-foreground",
+    mobileComfort ? "text-base" : "text-sm"
+  );
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -438,13 +451,27 @@ export function NotesRichEditor({
       attributes: {
         class: cn(
           "prose-notes outline-none",
-          fillHeight ? "min-h-full" : minHeightClass,
-          bare
-            ? "px-0 py-1 text-sm leading-relaxed text-foreground"
-            : "px-3 py-2.5 text-sm leading-relaxed text-foreground"
+          fillHeight || focusEndOnEmptyTap ? "min-h-full" : minHeightClass,
+          bare ? cn("px-0 py-1", editorTextClass) : cn("px-3 py-2.5", editorTextClass)
         ),
         ...(ariaLabel ? { "aria-label": ariaLabel } : {}),
       },
+      handleScrollToSelection: scrollCaretIntoView
+        ? (view) => {
+            const scrollRoot = view.dom.closest("[data-notes-scroll]") as HTMLElement | null;
+            if (!scrollRoot) return false;
+            const { head } = view.state.selection;
+            const coords = view.coordsAtPos(head);
+            const rootRect = scrollRoot.getBoundingClientRect();
+            const padding = 24;
+            if (coords.bottom > rootRect.bottom - padding) {
+              scrollRoot.scrollTop += coords.bottom - rootRect.bottom + padding;
+            } else if (coords.top < rootRect.top + padding) {
+              scrollRoot.scrollTop -= rootRect.top + padding - coords.top;
+            }
+            return true;
+          }
+        : undefined,
       handleDOMEvents: {
         blur: () => {
           onBlur?.();
@@ -454,6 +481,11 @@ export function NotesRichEditor({
     },
     onUpdate: ({ editor: ed }) => {
       onChange(ed.getHTML());
+      if (scrollCaretIntoView) {
+        requestAnimationFrame(() => {
+          ed.commands.scrollIntoView();
+        });
+      }
     },
   });
 
@@ -497,7 +529,39 @@ export function NotesRichEditor({
         />
       )}
       {fillHeight ? (
-        <div className="min-h-0 flex-1 overflow-y-auto">{editorBody}</div>
+        <div
+          data-notes-scroll
+          className={cn(
+            "min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y",
+            focusEndOnEmptyTap && "cursor-text"
+          )}
+          onPointerDown={(e) => {
+            if (!focusEndOnEmptyTap || e.button !== 0 || !editor) return;
+            const scrollRoot = e.currentTarget;
+            const prose = editor.view.dom;
+            const target = e.target as Node;
+            const proseRect = prose.getBoundingClientRect();
+            const emptyDoc = editor.state.doc.textContent.trim().length === 0;
+            const tapBelowContent = e.clientY > proseRect.bottom - 16;
+            const tapOnScrollPadding =
+              target === scrollRoot || !prose.contains(target);
+            const posAtTap = editor.view.posAtCoords({
+              left: e.clientX,
+              top: e.clientY,
+            });
+            if (
+              emptyDoc ||
+              tapOnScrollPadding ||
+              tapBelowContent ||
+              posAtTap == null
+            ) {
+              e.preventDefault();
+              editor.chain().focus("end").run();
+            }
+          }}
+        >
+          {editorBody}
+        </div>
       ) : (
         editorBody
       )}

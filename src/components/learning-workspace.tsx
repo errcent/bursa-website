@@ -20,6 +20,7 @@ import {
 } from "@/components/learning/learning-sidebar-resize";
 import { useMobileLearningPip } from "@/components/learning/mobile-learning-pip-provider";
 import { MobileLessonMiniPlayerShell } from "@/components/learning/mobile-lesson-mini-player";
+import { useVisualViewportBottomInset } from "@/lib/hooks/use-visual-viewport-inset";
 import { resolveBelajarReturnPath } from "@/lib/learning/belajar-return-path";
 import type { VideoPlayerHandle } from "@/lib/video/video-player-handle";
 
@@ -35,10 +36,13 @@ import { notifyLearningChange } from "@/lib/learning/events";
 import {
   loadGlobalGuestCompletedKeys,
   loadGuestProgress,
+  loadGuestVerifiedSeconds,
   mergeCourseGuestProgress,
   rememberGlobalGuestCompletion,
   saveGuestProgress,
+  saveGuestVerifiedSeconds,
 } from "@/lib/learning/guest-progress-storage";
+import { formatModuleTitle } from "@/lib/learning/module-title";
 import { lessonProgressKey } from "@/lib/learning/lesson-progress-key";
 import {
   isItemPlayable,
@@ -46,9 +50,15 @@ import {
 } from "@/components/playlist/playlist-item-utils";
 import type { PlaylistDetail } from "@/lib/playlist/types";
 import { computeProgressPercent } from "@/lib/learning/progress";
+import { AnimatePresence, motion } from "motion/react";
+
 import { cn } from "@/lib/utils";
 import type { Course, Mentor } from "@/lib/types";
 import type { ProtectionViolationType } from "@/lib/video/protection";
+import {
+  computeHeartbeatCredit,
+  watchCompletionThresholdSeconds,
+} from "@/lib/video/watch-credit";
 import {
   findLessonInCourse,
   getNextLesson,
@@ -91,12 +101,22 @@ export function LearningWorkspace({
   const [hasCourseAccess, setHasCourseAccess] = useState(false);
   const seekRequestSeconds = null;
   const autoCompleteRef = useRef(false);
+  const watchTrackerRef = useRef({
+    verified: 0,
+    position: 0,
+    lastAt: null as Date | null,
+  });
+  const [verifiedSecondsByLesson, setVerifiedSecondsByLesson] = useState<
+    Record<string, number>
+  >({});
   const completedModulesBeforeRef = useRef(0);
   const completedRef = useRef(completed);
   completedRef.current = completed;
   const [sidebarTab, setSidebarTab] = useState<"video" | "catatan">("video");
+  const [isMobileLayout, setIsMobileLayout] = useState(false);
   const [theaterMode, setTheaterMode] = useState(false);
   const [mobileCollapse, setMobileCollapse] = useState(0);
+  const [mobileVideoChromeVisible, setMobileVideoChromeVisible] = useState(true);
   const [mobilePlayback, setMobilePlayback] = useState({
     isPlaying: false,
     currentTime: 0,
@@ -104,6 +124,35 @@ export function LearningWorkspace({
   });
   const playerRef = useRef<VideoPlayerHandle>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
+  const mobileNotesStudio = isMobileLayout && sidebarTab === "catatan";
+  const keyboardInset = useVisualViewportBottomInset(mobileNotesStudio);
+
+  useEffect(() => {
+    router.prefetch(returnPath);
+  }, [router, returnPath]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const sync = () => setIsMobileLayout(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    if (!mobileNotesStudio || typeof document === "undefined") return;
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    return () => {
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+    };
+  }, [mobileNotesStudio]);
   const { width: sidebarWidth, widthRef: sidebarWidthRef, applyWidth, persist } =
     useLearningSidebarWidth(sidebarTab === "catatan");
   const progressApi = `/api/courses/${course.slug}/progress`;
@@ -447,6 +496,37 @@ export function LearningWorkspace({
     }
   }
 
+  const lessonDurationSeconds = Math.max(currentLesson.durationMinutes * 60, 1);
+
+  const getLessonWatchRatio = useCallback(
+    (lessonId: string, durationMinutes: number) => {
+      if (completed.has(lessonId)) return 1;
+      const durationSec = Math.max(durationMinutes * 60, 1);
+      const verified = verifiedSecondsByLesson[lessonId] ?? 0;
+      return Math.min(1, verified / durationSec);
+    },
+    [completed, verifiedSecondsByLesson]
+  );
+
+  const tryAutoCompleteLesson = useCallback(
+    (lessonId: string, watchedSeconds: number) => {
+      if (
+        autoCompleteRef.current ||
+        completedRef.current.has(lessonId) ||
+        !canTrackProgress
+      ) {
+        return;
+      }
+      autoCompleteRef.current = true;
+      void syncLessonProgress(lessonId, true, watchedSeconds);
+    },
+    [canTrackProgress]
+  );
+
+  const handleWatchCompletionEligible = useCallback(() => {
+    tryAutoCompleteLesson(currentLesson.id, Math.floor(lessonDurationSeconds * 0.8));
+  }, [currentLesson.id, lessonDurationSeconds, tryAutoCompleteLesson]);
+
   const handleVideoTimeUpdate = useCallback(
     (seconds: number) => {
       setMobilePlayback((prev) => {
@@ -458,22 +538,55 @@ export function LearningWorkspace({
         };
       });
 
-      if (
-        autoCompleteRef.current ||
-        completedRef.current.has(currentLesson.id) ||
-        !session?.email ||
-        !canTrackProgress
-      ) {
-        return;
+      if (!canTrackProgress || completedRef.current.has(currentLesson.id)) return;
+
+      const useClientWatchCredit =
+        isPreview || !session?.userId || !hasCourseAccess;
+
+      if (!useClientWatchCredit) return;
+
+      const tracker = watchTrackerRef.current;
+      const credit = computeHeartbeatCredit({
+        previousVerified: tracker.verified,
+        previousPosition: tracker.position,
+        lastHeartbeatAt: tracker.lastAt,
+        position: seconds,
+        durationSeconds: lessonDurationSeconds,
+      });
+      tracker.verified = credit.verifiedWatchedSeconds;
+      tracker.position = credit.heartbeatPosition;
+      tracker.lastAt = new Date();
+
+      setVerifiedSecondsByLesson((prev) => ({
+        ...prev,
+        [currentLesson.id]: credit.verifiedWatchedSeconds,
+      }));
+
+      if (!session?.userId && !session?.email) {
+        saveGuestVerifiedSeconds(
+          course.slug,
+          currentLesson.id,
+          credit.verifiedWatchedSeconds,
+          completedRef.current
+        );
       }
 
-      const durationSeconds = Math.max(currentLesson.durationMinutes * 60, 1);
-      if (seconds / durationSeconds < 0.9) return;
-
-      autoCompleteRef.current = true;
-      void syncLessonProgress(currentLesson.id, true, Math.floor(seconds));
+      const threshold = watchCompletionThresholdSeconds(lessonDurationSeconds);
+      if (credit.verifiedWatchedSeconds >= threshold) {
+        tryAutoCompleteLesson(currentLesson.id, credit.verifiedWatchedSeconds);
+      }
     },
-    [canTrackProgress, currentLesson.durationMinutes, currentLesson.id, session?.email]
+    [
+      canTrackProgress,
+      course.slug,
+      currentLesson.id,
+      hasCourseAccess,
+      isPreview,
+      lessonDurationSeconds,
+      session?.email,
+      session?.userId,
+      tryAutoCompleteLesson,
+    ]
   );
 
   useEffect(() => {
@@ -484,8 +597,15 @@ export function LearningWorkspace({
     }));
     setMobileCollapse(0);
     dockNavigatedRef.current = false;
+    autoCompleteRef.current = false;
+    watchTrackerRef.current = { verified: 0, position: 0, lastAt: null };
+    const guestVerified = loadGuestVerifiedSeconds(course.slug);
+    const restored = guestVerified[currentLesson.id] ?? 0;
+    watchTrackerRef.current.verified = restored;
+    setVerifiedSecondsByLesson((prev) => ({ ...prev, ...guestVerified }));
     pip.dismiss();
-  }, [currentLesson.id, currentLesson.durationMinutes, pip]);
+    setMobileVideoChromeVisible(true);
+  }, [course.slug, currentLesson.id, currentLesson.durationMinutes, pip]);
 
   const navigateBackFromLesson = useCallback(() => {
     if (dockNavigatedRef.current) {
@@ -498,16 +618,14 @@ export function LearningWorkspace({
     const lessonHref = query ? `${pathname}?${query}` : pathname;
     const video = playerRef.current?.getVideoElement() ?? null;
 
-    void pip
-      .enterDetached({
-        lessonHref,
-        returnPath,
-        courseTitle: course.title,
-        video,
-      })
-      .then(() => {
-        router.replace(returnPath);
-      });
+    router.replace(returnPath);
+
+    void pip.enterDetached({
+      lessonHref,
+      returnPath,
+      courseTitle: course.title,
+      video,
+    });
   }, [course.title, pathname, pip, returnPath, router, searchParams]);
 
   useEffect(() => {
@@ -524,20 +642,10 @@ export function LearningWorkspace({
   }, [mobileCollapse, navigateBackFromLesson]);
 
   async function handleContinue() {
-    if (!canTrackProgress) return;
-    if (!isCurrentDone) {
-      const ok = await syncLessonProgress(currentLesson.id, true);
-      if (!ok) return;
-    }
+    if (!canTrackProgress || !isCurrentDone) return;
     if (continueHref) {
       router.push(continueHref);
     }
-  }
-
-  async function handleUncheck() {
-    if (!canTrackProgress || !isCurrentDone) return;
-    autoCompleteRef.current = false;
-    await syncLessonProgress(currentLesson.id, false);
   }
 
   const playlistLessonList =
@@ -577,6 +685,14 @@ export function LearningWorkspace({
                     hasAccess={item.accessStatus === "owned"}
                     durationMinutes={item.durationMinutes ?? 0}
                     size="sm"
+                    watchProgress={
+                      item.lessonLegacyId && item.courseSlug
+                        ? getLessonWatchRatio(
+                            item.lessonLegacyId,
+                            item.durationMinutes ?? 0
+                          )
+                        : undefined
+                    }
                   />
                   <span
                     className={cn(
@@ -602,7 +718,7 @@ export function LearningWorkspace({
       {course.modules.map((module, moduleIndex) => (
         <div key={module.title}>
           <p className="mb-1.5 px-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80">
-            {module.title}
+            {formatModuleTitle(module.title)}
           </p>
           <ul className="flex flex-col gap-0.5">
             {module.lessons.map((lesson, lessonIndex) => {
@@ -627,6 +743,7 @@ export function LearningWorkspace({
                       hasAccess={hasCourseAccess}
                       durationMinutes={lesson.durationMinutes}
                       size="sm"
+                      watchProgress={getLessonWatchRatio(lesson.id, lesson.durationMinutes)}
                     />
                     <span
                       className={cn(
@@ -682,47 +799,74 @@ export function LearningWorkspace({
         </div>
       </div>
 
-      {sidebarTab === "video" ? (
-        <>
-          <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
-            <span>
-              {completedLessonCount}/{courseLessonTotal} selesai
-            </span>
-            <span className="font-mono tabular-nums">{progressPercent}%</span>
-          </div>
-          <Progress
-            value={progressPercent}
-            aria-label={`${completedLessonCount} dari ${courseLessonTotal} pelajaran selesai`}
-            className="h-1 [&_[data-slot=progress-indicator]]:bg-foreground"
-          />
-          <div className="min-h-0 max-h-[min(28rem,55vh)] overflow-y-auto lg:max-h-none lg:flex-1">
-            {playlistLessonList ?? lessonList}
-          </div>
-        </>
-      ) : (
-        <div className="flex min-h-0 max-h-[min(28rem,55vh)] flex-1 flex-col overflow-hidden lg:max-h-none">
-          <LessonNotesPanel
-            courseSlug={course.slug}
-            courseTitle={course.title}
-            lessonId={currentLesson.id}
-            lessonTitle={currentLesson.title}
-            variant="sidebar"
-          />
-        </div>
-      )}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={sidebarTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+          className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden"
+        >
+          {sidebarTab === "video" ? (
+            <>
+              <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
+                <span>
+                  {completedLessonCount}/{courseLessonTotal} selesai
+                </span>
+                <span className="font-mono tabular-nums">{progressPercent}%</span>
+              </div>
+              <Progress
+                value={progressPercent}
+                aria-label={`${completedLessonCount} dari ${courseLessonTotal} pelajaran selesai`}
+                className="h-1 [&_[data-slot=progress-indicator]]:bg-foreground"
+              />
+              <div
+                className={cn(
+                  "min-h-0 max-h-[min(28rem,55vh)] overflow-y-auto overscroll-contain",
+                  "scroll-pb-4 pb-[calc(3.25rem+env(safe-area-inset-bottom,0px))]",
+                  "lg:max-h-none lg:flex-1 lg:scroll-pb-6 lg:pb-12"
+                )}
+              >
+                {playlistLessonList ?? lessonList}
+              </div>
+            </>
+          ) : (
+            <div
+              className={cn(
+                "flex min-h-0 flex-1 flex-col overflow-hidden",
+                mobileNotesStudio ? "max-lg:min-h-0 max-lg:flex-1" : "max-h-[min(28rem,55vh)] lg:max-h-none"
+              )}
+            >
+              <LessonNotesPanel
+                courseSlug={course.slug}
+                courseTitle={course.title}
+                lessonId={currentLesson.id}
+                lessonTitle={currentLesson.title}
+                variant="sidebar"
+                mobileStudio={mobileNotesStudio}
+              />
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </>
   );
 
   return (
     <div
       ref={layoutRef}
-      className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_var(--sidebar-w)]"
+      className={cn(
+        "grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_var(--sidebar-w)]",
+        mobileNotesStudio && "max-lg:flex max-lg:h-full max-lg:min-h-0 max-lg:flex-col max-lg:overflow-hidden"
+      )}
       style={{ "--sidebar-w": `${sidebarWidth}px` } as CSSProperties}
     >
       <main
         className={cn(
           "flex min-w-0 flex-col border-border max-lg:pt-0 lg:border-r lg:p-5 lg:py-6",
-          theaterMode && "lg:px-4 xl:px-6"
+          theaterMode && "lg:px-4 xl:px-6",
+          mobileNotesStudio && "max-lg:shrink-0 max-lg:overflow-visible"
         )}
       >
         <div
@@ -734,6 +878,7 @@ export function LearningWorkspace({
           <MobileLessonMiniPlayerShell
             onCollapseProgress={setMobileCollapse}
             onRequestExit={navigateBackFromLesson}
+            overlayChromeVisible={mobileVideoChromeVisible}
             playback={mobilePlayback}
             onTogglePlay={() => {
               playerRef.current?.togglePlay();
@@ -774,6 +919,8 @@ export function LearningWorkspace({
               onTimeUpdate={handleVideoTimeUpdate}
               onProtectionViolation={handleProtectionViolation}
               hideControlBar={mobileCollapse > 0.22}
+              onMobileChromeVisibleChange={setMobileVideoChromeVisible}
+              onWatchCompletionEligible={handleWatchCompletionEligible}
               className="max-lg:h-full max-lg:min-h-0 max-lg:rounded-none max-lg:border-0 max-lg:[&_.video-player-shell]:h-full max-lg:[&_.video-player-shell]:aspect-auto"
             />
             </div>
@@ -781,19 +928,30 @@ export function LearningWorkspace({
 
           <div
             className={cn(
-              "max-lg:transition-opacity max-lg:duration-300 max-lg:ease-out lg:contents"
+              "max-lg:grid max-lg:transition-[grid-template-rows] max-lg:duration-500 max-lg:ease-[cubic-bezier(0.22,1,0.36,1)] lg:contents",
+              mobileNotesStudio ? "max-lg:grid-rows-[0fr]" : "max-lg:grid-rows-[1fr]"
             )}
-            style={
-              {
-                opacity:
-                  mobileCollapse >= 0.96
-                    ? 1
-                    : mobileCollapse > 0
-                      ? 1 - mobileCollapse * 0.45
-                      : 1,
-              } as CSSProperties
-            }
           >
+            <div
+              className={cn(
+                "max-lg:min-h-0 max-lg:overflow-hidden max-lg:transition-[opacity,transform] max-lg:duration-500 max-lg:ease-[cubic-bezier(0.22,1,0.36,1)] lg:contents",
+                mobileNotesStudio
+                  ? "max-lg:pointer-events-none max-lg:opacity-0 max-lg:-translate-y-1"
+                  : "max-lg:opacity-100 max-lg:translate-y-0"
+              )}
+              style={
+                mobileNotesStudio
+                  ? undefined
+                  : ({
+                      opacity:
+                        mobileCollapse >= 0.96
+                          ? 1
+                          : mobileCollapse > 0
+                            ? 1 - mobileCollapse * 0.45
+                            : 1,
+                    } as CSSProperties)
+              }
+            >
           <header
             className={cn(
               "mt-3 border-b border-border/60 px-4 pb-4 max-lg:pt-1 lg:mt-4 lg:px-0",
@@ -852,56 +1010,22 @@ export function LearningWorkspace({
           >
             {canTrackProgress ? (
               <>
-                {continueHref ? (
+                {isCurrentDone && continueHref ? (
                   <Button
                     size="sm"
                     className="btn-primary w-full sm:w-auto max-lg:h-9 max-lg:w-9 max-lg:min-w-9 max-lg:border-transparent max-lg:bg-transparent max-lg:p-0 max-lg:text-muted-foreground/40 max-lg:shadow-none hover:max-lg:text-muted-foreground/70"
                     disabled={!progressReady}
-                    aria-label={
-                      isCurrentDone ? "Pelajaran berikutnya" : "Selesai dan lanjut"
-                    }
+                    aria-label="Pelajaran berikutnya"
                     onClick={() => void handleContinue()}
                   >
-                    {isCurrentDone ? (
-                      <>
-                        <span className="hidden lg:inline">Pelajaran berikutnya</span>
-                        <ArrowRight className="size-4 lg:ml-1" />
-                      </>
-                    ) : (
-                      <>
-                        <Check className="size-4" />
-                        <span className="hidden lg:inline">Selesai & lanjut</span>
-                      </>
-                    )}
+                    <span className="hidden lg:inline">Pelajaran berikutnya</span>
+                    <ArrowRight className="size-4 lg:ml-1" />
                   </Button>
                 ) : (
-                  <Button
-                    size="sm"
-                    className={cn(
-                      "w-full sm:w-auto max-lg:h-9 max-lg:w-9 max-lg:min-w-9 max-lg:border-transparent max-lg:bg-transparent max-lg:p-0 max-lg:text-muted-foreground/40 max-lg:shadow-none",
-                      !isCurrentDone && "btn-primary lg:btn-primary"
-                    )}
-                    variant={isCurrentDone ? "outline" : "default"}
-                    disabled={!progressReady || isCurrentDone}
-                    aria-label={isCurrentDone ? "Selesai" : "Tandai selesai"}
-                    onClick={() => void syncLessonProgress(currentLesson.id, true)}
-                  >
-                    <Check className="size-4" />
-                    <span className="hidden lg:inline">
-                      {isCurrentDone ? "Selesai" : "Tandai selesai"}
-                    </span>
-                  </Button>
+                  <p className="hidden text-xs text-muted-foreground lg:block">
+                    Progres pelajaran tercatat otomatis saat kamu menonton.
+                  </p>
                 )}
-                {isCurrentDone ? (
-                  <button
-                    type="button"
-                    className="hidden text-left text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline disabled:opacity-50 lg:inline"
-                    disabled={!progressReady}
-                    onClick={() => void handleUncheck()}
-                  >
-                    Belum selesai
-                  </button>
-                ) : null}
               </>
             ) : (
               <Button
@@ -938,6 +1062,7 @@ export function LearningWorkspace({
               ))}
             </ul>
           ) : null}
+            </div>
           </div>
         </div>
       </main>
@@ -946,17 +1071,24 @@ export function LearningWorkspace({
         className={cn(
           "relative flex min-w-0 flex-col border-t border-border p-4 sm:p-5 lg:sticky lg:top-12 lg:max-h-[calc(100dvh-3rem)] lg:min-h-0 lg:overflow-hidden lg:border-t-0 lg:border-l lg:py-6",
           sidebarTab === "catatan" && "lg:bg-muted/10",
-          "max-lg:transition-opacity max-lg:duration-300 max-lg:ease-out lg:opacity-100"
+          "max-lg:transition-[opacity,transform] max-lg:duration-500 max-lg:ease-[cubic-bezier(0.22,1,0.36,1)] lg:opacity-100",
+          mobileNotesStudio
+            ? "max-lg:min-h-0 max-lg:flex-1 max-lg:translate-y-0 max-lg:overflow-hidden max-lg:border-t-0 max-lg:bg-background max-lg:px-3 max-lg:pb-0 max-lg:pt-2 max-lg:opacity-100"
+            : "max-lg:translate-y-0"
         )}
         style={
-          {
-            opacity:
-              mobileCollapse >= 0.96
-                ? 1
-                : mobileCollapse > 0
-                  ? 1 - mobileCollapse * 0.45
-                  : undefined,
-          } as CSSProperties
+          mobileNotesStudio
+            ? ({
+                paddingBottom: keyboardInset > 0 ? keyboardInset : undefined,
+              } as CSSProperties)
+            : ({
+                opacity:
+                  mobileCollapse >= 0.96
+                    ? 1
+                    : mobileCollapse > 0
+                      ? 1 - mobileCollapse * 0.45
+                      : undefined,
+              } as CSSProperties)
         }
       >
         <LearningSidebarResizeHandle

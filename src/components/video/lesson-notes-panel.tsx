@@ -35,6 +35,8 @@ interface LessonNotesPanelProps {
   lessonTitle: string;
   /** Tighter layout for the right sidebar panel */
   variant?: "default" | "sidebar";
+  /** Mobile: video pinned above; notes fill remaining viewport */
+  mobileStudio?: boolean;
 }
 
 const EXPORT_OPTIONS: { format: NoteExportFormat; label: string; hint: string }[] = [
@@ -120,6 +122,7 @@ export function LessonNotesPanel({
   lessonId,
   lessonTitle,
   variant = "default",
+  mobileStudio = false,
 }: LessonNotesPanelProps) {
   const [html, setHtml] = useState("<p></p>");
   const [isLoading, setIsLoading] = useState(true);
@@ -248,9 +251,12 @@ export function LessonNotesPanel({
             key={`lesson-note-${lessonId}`}
             content={html}
             onChange={setHtml}
-            autofocus={!isSidebar}
+            autofocus={false}
             bare
             fillHeight
+            mobileComfort={mobileStudio}
+            scrollCaretIntoView={mobileStudio}
+            focusEndOnEmptyTap={mobileStudio}
             placeholder="Tulis catatan…"
             ariaLabel={`Catatan untuk ${lessonTitle}`}
             minHeightClass={isSidebar ? "min-h-0" : "min-h-[14rem]"}

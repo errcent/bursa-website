@@ -49,7 +49,7 @@ export default async function LearningPage({
   if (!lessonExists) notFound();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background max-lg:h-dvh max-lg:min-h-0 max-lg:overflow-hidden">
       <header className="hidden h-12 shrink-0 items-center gap-2 border-b border-border px-4 sm:px-5 lg:flex">
         <Link
           href={`/kelas/${course.slug}`}
@@ -63,7 +63,7 @@ export default async function LearningPage({
           {course.title}
         </span>
       </header>
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col max-lg:overflow-hidden">
         <Suspense fallback={<p className="p-6 text-sm text-muted-foreground">Memuat…</p>}>
           <LearningWorkspace course={course} currentLessonId={lessonId} mentor={mentor} />
         </Suspense>

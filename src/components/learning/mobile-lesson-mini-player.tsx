@@ -39,6 +39,8 @@ type MobileLessonMiniPlayerShellProps = {
   onTogglePlay: () => void;
   /** Mobile top-left: leave lesson (return path / mini player). */
   onRequestExit?: () => void;
+  /** In-player chrome (back chevron) follows video control visibility. */
+  overlayChromeVisible?: boolean;
   className?: string;
 };
 
@@ -50,6 +52,7 @@ export function MobileLessonMiniPlayerShell({
   playback,
   onTogglePlay,
   onRequestExit,
+  overlayChromeVisible = true,
   className,
 }: MobileLessonMiniPlayerShellProps) {
   const [viewport, setViewport] = useState({ width: 390, height: 844 });
@@ -354,8 +357,15 @@ export function MobileLessonMiniPlayerShell({
                   }
                   animateTo(1);
                 }}
-                className="pointer-events-auto absolute left-2 top-2 z-[50] inline-flex size-9 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur-sm transition-colors hover:bg-black/70 lg:hidden"
+                className={cn(
+                  "pointer-events-auto absolute left-2 top-2 z-[50] inline-flex size-9 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur-sm transition-[opacity,transform] will-change-[opacity,transform] hover:bg-black/70 lg:hidden",
+                  overlayChromeVisible
+                    ? "scale-100 opacity-100 duration-[320ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                    : "pointer-events-none scale-[0.92] opacity-0 duration-[560ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+                )}
                 aria-label="Kembali ke halaman sebelumnya"
+                aria-hidden={!overlayChromeVisible}
+                tabIndex={overlayChromeVisible ? 0 : -1}
               >
                 <ChevronDown className="size-5" strokeWidth={2.25} aria-hidden />
               </button>

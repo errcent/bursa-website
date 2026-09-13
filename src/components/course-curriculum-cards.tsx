@@ -1,8 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 
 import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
+import { loadGuestVerifiedSeconds, loadGuestProgress } from "@/lib/learning/guest-progress-storage";
 import { LessonPreviewThumb } from "@/components/video/lesson-preview-thumb";
 import { useCourseEnrollment } from "@/hooks/use-course-enrollment";
 import { belajarLessonHref } from "@/lib/learning/belajar-return-path";
@@ -27,6 +29,24 @@ export function CourseCurriculumCards({
   hideBookmark = false,
 }: CourseCurriculumCardsProps) {
   const { enrolled } = useCourseEnrollment(course.slug);
+
+  const watchByLesson = useMemo(() => {
+    const completed = loadGuestProgress(course.slug);
+    const verified = loadGuestVerifiedSeconds(course.slug);
+    const map: Record<string, number> = {};
+    for (const module of course.modules) {
+      for (const lesson of module.lessons) {
+        if (completed.has(lesson.id)) {
+          map[lesson.id] = 1;
+          continue;
+        }
+        const durationSec = Math.max(lesson.durationMinutes * 60, 1);
+        const watched = verified[lesson.id] ?? 0;
+        if (watched > 0) map[lesson.id] = Math.min(1, watched / durationSec);
+      }
+    }
+    return map;
+  }, [course]);
 
   const flatVideos = course.modules.flatMap((module, moduleIndex) =>
     module.lessons.map((lesson, lessonIndex) => ({
@@ -64,6 +84,7 @@ export function CourseCurriculumCards({
                     showPlayOverlay={isPlayable}
                     durationPosition="bottom-right"
                     className="rounded-md border-border"
+                    watchProgress={watchByLesson[lesson.id]}
                   />
                 </Link>
               </div>

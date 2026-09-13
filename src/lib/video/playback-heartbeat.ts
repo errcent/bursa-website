@@ -16,14 +16,13 @@ import { isPrototypeMode } from "@/lib/auth/prototype";
 
 const HEARTBEAT_TOKEN_TTL_MS = 2 * 60 * 60 * 1000; // 2h, matches playback token lifetime.
 
-/** Max playback speed we credit (guards seek-to-end + fast-forward abuse while allowing 2x). */
-const MAX_CREDITED_SPEED = 3;
-
-/** Hard cap on watch-time credited per single heartbeat (defensive upper bound). */
-export const HEARTBEAT_MAX_CREDIT_SECONDS = 120;
-
-/** Fraction of a lesson that must be server-verified before completion is allowed. */
-export const WATCH_COMPLETION_RATIO = 0.8;
+export {
+  HEARTBEAT_MAX_CREDIT_SECONDS,
+  WATCH_COMPLETION_RATIO,
+  computeHeartbeatCredit,
+  type HeartbeatCredit,
+  type HeartbeatCreditInput,
+} from "@/lib/video/watch-credit";
 
 function heartbeatSecret(): string {
   const secret = process.env.VIDEO_TOKEN_SECRET?.trim();
@@ -94,59 +93,4 @@ export function verifyPlaybackHeartbeatToken(token: string): HeartbeatPayload | 
   } catch {
     return null;
   }
-}
-
-export interface HeartbeatCreditInput {
-  /** Verified watch seconds accumulated so far. */
-  previousVerified: number;
-  /** Last verified playhead position (seconds). */
-  previousPosition: number;
-  /** Wall-clock of the last heartbeat, or null on the first ping. */
-  lastHeartbeatAt: Date | null;
-  /** Current playhead position reported by the client (seconds). */
-  position: number;
-  /** Lesson duration (seconds), verified time is capped at this. */
-  durationSeconds: number;
-  /** Server "now" (defaults to Date.now). */
-  now?: Date;
-}
-
-export interface HeartbeatCredit {
-  verifiedWatchedSeconds: number;
-  heartbeatPosition: number;
-}
-
-/**
- * Pure credit calculation (unit-testable). Credits the playhead advance, clamped to
- * wall-clock elapsed × MAX_CREDITED_SPEED and to HEARTBEAT_MAX_CREDIT_SECONDS, never below 0,
- * and caps the running total at the lesson duration.
- */
-export function computeHeartbeatCredit(input: HeartbeatCreditInput): HeartbeatCredit {
-  const now = input.now ?? new Date();
-  const safePosition = Number.isFinite(input.position) ? Math.max(0, input.position) : 0;
-  const positionAdvance = Math.max(0, safePosition - input.previousPosition);
-
-  let credit = positionAdvance;
-  if (input.lastHeartbeatAt) {
-    const wallClockSeconds = Math.max(
-      0,
-      (now.getTime() - input.lastHeartbeatAt.getTime()) / 1000
-    );
-    credit = Math.min(credit, wallClockSeconds * MAX_CREDITED_SPEED);
-  } else {
-    // First ping of a session: no prior anchor, so credit nothing (avoids a free grant).
-    credit = 0;
-  }
-  credit = Math.min(credit, HEARTBEAT_MAX_CREDIT_SECONDS);
-
-  const duration = input.durationSeconds > 0 ? input.durationSeconds : Number.MAX_SAFE_INTEGER;
-  const verifiedWatchedSeconds = Math.min(
-    duration,
-    Math.round(input.previousVerified + credit)
-  );
-
-  return {
-    verifiedWatchedSeconds,
-    heartbeatPosition: Math.round(safePosition),
-  };
 }

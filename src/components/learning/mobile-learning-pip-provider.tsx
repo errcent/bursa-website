@@ -134,12 +134,12 @@ export function MobileLearningPipProvider({ children }: { children: ReactNode })
 
   const enterDetached = useCallback(
     async (input: PipSession & { video: HTMLVideoElement | null }) => {
-      await tryEnterNativePiP(input.video);
       setSession({
         lessonHref: input.lessonHref,
         returnPath: input.returnPath,
         courseTitle: input.courseTitle,
       });
+      void tryEnterNativePiP(input.video);
     },
     []
   );

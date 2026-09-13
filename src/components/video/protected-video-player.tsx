@@ -76,6 +76,10 @@ export interface ProtectedVideoPlayerProps {
   mockupAutoPlay?: boolean;
   /** Hide bottom control bar (e.g. mobile mini player chrome). */
   hideControlBar?: boolean;
+  /** Mobile lesson shell: sync back chevron with in-player chrome visibility. */
+  onMobileChromeVisibleChange?: (visible: boolean) => void;
+  /** Server heartbeat says verified watch time crossed completion threshold. */
+  onWatchCompletionEligible?: () => void;
 }
 
 export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideoPlayerProps>(
@@ -100,13 +104,18 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
   highlightFullscreenControl = false,
   mockupAutoPlay = false,
   hideControlBar = false,
+  onMobileChromeVisibleChange,
+  onWatchCompletionEligible,
 }, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   /** Signed server heartbeat token, enables verified watch-time accrual (QC-20260719-46). */
   const heartbeatTokenRef = useRef<string | null>(null);
+  const completionEligibleSentRef = useRef(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const isPlayingRef = useRef(false);
+  isPlayingRef.current = isPlaying;
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(durationMinutes * 60);
   const [volume, setVolume] = useState(1);
@@ -117,6 +126,7 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
   const [hasSubtitleTracks, setHasSubtitleTracks] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const controlsHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isBlurred, setIsBlurred] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [tokenReady, setTokenReady] = useState(isPreview || mockupMode);
@@ -137,9 +147,28 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
 
   const chapterMarkers = useMemoChapterMarkers(duration);
 
+  const clearControlsHideTimer = useCallback(() => {
+    if (controlsHideTimerRef.current) {
+      clearTimeout(controlsHideTimerRef.current);
+      controlsHideTimerRef.current = null;
+    }
+  }, []);
+
+  const scheduleControlsAutoHide = useCallback(() => {
+    clearControlsHideTimer();
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(max-width: 1023px)").matches) return;
+    if (!isPlaying) return;
+    controlsHideTimerRef.current = setTimeout(() => {
+      if (isPlayingRef.current) setShowControls(false);
+      controlsHideTimerRef.current = null;
+    }, 3600);
+  }, [clearControlsHideTimer, isPlaying]);
+
   const revealControls = useCallback(() => {
     setShowControls(true);
-  }, []);
+    scheduleControlsAutoHide();
+  }, [scheduleControlsAutoHide]);
 
   const logViolation = useCallback(
     (type: ProtectionViolationType) => {
@@ -232,6 +261,11 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
 
   const controlsVisible = mockupMode || showControls;
 
+  useEffect(() => {
+    if (hideControlBar) return;
+    onMobileChromeVisibleChange?.(controlsVisible);
+  }, [controlsVisible, hideControlBar, onMobileChromeVisibleChange]);
+
   // Server-verified watch time (QC-20260719-46): while an enrolled learner is playing, ping the
   // heartbeat endpoint with the current playhead so the server can accrue verified watch time.
   // Guests / previews don't accrue. Completion elsewhere is gated on this server value.
@@ -257,7 +291,18 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
           position: Math.floor(video.currentTime),
         }),
         keepalive: true,
-      }).catch(() => undefined);
+      })
+        .then(async (res) => {
+          if (!res.ok || completionEligibleSentRef.current) return;
+          const data = (await res.json().catch(() => ({}))) as {
+            completionEligible?: boolean;
+          };
+          if (data.completionEligible) {
+            completionEligibleSentRef.current = true;
+            onWatchCompletionEligible?.();
+          }
+        })
+        .catch(() => undefined);
     };
 
     sendHeartbeat();
@@ -266,7 +311,11 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
       cancelled = true;
       clearInterval(intervalId);
     };
-  }, [isPlaying, isPreview, userId, userEmail, lessonId]);
+  }, [isPlaying, isPreview, userId, userEmail, lessonId, onWatchCompletionEligible]);
+
+  useEffect(() => {
+    completionEligibleSentRef.current = false;
+  }, [lessonId]);
 
   useEffect(() => {
     if (!isProtected || !containerRef.current) return;
@@ -307,6 +356,8 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
 
   useEffect(() => {
     if (mockupMode) return;
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(min-width: 1024px)").matches) return;
 
     let hideTimer: ReturnType<typeof setTimeout>;
     const resetTimer = () => {
@@ -319,15 +370,30 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
 
     const container = containerRef.current;
     container?.addEventListener("mousemove", resetTimer);
-    container?.addEventListener("touchstart", resetTimer, { passive: true });
     resetTimer();
 
     return () => {
       clearTimeout(hideTimer);
       container?.removeEventListener("mousemove", resetTimer);
-      container?.removeEventListener("touchstart", resetTimer);
     };
   }, [isPlaying, mockupMode]);
+
+  useEffect(() => {
+    if (mockupMode || hideControlBar) return;
+    if (!showControls || !isPlaying) {
+      clearControlsHideTimer();
+      return;
+    }
+    scheduleControlsAutoHide();
+    return () => clearControlsHideTimer();
+  }, [
+    clearControlsHideTimer,
+    hideControlBar,
+    isPlaying,
+    mockupMode,
+    scheduleControlsAutoHide,
+    showControls,
+  ]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -362,8 +428,9 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
     } else {
       video.pause();
       setIsPlaying(false);
+      clearControlsHideTimer();
     }
-  }, [playbackError]);
+  }, [clearControlsHideTimer, playbackError]);
 
   useImperativeHandle(
     ref,
@@ -391,12 +458,16 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
   );
 
   const handleVideoAreaTap = useCallback(() => {
-    if (isPlaying && showControls) {
-      setShowControls(false);
-      return;
-    }
-    revealControls();
-  }, [isPlaying, revealControls, showControls]);
+    setShowControls((prev) => {
+      const next = !prev;
+      if (next) {
+        scheduleControlsAutoHide();
+      } else {
+        clearControlsHideTimer();
+      }
+      return next;
+    });
+  }, [clearControlsHideTimer, scheduleControlsAutoHide]);
 
   const handleVideoError = useCallback(() => {
     const video = videoRef.current;
@@ -641,7 +712,12 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
       {isProtected && !hideControlBar && (
         <Badge
           variant="outline"
-          className="absolute left-3 top-3 z-30 border-white/20 bg-black/50 text-white backdrop-blur-sm"
+          className={cn(
+            "absolute left-3 top-3 z-30 border-white/20 bg-black/50 text-white backdrop-blur-sm transition-[opacity,transform] ease-[cubic-bezier(0.16,1,0.3,1)] max-lg:duration-[520ms] lg:duration-300",
+            controlsVisible
+              ? "max-lg:scale-100 max-lg:opacity-100 lg:opacity-100"
+              : "pointer-events-none max-lg:scale-[0.98] max-lg:opacity-0 lg:opacity-100"
+          )}
         >
           <Shield className="size-3" />
           Konten Dilindungi
@@ -654,7 +730,11 @@ export const ProtectedVideoPlayer = forwardRef<VideoPlayerHandle, ProtectedVideo
             type="button"
             onClick={handleVideoAreaTap}
             className="video-tap-capture absolute inset-0 z-10 cursor-default bg-transparent"
-            aria-label={isPlaying ? "Tampilkan atau sembunyikan kontrol" : "Tampilkan kontrol video"}
+            aria-label={
+              controlsVisible
+                ? "Sembunyikan kontrol video"
+                : "Tampilkan kontrol video"
+            }
           />
 
           <MobileVideoControlBar

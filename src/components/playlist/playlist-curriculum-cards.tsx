@@ -1,6 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
+import { loadGuestProgress, loadGuestVerifiedSeconds } from "@/lib/learning/guest-progress-storage";
 import { UserRound } from "lucide-react";
 
 import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
@@ -25,6 +27,24 @@ export function PlaylistCurriculumCards({
   className,
   hideBookmark = false,
 }: PlaylistCurriculumCardsProps) {
+  const watchByKey = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const item of playlist.items) {
+      if (!item.courseSlug || !item.lessonLegacyId) continue;
+      const key = `${item.courseSlug}/${item.lessonLegacyId}`;
+      const completed = loadGuestProgress(item.courseSlug);
+      if (completed.has(item.lessonLegacyId)) {
+        map[key] = 1;
+        continue;
+      }
+      const verified = loadGuestVerifiedSeconds(item.courseSlug);
+      const durationSec = Math.max((item.durationMinutes ?? 0) * 60, 1);
+      const watched = verified[item.lessonLegacyId] ?? 0;
+      if (watched > 0) map[key] = Math.min(1, watched / durationSec);
+    }
+    return map;
+  }, [playlist.items]);
+
   if (playlist.items.length === 0) {
     return (
       <div className="mx-auto max-w-3xl rounded-xl border border-dashed border-border/60 px-6 py-12 text-center">
@@ -62,6 +82,11 @@ export function PlaylistCurriculumCards({
                     showPlayOverlay={playable}
                     durationPosition="bottom-right"
                     className="rounded-md border-border"
+                    watchProgress={
+                      item.courseSlug && item.lessonLegacyId
+                        ? watchByKey[`${item.courseSlug}/${item.lessonLegacyId}`]
+                        : undefined
+                    }
                   />
                 </Link>
                 {!hideBookmark && item.courseSlug && item.lessonLegacyId ? (
