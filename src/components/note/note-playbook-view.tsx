@@ -202,6 +202,7 @@ export function NotePlaybookView() {
     persist({
       ...state,
       profile: {
+        ...state.profile,
         signals,
         weights: priorWeightsFromSignals(signals),
         updatedAt: null,

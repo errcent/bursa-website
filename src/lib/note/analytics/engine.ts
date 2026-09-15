@@ -1,5 +1,6 @@
 import type {
   AnalyticsReport,
+  BehaviorDrift,
   ContextCell,
   ContextZone,
   EdgeRow,
@@ -202,7 +203,7 @@ function buildContext(entries: JournalEntry[], locale: "id" | "en"): ContextCell
   return cells.sort((a, b) => b.net - a.net);
 }
 
-function buildDrift(entries: JournalEntry[], locale: "id" | "en") {
+function buildDrift(entries: JournalEntry[], locale: "id" | "en"): BehaviorDrift[] {
   const now = Date.now();
   const recentStart = now - 7 * 86400000;
   const priorStart = now - 14 * 86400000;
@@ -240,7 +241,7 @@ function buildDrift(entries: JournalEntry[], locale: "id" | "en") {
     };
   };
 
-  const out = [];
+  const out: BehaviorDrift[] = [];
   const wr = drift(
     { id: "Win rate (7h)", en: "Win rate (7d)" },
     rate(recent),
@@ -256,7 +257,7 @@ function buildDrift(entries: JournalEntry[], locale: "id" | "en") {
       metric: { id: "Frekuensi trade (per hari)", en: "Trade frequency (per day)" },
       recent: freqRecent.toFixed(1),
       prior: freqPrior.toFixed(1),
-      direction: Math.abs(diff) < 0.3 ? "flat" : diff > 0 ? "worse" : "better",
+      direction: (Math.abs(diff) < 0.3 ? "flat" : diff > 0 ? "worse" : "better") as BehaviorDrift["direction"],
     });
   }
 

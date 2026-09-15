@@ -82,7 +82,15 @@ export function NoteJournalProvider({ children }: { children: ReactNode }) {
         });
       })
       .catch((err: Error) => {
-        if (!cancelled) setState({ data: null, demo: false, error: err.message, loading: false });
+        if (!cancelled) {
+          setState({
+            data: null,
+            demo: false,
+            openAccess: isNoteOpenAccessPeriod(),
+            error: err.message,
+            loading: false,
+          });
+        }
       });
     return () => {
       cancelled = true;
