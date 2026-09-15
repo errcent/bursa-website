@@ -2,7 +2,10 @@ import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { parseJournalCsv } from "@/lib/note/csv";
+import { enforceNoteRateLimit } from "@/lib/note/api-rate-limit";
 import { applyNoteCors, noteCorsPreflight, requireNoteSession } from "@/lib/note/guard";
+import { isBodyTooLarge } from "@/lib/note/request-limits";
+import { NOTE_IMPORT_BODY_MAX_BYTES } from "@/lib/note/resource-limits";
 import { getNoteRepo } from "@/lib/note/repo";
 
 export async function OPTIONS(request: NextRequest) {
@@ -13,6 +16,13 @@ export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
   const auth = await requireNoteSession(request, "note.write");
   if ("error" in auth) return applyNoteCors(auth.error, origin);
+
+  const limited = await enforceNoteRateLimit(request, "journal_import", auth.session);
+  if (!limited.ok) return applyNoteCors(limited.response, origin);
+
+  if (isBodyTooLarge(request, NOTE_IMPORT_BODY_MAX_BYTES)) {
+    return applyNoteCors(jsonError("File impor terlalu besar.", 413), origin);
+  }
 
   try {
     const form = await request.formData().catch(() => null);
@@ -40,6 +50,9 @@ export async function POST(request: NextRequest) {
     }
     return applyNoteCors(jsonOk({ imported: created.length, errors, entries: created }), origin);
   } catch (error) {
+    if (error instanceof Error && error.message === "NOTE_JOURNAL_CAP") {
+      return applyNoteCors(jsonError("Batas entry jurnal tercapai.", 413), origin);
+    }
     return applyNoteCors(handleApiError(error), origin);
   }
 }

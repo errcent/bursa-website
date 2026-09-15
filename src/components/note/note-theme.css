@@ -57,3 +57,199 @@
 [data-note-theme="light"] .ring-zinc-100 {
   --tw-ring-color: #18181b;
 }
+
+[data-note-theme="dark"],
+[data-note-theme="light"] {
+  /* sync with src/lib/note/chart-colors.ts */
+  --chart-up: #34d399;
+  --chart-up-strong: #10b981;
+  --chart-up-soft: #6ee7b7;
+  --chart-down: #fb7185;
+  --chart-down-strong: #f43f5e;
+  --chart-down-soft: #fda4af;
+  --chart-warn: #fbbf24;
+  --chart-warn-strong: #f59e0b;
+  --chart-warn-soft: #fde68a;
+  --chart-warn-muted: #fcd34d;
+  --chart-info: #38bdf8;
+  --chart-info-strong: #0ea5e9;
+  --chart-info-soft: #7dd3fc;
+  --chart-info-track: rgba(14, 165, 233, 0.12);
+  --chart-stack-wins: var(--chart-up);
+  --chart-stack-losses: var(--chart-down);
+  --chart-stack-be: var(--chart-info-strong);
+  --chart-track: rgba(255, 255, 255, 0.06);
+  --chart-stack-net: var(--chart-up-soft);
+}
+
+/* PnL text */
+.note-pnl-up {
+  color: var(--chart-up);
+}
+
+.note-pnl-down {
+  color: var(--chart-down);
+}
+
+/* Insight / zone surfaces */
+.note-surface-up {
+  border-color: color-mix(in srgb, var(--chart-up-strong) 28%, transparent);
+  background-color: color-mix(in srgb, var(--chart-up-strong) 6%, transparent);
+  color: color-mix(in srgb, var(--chart-up) 88%, white);
+}
+
+.note-surface-down {
+  border-color: color-mix(in srgb, var(--chart-down-strong) 32%, transparent);
+  background-color: color-mix(in srgb, var(--chart-down-strong) 6%, transparent);
+  color: color-mix(in srgb, var(--chart-down) 88%, white);
+}
+
+.note-surface-up-muted {
+  border-color: color-mix(in srgb, var(--chart-up-strong) 35%, transparent);
+  background-color: color-mix(in srgb, var(--chart-up-strong) 10%, transparent);
+  color: color-mix(in srgb, var(--chart-up) 75%, white);
+}
+
+.note-surface-down-muted {
+  border-color: color-mix(in srgb, var(--chart-down-strong) 35%, transparent);
+  background-color: color-mix(in srgb, var(--chart-down-strong) 10%, transparent);
+  color: color-mix(in srgb, var(--chart-down) 75%, white);
+}
+
+/* Calendar heat (hue mode) */
+.note-heat-up-1 {
+  background-color: color-mix(in srgb, var(--chart-up-strong) 10%, transparent);
+  color: color-mix(in srgb, var(--chart-up) 90%, white);
+}
+
+.note-heat-up-2 {
+  background-color: color-mix(in srgb, var(--chart-up-strong) 20%, transparent);
+  color: color-mix(in srgb, var(--chart-up) 92%, white);
+}
+
+.note-heat-up-3 {
+  background-color: color-mix(in srgb, var(--chart-up-strong) 35%, transparent);
+  color: color-mix(in srgb, var(--chart-up-soft) 95%, white);
+}
+
+.note-heat-down-1 {
+  background-color: color-mix(in srgb, var(--chart-down-strong) 10%, transparent);
+  color: color-mix(in srgb, var(--chart-down) 90%, white);
+}
+
+.note-heat-down-2 {
+  background-color: color-mix(in srgb, var(--chart-down-strong) 20%, transparent);
+  color: color-mix(in srgb, var(--chart-down) 92%, white);
+}
+
+.note-heat-down-3 {
+  background-color: color-mix(in srgb, var(--chart-down-strong) 35%, transparent);
+  color: color-mix(in srgb, var(--chart-down-soft) 95%, white);
+}
+
+.note-bar-up {
+  background-color: color-mix(in srgb, var(--chart-up-strong) 50%, transparent);
+}
+
+.note-bar-down {
+  background-color: color-mix(in srgb, var(--chart-down-strong) 50%, transparent);
+}
+
+.note-impact-high {
+  color: var(--chart-down-strong);
+}
+
+.note-impact-high-fill {
+  fill: color-mix(in srgb, var(--chart-down-strong) 30%, transparent);
+}
+
+.note-badge-up {
+  background-color: color-mix(in srgb, var(--chart-up-strong) 10%, transparent);
+  color: color-mix(in srgb, var(--chart-up) 85%, white);
+}
+
+.note-chip-up {
+  background-color: color-mix(in srgb, var(--chart-up-strong) 20%, transparent);
+  color: color-mix(in srgb, var(--chart-up) 90%, white);
+}
+
+.note-chip-down {
+  background-color: color-mix(in srgb, var(--chart-down-strong) 20%, transparent);
+  color: color-mix(in srgb, var(--chart-down) 90%, white);
+}
+
+/* Caution / neutral / medium impact */
+.note-warn {
+  color: var(--chart-warn);
+}
+
+.note-warn-body {
+  color: color-mix(in srgb, var(--chart-warn-soft) 88%, white);
+}
+
+.note-warn-muted {
+  color: color-mix(in srgb, var(--chart-warn-muted) 85%, white);
+}
+
+.note-surface-warn {
+  border-color: color-mix(in srgb, var(--chart-warn-strong) 22%, transparent);
+  background-color: color-mix(in srgb, var(--chart-warn-strong) 6%, transparent);
+  color: color-mix(in srgb, var(--chart-warn-soft) 85%, white);
+}
+
+.note-surface-warn-muted {
+  border-color: color-mix(in srgb, var(--chart-warn-strong) 30%, transparent);
+  background-color: color-mix(in srgb, var(--chart-warn-strong) 10%, transparent);
+  color: color-mix(in srgb, var(--chart-warn-soft) 90%, white);
+}
+
+.note-badge-warn {
+  background-color: color-mix(in srgb, var(--chart-warn-strong) 10%, transparent);
+  color: color-mix(in srgb, var(--chart-warn-soft) 88%, white);
+}
+
+.note-dot-warn {
+  background-color: var(--chart-warn);
+}
+
+.note-icon-wrap-warn {
+  background-color: color-mix(in srgb, var(--chart-warn-strong) 15%, transparent);
+}
+
+.note-impact-medium {
+  color: var(--chart-warn);
+}
+
+.note-impact-medium-fill {
+  fill: color-mix(in srgb, var(--chart-warn) 25%, transparent);
+}
+
+.note-impact-low {
+  color: var(--chart-warn-muted);
+}
+
+.note-impact-low-fill {
+  fill: color-mix(in srgb, var(--chart-warn-muted) 25%, transparent);
+}
+
+.note-row-warn {
+  background-color: color-mix(in srgb, var(--chart-warn-strong) 12%, transparent);
+}
+
+.note-pill-warn {
+  border-color: color-mix(in srgb, var(--chart-warn-strong) 30%, transparent);
+  background-color: color-mix(in srgb, var(--chart-warn-strong) 10%, transparent);
+  color: color-mix(in srgb, var(--chart-warn-soft) 90%, white);
+}
+
+.note-link-warn {
+  color: color-mix(in srgb, var(--chart-warn-soft) 90%, white);
+}
+
+.note-link-warn:hover {
+  color: color-mix(in srgb, var(--chart-warn-soft) 98%, white);
+}
+
+.note-mark-warn {
+  color: color-mix(in srgb, var(--chart-warn) 90%, white);
+}

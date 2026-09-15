@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
@@ -208,7 +208,7 @@ export function MentorL2ApplicationForm({ token }: { token: string }) {
         ) : null}
         {asString(l1.l1_professional_background) ? (
           <p className="mt-3 text-sm">
-            <span className="text-xs text-muted-foreground">Latar L1  -  diperhalus di capaian di bawah. </span>
+            <span className="text-xs text-muted-foreground">Latar L1 - diperhalus di capaian di bawah. </span>
             {asString(l1.l1_professional_background)}
           </p>
         ) : null}

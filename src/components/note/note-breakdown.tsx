@@ -39,25 +39,20 @@ function Column({
 
 export function NoteBreakdown({
   symbols,
-  emotions,
   colorMode,
   formatOpts,
   scopeLabel,
 }: {
   symbols: SliceStat[];
-  emotions: SliceStat[];
   colorMode: ColorMode;
   formatOpts: FormatPnlOpts;
   scopeLabel?: string;
 }) {
-  if (symbols.length === 0 && emotions.length === 0) return null;
+  if (symbols.length === 0) return null;
   return (
     <div className="space-y-3">
       {scopeLabel ? <p className="text-[11px] text-zinc-600">{scopeLabel}</p> : null}
-      <div className="grid gap-8 sm:grid-cols-2">
-        <Column title="Simbol" rows={symbols} colorMode={colorMode} formatOpts={formatOpts} />
-        <Column title="Emosi" rows={emotions} colorMode={colorMode} formatOpts={formatOpts} />
-      </div>
+      <Column title="Simbol" rows={symbols} colorMode={colorMode} formatOpts={formatOpts} />
     </div>
   );
 }

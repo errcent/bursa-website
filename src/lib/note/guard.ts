@@ -11,6 +11,12 @@ import {
   signNoteSessionToken,
   noteSessionCookieOptions,
 } from "@/lib/note/session";
+import {
+  isNoteOpenAccessPeriod,
+  isNoteOpenAccessGuest,
+  NOTE_OPEN_ACCESS_GUEST_EMAIL,
+} from "@/lib/note/open-access";
+import { applyPreviewUserCookie, resolvePreviewUserId } from "@/lib/note/preview-access";
 import type { NoteScope, NoteSession } from "@/lib/note/types";
 import { hostRole, isProductionHostRouting, NOTE_HOST } from "@/lib/hosts/hosts";
 
@@ -67,6 +73,16 @@ export async function requireNoteSession(
     }
   }
 
+  if (isNoteOpenAccessPeriod()) {
+    return {
+      session: {
+        userId: resolvePreviewUserId(request),
+        email: NOTE_OPEN_ACCESS_GUEST_EMAIL,
+        scopes: ["note.read", "note.write", "note.sync"],
+      },
+    };
+  }
+
   return { error: jsonError("Sesi Note diperlukan.", 401) };
 }
 
@@ -76,6 +92,17 @@ export async function bootstrapLocalNoteCookie(userId: string, email: string) {
   if (jar.get(NOTE_SESSION_COOKIE)?.value) return;
   const token = await signNoteSessionToken({ id: userId, email });
   jar.set(NOTE_SESSION_COOKIE, token, noteSessionCookieOptions());
+}
+
+export function attachNoteSessionCookies(
+  request: NextRequest,
+  response: NextResponse,
+  session: NoteSession
+): NextResponse {
+  if (isNoteOpenAccessPeriod() && isNoteOpenAccessGuest(session.userId)) {
+    applyPreviewUserCookie(response, request, session.userId);
+  }
+  return response;
 }
 
 export function noteHostHref(pathname: string): string {

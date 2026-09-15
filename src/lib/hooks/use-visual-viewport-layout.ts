@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, type RefObject } from "react";
 
@@ -9,7 +9,7 @@ export type VisualViewportLayout = {
 };
 
 /**
- * Updates CSS vars on a target element from visualViewport — no React re-renders (avoids keyboard jitter).
+ * Updates CSS vars on a target element from visualViewport - no React re-renders (avoids keyboard jitter).
  */
 export function useVisualViewportCssVars(
   targetRef: RefObject<HTMLElement | null>,

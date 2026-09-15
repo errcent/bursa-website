@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -28,7 +28,7 @@ function slugifyHeading(text: string): string {
     .replace(/\s+/g, "-");
 }
 
-/** Stable anchor for ToS §11 — footer links `/terms#risiko`. */
+/** Stable anchor for ToS §11 - footer links `/terms#risiko`. */
 function headingAnchor(text: string): string {
   const cleaned = text.replace(/\*\*/g, "").trim();
   const withoutNumber = cleaned.replace(/^\d+\.\s*/, "");

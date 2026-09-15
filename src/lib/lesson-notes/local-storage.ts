@@ -1,4 +1,4 @@
-/** Lesson notes on `/belajar` — device-local only (no server persistence). */
+﻿/** Lesson notes on `/belajar` - device-local only (no server persistence). */
 
 const STORAGE_PREFIX = "bursa:lesson-notes:";
 

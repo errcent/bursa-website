@@ -149,11 +149,11 @@ describe("admin L1 display", () => {
       l1_confirmation: true,
     });
     assert.equal(rows.some((row) => row.label === "Mengapa Bursanalar"), true);
-    assert.equal(rows.some((row) => row.value === "5–10 tahun"), true);
+    assert.equal(rows.some((row) => row.value === "5-10 tahun"), true);
     assert.equal(rows.some((row) => row.id === "l1_confirmation"), false);
     assert.equal(
       l1PrimaryPreview({ l1_primary_expertise: "equities", l1_years_experience: "5_10" }),
-      "Saham / ekuitas · 5–10 tahun",
+      "Saham / ekuitas · 5-10 tahun",
     );
   });
 });

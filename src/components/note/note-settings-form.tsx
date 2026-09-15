@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 
-import { DEFAULT_NOTE_PREFS, type DisplayCurrency, type NoteLocale, type NotePrefs, type NoteTheme } from "@/lib/note/prefs";
+import { DEFAULT_NOTE_PREFS, type DisplayCurrency, type NoteLocale, type NotePrefs } from "@/lib/note/prefs";
 import { noteCopy } from "@/lib/note/copy";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 
@@ -66,8 +66,8 @@ export function NoteSettingsForm() {
       <Heading>{copy.tampilan}</Heading>
       <p className="mt-3 text-xs leading-relaxed text-zinc-500">
         {prefs.locale === "en"
-          ? "Email, language, currency, and theme also live in the Profile menu. This page is the full list."
-          : "Email, bahasa, mata uang, dan tema juga ada di menu Profil. Halaman ini daftar lengkapnya."}
+          ? "Language and currency also live in the Profile menu. This page is the full list."
+          : "Bahasa dan mata uang juga ada di menu Profil. Halaman ini daftar lengkapnya."}
       </p>
       <p className="mt-2 text-xs text-zinc-600">{copy.noStreak}</p>
 
@@ -86,20 +86,8 @@ export function NoteSettingsForm() {
           </Choice>
         ))}
       </Row>
-      <Row label={copy.theme} hint={copy.themeHint}>
-        <Choice value={"dark" as NoteTheme} current={prefs.theme} onChange={(theme) => update({ theme })}>
-          {copy.themeDark}
-        </Choice>
-        <Choice value={"light" as NoteTheme} current={prefs.theme} onChange={(theme) => update({ theme })}>
-          {copy.themeLight}
-        </Choice>
-        <Choice value={"system" as NoteTheme} current={prefs.theme} onChange={(theme) => update({ theme })}>
-          {copy.themeSystem}
-        </Choice>
-      </Row>
-
       <Heading>{copy.angka}</Heading>
-      <Row label={copy.numberFormat} hint="Compact memakai rb / jt agar sel kalender tidak pecah.">
+      <Row label={copy.numberFormat} hint={copy.numberFormatCompactHint}>
         <Choice value={"compact" as const} current={prefs.numberFormat} onChange={(numberFormat) => update({ numberFormat })}>
           {copy.compact}
         </Choice>
@@ -107,7 +95,7 @@ export function NoteSettingsForm() {
           {copy.full}
         </Choice>
       </Row>
-      <Row label={copy.heroNet} hint="Hari yang diklik tidak pernah mengubah angka ini.">
+      <Row label={copy.heroNet} hint={copy.heroNetHint}>
         <Choice value={"all" as const} current={prefs.heroRange} onChange={(heroRange) => update({ heroRange })}>
           {copy.allFilter}
         </Choice>
@@ -130,7 +118,7 @@ export function NoteSettingsForm() {
           {copy.paren}
         </Choice>
       </Row>
-      <Row label={copy.colorMode} hint="Pola memakai garis bawah pada rugi, bukan merah/hijau saja.">
+      <Row label={copy.colorMode} hint={copy.colorModePatternHint}>
         <Choice value={"hue" as const} current={prefs.colorMode} onChange={(colorMode) => update({ colorMode })}>
           {copy.hue}
         </Choice>
@@ -140,14 +128,6 @@ export function NoteSettingsForm() {
       </Row>
 
       <Heading>{copy.journal}</Heading>
-      <Row label={copy.defaultKind} hint="Form Baru memakai ini. Filter sidebar tetap Semua sampai kamu ganti.">
-        <Choice value={"TRADE" as const} current={prefs.defaultKind} onChange={(defaultKind) => update({ defaultKind })}>
-          {copy.trade}
-        </Choice>
-        <Choice value={"INVEST" as const} current={prefs.defaultKind} onChange={(defaultKind) => update({ defaultKind })}>
-          {copy.invest}
-        </Choice>
-      </Row>
       <Row label={copy.calendarNumbers}>
         <Choice value={true} current={prefs.calendarShowNet} onChange={(calendarShowNet) => update({ calendarShowNet })}>
           {copy.show}
@@ -172,23 +152,6 @@ export function NoteSettingsForm() {
           {copy.dense}
         </Choice>
       </Row>
-      <Row label={copy.emotionPrompt} hint="Tetap bisa dikosongkan. Bukan wajib.">
-        <Choice
-          value={"optional" as const}
-          current={prefs.emotionPrompt}
-          onChange={(emotionPrompt) => update({ emotionPrompt })}
-        >
-          {copy.optional}
-        </Choice>
-        <Choice
-          value={"after-loss" as const}
-          current={prefs.emotionPrompt}
-          onChange={(emotionPrompt) => update({ emotionPrompt })}
-        >
-          {copy.afterLoss}
-        </Choice>
-      </Row>
-
       <p className="pt-6 text-xs text-zinc-600">{copy.locked}</p>
       <button
         type="button"

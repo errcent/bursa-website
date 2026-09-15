@@ -19,14 +19,14 @@ function heatClass(pnl: number, maxAbs: number, count: number, colorMode: ColorM
   }
   const intensity = maxAbs === 0 ? 0.35 : Math.min(1, Math.abs(pnl) / maxAbs);
   if (pnl > 0) {
-    if (intensity > 0.66) return "bg-emerald-500/35 text-emerald-50";
-    if (intensity > 0.33) return "bg-emerald-500/20 text-emerald-100";
-    return "bg-emerald-500/10 text-emerald-200";
+    if (intensity > 0.66) return "note-heat-up-3";
+    if (intensity > 0.33) return "note-heat-up-2";
+    return "note-heat-up-1";
   }
   if (pnl < 0) {
-    if (intensity > 0.66) return "bg-rose-500/35 text-rose-50";
-    if (intensity > 0.33) return "bg-rose-500/20 text-rose-100";
-    return "bg-rose-500/10 text-rose-200";
+    if (intensity > 0.66) return "note-heat-down-3";
+    if (intensity > 0.33) return "note-heat-down-2";
+    return "note-heat-down-1";
   }
   return "bg-zinc-800 text-zinc-300";
 }

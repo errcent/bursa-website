@@ -1,4 +1,4 @@
-import { privacyPublicUrl } from "@/lib/hosts/hosts";
+﻿import { privacyPublicUrl } from "@/lib/hosts/hosts";
 import type { LegalLocale } from "@/lib/hosts/hosts";
 
 export function dsarConfirmationEmail(
@@ -8,7 +8,7 @@ export function dsarConfirmationEmail(
   const statusUrl = privacyPublicUrl("permintaan-status", locale);
   if (locale === "en") {
     return {
-      subject: `Privacy request received  -  ${input.referenceCode}`,
+      subject: `Privacy request received - ${input.referenceCode}`,
       html: `<p>Hi ${input.fullName},</p>
 <p>We received your data-subject request. Reference: <strong>${input.referenceCode}</strong>.</p>
 <p>We will respond within 14 business days. Track status: <a href="${statusUrl}">${statusUrl}</a></p>
@@ -17,7 +17,7 @@ export function dsarConfirmationEmail(
     };
   }
   return {
-    subject: `Permintaan privasi diterima  -  ${input.referenceCode}`,
+    subject: `Permintaan privasi diterima - ${input.referenceCode}`,
     html: `<p>Halo ${input.fullName},</p>
 <p>Kami menerima permintaan hak subjek datamu. Nomor referensi: <strong>${input.referenceCode}</strong>.</p>
 <p>Kami akan merespons paling lambat 14 hari kerja. Lacak status: <a href="${statusUrl}">${statusUrl}</a></p>
@@ -51,13 +51,13 @@ export function dsarStatusUpdateEmail(
   const statusUrl = privacyPublicUrl("permintaan-status", locale);
   if (locale === "en") {
     return {
-      subject: `Privacy request update  -  ${input.referenceCode}`,
+      subject: `Privacy request update - ${input.referenceCode}`,
       html: `<p>Hi ${input.fullName},</p><p>Request <strong>${input.referenceCode}</strong> is now: <strong>${input.status}</strong>.</p><p><a href="${statusUrl}">View details</a></p>`,
       text: `Request ${input.referenceCode} status: ${input.status}. ${statusUrl}`,
     };
   }
   return {
-    subject: `Update permintaan privasi  -  ${input.referenceCode}`,
+    subject: `Update permintaan privasi - ${input.referenceCode}`,
     html: `<p>Halo ${input.fullName},</p><p>Permintaan <strong>${input.referenceCode}</strong> sekarang: <strong>${input.status}</strong>.</p><p><a href="${statusUrl}">Lihat detail</a></p>`,
     text: `Permintaan ${input.referenceCode}: ${input.status}. ${statusUrl}`,
   };

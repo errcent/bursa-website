@@ -12,17 +12,19 @@ import {
 export function NoteWeekdayStrip({
   nets,
   weekStart,
+  locale = "id",
   colorMode,
   formatOpts,
   compact = false,
 }: {
   nets: WeekdayNet[];
   weekStart: WeekStart;
+  locale?: "id" | "en";
   colorMode: ColorMode;
   formatOpts: FormatPnlOpts;
   compact?: boolean;
 }) {
-  const labels = weekdayLabels(weekStart);
+  const labels = weekdayLabels(weekStart, locale);
   const order = weekdayOrder(weekStart);
   const maxAbs = Math.max(1, ...nets.map((n) => Math.abs(n.net)));
 
@@ -37,9 +39,9 @@ export function NoteWeekdayStrip({
             <span
               className={`w-full max-w-[1.35rem] rounded-sm ${
                 cell.net > 0 && colorMode === "hue"
-                  ? "bg-emerald-500/50"
+                  ? "note-bar-up"
                   : cell.net < 0 && colorMode === "hue"
-                    ? "bg-rose-500/50"
+                    ? "note-bar-down"
                     : "bg-zinc-800"
               }`}
               style={{ height: h }}

@@ -7,3 +7,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Bursa copy (Website)
+
+Never use **em dash** (Unicode U+2014) in user-facing strings under `Website/`. Use `.`, `,`, ` · `, or spaced ASCII hyphen ` - ` instead. Empty values: `-`. See `.cursor/rules/website-no-em-dash.mdc`.

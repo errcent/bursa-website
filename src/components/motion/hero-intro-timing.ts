@@ -1,4 +1,4 @@
-import {
+﻿import {
   tokenizeForReveal,
   WORD_REVEAL_STAGGER,
 } from "@/components/motion/word-reveal";
@@ -49,7 +49,7 @@ export function resolveHeroIntroDelay(): number {
   return HERO_HEADLINE_BASE_DELAY;
 }
 
-/** SSR / hydration snapshot  -  gate opens on the client. */
+/** SSR / hydration snapshot - gate opens on the client. */
 export function resolveHeroIntroDelaySSR(): number {
   return HERO_HEADLINE_BASE_DELAY;
 }

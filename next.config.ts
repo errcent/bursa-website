@@ -19,9 +19,9 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       // Production Next/Turbopack does not need eval. Dev: React 19 reconstructs
-      // stacks via eval() — omit this in prod (QC-20260819-06 / BN-SEC-009).
+      // stacks via eval() - omit this in prod (QC-20260819-06 / BN-SEC-009).
       // Keep script/style unsafe-inline until BN-SEC-009 nonce.
-      `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://challenges.cloudflare.com https://*.posthog.com`,
+      `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://challenges.cloudflare.com https://*.posthog.com https://s3.tradingview.com`,
       "style-src 'self' 'unsafe-inline'",
       "object-src 'none'",
       "img-src 'self' data: blob: https:",
@@ -30,7 +30,8 @@ const securityHeaders = [
       "media-src 'self' blob: https:",
       "font-src 'self' data:",
       "connect-src 'self' https: wss:",
-      "frame-src https://challenges.cloudflare.com",
+      // Note News: TradingView Advanced Chart embed (script + widget iframe).
+      "frame-src https://challenges.cloudflare.com https://www.tradingview.com https://*.tradingview.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

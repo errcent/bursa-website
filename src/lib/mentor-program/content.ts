@@ -1,4 +1,4 @@
-import type { Instrument } from "@/lib/types";
+﻿import type { Instrument } from "@/lib/types";
 
 export interface MentorBenefit {
   icon: string;
@@ -123,7 +123,7 @@ export const mentorProcessSteps: MentorProcessStep[] = [
     step: "04",
     title: "Review & assessment",
     description:
-      "Review manusia. Assessment (wawancara/sample) disesuaikan kandidat  -  bukan formulir otomatis.",
+      "Review manusia. Assessment (wawancara/sample) disesuaikan kandidat - bukan formulir otomatis.",
     duration: "bergantung kandidat",
   },
   {

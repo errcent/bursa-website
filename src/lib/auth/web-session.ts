@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from "jose";
+﻿import { SignJWT, jwtVerify } from "jose";
 
 import { getAuthSecret } from "@/lib/auth/auth-secret";
 import { isWebSessionJtiRevoked } from "@/lib/auth/revoked-web-session";
@@ -22,7 +22,7 @@ export function webSessionCookieOptions(rememberMe = true) {
     ...(rememberMe
       ? { maxAge: WEB_SESSION_REMEMBER_TTL_SEC }
       : { maxAge: WEB_SESSION_SHORT_TTL_SEC }),
-    // Host-only on purpose. Never set Domain=.bursanalar.com  -  that would share
+    // Host-only on purpose. Never set Domain=.bursanalar.com - that would share
     // admin.bursanalar.com sessions with the public site (XSS blast radius).
   };
 }

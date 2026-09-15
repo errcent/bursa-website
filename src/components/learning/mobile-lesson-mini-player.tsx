@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { ChevronDown, GripHorizontal, Pause, Play, X } from "lucide-react";
@@ -179,7 +179,7 @@ export function MobileLessonMiniPlayerShell({
         return;
       }
 
-      // Fullscreen: no swipe-down to minimize — use top-left chevron only.
+      // Fullscreen: no swipe-down to minimize - use top-left chevron only.
       gesture.current = "idle";
     },
     [docked, floatPos, floatWidth, getMiniMetrics, viewport.height, viewport.width]

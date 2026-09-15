@@ -7,6 +7,8 @@ export const JOURNAL_KINDS: JournalKind[] = ["TRADE", "INVEST", "REFLEKSI"];
 
 export type NoteScope = "note.read" | "note.write" | "note.sync";
 
+export type JournalMoneyCurrency = "IDR" | "USD" | "USDT";
+
 export interface JournalEntry {
   id: string;
   apexUserId: string;
@@ -18,6 +20,8 @@ export interface JournalEntry {
   entryPrice: number | null;
   exitPrice: number | null;
   fees: number | null;
+  /** Native currency of pnl/fees when logged; aggregates convert to display currency. */
+  currency?: JournalMoneyCurrency | null;
   pnl: number | null;
   result: JournalResult | null;
   emotion: string | null;
@@ -47,6 +51,7 @@ export interface CreateEntryInput {
   entryPrice?: number | null;
   exitPrice?: number | null;
   fees?: number | null;
+  currency?: JournalMoneyCurrency | null;
   pnl?: number | null;
   result?: JournalResult | null;
   emotion?: string | null;

@@ -4,6 +4,8 @@ import { Fragment, useMemo, useState, type ReactNode } from "react";
 
 import { isProductionHostRouting, originFor } from "@/lib/hosts/hosts";
 import { courseClassHref } from "@/lib/security/safe-http-url";
+import { journalKindLabel, journalModeLabel, noteCopy } from "@/lib/note/copy";
+import type { NoteLocale } from "@/lib/note/prefs";
 import {
   dayKey,
   formatNoteTimestamp,
@@ -14,24 +16,22 @@ import {
 } from "@/lib/note/stats";
 import type { JournalEntry } from "@/lib/note/types";
 
-function kindLabel(kind: JournalEntry["kind"]) {
-  if (kind === "REFLEKSI") return "Refleksi";
-  return kind;
-}
-
 export function NoteEntryList({
   entries,
+  locale,
   colorMode,
   formatOpts,
   hideDates = false,
   empty,
 }: {
   entries: JournalEntry[];
+  locale: NoteLocale;
   colorMode: ColorMode;
   formatOpts: FormatPnlOpts;
   hideDates?: boolean;
   empty?: ReactNode;
 }) {
+  const copy = noteCopy(locale);
   const [openId, setOpenId] = useState<string | null>(null);
   const catalogBase = isProductionHostRouting() ? originFor("apex") : "";
 
@@ -41,7 +41,7 @@ export function NoteEntryList({
   );
 
   if (entries.length === 0) {
-    return empty ?? <p className="text-sm text-zinc-500">Belum ada entry.</p>;
+    return empty ?? <p className="text-sm text-zinc-500">{copy.belumAda}</p>;
   }
 
   return (
@@ -49,19 +49,18 @@ export function NoteEntryList({
       <table className="w-full min-w-[36rem] text-left text-sm">
         <thead>
           <tr className="border-b border-zinc-800/80 text-[11px] uppercase tracking-wide text-zinc-500">
-            {hideDates ? null : <th className="px-3 py-2.5 font-medium">Tanggal</th>}
-            <th className="px-3 py-2.5 font-medium">Simbol</th>
-            <th className="px-3 py-2.5 font-medium">Jenis</th>
-            <th className="px-3 py-2.5 font-medium">Sisi</th>
+            {hideDates ? null : <th className="px-3 py-2.5 font-medium">{copy.colDate}</th>}
+            <th className="px-3 py-2.5 font-medium">{copy.colSymbol}</th>
+            <th className="px-3 py-2.5 font-medium">{copy.jenis}</th>
+            <th className="px-3 py-2.5 font-medium">{copy.colSide}</th>
             <th className="px-3 py-2.5 font-medium text-right">PnL</th>
-            <th className="px-3 py-2.5 font-medium">Emosi</th>
-            <th className="px-3 py-2.5 font-medium">Mode</th>
+            <th className="px-3 py-2.5 font-medium">{copy.colMode}</th>
           </tr>
         </thead>
         <tbody>
           {sorted.map((entry) => {
             const open = openId === entry.id;
-            const ts = formatNoteTimestamp(entry.openedAt);
+            const ts = formatNoteTimestamp(entry.openedAt, new Date().toISOString(), locale);
             const isRefleksi = entry.kind === "REFLEKSI";
             const courseHref = entry.relatedCourseSlug
               ? courseClassHref(catalogBase, entry.relatedCourseSlug)
@@ -85,27 +84,34 @@ export function NoteEntryList({
                         target="_blank"
                         rel="noreferrer"
                       >
-                        kelas
+                        {copy.classShort}
                       </a>
                     ) : null}
                   </td>
-                  <td className="px-3 py-2.5 text-zinc-400">{kindLabel(entry.kind)}</td>
+                  <td className="px-3 py-2.5 text-zinc-400">{journalKindLabel(entry.kind, locale)}</td>
                   <td className="px-3 py-2.5 text-zinc-400">{entry.side}</td>
                   <td
                     className={`px-3 py-2.5 text-right tabular-nums ${isRefleksi ? "text-zinc-600" : pnlTone(entry.pnl ?? 0, colorMode)}`}
                   >
                     {isRefleksi ? "-" : formatPnl(entry.pnl, formatOpts)}
                   </td>
-                  <td className="px-3 py-2.5 text-zinc-400">{entry.emotion ?? "-"}</td>
-                  <td className="px-3 py-2.5 text-zinc-500">{entry.mode}</td>
+                  <td className="px-3 py-2.5 text-zinc-500">{journalModeLabel(entry.mode, locale)}</td>
                 </tr>
                 {open ? (
                   <tr className="bg-zinc-900/40">
-                    <td colSpan={hideDates ? 6 : 7} className="px-3 py-3 text-xs leading-relaxed text-zinc-400">
+                    <td colSpan={hideDates ? 5 : 6} className="px-3 py-3 text-xs leading-relaxed text-zinc-400">
                       <span className="text-zinc-500">{ts.absolute}</span>
                       {entry.note ? <p className="mt-1 text-zinc-300">{entry.note}</p> : null}
-                      {entry.ruleBroken ? <p className="mt-1">Aturan: {entry.ruleBroken}</p> : null}
-                      {entry.lesson ? <p className="mt-1">Pelajaran: {entry.lesson}</p> : null}
+                      {entry.ruleBroken ? (
+                        <p className="mt-1">
+                          {copy.ruleShort}: {entry.ruleBroken}
+                        </p>
+                      ) : null}
+                      {entry.lesson ? (
+                        <p className="mt-1">
+                          {copy.lessonShort}: {entry.lesson}
+                        </p>
+                      ) : null}
                     </td>
                   </tr>
                 ) : null}

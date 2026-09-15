@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { jsonError, jsonOk } from "@/lib/api-utils";
+import { enforceNoteRateLimit } from "@/lib/note/api-rate-limit";
 import { applyNoteCors, isNoteApiAllowedOnHost, noteCorsPreflight } from "@/lib/note/guard";
 import { consumeNoteSsoCode } from "@/lib/note/sso";
 import { noteSessionCookieOptions, signNoteSessionToken } from "@/lib/note/session";
@@ -14,6 +15,9 @@ export async function POST(request: NextRequest) {
   if (!isNoteApiAllowedOnHost(request, request.nextUrl.pathname)) {
     return applyNoteCors(jsonError("Not found", 404), origin);
   }
+
+  const limited = await enforceNoteRateLimit(request, "sso_consume", null);
+  if (!limited.ok) return applyNoteCors(limited.response, origin);
 
   const body = (await request.json().catch(() => null)) as { code?: string } | null;
   const code = body?.code?.trim();

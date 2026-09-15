@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -88,7 +88,7 @@ export function LandingStoryCursor({ progress }: { progress: MotionValue<number>
         root.classList.add("landing-story-cursor-on");
       }
 
-      // Sync write — no rAF gate (avoids lag under scroll Motion + stuck rafRef).
+      // Sync write - no rAF gate (avoids lag under scroll Motion + stuck rafRef).
       el.style.transform = `translate3d(${event.clientX - HALF}px, ${event.clientY - HALF}px, 0)`;
       el.style.opacity = "1";
 

@@ -4,13 +4,14 @@ import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
-import { NoteJournalProvider } from "@/components/note/note-journal-context";
-import { NoteKindProvider } from "@/components/note/note-kind-context";
-import { NoteProfileMenu } from "@/components/note/note-profile-menu";
+import { NoteJournalOnboarding } from "@/components/note/note-journal-onboarding";
+import { NoteJournalProvider, useNoteJournal } from "@/components/note/note-journal-context";
+import { NoteAiAssistant } from "@/components/note/note-ai-assistant";
 import { NoteSidebar } from "@/components/note/note-sidebar";
 import { isProductionHostRouting, originFor } from "@/lib/hosts/hosts";
 import { noteCopy } from "@/lib/note/copy";
-import { resolveNoteTheme } from "@/lib/note/prefs";
+import { needsNoteJournalOnboarding } from "@/lib/note/prefs";
+import { useUsdIdrRateSync } from "@/lib/note/fx/use-usd-idr-sync";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
 
@@ -18,20 +19,48 @@ import "./note-theme.css";
 
 const chromePad = "px-4 sm:px-6 lg:px-8";
 
-function NoteShellInner({ title, children }: { title?: ReactNode; children: ReactNode }) {
+function NotePublicStatusStrip() {
+  const journal = useNoteJournal();
   const [prefs] = useNotePrefs();
+  const locale = prefs.locale;
+  if (journal.loading) return null;
+
+  const parts: string[] = [];
+  if (journal.openAccess) {
+    parts.push(
+      locale === "en"
+        ? "Preview until 1 Oct 2026 (no Bursa login required)."
+        : "Preview sampai 1 Okt 2026 (tanpa login Bursa)."
+    );
+  }
+  if (journal.demo) {
+    parts.push(
+      locale === "en"
+        ? "Journal numbers include sample trades until you log your own."
+        : "Angka jurnal memakai contoh trade sampai kamu log sendiri."
+    );
+  }
+  if (!parts.length) return null;
+
+  return (
+    <p className="mb-4 rounded-lg border border-zinc-800/80 bg-zinc-900/40 px-3 py-2 text-xs leading-snug text-zinc-400">
+      {parts.join(" ")}
+    </p>
+  );
+}
+
+function NoteShellInner({ title, children }: { title?: ReactNode; children: ReactNode }) {
+  const [prefs, updatePrefs] = useNotePrefs();
   const copy = noteCopy(prefs.locale);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [prefersDark, setPrefersDark] = useState(true);
-  const helpHref = isProductionHostRouting() ? `${originFor("apex")}/bantuan` : "/bantuan";
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useUsdIdrRateSync();
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    setPrefersDark(mq.matches);
-    const onChange = () => setPrefersDark(mq.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
+    setShowOnboarding(needsNoteJournalOnboarding());
   }, []);
+  const helpHref = isProductionHostRouting() ? `${originFor("apex")}/bantuan` : "/bantuan";
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -42,15 +71,10 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  const theme = resolveNoteTheme(prefs.theme, prefersDark);
-
   return (
     <div
-      data-note-theme={theme}
-      className={cn(
-        "flex min-h-full flex-1 flex-col",
-        theme === "light" ? "bg-zinc-50 text-zinc-900" : "bg-zinc-950 text-zinc-100"
-      )}
+      data-note-theme="dark"
+      className={cn("flex h-dvh min-h-0 flex-col overflow-hidden", "bg-zinc-950 text-zinc-100")}
     >
       <header className="border-b border-zinc-800/80">
         <div className={`flex h-14 w-full items-center justify-between gap-3 ${chromePad}`}>
@@ -70,17 +94,14 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
               <span className="font-heading text-sm font-semibold tracking-wide">Note</span>
             </Link>
           </div>
-          <div className="flex shrink-0 items-center gap-3 sm:gap-4">
-            <a href={helpHref} className="text-sm text-zinc-400 hover:text-zinc-100">
-              {copy.support}
-            </a>
-            <NoteProfileMenu />
-          </div>
+          <a href={helpHref} className="shrink-0 text-sm text-zinc-400 hover:text-zinc-100">
+            {copy.support}
+          </a>
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1">
-        <aside className="hidden w-60 shrink-0 border-r border-zinc-800/80 lg:block xl:w-64">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        <aside className="hidden w-60 shrink-0 self-stretch border-r border-zinc-800/80 lg:flex lg:min-h-0 lg:flex-col xl:w-64">
           <NoteSidebar />
         </aside>
 
@@ -106,30 +127,44 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
                   {copy.tutup}
                 </button>
               </div>
-              <div className="min-h-0 flex-1">
+              <div className="flex min-h-0 flex-1 flex-col">
                 <NoteSidebar onNavigate={() => setMenuOpen(false)} />
               </div>
             </aside>
           </div>
         ) : null}
 
-        <main className={`min-w-0 flex-1 ${chromePad} py-6 sm:py-8`}>
+        <main className={`min-h-0 min-w-0 flex-1 overflow-y-auto ${chromePad} py-5 sm:py-7`}>
           {title ? (
-            <h1 className="mb-8 font-heading text-xl font-semibold tracking-tight">{title}</h1>
+            <h1 className="mb-4 font-heading text-xl font-semibold tracking-tight text-zinc-100 sm:mb-5">
+              {title}
+            </h1>
           ) : null}
+          <NotePublicStatusStrip />
           {children}
         </main>
       </div>
+
+      <NoteAiAssistant />
+
+      {showOnboarding ? (
+        <NoteJournalOnboarding
+          locale={prefs.locale}
+          currency={prefs.currency}
+          onComplete={(patch) => {
+            updatePrefs(patch);
+            setShowOnboarding(false);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
 
 export function NoteShell({ title, children }: { title?: ReactNode; children: ReactNode }) {
   return (
-    <NoteKindProvider>
-      <NoteJournalProvider>
-        <NoteShellInner title={title}>{children}</NoteShellInner>
-      </NoteJournalProvider>
-    </NoteKindProvider>
+    <NoteJournalProvider>
+      <NoteShellInner title={title}>{children}</NoteShellInner>
+    </NoteJournalProvider>
   );
 }

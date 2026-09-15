@@ -1,4 +1,4 @@
-export interface ClinicQuestion {
+﻿export interface ClinicQuestion {
   id: string;
   prompt: string;
 }
@@ -116,7 +116,7 @@ export const CLINIC_MODULES: ClinicModule[] = [
     plusOnly: false,
     protocol: "Tulis thesis 3 kalimat di hari beli. Review hanya terhadap teks itu. Jika beda, itu exit signal.",
     questions: [
-      { id: "q1", prompt: "Thesis asli saat beli  -  masih sama kata-katanya?" },
+      { id: "q1", prompt: "Thesis asli saat beli - masih sama kata-katanya?" },
       { id: "q2", prompt: "Alasan hold hari ini: data baru atau harga sudah masuk?" },
       { id: "q3", prompt: "Apa yang akan membuatmu salah (pre-mortem)?" },
       { id: "q4", prompt: "Sudah berapa kali thesis ini kamu rewrite diam-diam?" },
@@ -126,7 +126,7 @@ export const CLINIC_MODULES: ClinicModule[] = [
   {
     id: "banjir-info",
     name: "Banjir informasi",
-    summary: "Terlalu banyak indikator, channel, dan opini  -  keputusan jadi kabur.",
+    summary: "Terlalu banyak indikator, channel, dan opini - keputusan jadi kabur.",
     kindHint: "BOTH",
     plusOnly: false,
     protocol: "Pakai maksimal 3 sumber. Hapus 1 indikator atau 1 channel minggu ini. Jangan menambah.",

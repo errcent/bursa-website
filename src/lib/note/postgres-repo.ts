@@ -1,6 +1,8 @@
 import { getNotePrisma } from "@/lib/note/db";
+import { NOTE_JOURNAL_ACCOUNT_MAX, NOTE_JOURNAL_LIST_MAX } from "@/lib/note/resource-limits";
 import type { CreateEntryInput, JournalEntry } from "@/lib/note/types";
 import { buildJournalEntry } from "@/lib/note/build-entry";
+import { encodeJournalPageCursor, parseJournalPageCursor } from "@/lib/note/journal-page-cursor";
 import type { NoteRepository, SsoRecord } from "@/lib/note/repo";
 
 function toIso(value: Date): string {
@@ -24,13 +26,44 @@ export const postgresRepo: NoteRepository = {
   },
 
   async listEntries(apexUserId) {
+    const page = await postgresRepo.listEntriesPage(apexUserId, { limit: NOTE_JOURNAL_LIST_MAX });
+    return page.entries;
+  },
+
+  async listEntriesPage(apexUserId, { limit, cursor }) {
     const db = getNotePrisma();
-    const account = await db.noteAccount.findUnique({
-      where: { apexUserId },
-      include: { entries: { orderBy: { createdAt: "desc" } } },
+    const cap = Math.min(Math.max(limit, 1), NOTE_JOURNAL_LIST_MAX);
+    const account = await db.noteAccount.findUnique({ where: { apexUserId } });
+    if (!account) return { entries: [], nextCursor: null };
+
+    const parsed = cursor ? parseJournalPageCursor(cursor) : null;
+    const cursorAt = parsed ? new Date(parsed.createdAt) : null;
+    const rows = await db.journalEntry.findMany({
+      where: {
+        accountId: account.id,
+        ...(parsed && cursorAt && !Number.isNaN(cursorAt.getTime())
+          ? parsed.id
+            ? {
+                OR: [
+                  { createdAt: { lt: cursorAt } },
+                  { createdAt: cursorAt, id: { lt: parsed.id } },
+                ],
+              }
+            : { createdAt: { lt: cursorAt } }
+          : {}),
+      },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take: cap + 1,
     });
-    if (!account) return [];
-    return account.entries.map((row) => mapRow(apexUserId, row));
+    const hasMore = rows.length > cap;
+    const slice = hasMore ? rows.slice(0, cap) : rows;
+    const entries = slice.map((row) => mapRow(apexUserId, row));
+    const tail = slice[slice.length - 1];
+    const nextCursor =
+      hasMore && tail
+        ? encodeJournalPageCursor({ createdAt: tail.createdAt.toISOString(), id: tail.id })
+        : null;
+    return { entries, nextCursor };
   },
 
   async createEntry(apexUserId, input: CreateEntryInput) {
@@ -40,6 +73,10 @@ export const postgresRepo: NoteRepository = {
       create: { apexUserId, plus: false },
       update: {},
     });
+    const entryCount = await db.journalEntry.count({ where: { accountId: account.id } });
+    if (entryCount >= NOTE_JOURNAL_ACCOUNT_MAX) {
+      throw new Error("NOTE_JOURNAL_CAP");
+    }
     const built = buildJournalEntry(apexUserId, input);
     const row = await db.journalEntry.create({
       data: {

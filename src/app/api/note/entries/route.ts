@@ -2,11 +2,17 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
+import { withDemoJournalFallback } from "@/lib/note/demo-entries";
 import { canUseMode, countReviewsInWeek, filterEntriesForTier } from "@/lib/note/entitlements";
-import { applyNoteCors, noteCorsPreflight, requireNoteSession } from "@/lib/note/guard";
+import { enforceNoteRateLimit } from "@/lib/note/api-rate-limit";
+import { applyNoteCors, attachNoteSessionCookies, noteCorsPreflight, requireNoteSession } from "@/lib/note/guard";
+import { parseJournalListQuery } from "@/lib/note/journal-list-query";
+import { isNoteOpenAccessPeriod } from "@/lib/note/open-access";
 import { getNoteRepo } from "@/lib/note/repo";
 import { getClinicModule } from "@/lib/note/taxonomy";
 import type { CreateEntryInput, JournalKind, JournalMode, JournalResult } from "@/lib/note/types";
+
+export const dynamic = "force-dynamic";
 
 const createSchema = z
   .object({
@@ -52,19 +58,27 @@ export async function GET(request: NextRequest) {
   const auth = await requireNoteSession(request, "note.read");
   if ("error" in auth) return applyNoteCors(auth.error, origin);
 
+  const limited = await enforceNoteRateLimit(request, "journal_read", auth.session);
+  if (!limited.ok) return applyNoteCors(limited.response, origin);
+
   try {
+    const { limit, cursor } = parseJournalListQuery(request.nextUrl.searchParams);
     const repo = getNoteRepo();
     const entitlement = await repo.getEntitlement(auth.session.userId);
-    const all = await repo.listEntries(auth.session.userId);
-    const entries = filterEntriesForTier(all, entitlement.plus);
-    return applyNoteCors(
-      jsonOk({
-        entries,
-        plus: entitlement.plus,
-        reviewCountThisWeek: countReviewsInWeek(all),
-      }),
-      origin
-    );
+    const page = await repo.listEntriesPage(auth.session.userId, { limit, cursor });
+    const { entries: source, demo: useDemoFallback } = withDemoJournalFallback(page.entries);
+    const entries = filterEntriesForTier(source, entitlement.plus);
+    const res = jsonOk({
+      entries,
+      nextCursor: page.nextCursor,
+      plus: entitlement.plus,
+      reviewCountThisWeek: countReviewsInWeek(entries),
+      demo: useDemoFallback,
+      openAccess: isNoteOpenAccessPeriod(),
+    });
+    res.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+    res.headers.set("Pragma", "no-cache");
+    return applyNoteCors(attachNoteSessionCookies(request, res, auth.session), origin);
   } catch (error) {
     return applyNoteCors(handleApiError(error), origin);
   }
@@ -74,6 +88,9 @@ export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
   const auth = await requireNoteSession(request, "note.write");
   if ("error" in auth) return applyNoteCors(auth.error, origin);
+
+  const limited = await enforceNoteRateLimit(request, "journal_write", auth.session);
+  if (!limited.ok) return applyNoteCors(limited.response, origin);
 
   try {
     const parsed = createSchema.parse(await request.json());
@@ -102,8 +119,11 @@ export async function POST(request: NextRequest) {
       result: parsed.result as JournalResult | null | undefined,
     };
     const entry = await repo.createEntry(auth.session.userId, input);
-    return applyNoteCors(jsonOk({ entry }), origin);
+    return applyNoteCors(attachNoteSessionCookies(request, jsonOk({ entry }), auth.session), origin);
   } catch (error) {
+    if (error instanceof Error && error.message === "NOTE_JOURNAL_CAP") {
+      return applyNoteCors(jsonError("Batas entry jurnal tercapai.", 413), origin);
+    }
     return applyNoteCors(handleApiError(error), origin);
   }
 }

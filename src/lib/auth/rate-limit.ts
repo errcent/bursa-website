@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+﻿import { createHash } from "crypto";
 import { NextResponse } from "next/server";
 
 import { checkRateLimitUpstash, isUpstashRateLimitConfigured } from "@/lib/auth/rate-limit-upstash";
@@ -96,7 +96,7 @@ const SESSION_READ_LIMIT = 400;
 export async function checkApiRateLimit(request: Request): Promise<RateLimitResult> {
   const ip = clientIp(request);
   const auth = request.headers.get("authorization")?.trim();
-  // BN-SEC-004: hash full Authorization value  -  never slice(0,32) JWT prefix.
+  // BN-SEC-004: hash full Authorization value - never slice(0,32) JWT prefix.
   const key = auth ? `user:${hashKeyMaterial(auth)}` : `ip:${ip}`;
   const ua = request.headers.get("user-agent") || "";
   let limit = DEFAULT_API_LIMIT;

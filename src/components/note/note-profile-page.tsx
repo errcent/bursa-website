@@ -53,7 +53,7 @@ export function NoteProfilePage() {
         </Link>
         <button
           type="button"
-          className="text-rose-400 hover:text-rose-300"
+          className="note-pnl-down hover:opacity-80"
           onClick={() => {
             void logout().then(() => router.replace(loginHref));
           }}

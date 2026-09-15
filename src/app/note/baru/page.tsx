@@ -11,14 +11,15 @@ export const metadata: Metadata = {
 export default async function NoteNewPage({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string }>;
+  searchParams: Promise<{ date?: string; layer?: string }>;
 }) {
   const params = await searchParams;
   const date = /^\d{4}-\d{2}-\d{2}$/.test(params.date ?? "") ? params.date : null;
+  const cognition = params.layer === "notes";
 
   return (
-    <NoteShell title="Baru">
-      <NoteEntryForm initialDate={date} />
+    <NoteShell title={cognition ? "Notes · baru" : "Log trade"}>
+      <NoteEntryForm initialDate={date} layer={cognition ? "cognition" : "execution"} />
     </NoteShell>
   );
 }

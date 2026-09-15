@@ -1,5 +1,6 @@
-import type { JournalKind } from "@/lib/note/types";
-import type { FormatPnlOpts } from "@/lib/note/stats";
+﻿import type { JournalKind } from "@/lib/note/types";
+import { pnlFormatForSlot, type FormatPnlOpts, type PnlDisplaySlot } from "@/lib/note/stats";
+import { DEFAULT_USD_IDR, normalizeUsdIdrRate } from "@/lib/note/fx/rates";
 
 export const NOTE_PREFS_KEY = "bursa-note-prefs-v1";
 
@@ -14,9 +15,19 @@ export type NoteLocale = "id" | "en";
 export type DisplayCurrency = "IDR" | "USD" | "USDT";
 export type NoteTheme = "system" | "dark" | "light";
 
+export type NotePrimaryMarket = "fx" | "saham" | "komoditi" | "mixed";
+export type NoteExperience = "baru" | "menengah" | "rutin";
+export type NoteJournalFocus = "disiplin" | "edge" | "semua";
+
+export type NotePersonalization = {
+  primaryMarket?: NotePrimaryMarket;
+  experience?: NoteExperience;
+  journalFocus?: NoteJournalFocus;
+};
+
 /**
  * Local journal prefs. Future AI may read `{ entries, prefs, log-vs-pnl timestamps }`
- * to suggest defaults  -  this pass stores the contract only, no model UI.
+ * to suggest defaults - this pass stores the contract only, no model UI.
  * No logging streak: daily-trade pressure is a harmful default.
  */
 export type NotePrefs = {
@@ -33,7 +44,15 @@ export type NotePrefs = {
   emotionPrompt: EmotionPrompt;
   locale: NoteLocale;
   currency: DisplayCurrency;
+  /** Spot IDR per 1 USD for cross-currency aggregates. */
+  usdIdrRate: number;
+  /** When true, do not overwrite usdIdrRate from market sync. */
+  usdIdrRateManual?: boolean;
+  /** ISO time when usdIdrRate was last set from market API. */
+  usdIdrRateFetchedAt?: string;
   theme: NoteTheme;
+  onboardingCompleted: boolean;
+  personalization: NotePersonalization;
 };
 
 export const DEFAULT_NOTE_PREFS: NotePrefs = {
@@ -50,7 +69,10 @@ export const DEFAULT_NOTE_PREFS: NotePrefs = {
   emotionPrompt: "optional",
   locale: "id",
   currency: "IDR",
+  usdIdrRate: DEFAULT_USD_IDR,
   theme: "dark",
+  onboardingCompleted: false,
+  personalization: {},
 };
 
 const listeners = new Set<() => void>();
@@ -66,6 +88,30 @@ function isKind(value: unknown): value is JournalKind {
   return value === "TRADE" || value === "INVEST" || value === "REFLEKSI";
 }
 
+function parsePersonalization(raw: unknown): NotePersonalization {
+  if (!raw || typeof raw !== "object") return {};
+  const o = raw as Record<string, unknown>;
+  const primaryMarket =
+    o.primaryMarket === "fx" ||
+    o.primaryMarket === "saham" ||
+    o.primaryMarket === "komoditi" ||
+    o.primaryMarket === "mixed"
+      ? o.primaryMarket
+      : undefined;
+  const experience =
+    o.experience === "baru" || o.experience === "menengah" || o.experience === "rutin"
+      ? o.experience
+      : undefined;
+  const journalFocusRaw = o.journalFocus === "emosi" ? "semua" : o.journalFocus;
+  const journalFocus =
+    journalFocusRaw === "disiplin" ||
+    journalFocusRaw === "edge" ||
+    journalFocusRaw === "semua"
+      ? journalFocusRaw
+      : undefined;
+  return { primaryMarket, experience, journalFocus };
+}
+
 export function parseNotePrefs(raw: unknown): NotePrefs {
   if (!raw || typeof raw !== "object") return { ...DEFAULT_NOTE_PREFS };
   const o = raw as Record<string, unknown>;
@@ -73,7 +119,12 @@ export function parseNotePrefs(raw: unknown): NotePrefs {
     version: 1,
     numberFormat: o.numberFormat === "full" ? "full" : "compact",
     heroRange: o.heroRange === "month" ? "month" : "all",
-    defaultKind: isKind(o.defaultKind) ? o.defaultKind : DEFAULT_NOTE_PREFS.defaultKind,
+    defaultKind:
+      o.defaultKind === "INVEST"
+        ? "TRADE"
+        : isKind(o.defaultKind)
+          ? o.defaultKind
+          : DEFAULT_NOTE_PREFS.defaultKind,
     calendarShowNet: o.calendarShowNet !== false,
     weekStart: o.weekStart === "monday" ? "monday" : "sunday",
     decimals: o.decimals === 1 || o.decimals === 2 ? o.decimals : 0,
@@ -83,8 +134,26 @@ export function parseNotePrefs(raw: unknown): NotePrefs {
     emotionPrompt: o.emotionPrompt === "after-loss" ? "after-loss" : "optional",
     locale: o.locale === "en" ? "en" : "id",
     currency: o.currency === "USD" || o.currency === "USDT" ? o.currency : "IDR",
-    theme: o.theme === "light" || o.theme === "system" ? o.theme : "dark",
+    usdIdrRate: normalizeUsdIdrRate(o.usdIdrRate),
+    usdIdrRateManual: o.usdIdrRateManual === true,
+    usdIdrRateFetchedAt:
+      typeof o.usdIdrRateFetchedAt === "string" ? o.usdIdrRateFetchedAt : undefined,
+    theme: "dark",
+    onboardingCompleted: typeof o.onboardingCompleted === "boolean" ? o.onboardingCompleted : true,
+    personalization: parsePersonalization(o.personalization),
   };
+}
+
+/** First journal visit (no saved prefs blob). */
+export function needsNoteJournalOnboarding(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = window.localStorage.getItem(NOTE_PREFS_KEY);
+    if (!raw) return true;
+    return !parseNotePrefs(JSON.parse(raw) as unknown).onboardingCompleted;
+  } catch {
+    return true;
+  }
 }
 
 export function loadNotePrefs(): NotePrefs {
@@ -100,7 +169,10 @@ export function loadNotePrefs(): NotePrefs {
 
 export function saveNotePrefs(prefs: NotePrefs) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(NOTE_PREFS_KEY, JSON.stringify({ ...prefs, version: 1 }));
+  window.localStorage.setItem(
+    NOTE_PREFS_KEY,
+    JSON.stringify({ ...prefs, version: 1, theme: "dark" as const })
+  );
   listeners.forEach((listener) => listener());
 }
 
@@ -110,10 +182,15 @@ export function pnlOptsFromPrefs(prefs: NotePrefs): FormatPnlOpts {
     decimals: prefs.decimals,
     lossStyle: prefs.lossStyle,
     currency: prefs.currency,
+    locale: prefs.locale,
   };
 }
 
-export function resolveNoteTheme(theme: NoteTheme, prefersDark = true): "dark" | "light" {
-  if (theme === "system") return prefersDark ? "dark" : "light";
-  return theme;
+export function pnlOptsForSlot(prefs: NotePrefs, slot: PnlDisplaySlot): FormatPnlOpts {
+  return pnlFormatForSlot(pnlOptsFromPrefs(prefs), slot);
+}
+
+/** Note is dark-only for now; theme field kept for future. */
+export function resolveNoteTheme(_theme: NoteTheme, _prefersDark = true): "dark" {
+  return "dark";
 }

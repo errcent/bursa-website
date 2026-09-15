@@ -28,7 +28,7 @@ export function PlaylistDetailHero({
   const ctaHref = firstPlayableHref ?? "#playlist-videos";
   const ctaLabel = firstPlayableHref ? "Mulai Preview" : "Lihat Daftar Video";
   const isDevice = variant === "device";
-  const aboutText = playlist.description?.trim() || "Playlist kurasi Bursa — jalur belajar runut dari video terpilih.";
+  const aboutText = playlist.description?.trim() || "Playlist kurasi Bursa: jalur belajar runut dari video terpilih.";
 
   return (
     <>

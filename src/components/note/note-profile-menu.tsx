@@ -1,127 +1,119 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { NoteQuickPrefs } from "@/components/note/note-quick-prefs";
 import { useAuth } from "@/components/auth-provider";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { isProductionHostRouting, originFor } from "@/lib/hosts/hosts";
+import { isNoteOpenAccessPeriod } from "@/lib/note/open-access";
 import { noteCopy } from "@/lib/note/copy";
-import type { DisplayCurrency, NoteLocale, NoteTheme } from "@/lib/note/prefs";
+import type { DisplayCurrency, NoteLocale } from "@/lib/note/prefs";
 import { noteApexLoginHref } from "@/lib/note/sso-urls";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 
-function Selected({ on }: { on: boolean }) {
-  return on ? (
-    <span className="ml-auto text-zinc-400" aria-hidden>
-      ✓
-    </span>
-  ) : null;
-}
-
-export function NoteProfileMenu() {
+export function NoteProfileMenuContent() {
   const { session, logout, isLoading } = useAuth();
   const router = useRouter();
   const [prefs, update] = useNotePrefs();
   const copy = noteCopy(prefs.locale);
   const loginHref = noteApexLoginHref("/note");
   const apexProfil = isProductionHostRouting() ? `${originFor("apex")}/profil` : "/profil";
+  const openAccess = isNoteOpenAccessPeriod();
 
   if (isLoading) {
-    return <span className="text-xs text-zinc-500">{copy.profil}</span>;
+    return <p className="px-2 py-3 text-xs text-zinc-500">{copy.profil}</p>;
   }
 
-  if (!session) {
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger className="rounded-md px-2 py-1 text-sm text-zinc-300 hover:bg-zinc-900 hover:text-white">
-          {copy.profil}
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64">
-          <DropdownMenuLabel className="font-normal">
-            <p className="text-[11px] text-zinc-500">{copy.accountEmail}</p>
-            <p className="truncate text-sm text-zinc-100">{copy.belumMasuk}</p>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem render={<Link href={loginHref} />}>{copy.masuk}</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  }
-
+  const patchLocale = (locale: NoteLocale) => update({ locale });
+  const patchCurrency = (currency: DisplayCurrency) => update({ currency });
+  const patchUsdIdr = (usdIdrRate: number) =>
+    update({ usdIdrRate, usdIdrRateManual: true, usdIdrRateFetchedAt: undefined });
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="rounded-md px-2 py-1 text-sm text-zinc-300 hover:bg-zinc-900 hover:text-white">
-        {copy.profil}
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64">
+    <>
+      <DropdownMenuGroup>
         <DropdownMenuLabel className="font-normal">
           <p className="text-[11px] text-zinc-500">{copy.accountEmail}</p>
-          <p className="truncate text-sm text-zinc-100">{session.email}</p>
+          <p className="truncate text-sm text-zinc-100">
+            {session?.email ??
+              (openAccess
+                ? prefs.locale === "en"
+                  ? "Preview (no login)"
+                  : "Preview (tanpa login)"
+                : copy.belumMasuk)}
+          </p>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem render={<Link href="/note/profil" />}>{copy.profil}</DropdownMenuItem>
-        <DropdownMenuItem render={<a href={apexProfil} />}>{copy.bursaAccount}</DropdownMenuItem>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>{copy.language}</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuItem onClick={() => update({ locale: "id" as NoteLocale })}>
-              Indonesia
-              <Selected on={prefs.locale === "id"} />
+      </DropdownMenuGroup>
+
+      <DropdownMenuSeparator />
+
+      <DropdownMenuGroup>
+        <DropdownMenuLabel>{prefs.locale === "en" ? "Preferences" : "Preferensi"}</DropdownMenuLabel>
+        <div className="px-2 pb-2">
+          <NoteQuickPrefs
+            locale={prefs.locale}
+            currency={prefs.currency}
+            usdIdrRate={prefs.usdIdrRate}
+            onLocale={patchLocale}
+            onCurrency={patchCurrency}
+            onUsdIdrRate={patchUsdIdr}
+            copy={copy}
+            compact
+          />
+        </div>
+      </DropdownMenuGroup>
+
+      <DropdownMenuSeparator />
+
+      {session ? (
+        <>
+          <DropdownMenuGroup>
+            <DropdownMenuItem render={<Link href="/note/profil" />}>{copy.profil}</DropdownMenuItem>
+            <DropdownMenuItem render={<Link href="/note/setelan" />}>{copy.setelan}</DropdownMenuItem>
+            <DropdownMenuItem render={<a href={apexProfil} />}>{copy.bursaAccount}</DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => {
+                void logout().then(() => router.replace(loginHref));
+              }}
+            >
+              {copy.keluar}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => update({ locale: "en" as NoteLocale })}>
-              English
-              <Selected on={prefs.locale === "en"} />
-            </DropdownMenuItem>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>{copy.currency}</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            {(["IDR", "USD", "USDT"] as DisplayCurrency[]).map((currency) => (
-              <DropdownMenuItem key={currency} onClick={() => update({ currency })}>
-                {currency}
-                <Selected on={prefs.currency === currency} />
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>{copy.theme}</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            {(
-              [
-                ["dark", copy.themeDark],
-                ["light", copy.themeLight],
-                ["system", copy.themeSystem],
-              ] as [NoteTheme, string][]
-            ).map(([theme, label]) => (
-              <DropdownMenuItem key={theme} onClick={() => update({ theme })}>
-                {label}
-                <Selected on={prefs.theme === theme} />
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          onClick={() => {
-            void logout().then(() => router.replace(loginHref));
-          }}
-        >
-          {copy.keluar}
-        </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </>
+      ) : openAccess ? null : (
+        <DropdownMenuGroup>
+          <DropdownMenuItem render={<Link href={loginHref} />}>{copy.masuk}</DropdownMenuItem>
+        </DropdownMenuGroup>
+      )}
+    </>
+  );
+}
+
+export function NoteProfileMenu({ trigger }: { trigger: ReactNode }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className="w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-zinc-600 rounded-md"
+        aria-label="Profil dan preferensi"
+      >
+        {trigger}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" side="top" sideOffset={8} className="z-50 w-72">
+        <NoteProfileMenuContent />
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+﻿import type { Metadata, Viewport } from "next";
 import { DM_Sans, Inter, Montserrat_Alternates } from "next/font/google";
 import { headers } from "next/headers";
 import Script from "next/script";
@@ -42,7 +42,7 @@ const fontHeading = DM_Sans({
   display: "swap",
 });
 
-/** Product wordmark "bursa"  -  matches logo_product_bursa_navbar */
+/** Product wordmark "bursa" - matches logo_product_bursa_navbar */
 const fontMontAlt = Montserrat_Alternates({
   variable: "--font-mont-alt",
   subsets: ["latin"],

@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useReducedMotion } from "motion/react";
 
-/** Soft pointer wash  -  landing hero only. Hidden again when the landasan ring cursor is on. */
+/** Soft pointer wash - landing hero only. Hidden again when the landasan ring cursor is on. */
 export function CursorGlow() {
   const pathname = usePathname();
   const prefersReducedMotion = useReducedMotion();

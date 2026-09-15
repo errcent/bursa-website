@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Lock, PlayCircle } from "lucide-react";
@@ -33,7 +33,7 @@ export function LessonPreviewThumb({
   showPlayOverlay?: boolean;
   durationPosition?: "auto" | "bottom-right" | "top-left";
   className?: string;
-  /** Video frame only — no course/playlist poster fallback. */
+  /** Video frame only - no course/playlist poster fallback. */
   posterSrc?: string | null;
   /** 0–1 watched progress for timeline bar at bottom of thumb */
   watchProgress?: number;

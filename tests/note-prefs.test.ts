@@ -12,6 +12,8 @@ describe("Note prefs", () => {
     assert.equal(parseNotePrefs({}).locale, "id");
     assert.equal(parseNotePrefs({}).currency, "IDR");
     assert.equal(parseNotePrefs({}).theme, "dark");
+    assert.equal(parseNotePrefs({}).onboardingCompleted, true);
+    assert.equal(DEFAULT_NOTE_PREFS.onboardingCompleted, false);
   });
 
   it("accepts known fields and ignores unknown", () => {
@@ -33,7 +35,7 @@ describe("Note prefs", () => {
     });
     assert.equal(parsed.numberFormat, "full");
     assert.equal(parsed.heroRange, "month");
-    assert.equal(parsed.defaultKind, "INVEST");
+    assert.equal(parsed.defaultKind, "TRADE");
     assert.equal(parsed.weekStart, "monday");
     assert.equal(parsed.decimals, 2);
     assert.equal(parsed.lossStyle, "paren");
@@ -43,7 +45,7 @@ describe("Note prefs", () => {
     assert.equal(parsed.calendarShowNet, false);
     assert.equal(parsed.locale, "en");
     assert.equal(parsed.currency, "USD");
-    assert.equal(parsed.theme, "light");
+    assert.equal(parsed.theme, "dark");
     assert.equal(parsed.version, 1);
   });
 
@@ -58,5 +60,8 @@ describe("Note prefs", () => {
     assert.equal(opts.decimals, 1);
     assert.equal(opts.lossStyle, "paren");
     assert.equal(opts.currency, "IDR");
+    assert.equal(opts.locale, "id");
+    const enOpts = pnlOptsFromPrefs({ ...DEFAULT_NOTE_PREFS, locale: "en" });
+    assert.equal(enOpts.locale, "en");
   });
 });

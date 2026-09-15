@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   createContext,
@@ -50,7 +50,7 @@ async function tryEnterNativePiP(video: HTMLVideoElement | null) {
       await video.requestPictureInPicture();
     }
   } catch {
-    // PiP denied or unsupported — playback stays in-page until unmount.
+    // PiP denied or unsupported - playback stays in-page until unmount.
   }
 }
 

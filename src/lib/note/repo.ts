@@ -1,8 +1,15 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { NOTE_JOURNAL_ACCOUNT_MAX, NOTE_JOURNAL_LIST_MAX } from "@/lib/note/resource-limits";
 import type { CreateEntryInput, JournalEntry, NoteEntitlement } from "@/lib/note/types";
 import { buildJournalEntry } from "@/lib/note/build-entry";
+import {
+  compareJournalEntriesDesc,
+  encodeJournalPageCursor,
+  journalEntryAfterPageCursor,
+  parseJournalPageCursor,
+} from "@/lib/note/journal-page-cursor";
 import { postgresRepo } from "@/lib/note/postgres-repo";
 
 export interface SsoRecord {
@@ -18,10 +25,19 @@ interface NoteStoreFile {
   ssoCodes: SsoRecord[];
 }
 
+export type JournalListPage = {
+  entries: JournalEntry[];
+  nextCursor: string | null;
+};
+
 export interface NoteRepository {
   getEntitlement(apexUserId: string): Promise<NoteEntitlement>;
   setPlus(apexUserId: string, plus: boolean): Promise<void>;
   listEntries(apexUserId: string): Promise<JournalEntry[]>;
+  listEntriesPage(
+    apexUserId: string,
+    opts: { limit: number; cursor?: string | null }
+  ): Promise<JournalListPage>;
   createEntry(apexUserId: string, input: CreateEntryInput): Promise<JournalEntry>;
   saveSsoCode(record: SsoRecord): Promise<void>;
   consumeSsoCode(code: string): Promise<SsoRecord | null>;
@@ -74,13 +90,37 @@ const fileRepo: NoteRepository = {
     await writeStore(store);
   },
   async listEntries(apexUserId) {
+    const page = await fileRepo.listEntriesPage(apexUserId, { limit: NOTE_JOURNAL_LIST_MAX });
+    return page.entries;
+  },
+  async listEntriesPage(apexUserId, { limit, cursor }) {
     const store = await readStore();
-    return store.entries
+    const cap = Math.min(Math.max(limit, 1), NOTE_JOURNAL_LIST_MAX);
+    let rows = store.entries
       .filter((e) => e.apexUserId === apexUserId)
-      .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+      .sort(compareJournalEntriesDesc);
+    if (cursor) {
+      const parsed = parseJournalPageCursor(cursor);
+      rows = rows.filter((e) =>
+        parsed.id
+          ? journalEntryAfterPageCursor(e, parsed)
+          : e.createdAt < parsed.createdAt
+      );
+    }
+    const hasMore = rows.length > cap;
+    const slice = hasMore ? rows.slice(0, cap) : rows;
+    const tail = slice[slice.length - 1];
+    return {
+      entries: slice,
+      nextCursor: hasMore && tail ? encodeJournalPageCursor(tail) : null,
+    };
   },
   async createEntry(apexUserId, input) {
     const store = await readStore();
+    const count = store.entries.filter((e) => e.apexUserId === apexUserId).length;
+    if (count >= NOTE_JOURNAL_ACCOUNT_MAX) {
+      throw new Error("NOTE_JOURNAL_CAP");
+    }
     const entry = buildJournalEntry(apexUserId, input);
     store.entries.push(entry);
     await writeStore(store);
@@ -117,13 +157,37 @@ const memoryRepo: NoteRepository = {
     memory.entitlements.push({ apexUserId, plus });
   },
   async listEntries(apexUserId) {
+    const page = await memoryRepo.listEntriesPage(apexUserId, { limit: NOTE_JOURNAL_LIST_MAX });
+    return page.entries;
+  },
+  async listEntriesPage(apexUserId, { limit, cursor }) {
     memory ??= { entitlements: [], entries: [], ssoCodes: [] };
-    return memory.entries
+    const cap = Math.min(Math.max(limit, 1), NOTE_JOURNAL_LIST_MAX);
+    let rows = memory.entries
       .filter((e) => e.apexUserId === apexUserId)
-      .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+      .sort(compareJournalEntriesDesc);
+    if (cursor) {
+      const parsed = parseJournalPageCursor(cursor);
+      rows = rows.filter((e) =>
+        parsed.id
+          ? journalEntryAfterPageCursor(e, parsed)
+          : e.createdAt < parsed.createdAt
+      );
+    }
+    const hasMore = rows.length > cap;
+    const slice = hasMore ? rows.slice(0, cap) : rows;
+    const tail = slice[slice.length - 1];
+    return {
+      entries: slice,
+      nextCursor: hasMore && tail ? encodeJournalPageCursor(tail) : null,
+    };
   },
   async createEntry(apexUserId, input) {
     memory ??= { entitlements: [], entries: [], ssoCodes: [] };
+    const count = memory.entries.filter((e) => e.apexUserId === apexUserId).length;
+    if (count >= NOTE_JOURNAL_ACCOUNT_MAX) {
+      throw new Error("NOTE_JOURNAL_CAP");
+    }
     const entry = buildJournalEntry(apexUserId, input);
     memory.entries.push(entry);
     return entry;
