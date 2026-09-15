@@ -5,11 +5,13 @@ import { NextRequest } from "next/server";
 
 import { enforceNoteRateLimit, noteRateLimitKey } from "../src/lib/note/api-rate-limit";
 import { NOTE_OPEN_ACCESS_GUEST_ID } from "../src/lib/note/open-access";
+import type { NoteSession } from "../src/lib/note/types";
 
 describe("Note API rate limit keys", () => {
   it("uses user id for signed-in sessions", () => {
     const req = new NextRequest("https://note.bursanalar.com/api/note/economic-calendar");
-    const key = noteRateLimitKey(req, { userId: "user-abc", email: "a@b.com", scopes: ["note.read"] });
+    const signedIn: NoteSession = { userId: "user-abc", email: "a@b.com", scopes: ["note.read"] };
+    const key = noteRateLimitKey(req, signedIn);
     assert.equal(key, "note:uid:user-abc");
   });
 
@@ -17,11 +19,12 @@ describe("Note API rate limit keys", () => {
     const req = new NextRequest("https://note.bursanalar.com/api/note/economic-calendar", {
       headers: { "x-forwarded-for": "203.0.113.10" },
     });
-    const key = noteRateLimitKey(req, {
+    const guest: NoteSession = {
       userId: NOTE_OPEN_ACCESS_GUEST_ID,
       email: "preview@note.bursanalar.com",
       scopes: ["note.read"],
-    });
+    };
+    const key = noteRateLimitKey(req, guest);
     assert.equal(key, "note:ip:203.0.113.10");
   });
 });
@@ -31,7 +34,7 @@ describe("Note API rate limit enforcement", () => {
     const req = new NextRequest("https://note.bursanalar.com/api/note/economic-calendar", {
       headers: { "x-forwarded-for": `test-econ-${Date.now()}` },
     });
-    const session = {
+    const session: NoteSession = {
       userId: NOTE_OPEN_ACCESS_GUEST_ID,
       email: "preview@note.bursanalar.com",
       scopes: ["note.read", "note.write", "note.sync"],
