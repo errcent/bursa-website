@@ -17,8 +17,8 @@ export function NoteSectionIntro({
   return (
     <header className={className ?? "mb-5 max-w-2xl space-y-1.5 border-b border-zinc-800/60 pb-4"}>
       <p className="font-heading text-base font-medium text-zinc-200">{s.question[locale]}</p>
-      <p className="text-sm leading-relaxed text-zinc-500">{s.scope[locale]}</p>
-      <p className="text-[11px] leading-snug text-zinc-600">{s.boundary[locale]}</p>
+      <p className="text-sm leading-relaxed text-zinc-400">{s.scope[locale]}</p>
+      <p className="text-xs leading-snug text-zinc-400">{s.boundary[locale]}</p>
     </header>
   );
 }

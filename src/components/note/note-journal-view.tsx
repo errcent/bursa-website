@@ -86,13 +86,13 @@ export function NoteJournalView() {
     return <p className="note-pnl-down text-sm">{journal.error}</p>;
   }
   if (journal.loading || !journal.data) {
-    return <p className="text-sm text-zinc-600">{copy.loadingJournal}</p>;
+    return <p className="text-sm text-zinc-400">{copy.loadingJournal}</p>;
   }
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       {journal.demo && !journal.openAccess ? (
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-zinc-400">
           {copy.contoh}{" "}
           <Link href={noteApexLoginHref("/note/jurnal")} className="text-zinc-200 hover:underline">
             {copy.masuk}
@@ -102,9 +102,9 @@ export function NoteJournalView() {
 
       <Link
         href={baruHref}
-        className="flex w-full max-w-md items-center justify-center rounded-md bg-zinc-100 px-4 py-3 text-center text-sm font-semibold text-zinc-950 hover:bg-white"
+        className="flex min-h-11 w-full max-w-md items-center justify-center rounded-md bg-zinc-100 px-4 text-center text-sm font-semibold text-zinc-950 hover:bg-white"
       >
-        + Log trade
+        + {copy.logTrade}
       </Link>
 
       <NoteJournalFilters
@@ -126,21 +126,27 @@ export function NoteJournalView() {
           {formatPnl(snap.pnlSum, formatOpts)} · {snap.tradeCount} {copy.journalRows}
           {snap.winRate != null ? ` · ${Math.round(snap.winRate * 100)}% W` : ""}
         </span>
-        <Link href="/note/impor" className="text-zinc-500 hover:text-zinc-200">
+        <Link
+          href="/note/impor"
+          className="inline-flex min-h-11 items-center px-1 text-zinc-300 hover:text-zinc-100"
+        >
           {copy.impor}
         </Link>
-        <Link href="/note/track" className="text-zinc-500 hover:text-zinc-200">
+        <Link
+          href="/note/track"
+          className="inline-flex min-h-11 items-center px-1 text-zinc-300 hover:text-zinc-100"
+        >
           Track
         </Link>
       </div>
 
       <div>
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+          <h2 className="text-sm font-semibold text-zinc-200">
             {singleDay ? `${copy.log} · ${singleDay}` : copy.journal}
           </h2>
           {updated ? (
-            <span className="text-[10px] text-zinc-600">
+            <span className="text-xs text-zinc-400">
               {copy.diperbarui} {updated.relative}
             </span>
           ) : null}
@@ -152,7 +158,7 @@ export function NoteJournalView() {
           formatOpts={formatOpts}
           hideDates={Boolean(singleDay)}
           empty={
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-zinc-400">
               {copy.belumAda}{" "}
               <Link href={baruHref} className="text-zinc-200 hover:underline">
                 {copy.tulisSatu}

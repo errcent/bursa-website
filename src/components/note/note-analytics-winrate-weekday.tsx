@@ -107,7 +107,7 @@ export function NoteAnalyticsWinrateWeekday({ entries, locale, weekStart }: Prop
 
   if (!hasAny) {
     return (
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-zinc-400">
         {locale === "en" ? "Need closed trades in range." : "Butuh trade close di rentang ini."}
       </p>
     );
@@ -116,7 +116,7 @@ export function NoteAnalyticsWinrateWeekday({ entries, locale, weekStart }: Prop
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">{copy.title}</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">{copy.title}</p>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex gap-1">
             {([30, 90, 0] as const).map((n) => (
@@ -125,15 +125,15 @@ export function NoteAnalyticsWinrateWeekday({ entries, locale, weekStart }: Prop
                 type="button"
                 onClick={() => setRangeDays(n)}
                 className={cn(
-                  "rounded-md border px-2 py-0.5 text-[10px]",
-                  rangeDays === n ? "border-zinc-500 bg-zinc-800 text-zinc-200" : "border-zinc-800 text-zinc-500"
+                  "rounded-md border px-2 py-0.5 text-xs",
+                  rangeDays === n ? "border-zinc-500 bg-zinc-800 text-zinc-200" : "border-zinc-800 text-zinc-400"
                 )}
               >
                 {n === 0 ? copy.all : `${n}d`}
               </button>
             ))}
           </div>
-          <label className="flex cursor-pointer items-center gap-2 text-[10px] text-zinc-400">
+          <label className="flex cursor-pointer items-center gap-2 text-xs text-zinc-400">
             <input
               type="checkbox"
               checked={includeBe}
@@ -146,7 +146,7 @@ export function NoteAnalyticsWinrateWeekday({ entries, locale, weekStart }: Prop
       </div>
 
       {summary ? (
-        <p className="text-[11px] leading-snug text-zinc-500">
+        <p className="text-xs leading-snug text-zinc-400">
           {locale === "en" ? "Peaks · " : "Puncak · "}
           {summary.winDay ? (
             <span>

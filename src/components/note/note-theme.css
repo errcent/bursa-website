@@ -1,66 +1,34 @@
+/* Note chrome tokens. Zinc utilities stay as the authoring language; this file
+   binds them to DESIGN.md and remaps light. */
+
+[data-note-theme="dark"] {
+  color-scheme: dark;
+  --note-bg: #09090b;
+  --note-bg-raised: #18181b;
+  --note-text: #f4f4f5;
+  --note-text-muted: #a1a1aa;
+  --note-text-faint: #a1a1aa;
+  --note-border: #27272a;
+  --note-accent: #8b93a7;
+  --note-overlay: rgb(0 0 0 / 0.6);
+  --chart-track: rgb(255 255 255 / 0.06);
+}
+
 [data-note-theme="light"] {
   color-scheme: light;
-}
-
-[data-note-theme="light"] .text-zinc-50,
-[data-note-theme="light"] .text-zinc-100,
-[data-note-theme="light"] .text-zinc-200 {
-  color: #18181b;
-}
-
-[data-note-theme="light"] .text-zinc-300 {
-  color: #3f3f46;
-}
-
-[data-note-theme="light"] .text-zinc-400,
-[data-note-theme="light"] .text-zinc-500 {
-  color: #52525b;
-}
-
-[data-note-theme="light"] .text-zinc-600 {
-  color: #71717a;
-}
-
-[data-note-theme="light"] .bg-zinc-950 {
-  background-color: #fafafa;
-}
-
-[data-note-theme="light"] .bg-zinc-900 {
-  background-color: #f4f4f5;
-}
-
-[data-note-theme="light"] .hover\:bg-zinc-900:hover {
-  background-color: #e4e4e7;
-}
-
-[data-note-theme="light"] .border-zinc-800,
-[data-note-theme="light"] .border-zinc-800\/80 {
-  border-color: #e4e4e7;
-}
-
-[data-note-theme="light"] .border-zinc-700 {
-  border-color: #d4d4d8;
-}
-
-[data-note-theme="light"] .bg-zinc-100 {
-  background-color: #18181b;
-}
-
-[data-note-theme="light"] .text-zinc-950 {
-  color: #fafafa;
-}
-
-[data-note-theme="light"] .hover\:bg-white:hover {
-  background-color: #27272a;
-}
-
-[data-note-theme="light"] .ring-zinc-100 {
-  --tw-ring-color: #18181b;
+  --note-bg: #fafafa;
+  --note-bg-raised: #f4f4f5;
+  --note-text: #18181b;
+  --note-text-muted: #3f3f46;
+  --note-text-faint: #52525b;
+  --note-border: #e4e4e7;
+  --note-accent: #5b6478;
+  --note-overlay: rgb(24 24 27 / 0.45);
+  --chart-track: rgb(0 0 0 / 0.08);
 }
 
 [data-note-theme="dark"],
 [data-note-theme="light"] {
-  /* sync with src/lib/note/chart-colors.ts */
   --chart-up: #34d399;
   --chart-up-strong: #10b981;
   --chart-up-soft: #6ee7b7;
@@ -78,8 +46,168 @@
   --chart-stack-wins: var(--chart-up);
   --chart-stack-losses: var(--chart-down);
   --chart-stack-be: var(--chart-info-strong);
-  --chart-track: rgba(255, 255, 255, 0.06);
   --chart-stack-net: var(--chart-up-soft);
+  caret-color: var(--note-accent);
+}
+
+[data-note-theme] ::selection {
+  background: color-mix(in srgb, var(--note-accent) 35%, transparent);
+  color: var(--note-text);
+}
+
+[data-note-theme] :focus-visible {
+  outline: 2px solid var(--note-accent);
+  outline-offset: 2px;
+}
+
+[data-note-theme] {
+  background-color: var(--note-bg);
+  color: var(--note-text);
+  scrollbar-color: var(--note-border) var(--note-bg);
+  scrollbar-width: thin;
+}
+
+[data-note-theme]::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+[data-note-theme]::-webkit-scrollbar-thumb {
+  background: var(--note-border);
+  border-radius: 999px;
+}
+
+.note-skip {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 80;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  border-radius: 6px;
+  background: var(--note-bg-raised);
+  padding: 0 12px;
+  color: var(--note-text);
+  transform: translateY(-180%);
+}
+
+.note-skip:focus {
+  transform: none;
+}
+
+.note-field {
+  min-height: 44px;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid var(--note-border);
+  background: color-mix(in srgb, var(--note-bg-raised) 80%, transparent);
+  padding: 0 12px;
+  font-size: 16px;
+  color: var(--note-text);
+}
+
+.note-field::placeholder {
+  color: var(--note-text-muted);
+}
+
+.note-hit {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-note-theme] .animate-pulse,
+  [data-note-theme] .animate-spin,
+  [data-note-theme] .animate-bounce {
+    animation: none !important;
+  }
+
+  [data-note-theme] {
+    scroll-behavior: auto;
+  }
+}
+
+[data-note-theme="light"].text-zinc-100,
+[data-note-theme="light"] .text-zinc-50,
+[data-note-theme="light"] .text-zinc-100,
+[data-note-theme="light"] .text-zinc-200 {
+  color: #18181b;
+}
+
+[data-note-theme="light"] .text-zinc-300 {
+  color: #3f3f46;
+}
+
+[data-note-theme="light"] .text-zinc-400,
+[data-note-theme="light"] .text-zinc-500,
+[data-note-theme="light"] .text-zinc-600 {
+  color: #3f3f46;
+}
+
+[data-note-theme="light"].bg-zinc-950,
+[data-note-theme="light"] .bg-zinc-950,
+[data-note-theme="light"] .bg-zinc-950\/40,
+[data-note-theme="light"] .bg-zinc-950\/50,
+[data-note-theme="light"] .bg-zinc-950\/95 {
+  background-color: #fafafa;
+}
+
+[data-note-theme="light"] .bg-zinc-900,
+[data-note-theme="light"] .bg-zinc-900\/40,
+[data-note-theme="light"] .bg-zinc-900\/50,
+[data-note-theme="light"] .bg-zinc-900\/60,
+[data-note-theme="light"] .bg-zinc-900\/80,
+[data-note-theme="light"] .bg-zinc-900\/90 {
+  background-color: #f4f4f5;
+}
+
+[data-note-theme="light"] .bg-zinc-800,
+[data-note-theme="light"] .bg-zinc-800\/80,
+[data-note-theme="light"] .bg-zinc-800\/95 {
+  background-color: #e4e4e7;
+}
+
+[data-note-theme="light"] .hover\:bg-zinc-900:hover,
+[data-note-theme="light"] .hover\:bg-zinc-900\/60:hover,
+[data-note-theme="light"] .hover\:bg-zinc-900\/80:hover,
+[data-note-theme="light"] .hover\:bg-zinc-800:hover {
+  background-color: #e4e4e7;
+}
+
+[data-note-theme="light"] .border-zinc-800,
+[data-note-theme="light"] .border-zinc-800\/60,
+[data-note-theme="light"] .border-zinc-800\/80,
+[data-note-theme="light"] .border-zinc-800\/90,
+[data-note-theme="light"] .border-zinc-700,
+[data-note-theme="light"] .border-zinc-600,
+[data-note-theme="light"] .border-zinc-600\/50,
+[data-note-theme="light"] .border-zinc-600\/60,
+[data-note-theme="light"] .border-zinc-600\/70 {
+  border-color: #e4e4e7;
+}
+
+[data-note-theme="light"] .bg-zinc-100 {
+  background-color: #18181b;
+}
+
+[data-note-theme="light"] .text-zinc-950,
+[data-note-theme="light"] .text-zinc-900 {
+  color: #fafafa;
+}
+
+[data-note-theme="light"] .hover\:bg-white:hover {
+  background-color: #27272a;
+}
+
+[data-note-theme="light"] .ring-zinc-100 {
+  --tw-ring-color: #18181b;
+}
+
+[data-note-theme="light"] .bg-black\/60,
+[data-note-theme="light"] .bg-black\/50,
+[data-note-theme="light"] .bg-black\/25 {
+  background-color: var(--note-overlay);
 }
 
 /* PnL text */
@@ -161,6 +289,14 @@
 
 .note-impact-high-fill {
   fill: color-mix(in srgb, var(--chart-down-strong) 30%, transparent);
+}
+
+.note-impact-holiday {
+  color: var(--note-accent);
+}
+
+.note-impact-holiday-fill {
+  fill: color-mix(in srgb, var(--note-accent) 25%, transparent);
 }
 
 .note-badge-up {

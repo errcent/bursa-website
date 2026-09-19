@@ -2,7 +2,13 @@
 
 import type { ReactNode } from "react";
 
-import { DEFAULT_NOTE_PREFS, type DisplayCurrency, type NoteLocale, type NotePrefs } from "@/lib/note/prefs";
+import {
+  DEFAULT_NOTE_PREFS,
+  type DisplayCurrency,
+  type NoteLocale,
+  type NotePrefs,
+  type NoteTheme,
+} from "@/lib/note/prefs";
 import { noteCopy } from "@/lib/note/copy";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 
@@ -19,7 +25,7 @@ function Row({
     <div className="flex flex-col gap-2 border-b border-zinc-800/80 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
       <div className="max-w-sm">
         <p className="text-sm text-zinc-200">{label}</p>
-        {hint ? <p className="mt-1 text-xs text-zinc-500">{hint}</p> : null}
+        {hint ? <p className="mt-1 text-xs text-zinc-400">{hint}</p> : null}
       </div>
       <div className="flex flex-wrap gap-2">{children}</div>
     </div>
@@ -44,8 +50,8 @@ function Choice<T extends string | boolean | number>({
       onClick={() => onChange(value)}
       className={
         selected
-          ? "rounded-md bg-zinc-100 px-3 py-1.5 text-sm text-zinc-950"
-          : "rounded-md px-3 py-1.5 text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+          ? "inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-sm text-zinc-950"
+          : "inline-flex min-h-11 items-center rounded-md px-3 text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
       }
     >
       {children}
@@ -54,7 +60,7 @@ function Choice<T extends string | boolean | number>({
 }
 
 function Heading({ children }: { children: ReactNode }) {
-  return <h2 className="pt-8 text-[11px] uppercase tracking-wide text-zinc-600 first:pt-0">{children}</h2>;
+  return <h2 className="pt-8 text-xs font-medium uppercase tracking-wide text-zinc-400 first:pt-0">{children}</h2>;
 }
 
 export function NoteSettingsForm() {
@@ -64,13 +70,24 @@ export function NoteSettingsForm() {
   return (
     <div className="max-w-2xl">
       <Heading>{copy.tampilan}</Heading>
-      <p className="mt-3 text-xs leading-relaxed text-zinc-500">
+      <p className="mt-3 text-xs leading-relaxed text-zinc-400">
         {prefs.locale === "en"
           ? "Language and currency also live in the Profile menu. This page is the full list."
           : "Bahasa dan mata uang juga ada di menu Profil. Halaman ini daftar lengkapnya."}
       </p>
-      <p className="mt-2 text-xs text-zinc-600">{copy.noStreak}</p>
+      <p className="mt-2 text-xs text-zinc-400">{copy.noStreak}</p>
 
+      <Row label={copy.theme} hint={copy.themeHint}>
+        <Choice value={"dark" as NoteTheme} current={prefs.theme} onChange={(theme) => update({ theme })}>
+          {copy.themeDark}
+        </Choice>
+        <Choice value={"light" as NoteTheme} current={prefs.theme} onChange={(theme) => update({ theme })}>
+          {copy.themeLight}
+        </Choice>
+        <Choice value={"system" as NoteTheme} current={prefs.theme} onChange={(theme) => update({ theme })}>
+          {copy.themeSystem}
+        </Choice>
+      </Row>
       <Row label={copy.language} hint={copy.languageHint}>
         <Choice value={"id" as NoteLocale} current={prefs.locale} onChange={(locale) => update({ locale })}>
           Indonesia
@@ -152,10 +169,10 @@ export function NoteSettingsForm() {
           {copy.dense}
         </Choice>
       </Row>
-      <p className="pt-6 text-xs text-zinc-600">{copy.locked}</p>
+      <p className="pt-6 text-xs text-zinc-400">{copy.locked}</p>
       <button
         type="button"
-        className="mt-4 text-xs text-zinc-500 hover:text-zinc-300"
+        className="mt-4 inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
         onClick={() => {
           const reset: NotePrefs = { ...DEFAULT_NOTE_PREFS };
           update(reset);

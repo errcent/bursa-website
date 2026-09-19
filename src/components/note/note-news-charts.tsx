@@ -23,11 +23,15 @@ import {
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
 
-const LAYOUTS: { id: NewsChartLayout; icon: typeof Square; label: Record<"id" | "en", string> }[] = [
-  { id: "1", icon: Square, label: { id: "1", en: "1" } },
-  { id: "2-col", icon: PanelLeft, label: { id: "2↔", en: "2↔" } },
-  { id: "2-row", icon: PanelTop, label: { id: "2↕", en: "2↕" } },
-  { id: "grid", icon: LayoutGrid, label: { id: "4", en: "4" } },
+const LAYOUTS: {
+  id: NewsChartLayout;
+  icon: typeof Square;
+  copyKey: "newsChartsLayout1" | "newsChartsLayout2col" | "newsChartsLayout2row" | "newsChartsLayoutGrid";
+}[] = [
+  { id: "1", icon: Square, copyKey: "newsChartsLayout1" },
+  { id: "2-col", icon: PanelLeft, copyKey: "newsChartsLayout2col" },
+  { id: "2-row", icon: PanelTop, copyKey: "newsChartsLayout2row" },
+  { id: "grid", icon: LayoutGrid, copyKey: "newsChartsLayoutGrid" },
 ];
 
 type Props = {
@@ -35,7 +39,7 @@ type Props = {
   embedded?: boolean;
 };
 
-export function NoteNewsCharts({ filterCurrencies, embedded = false }: Props) {
+export function NoteNewsCharts({ filterCurrencies }: Props) {
   const [prefs] = useNotePrefs();
   const copy = noteCopy(prefs.locale);
   const locale = prefs.locale;
@@ -90,27 +94,29 @@ export function NoteNewsCharts({ filterCurrencies, embedded = false }: Props) {
       role="group"
       aria-label={copy.newsChartsLayout}
     >
-      {LAYOUTS.map(({ id, icon: Icon, label }) => (
+      {LAYOUTS.map(({ id, icon: Icon, copyKey }) => (
         <button
           key={id}
           type="button"
-          title={label[locale]}
+          title={copy[copyKey]}
+          aria-label={copy[copyKey]}
+          aria-pressed={chartPrefs.layout === id}
           onClick={() => setLayout(id)}
           className={cn(
-            "inline-flex size-7 items-center justify-center rounded transition-colors",
-            chartPrefs.layout === id ? "bg-zinc-700 text-zinc-100" : "text-zinc-500 hover:text-zinc-300"
+            "inline-flex size-11 items-center justify-center rounded transition-colors",
+            chartPrefs.layout === id ? "bg-zinc-700 text-zinc-100" : "text-zinc-400 hover:text-zinc-200"
           )}
         >
-          <Icon className="size-3.5" />
+          <Icon className="size-4" />
         </button>
       ))}
     </div>
   );
 
   return (
-    <div className={cn("space-y-2", !embedded && "rounded-xl border border-zinc-800/80 p-3 sm:p-4")}>
+    <div className="space-y-2">
       {broadFilter ? (
-        <p className="note-warn-body text-[10px] opacity-75">{copy.newsChartsBroadFilter}</p>
+        <p className="note-warn text-xs leading-snug">{copy.newsChartsBroadFilter}</p>
       ) : null}
 
       <div className={cn("grid gap-2", gridClass)}>
@@ -126,7 +132,7 @@ export function NoteNewsCharts({ filterCurrencies, embedded = false }: Props) {
               <div className="flex items-center gap-2 border-b border-zinc-800/70 px-2 py-1.5 sm:px-3">
                 <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
                   {!singlePaneMultiCurrency ? (
-                    <span className="note-warn-body shrink-0 text-[11px] font-semibold tabular-nums opacity-90">
+                    <span className="note-warn-body shrink-0 text-xs font-semibold tabular-nums">
                       {badge}
                     </span>
                   ) : null}
@@ -134,7 +140,7 @@ export function NoteNewsCharts({ filterCurrencies, embedded = false }: Props) {
                     <select
                       value={pane.symbol}
                       onChange={(e) => updatePaneSymbol(index, e.target.value)}
-                      className="w-full min-w-0 cursor-pointer appearance-none border-0 bg-transparent py-1 text-[13px] font-medium text-zinc-100 outline-none [&>optgroup]:bg-zinc-900 [&>optgroup]:text-zinc-400 [&>option]:bg-zinc-900 [&>option]:text-zinc-100"
+                      className="min-h-11 w-full min-w-0 cursor-pointer appearance-none border-0 bg-transparent text-sm font-medium text-zinc-100 [&>optgroup]:bg-zinc-900 [&>optgroup]:text-zinc-400 [&>option]:bg-zinc-900 [&>option]:text-zinc-100"
                       aria-label={`${copy.newsChartsPair} ${index + 1}`}
                     >
                       {singlePaneMultiCurrency

@@ -71,8 +71,8 @@ const SIGNAL_UI: {
     title: { id: "Respons loss", en: "Loss response" },
     options: [
       { value: "stable", label: { id: "Stabil", en: "Stable" } },
-      { value: "revenge", label: { id: "Revenge", en: "Revenge" } },
-      { value: "overcorrect", label: { id: "Overcorrect", en: "Overcorrect" } },
+      { value: "revenge", label: { id: "Balas dendam", en: "Revenge" } },
+      { value: "overcorrect", label: { id: "Koreksi berlebih", en: "Overcorrect" } },
     ],
   },
   {
@@ -89,8 +89,8 @@ const SIGNAL_UI: {
     title: { id: "Pergeseran confidence", en: "Confidence shift" },
     options: [
       { value: "stable", label: { id: "Stabil", en: "Stable" } },
-      { value: "overconfident", label: { id: "Overconfident", en: "Overconfident" } },
-      { value: "underconfident", label: { id: "Underconfident", en: "Underconfident" } },
+      { value: "overconfident", label: { id: "Terlalu yakin", en: "Overconfident" } },
+      { value: "underconfident", label: { id: "Kurang yakin", en: "Underconfident" } },
     ],
   },
 ];
@@ -319,7 +319,7 @@ export function NotePlaybookView() {
           <h2 className="font-heading text-sm font-semibold uppercase tracking-wide text-zinc-200">
             {locale === "en" ? "Trading behavior" : "Perilaku trading"}
           </h2>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-zinc-400">
             {locale === "en"
               ? "Four signals. Journal keeps updating intensity in the background."
               : "Empat sinyal. Journal memperbarui intensitas di belakang layar."}
@@ -339,7 +339,7 @@ export function NotePlaybookView() {
                       aria-pressed={active}
                       onClick={() => setSignal(block.key, opt.value as BehaviorSignals[typeof block.key])}
                       className={cn(
-                        "rounded-md px-2.5 py-1 text-[11px] font-medium",
+                        "inline-flex min-h-11 items-center rounded-md px-2.5 text-xs font-medium",
                         active
                           ? "bg-zinc-100 text-zinc-950"
                           : "border border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
@@ -353,7 +353,7 @@ export function NotePlaybookView() {
             </div>
           ))}
         </div>
-        <p className="text-[10px] text-zinc-600">
+        <p className="text-xs text-zinc-400">
           {locale === "en"
             ? "Intensity from journal: auto-adjusted. Not a personality label."
             : "Intensitas dari jurnal: disesuaikan otomatis. Bukan label kepribadian."}
@@ -362,10 +362,10 @@ export function NotePlaybookView() {
 
       <div className={cn("rounded-xl border px-4 py-4 sm:px-5", verdictUi.className)}>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">
+          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
             {locale === "en" ? "Gate" : "Gerbang"}
           </p>
-          <span className="rounded border border-zinc-700 px-2 py-0.5 text-[10px] font-semibold uppercase text-zinc-300">
+          <span className="rounded border border-zinc-700 px-2 py-1 text-xs font-semibold uppercase text-zinc-300">
             {intensityLabel}
           </span>
         </div>
@@ -401,24 +401,24 @@ export function NotePlaybookView() {
         <header className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <h2 className="font-heading text-sm font-semibold uppercase tracking-wide text-zinc-200">Setup</h2>
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-zinc-400">
               {locale === "en"
-                ? "Your rules - name, criteria, and confidence. No preset style forced."
-                : "Aturan kamu - nama, kriteria, keyakinan. Tidak ada gaya trade bawaan."}
+                ? "Your rules. The Example menu is an optional starter (ICT, breakout, and so on). Nothing applies until you pick one."
+                : "Aturan kamu. Menu Contoh hanya starter opsional (ICT, breakout, dan sejenisnya). Tidak dipakai sampai kamu pilih."}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className="rounded-md border border-zinc-700 px-2.5 py-1.5 text-[11px] font-medium text-zinc-200 hover:border-zinc-500"
+              className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs font-medium text-zinc-200 hover:border-zinc-500"
               onClick={addBlankSetup}
             >
               {locale === "en" ? "+ Add setup" : "+ Tambah setup"}
             </button>
-            <label className="flex items-center gap-1.5 text-[11px] text-zinc-500">
-              <span>{locale === "en" ? "Template" : "Contoh"}</span>
+            <label className="flex items-center gap-1.5 text-xs text-zinc-400">
+              <span>{locale === "en" ? "Example" : "Contoh"}</span>
               <select
-                className="rounded-md border border-zinc-800 bg-zinc-900/80 px-2 py-1.5 text-[11px] text-zinc-200"
+                className="min-h-11 rounded-md border border-zinc-800 bg-zinc-900/80 px-2 text-xs text-zinc-200"
                 defaultValue=""
                 onChange={(e) => {
                   const v = e.target.value;
@@ -468,7 +468,7 @@ export function NotePlaybookView() {
                       <input
                         value={setup.name}
                         onChange={(e) => updateSetup(setup.id, { name: e.target.value })}
-                        className="min-w-[8rem] flex-1 rounded-md border border-zinc-800 bg-zinc-950/60 px-2 py-1 text-sm font-medium text-zinc-100"
+                        className="note-field min-w-[8rem] flex-1 text-sm font-medium"
                         aria-label={locale === "en" ? "Setup name" : "Nama setup"}
                       />
                       <select
@@ -477,7 +477,7 @@ export function NotePlaybookView() {
                           updateSetup(setup.id, { confidence: e.target.value as SetupConfidence })
                         }
                         className={cn(
-                          "rounded border px-1.5 py-1 text-[10px] font-semibold",
+                          "note-hit rounded border px-2 text-xs font-semibold",
                           CONF_CLASS[setup.confidence]
                         )}
                         aria-label={locale === "en" ? "Confidence" : "Keyakinan"}
@@ -488,9 +488,10 @@ export function NotePlaybookView() {
                           </option>
                         ))}
                       </select>
-                      <label className="flex items-center gap-1 text-[10px] text-zinc-500">
+                      <label className="flex min-h-11 items-center gap-2 text-xs text-zinc-400">
                         <input
                           type="checkbox"
+                          className="size-4"
                           checked={setup.enabled}
                           onChange={() => toggleSetupEnabled(setup.id)}
                         />
@@ -499,7 +500,7 @@ export function NotePlaybookView() {
                       {state.setups.length > 1 ? (
                         <button
                           type="button"
-                          className="text-[10px] text-zinc-600 hover:text-red-400"
+                          className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-red-400"
                           onClick={() => removeSetup(setup.id)}
                         >
                           {locale === "en" ? "Remove" : "Hapus"}
@@ -510,7 +511,7 @@ export function NotePlaybookView() {
                       value={setup.condition[locale]}
                       onChange={(e) => updateSetupCondition(setup.id, e.target.value)}
                       rows={2}
-                      className="w-full resize-y rounded-md border border-zinc-800 bg-zinc-950/40 px-2 py-1.5 text-xs leading-snug text-zinc-300 placeholder:text-zinc-600"
+                      className="w-full resize-y rounded-md border border-zinc-800 bg-zinc-950/40 px-2 py-1.5 text-xs leading-snug text-zinc-300 placeholder:text-zinc-400"
                       placeholder={
                         locale === "en"
                           ? "When is this setup valid for you?"
@@ -529,13 +530,13 @@ export function NotePlaybookView() {
         <header className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <h2 className="font-heading text-sm font-semibold uppercase tracking-wide text-zinc-200">Check</h2>
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-zinc-400">
               {locale === "en"
                 ? `Deterministic · core ${gate.requiredYes}/${CORE_CHECK_IDS.length} YES`
                 : `Deterministik · core ${gate.requiredYes}/${CORE_CHECK_IDS.length} YA`}
             </p>
           </div>
-          <button type="button" className="text-[11px] text-zinc-500 hover:text-zinc-200" onClick={resetChecks}>
+          <button type="button" className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200" onClick={resetChecks}>
             {locale === "en" ? "Reset checks" : "Reset check"}
           </button>
         </header>
@@ -547,7 +548,7 @@ export function NotePlaybookView() {
                 <span className="text-sm text-zinc-200">
                   {check.label[locale]}
                   {check.critical ? (
-                    <span className="note-mark-warn ml-1 text-[10px]">*</span>
+                    <span className="note-mark-warn ml-1 text-xs">*</span>
                   ) : null}
                 </span>
                 <div className="flex gap-1 rounded-md border border-zinc-800 p-0.5">
@@ -563,12 +564,12 @@ export function NotePlaybookView() {
                       aria-pressed={answer === val}
                       onClick={() => setCheck(check.id, val)}
                       className={cn(
-                        "rounded px-3 py-1 text-xs font-semibold",
+                        "inline-flex min-h-11 items-center rounded px-3 text-xs font-semibold",
                         answer === val
                           ? val
                             ? "note-chip-up"
                             : "note-chip-down"
-                          : "text-zinc-500 hover:text-zinc-200"
+                          : "text-zinc-400 hover:text-zinc-200"
                       )}
                     >
                       {label}
@@ -580,7 +581,7 @@ export function NotePlaybookView() {
           })}
         </ul>
         {highImpactMins != null && highImpactMins <= gate.adapted.rules.blockMinutesBeforeHighImpact ? (
-          <p className="note-warn-body text-[11px]">
+          <p className="note-warn-body text-xs">
             {locale === "en"
               ? `High-impact event in ~${Math.ceil(highImpactMins)} min.`
               : `Event high-impact ~${Math.ceil(highImpactMins)} menit lagi.`}{" "}
@@ -594,7 +595,7 @@ export function NotePlaybookView() {
       <section className="space-y-3">
         <header>
           <h2 className="font-heading text-sm font-semibold uppercase tracking-wide text-zinc-200">Risk</h2>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-zinc-400">
             {locale === "en"
               ? "Hard bounds (baseline editable, effective limits adapt)."
               : "Batas keras (baseline bisa edit, limit efektif adaptif)."}
@@ -628,7 +629,7 @@ export function NotePlaybookView() {
             }
           />
         </dl>
-        <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/40 px-3 py-3 text-xs text-zinc-500">
+        <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/40 px-3 py-3 text-xs text-zinc-400">
           <p className="font-medium text-zinc-400">
             {locale === "en" ? "Effective limits (now)" : "Limit efektif (sekarang)"}
           </p>
@@ -664,7 +665,7 @@ function RuleField({
 }) {
   return (
     <label className="block text-xs">
-      <span className="text-zinc-500">{label}</span>
+      <span className="text-zinc-400">{label}</span>
       <input
         type="number"
         min={0}

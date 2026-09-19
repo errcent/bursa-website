@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,6 +22,7 @@ import { NotePnlTradeScatterChart } from "@/components/ui/note-pnl-trade-scatter
 import { noteCopy } from "@/lib/note/copy";
 import { buildNoteInsights } from "@/lib/note/insights";
 import { noteApexLoginHref } from "@/lib/note/sso-urls";
+import { jakartaDateKey } from "@/lib/note/economic-calendar/date-range";
 import { fxFootnote } from "@/lib/note/fx/convert";
 import { fxContextFromPrefs } from "@/lib/note/fx/context";
 import { pnlOptsForSlot, pnlOptsFromPrefs } from "@/lib/note/prefs";
@@ -29,7 +30,6 @@ import {
   dailyReturnPct,
   alignedCumulativeSeries,
   pnlStackPoints,
-  dayKey,
   filterEntries,
   formatPnl,
   monthBuckets,
@@ -48,10 +48,12 @@ export function NoteOverview() {
   const fx = useMemo(() => fxContextFromPrefs(prefs), [prefs]);
   const kind = NOTE_EXECUTION_KIND;
   const journal = useNoteJournal();
-  const now = new Date();
-  const [cursor, setCursor] = useState({ year: now.getFullYear(), month: now.getMonth() });
+  const today = jakartaDateKey();
+  const [cursor, setCursor] = useState(() => {
+    const [year, month] = today.split("-").map(Number);
+    return { year, month: month - 1 };
+  });
   const [chartPrefs, setChartPrefs] = useState<OverviewChartPrefs>(defaultOverviewChartPrefs);
-  const today = dayKey(now.toISOString());
 
   useEffect(() => {
     setChartPrefs(loadOverviewChartPrefs());
@@ -151,7 +153,7 @@ export function NoteOverview() {
     return <p className="note-pnl-down text-sm">{journal.error}</p>;
   }
   if (journal.loading || !journal.data) {
-    return <p className="text-sm text-zinc-600">{copy.loadingJournal}</p>;
+    return <p className="text-sm text-zinc-400">{copy.loadingJournal}</p>;
   }
 
   const headline =
@@ -180,9 +182,9 @@ export function NoteOverview() {
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] xl:items-start">
         <div className="flex flex-col gap-5">
           <section className="rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-4 sm:p-5">
-            <p className="mb-3 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
-              {prefs.locale === "en" ? "PnL calendar" : "Kalender PnL"}
-            </p>
+            <h2 className="mb-3 text-sm font-semibold text-zinc-200">
+              {prefs.locale === "en" ? "This month" : "Bulan ini"}
+            </h2>
             <DailyReturnsCalendar
               variant="hero"
               year={cursor.year}
@@ -235,7 +237,7 @@ export function NoteOverview() {
 
           {insights[0] ? (
             <section className="space-y-2">
-              <h2 className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+              <h2 className="text-sm font-semibold text-zinc-200">
                 {prefs.locale === "en" ? "Bias snapshot" : "Snapshot bias"}
               </h2>
               <p
@@ -255,37 +257,31 @@ export function NoteOverview() {
 
           <div className="flex flex-wrap gap-2">
             <Link
+              href="/note/baru"
+              className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-4 text-sm font-semibold text-zinc-950 hover:bg-white"
+            >
+              + {copy.logTrade}
+            </Link>
+            <Link
               href="/note/jurnal"
-              className="rounded-md bg-zinc-100 px-3 py-2 text-sm font-medium text-zinc-950 hover:bg-white"
+              className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-4 text-sm text-zinc-200 hover:bg-zinc-900"
             >
               {prefs.locale === "en" ? "Open journal" : "Buka jurnal"}
-            </Link>
-            <Link
-              href="/note/news"
-              className="rounded-md border border-zinc-700 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-900"
-            >
-              {prefs.locale === "en" ? "External news" : "News eksternal"}
-            </Link>
-            <Link
-              href="/note/baru"
-              className="rounded-md border border-zinc-700 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-900"
-            >
-              + {copy.baru}
             </Link>
           </div>
         </div>
 
         <section className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4 sm:p-5">
-            <p className="mb-1 text-[11px] uppercase tracking-wide text-zinc-500">
-              {prefs.locale === "en" ? "Performance" : "Performa"}
-            </p>
+            <h2 className="mb-1 text-sm font-semibold text-zinc-200">
+              {prefs.locale === "en" ? "Chart range" : "Rentang chart"}
+            </h2>
             <p className="mb-3 font-heading text-base font-semibold tracking-tight text-zinc-200 sm:text-lg">
               {headline}
             </p>
             <div className="mb-4 grid grid-cols-3 gap-3 sm:gap-4">
               <div>
-                <p className="text-[10px] uppercase text-zinc-500">
-                  {prefs.locale === "en" ? "PnL (chart range)" : "PnL (rentang chart)"}
+                <p className="text-xs text-zinc-400">
+                  {prefs.locale === "en" ? "PnL" : "PnL"}
                 </p>
                 <p
                   className={cn(
@@ -297,7 +293,7 @@ export function NoteOverview() {
                 </p>
               </div>
               <div>
-                <p className="text-[10px] uppercase text-zinc-500">
+                <p className="text-xs text-zinc-400">
                   {prefs.locale === "en" ? "Win rate" : "Win rate"}
                 </p>
                 <p className="font-heading text-xl tabular-nums tracking-tight text-zinc-100 sm:text-2xl">
@@ -307,7 +303,7 @@ export function NoteOverview() {
                 </p>
               </div>
               <div>
-                <p className="text-[10px] uppercase text-zinc-500">
+                <p className="text-xs text-zinc-400">
                   {prefs.locale === "en" ? "Trades" : "Trade"}
                 </p>
                 <p className="font-heading text-xl tabular-nums tracking-tight text-zinc-100 sm:text-2xl">
@@ -324,10 +320,10 @@ export function NoteOverview() {
                 }}
               />
             </div>
-            <p className="mb-3 text-[10px] leading-snug text-zinc-600">{fxNote}</p>
+            <p className="mb-3 text-xs leading-snug text-zinc-400">{fxNote}</p>
             <div className="flex flex-col gap-6">
               <div className="min-w-0 space-y-2">
-                <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-500">
+                <p className="text-xs font-medium text-zinc-400">
                   {prefs.locale === "en" ? "PnL · wins / losses / net" : "PnL · menang / rugi / net"}
                 </p>
                 {chartPrefs.granularity === "trade" ? (

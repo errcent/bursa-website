@@ -38,10 +38,10 @@ export function NoteRiskSnapshot({
   return (
     <section className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">{title}</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">{title}</p>
         <span
           className={cn(
-            "rounded px-2 py-0.5 text-[10px] font-medium uppercase",
+            "rounded px-2 py-0.5 text-xs font-medium uppercase",
             stable ? "note-badge-up" : "note-badge-warn"
           )}
         >
@@ -50,22 +50,22 @@ export function NoteRiskSnapshot({
       </div>
       <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
         <div>
-          <dt className="text-[11px] text-zinc-500">{locale === "en" ? "Open trades" : "Trade open"}</dt>
+          <dt className="text-xs text-zinc-400">{locale === "en" ? "Open trades" : "Trade open"}</dt>
           <dd className="tabular-nums text-zinc-100">{openCount}</dd>
         </div>
         <div>
-          <dt className="text-[11px] text-zinc-500">{locale === "en" ? "Closed (filter)" : "Close (filter)"}</dt>
+          <dt className="text-xs text-zinc-400">{locale === "en" ? "Closed (filter)" : "Close (filter)"}</dt>
           <dd className="tabular-nums text-zinc-100">{snapshot.closedCount}</dd>
         </div>
         <div>
-          <dt className="text-[11px] text-zinc-500">{locale === "en" ? "Win rate" : "Win rate"}</dt>
+          <dt className="text-xs text-zinc-400">{locale === "en" ? "Win rate" : "Win rate"}</dt>
           <dd className="tabular-nums text-zinc-100">
             {snapshot.winRate != null ? `${Math.round(snapshot.winRate * 100)}%` : "-"}
           </dd>
         </div>
       </dl>
       {topSymbol ? (
-        <p className="mt-3 text-[11px] text-zinc-500">
+        <p className="mt-3 text-xs text-zinc-400">
           {locale === "en" ? "Largest open concentration" : "Konsentrasi open terbesar"}:{" "}
           <span className="text-zinc-300">
             {topSymbol[0]} ({topSymbol[1]})

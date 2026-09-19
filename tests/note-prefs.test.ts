@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { DEFAULT_NOTE_PREFS, parseNotePrefs, pnlOptsFromPrefs } from "../src/lib/note/prefs";
+import {
+  DEFAULT_NOTE_PREFS,
+  parseNotePrefs,
+  pnlOptsFromPrefs,
+  resolveNoteTheme,
+} from "../src/lib/note/prefs";
 
 describe("Note prefs", () => {
   it("returns defaults for empty or garbage input", () => {
@@ -45,8 +50,15 @@ describe("Note prefs", () => {
     assert.equal(parsed.calendarShowNet, false);
     assert.equal(parsed.locale, "en");
     assert.equal(parsed.currency, "USD");
-    assert.equal(parsed.theme, "dark");
+    assert.equal(parsed.theme, "light");
     assert.equal(parsed.version, 1);
+  });
+
+  it("resolves stored theme against system preference", () => {
+    assert.equal(resolveNoteTheme("dark", false), "dark");
+    assert.equal(resolveNoteTheme("light", true), "light");
+    assert.equal(resolveNoteTheme("system", true), "dark");
+    assert.equal(resolveNoteTheme("system", false), "light");
   });
 
   it("maps prefs to pnl format options", () => {

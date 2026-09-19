@@ -11,9 +11,6 @@ export const metadata: Metadata = {
 export default function NoteImportPage() {
   return (
     <NoteShell title="Impor">
-      <p className="mb-6 max-w-lg text-sm text-zinc-500">
-        CSV. Header: symbol, side, qty, entry, exit, pnl, date. Tanpa password broker.
-      </p>
       <NoteImportForm />
     </NoteShell>
   );

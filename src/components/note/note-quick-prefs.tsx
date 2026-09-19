@@ -14,7 +14,7 @@ type SegProps<T extends string> = {
 function Segmented<T extends string>({ label, value, options, onChange, compact }: SegProps<T>) {
   return (
     <div className={cn("space-y-1.5", compact ? "" : "py-0.5")}>
-      <p className="text-[11px] font-medium text-zinc-500">{label}</p>
+      <p className="text-xs font-medium text-zinc-400">{label}</p>
       <div className="flex flex-wrap gap-1" role="group" aria-label={label}>
         {options.map((opt) => {
           const on = value === opt.value;
@@ -25,7 +25,7 @@ function Segmented<T extends string>({ label, value, options, onChange, compact 
               aria-pressed={on}
               onClick={() => onChange(opt.value)}
               className={cn(
-                "rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
+                "inline-flex min-h-11 items-center rounded-md border px-2.5 text-xs font-medium transition-colors",
                 on
                   ? "border-[var(--chart-info-strong)]/50 bg-[var(--chart-info-track)] text-zinc-100"
                   : "border-zinc-700 bg-zinc-900/80 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
@@ -90,7 +90,7 @@ export function NoteQuickPrefs({
       />
       {copy.usdIdrRate ? (
         <label className="block space-y-1">
-          <span className="text-[11px] font-medium text-zinc-500">{copy.usdIdrRate}</span>
+          <span className="text-xs font-medium text-zinc-400">{copy.usdIdrRate}</span>
           <input
             type="number"
             min={1000}
@@ -98,10 +98,10 @@ export function NoteQuickPrefs({
             step={50}
             value={usdIdrRate}
             onChange={(e) => onUsdIdrRate(Number(e.target.value))}
-            className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm tabular-nums text-zinc-100"
+            className="min-h-11 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 text-sm tabular-nums text-zinc-100"
           />
           {copy.usdIdrRateHint ? (
-            <span className="block text-[10px] leading-snug text-zinc-600">{copy.usdIdrRateHint}</span>
+            <span className="block text-xs leading-snug text-zinc-400">{copy.usdIdrRateHint}</span>
           ) : null}
         </label>
       ) : null}

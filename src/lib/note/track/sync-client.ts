@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  isDemoTrackStore,
   loadTrackStoreLocal,
   saveTrackStoreLocal,
   withTrackDemoFallback,
@@ -45,7 +46,7 @@ export async function loadTrackWithSync(): Promise<TrackSyncResult> {
     }
     return {
       store: merged,
-      demo,
+      demo: demo || isDemoTrackStore(merged),
       openAccess: Boolean(payload.openAccess),
     };
   } catch {

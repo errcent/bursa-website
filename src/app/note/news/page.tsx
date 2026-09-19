@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function NoteNewsPage() {
   return (
-    <NoteShell>
+    <NoteShell title="News">
       <NoteNewsView />
     </NoteShell>
   );

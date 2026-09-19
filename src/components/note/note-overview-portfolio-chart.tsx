@@ -63,7 +63,7 @@ export function NoteOverviewPortfolioChart({
   );
 
   if (loading) {
-    return <p className={cn("text-xs text-zinc-500", className)}>{loadingLabel}</p>;
+    return <p className={cn("text-xs text-zinc-400", className)}>{loadingLabel}</p>;
   }
 
   if (!points.length) {
@@ -74,15 +74,15 @@ export function NoteOverviewPortfolioChart({
           className
         )}
       >
-        <p className="text-xs text-zinc-500">{empty}</p>
+        <p className="text-xs text-zinc-400">{empty}</p>
       </div>
     );
   }
 
   return (
     <div className={cn("space-y-2", className)}>
-      <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-500">{title}</p>
-      <p className="text-[10px] text-zinc-600">
+      <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">{title}</p>
+      <p className="text-xs text-zinc-400">
         {locale === "en"
           ? "Trading P/L over time - not account balance or holdings value."
           : "PnL trading over time - bukan saldo akun atau nilai holdings."}

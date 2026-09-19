@@ -25,12 +25,13 @@ import { fxFootnote } from "@/lib/note/fx/convert";
 import { fxContextFromPrefs } from "@/lib/note/fx/context";
 import { pnlOptsFromPrefs } from "@/lib/note/prefs";
 import { formatPnl } from "@/lib/note/stats";
+import { noteCopy } from "@/lib/note/copy";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">{children}</h2>
+    <h2 className="text-sm font-semibold text-zinc-200">{children}</h2>
   );
 }
 
@@ -39,7 +40,8 @@ function TrackInner() {
   const locale = prefs.locale;
   const formatOpts = pnlOptsFromPrefs(prefs);
   const fx = useMemo(() => fxContextFromPrefs(prefs), [prefs]);
-  const { store, scope, setScope, loading } = useNoteTrack();
+  const { store, scope, setScope, loading, demo } = useNoteTrack();
+  const copy = noteCopy(locale);
   const txns = useScopedTransactions();
   const [range, setRange] = useState<TrackRangePreset>("30d");
   const [showCreatePf, setShowCreatePf] = useState(false);
@@ -74,21 +76,26 @@ function TrackInner() {
   const txPortfolioId = scope === "all" ? null : scope;
 
   if (loading) {
-    return <p className="text-sm text-zinc-500">{t("Memuat…", "Loading…")}</p>;
+    return <p className="text-sm text-zinc-400">{t("Memuat…", "Loading…")}</p>;
   }
 
   return (
     <div className="mx-auto max-w-6xl space-y-5 pb-12">
+      {demo ? (
+        <p className="rounded-lg border border-zinc-800/80 bg-zinc-900/40 px-3 py-2 text-xs leading-snug text-zinc-300">
+          {copy.trackDemo}
+        </p>
+      ) : null}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0 flex-1 space-y-2">
-          <label className="block text-[11px] text-zinc-500">
+          <label className="block text-xs text-zinc-400">
             {t("Portfolio", "Portfolio")}
             <select
-              className="mt-1 block w-full max-w-sm rounded-md border border-zinc-700 bg-zinc-900 px-2 py-2 text-sm text-zinc-100"
+              className="mt-1 block min-h-11 w-full max-w-sm rounded-md border border-zinc-700 bg-zinc-900 px-2 text-sm text-zinc-100"
               value={scope}
               onChange={(e) => setScope(e.target.value as "all" | string)}
             >
-              <option value="all">{t("All portfolios", "All portfolios")}</option>
+              <option value="all">{copy.trackAllPortfolios}</option>
               {store.portfolios.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
@@ -105,8 +112,8 @@ function TrackInner() {
                 type="button"
                 onClick={() => setRange(r)}
                 className={cn(
-                  "rounded-md border px-2 py-1 text-[10px] uppercase",
-                  range === r ? "border-zinc-500 bg-zinc-800 text-zinc-200" : "border-zinc-800 text-zinc-500"
+                  "inline-flex min-h-11 items-center rounded-md border px-3 text-xs uppercase",
+                  range === r ? "border-zinc-500 bg-zinc-800 text-zinc-200" : "border-zinc-800 text-zinc-400"
                 )}
               >
                 {r}
@@ -115,15 +122,15 @@ function TrackInner() {
           </div>
           <button
             type="button"
-            className="rounded-md bg-zinc-100 px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-white"
+            className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-4 text-sm font-semibold text-zinc-900 hover:bg-white"
             onClick={() => (scope === "all" ? setShowCreatePf(true) : setShowAddTx(true))}
           >
-            {scope === "all" ? t("Create portfolio", "Create portfolio") : t("Add transaction", "Add transaction")}
+            {scope === "all" ? copy.trackCreate : copy.trackAddTx}
           </button>
         </div>
       </div>
 
-      <p className="text-[10px] leading-snug text-zinc-600">
+      <p className="text-xs leading-snug text-zinc-400">
         {snap.marketDataUsed
           ? locale === "en"
             ? "History uses Yahoo Finance daily closes where available."
@@ -139,19 +146,19 @@ function TrackInner() {
       {/* KPI strip */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/50 p-3 lg:col-span-2">
-          <p className="text-[10px] uppercase text-zinc-500">{t("Nilai portfolio", "Portfolio value")}</p>
+          <p className="text-xs text-zinc-400">{t("Nilai portfolio", "Portfolio value")}</p>
           <p className="font-heading text-3xl tabular-nums tracking-tight text-zinc-50">
             {formatPnl(snap.totalValue, formatOpts)}
           </p>
         </div>
         <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/40 p-3">
-          <p className="text-[10px] uppercase text-zinc-500">{t("All-time P/L", "All-time P/L")}</p>
+          <p className="text-xs text-zinc-400">{t("All-time P/L", "All-time P/L")}</p>
           <p className={cn("text-xl tabular-nums font-medium", snap.allTimePnl >= 0 ? "note-pnl-up" : "note-pnl-down")}>
             {formatPnl(snap.allTimePnl, formatOpts)}
           </p>
         </div>
         <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/40 p-3">
-          <p className="text-[10px] uppercase text-zinc-500">
+          <p className="text-xs text-zinc-400">
             {t("Periode", "Period")} ({range})
           </p>
           <p className={cn("text-xl tabular-nums font-medium", snap.rangePnl >= 0 ? "note-pnl-up" : "note-pnl-down")}>
@@ -177,7 +184,7 @@ function TrackInner() {
           <SectionTitle>{t("Performers", "Performers")}</SectionTitle>
           <ul className="mt-3 space-y-3 text-sm">
             <li>
-              <span className="text-zinc-500">{t("Terbaik", "Best")}</span>
+              <span className="text-zinc-400">{t("Terbaik", "Best")}</span>
               <p className="font-medium text-zinc-100">
                 {snap.bestPerformer
                   ? `${snap.bestPerformer.symbol} · ${snap.bestPerformer.pct.toFixed(1)}%`
@@ -185,7 +192,7 @@ function TrackInner() {
               </p>
             </li>
             <li>
-              <span className="text-zinc-500">{t("Terburuk", "Worst")}</span>
+              <span className="text-zinc-400">{t("Terburuk", "Worst")}</span>
               <p className="font-medium text-zinc-100">
                 {snap.worstPerformer
                   ? `${snap.worstPerformer.symbol} · ${snap.worstPerformer.pct.toFixed(1)}%`
@@ -212,12 +219,12 @@ function TrackInner() {
       <div className="grid gap-4 lg:grid-cols-5">
         <div className="rounded-lg border border-zinc-800/80 lg:col-span-3">
           <div className="border-b border-zinc-800/80 px-3 py-2">
-            <SectionTitle>{t("Assets (holdings)", "Assets (holdings)")}</SectionTitle>
+            <SectionTitle>{t("Aset (holdings)", "Assets (holdings)")}</SectionTitle>
           </div>
           <div className="max-h-[320px] overflow-auto">
             <table className="w-full min-w-[28rem] text-sm">
               <thead className="sticky top-0 bg-zinc-950/95">
-                <tr className="text-left text-[10px] uppercase text-zinc-500">
+                <tr className="text-left text-xs uppercase text-zinc-400">
                   <th className="px-3 py-2">Asset</th>
                   <th className="px-3 py-2">Qty</th>
                   <th className="px-3 py-2">{t("Nilai", "Value")}</th>
@@ -248,7 +255,7 @@ function TrackInner() {
           </div>
           <ul className="max-h-[320px] divide-y divide-zinc-800/80 overflow-auto">
             {recentTx.length === 0 ? (
-              <li className="px-3 py-4 text-sm text-zinc-500">{t("Belum ada transaksi.", "No transactions yet.")}</li>
+              <li className="px-3 py-4 text-sm text-zinc-400">{t("Belum ada transaksi.", "No transactions yet.")}</li>
             ) : (
               recentTx.map((tx) => (
                 <li key={tx.id} className="px-3 py-2.5 text-sm">
@@ -256,7 +263,7 @@ function TrackInner() {
                     <span className="font-medium text-zinc-200">
                       {tx.type.replace("_", " ").toUpperCase()} · {tx.symbol}
                     </span>
-                    <span className="shrink-0 tabular-nums text-xs text-zinc-500">
+                    <span className="shrink-0 tabular-nums text-xs text-zinc-400">
                       {formatTrackDateTime(tx.executedAt, locale)}
                     </span>
                   </div>

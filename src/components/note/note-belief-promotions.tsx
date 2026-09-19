@@ -42,8 +42,8 @@ export function NoteBeliefPromotions({ entries }: { entries: JournalEntry[] }) {
 
   return (
     <section className="rounded-lg border border-zinc-800/70 bg-zinc-950/20 px-3 py-3">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{copy.notesMirrorTitle}</h2>
-      <p className="mt-0.5 text-[11px] text-zinc-600">{copy.notesMirrorHint}</p>
+      <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">{copy.notesMirrorTitle}</h2>
+      <p className="mt-0.5 text-xs text-zinc-400">{copy.notesMirrorHint}</p>
       <ul className="mt-3 space-y-2">
         {items.map((p) => (
           <li
@@ -54,25 +54,25 @@ export function NoteBeliefPromotions({ entries }: { entries: JournalEntry[] }) {
             )}
           >
             <p className="font-medium text-zinc-200">{p.title[locale]}</p>
-            <p className="mt-0.5 text-xs text-zinc-500">{p.detail[locale]}</p>
+            <p className="mt-0.5 text-xs text-zinc-400">{p.detail[locale]}</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {p.kind === "playbook_candidate" && p.beliefSnippet ? (
                 <button
                   type="button"
-                  className="rounded-md bg-zinc-100 px-2.5 py-1 text-[11px] font-semibold text-zinc-900 hover:bg-white"
+                  className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-2.5 text-xs font-semibold text-zinc-900 hover:bg-white"
                   onClick={() => onAdopt(p.id, p.beliefSnippet!)}
                 >
                   {adoptedId === p.id ? copy.notesAdoptedPlaybook : copy.notesAdoptPlaybook}
                 </button>
               ) : null}
               {p.href ? (
-                <Link href={p.href} className="rounded-md border border-zinc-700 px-2.5 py-1 text-[11px] text-zinc-300 hover:border-zinc-500">
+                <Link href={p.href} className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-2.5 text-xs text-zinc-300 hover:border-zinc-500">
                   {copy.notesMirrorAction}
                 </Link>
               ) : null}
               <button
                 type="button"
-                className="text-[11px] text-zinc-600 hover:text-zinc-400"
+                className="text-xs text-zinc-400 hover:text-zinc-400"
                 onClick={() => onDismiss(p.id)}
               >
                 {copy.notesDismissPromotion}

@@ -10,8 +10,8 @@ const IMPACT_ICON: Record<string, string> = {
   high: "note-impact-high note-impact-high-fill",
   medium: "note-impact-medium note-impact-medium-fill",
   low: "note-impact-low note-impact-low-fill",
-  holiday: "text-violet-400 fill-violet-400/20",
-  unknown: "text-zinc-500 fill-zinc-500/15",
+  holiday: "note-impact-holiday note-impact-holiday-fill",
+  unknown: "text-zinc-400 fill-zinc-400/15",
 };
 
 export type EconTableColumnLabels = {
@@ -154,7 +154,7 @@ export function EconomicCalendarTable({
             <button
               type="button"
               onClick={onUpNext}
-              className="text-[11px] font-semibold text-sky-400 hover:text-sky-300"
+              className="inline-flex min-h-11 items-center text-xs font-semibold text-zinc-200 hover:text-zinc-50"
             >
               {locale === "en" ? "Up Next" : "Berikutnya"}
             </button>
@@ -164,9 +164,9 @@ export function EconomicCalendarTable({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[880px] border-collapse text-left text-[11px]">
+        <table className="w-full min-w-[880px] border-collapse text-left text-xs">
           <thead>
-            <tr className="border-b border-zinc-600/70 bg-zinc-800/95 text-[10px] font-bold uppercase tracking-wide text-zinc-200">
+            <tr className="border-b border-zinc-600/70 bg-zinc-800/95 text-xs font-bold uppercase tracking-wide text-zinc-200">
               <th className="whitespace-nowrap border-r border-zinc-700/60 px-2 py-2.5 pl-3">{labels.date}</th>
               <th className="whitespace-nowrap border-r border-zinc-700/40 px-2 py-2.5">{labels.time}</th>
               <th className="whitespace-nowrap px-2 py-2.5">{labels.currency}</th>
@@ -198,7 +198,7 @@ export function EconomicCalendarTable({
                   {showDate ? (
                     <td
                       rowSpan={dateSpan}
-                      className="align-top border-r border-zinc-700/55 bg-zinc-900/30 px-2 py-2.5 pl-3 text-[11px] font-semibold leading-snug text-zinc-200"
+                      className="align-top border-r border-zinc-700/55 bg-zinc-900/30 px-2 py-2.5 pl-3 text-xs font-semibold leading-snug text-zinc-200"
                     >
                       {formatDateCell(event.date, locale)}
                     </td>
@@ -227,7 +227,7 @@ export function EconomicCalendarTable({
                     <div className="flex min-w-0 flex-col gap-0.5">
                       <span className="leading-snug text-zinc-50">{event.title}</span>
                       {highlight && countdownLabel ? (
-                        <span className="note-pill-warn w-fit rounded border px-1.5 py-0.5 text-[10px] font-medium tabular-nums">
+                        <span className="note-pill-warn w-fit rounded border px-1.5 py-0.5 text-xs font-medium tabular-nums">
                           {countdownLabel}
                         </span>
                       ) : null}
@@ -245,7 +245,7 @@ export function EconomicCalendarTable({
                         <ExternalLink className="size-3.5" />
                       </a>
                     ) : (
-                      <span className="text-zinc-600">-</span>
+                      <span className="text-zinc-400">-</span>
                     )}
                   </td>
                   <td
@@ -254,7 +254,7 @@ export function EconomicCalendarTable({
                       tone === "up" && "note-pnl-up",
                       tone === "down" && "note-pnl-down",
                       tone === "neutral" && "text-zinc-100",
-                      tone == null && "text-zinc-500"
+                      tone == null && "text-zinc-400"
                     )}
                   >
                     {event.actual?.trim() || ""}

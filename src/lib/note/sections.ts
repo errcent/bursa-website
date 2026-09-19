@@ -138,7 +138,9 @@ export function noteSection(id: NoteSectionId): NoteSection {
 }
 
 export function noteNavActive(pathname: string, href: string): boolean {
-  if (href === "/note") return pathname === "/note" || pathname === "/note/";
+  if (href === "/note") {
+    return pathname === "/" || pathname === "/note" || pathname === "/note/";
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

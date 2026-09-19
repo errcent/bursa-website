@@ -121,7 +121,7 @@ export function NoteAnalyticsWinrate({ entries, locale }: Props) {
 
   if (!symbols.length) {
     return (
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-zinc-400">
         {locale === "en" ? "Log closed trades to see win rate." : "Log trade close untuk lihat win rate."}
       </p>
     );
@@ -141,14 +141,14 @@ export function NoteAnalyticsWinrate({ entries, locale }: Props) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[11px] uppercase tracking-wide text-zinc-500">
+          <p className="text-xs uppercase tracking-wide text-zinc-400">
             {locale === "en" ? "Win rate" : "Win rate"}
           </p>
           <p className="font-heading text-2xl tabular-nums text-zinc-100">
             {overall == null ? "-" : `${roundPct(overall * 100)}%`}
           </p>
           {totals.be > 0 && !includeBe ? (
-            <p className="mt-0.5 text-[11px] text-[var(--chart-info-soft)]">
+            <p className="mt-0.5 text-xs text-[var(--chart-info-soft)]">
               {locale === "en"
                 ? `${totals.be} BE excluded from rate`
                 : `${totals.be} BE tidak masuk perhitungan`}
@@ -156,21 +156,21 @@ export function NoteAnalyticsWinrate({ entries, locale }: Props) {
           ) : null}
         </div>
         <div className="flex flex-wrap items-end gap-4">
-          <label className="flex cursor-pointer items-center gap-2 text-[11px] text-zinc-400">
+          <label className="flex cursor-pointer items-center gap-2 text-xs text-zinc-400">
             <input
               type="checkbox"
               checked={includeBe}
               onChange={(e) => setIncludeBe(e.target.checked)}
-              className="size-3.5 rounded border-zinc-600 bg-zinc-900 accent-[var(--chart-info-strong)]"
+              className="size-4 rounded border-zinc-600 bg-zinc-900 accent-[var(--chart-info-strong)]"
             />
             {labels.showBe}
           </label>
-          <label className="text-[11px] text-zinc-500">
+          <label className="text-xs text-zinc-400">
             {labels.instrument}
             <select
               value={instrument}
               onChange={(e) => setInstrument(e.target.value)}
-              className="mt-1 block min-w-[8rem] rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+              className="note-field mt-1 block min-w-[8rem]"
             >
               <option value="ALL">{labels.all}</option>
               {symbols.map((s) => (
@@ -183,7 +183,7 @@ export function NoteAnalyticsWinrate({ entries, locale }: Props) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3 text-[10px] uppercase tracking-wide text-zinc-500">
+      <div className="flex flex-wrap gap-3 text-xs uppercase tracking-wide text-zinc-400">
         <span className="inline-flex items-center gap-1.5">
           <span className="size-2 rounded-sm bg-[var(--chart-up-strong)]" aria-hidden />
           {labels.wins}

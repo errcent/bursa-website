@@ -37,7 +37,7 @@ const tooltipStyle = {
 
 export function TrackAllocationPie({ slices }: { slices: AllocationSlice[] }) {
   if (!slices.length) {
-    return <p className="text-sm text-zinc-500">-</p>;
+    return <p className="text-sm text-zinc-400">-</p>;
   }
   return (
     <div className="h-[220px] w-full">
@@ -57,7 +57,7 @@ export function TrackAllocationPie({ slices }: { slices: AllocationSlice[] }) {
 
 export function TrackAllocationOverTime({ series, symbols }: { series: AllocationTimePoint[]; symbols: string[] }) {
   if (!series.length || !symbols.length) {
-    return <p className="text-sm text-zinc-500">-</p>;
+    return <p className="text-sm text-zinc-400">-</p>;
   }
   const data = series.map((p) => {
     const row: Record<string, string | number> = { date: p.date.slice(5) };
@@ -99,7 +99,7 @@ export function TrackHistoryLine({
   /** When true, Y-axis fits data band (not anchored at 0). */
   pnlMode?: boolean;
 }) {
-  if (!points.length) return <p className="text-sm text-zinc-500">-</p>;
+  if (!points.length) return <p className="text-sm text-zinc-400">-</p>;
   const yDomain = pnlMode ? seriesYDomain(points.map((p) => p.value)) : undefined;
   return (
     <div className="h-[220px] w-full">

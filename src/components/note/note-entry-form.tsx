@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { isProductionHostRouting, originFor } from "@/lib/hosts/hosts";
+import { jakartaDateKey } from "@/lib/note/economic-calendar/date-range";
 import { noteCopy } from "@/lib/note/copy";
 import { noteSsoStartHref } from "@/lib/note/sso-urls";
 import { courseClassHref } from "@/lib/security/safe-http-url";
@@ -12,9 +13,9 @@ import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
 
 const inputClass =
-  "mt-1 h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/40 px-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-zinc-600";
+  "note-field mt-1 text-zinc-100 placeholder:text-zinc-400";
 
-const labelClass = "block text-[11px] font-medium uppercase tracking-wide text-zinc-500";
+const labelClass = "block text-xs font-medium text-zinc-400";
 
 export type NoteEntryLayer = "execution" | "cognition";
 
@@ -36,7 +37,7 @@ export function NoteEntryForm({
   const [symbol, setSymbol] = useState("");
   const [side, setSide] = useState("BUY");
   const [pnl, setPnl] = useState("");
-  const [openedDate, setOpenedDate] = useState(initialDate ?? "");
+  const [openedDate, setOpenedDate] = useState(initialDate ?? jakartaDateKey());
   const [note, setNote] = useState("");
   const [ruleBroken, setRuleBroken] = useState("");
   const [lesson, setLesson] = useState("");
@@ -92,7 +93,7 @@ export function NoteEntryForm({
   return (
     <form onSubmit={onSubmit} className="mx-auto max-w-lg space-y-8">
       {cognition ? (
-        <p className="text-sm text-zinc-500">{copy.notesCaptureHint}</p>
+        <p className="text-sm text-zinc-400">{copy.notesCaptureHint}</p>
       ) : null}
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-5">
@@ -246,13 +247,17 @@ export function NoteEntryForm({
       {error ? <p className="note-pnl-down text-sm">{error}</p> : null}
 
       <div className="flex items-center justify-between border-t border-zinc-800 pt-6">
-        <button type="button" className="text-sm text-zinc-500 hover:text-zinc-200" onClick={() => router.push("/note")}>
+        <button
+          type="button"
+          className="inline-flex min-h-11 items-center text-sm text-zinc-400 hover:text-zinc-200"
+          onClick={() => router.push("/note")}
+        >
           {copy.batal}
         </button>
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-zinc-100 px-5 py-2 text-sm font-medium text-zinc-950 hover:bg-white disabled:bg-zinc-800 disabled:text-zinc-500"
+          className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-5 text-sm font-medium text-zinc-950 hover:bg-white disabled:bg-zinc-800 disabled:text-zinc-400"
         >
           {pending ? copy.menyimpan : copy.simpan}
         </button>

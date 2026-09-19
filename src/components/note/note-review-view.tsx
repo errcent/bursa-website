@@ -47,37 +47,37 @@ export function NoteReviewView() {
         : "Belum ada pola mistake dominan - cukup catatan mingguan singkat.";
 
   if (journal.loading || !journal.data) {
-    return <p className="text-sm text-zinc-600">{copy.loading}</p>;
+    return <p className="text-sm text-zinc-400">{copy.loading}</p>;
   }
 
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="rounded-lg border border-zinc-800/80 p-4">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-500">
+          <p className="text-xs uppercase tracking-wide text-zinc-400">
             {prefs.locale === "en" ? "Last 7 days" : "7 hari"}
           </p>
           <p className="mt-2 font-heading text-xl tabular-nums text-zinc-100">
             {formatPnl(week.pnlSum, formatOpts)}
           </p>
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-zinc-400">
             {week.closedCount} close · {week.winRate == null ? "-" : `${Math.round(week.winRate * 100)}% win`}
           </p>
         </div>
         <div className="rounded-lg border border-zinc-800/80 p-4">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-500">
+          <p className="text-xs uppercase tracking-wide text-zinc-400">
             {prefs.locale === "en" ? "Last 31 days" : "31 hari"}
           </p>
           <p className="mt-2 font-heading text-xl tabular-nums text-zinc-100">
             {formatPnl(month.pnlSum, formatOpts)}
           </p>
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-zinc-400">
             {month.closedCount} close · {month.winRate == null ? "-" : `${Math.round(month.winRate * 100)}% win`}
           </p>
         </div>
       </div>
       <div className="rounded-md border border-zinc-800 bg-zinc-900/40 px-3 py-3 text-sm text-zinc-300">
-        <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-zinc-400">
           {prefs.locale === "en" ? "Mistake summary" : "Ringkasan mistake"}
         </p>
         {mistake}

@@ -153,7 +153,7 @@ export function NotePlaybookOnboarding({
                 {t("Disiplin", "Discipline")}: {discipline}
               </li>
             </ul>
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-zinc-400">
               {t(
                 "Playbook akan adapt dari Journal. Tanpa archetype.",
                 "Playbook adapts from Journal. No archetype shown."
@@ -214,7 +214,7 @@ function NavButtons({
 }) {
   return (
     <div className="flex gap-2 pt-2">
-      <button type="button" className="flex-1 py-2 text-sm text-zinc-500 hover:text-zinc-200" onClick={onBack}>
+      <button type="button" className="flex-1 py-2 text-sm text-zinc-400 hover:text-zinc-200" onClick={onBack}>
         {locale === "en" ? "Back" : "Kembali"}
       </button>
       <button

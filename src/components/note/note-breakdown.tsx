@@ -14,9 +14,9 @@ function Column({
 }) {
   return (
     <div>
-      <h3 className="mb-2 text-[11px] text-zinc-500">{title}</h3>
+      <h3 className="mb-2 text-xs text-zinc-400">{title}</h3>
       {rows.length === 0 ? (
-        <p className="text-xs text-zinc-600"> - </p>
+        <p className="text-xs text-zinc-400"> - </p>
       ) : (
         <ul className="space-y-1">
           {rows.slice(0, 8).map((row) => (
@@ -51,7 +51,7 @@ export function NoteBreakdown({
   if (symbols.length === 0) return null;
   return (
     <div className="space-y-3">
-      {scopeLabel ? <p className="text-[11px] text-zinc-600">{scopeLabel}</p> : null}
+      {scopeLabel ? <p className="text-xs text-zinc-400">{scopeLabel}</p> : null}
       <Column title="Simbol" rows={symbols} colorMode={colorMode} formatOpts={formatOpts} />
     </div>
   );

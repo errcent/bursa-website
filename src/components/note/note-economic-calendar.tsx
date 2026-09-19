@@ -58,8 +58,8 @@ function FilterSection({
   return (
     <fieldset className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <legend className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">{title}</legend>
-        <span className="text-[10px] text-zinc-600">
+        <legend className="text-xs font-medium uppercase tracking-wide text-zinc-400">{title}</legend>
+        <span className="text-xs text-zinc-400">
           <button type="button" className="hover:text-zinc-300" onClick={onAll}>
             {allLabel}
           </button>
@@ -212,7 +212,7 @@ export function NoteEconomicCalendar({
   const filterToggle = !compact ? (
     <button
       type="button"
-      className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-300 hover:text-zinc-100"
+      className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-300 hover:text-zinc-100"
       onClick={() => {
         setDraft(filter);
         setFilterOpen((o) => !o);
@@ -240,12 +240,12 @@ export function NoteEconomicCalendar({
 
   return (
     <section className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4 sm:p-5">
-      {monthHint ? <p className="mb-3 text-[11px] leading-relaxed text-zinc-600">{monthHint}</p> : null}
+      {monthHint ? <p className="mb-3 text-xs leading-relaxed text-zinc-400">{monthHint}</p> : null}
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <CalendarDays className="size-4 text-zinc-400" aria-hidden />
-        <h2 className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">{copy.econCalendar}</h2>
+        <h2 className="text-xs font-medium uppercase tracking-wide text-zinc-400">{copy.econCalendar}</h2>
         {data?.provider && data.provider !== "none" ? (
-          <span className="rounded bg-zinc-800/80 px-1.5 py-0.5 text-[10px] uppercase text-zinc-500">
+          <span className="rounded bg-zinc-800/80 px-1.5 py-0.5 text-xs uppercase text-zinc-400">
             {data.provider === "scrape_snapshot" || data.provider === "forexfactory_json"
               ? "scrape"
               : data.provider}
@@ -266,7 +266,7 @@ export function NoteEconomicCalendar({
             <div className="min-w-0 flex-1">
               <p className="text-xs text-zinc-400">{copy.econNextEvent}</p>
               <p className="truncate text-sm font-medium text-zinc-100">{nearest.title}</p>
-              <p className="text-[11px] text-zinc-500">
+              <p className="text-xs text-zinc-400">
                 {nearest.currency} · {nearest.timeLabel}
               </p>
             </div>
@@ -282,7 +282,7 @@ export function NoteEconomicCalendar({
             </p>
           </div>
           {volatilityAware && countdown.heavyHighImpact ? (
-            <p className="mt-2 flex items-center gap-1 text-[10px] text-zinc-500">
+            <p className="mt-2 flex items-center gap-1 text-xs text-zinc-400">
               <Radio className="note-warn size-3 opacity-80" />
               {copy.econVolatilityHint}
             </p>
@@ -384,7 +384,7 @@ export function NoteEconomicCalendar({
           </FilterSection>
 
           {showCharts && draft.currencies.length > 0 && draft.currencies.length < ECON_FILTER_CURRENCIES.length ? (
-            <p className="text-[11px] text-zinc-500">
+            <p className="text-xs text-zinc-400">
               {copy.newsChartsOnApply}{" "}
               <span className="font-medium text-zinc-400">
                 {draft.currencies.slice(0, 4).join(" · ")}
@@ -395,14 +395,14 @@ export function NoteEconomicCalendar({
           <div className="flex flex-wrap gap-2 pt-1">
             <button
               type="button"
-              className="rounded-md bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-900 hover:bg-white"
+              className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-900 hover:bg-white"
               onClick={applyDraft}
             >
               {copy.econApplyFilter}
             </button>
             <button
               type="button"
-              className="rounded-md border border-zinc-700 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800"
+              className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
               onClick={() => {
                 setDraft(filter);
                 setFilterOpen(false);
@@ -410,7 +410,7 @@ export function NoteEconomicCalendar({
             >
               {copy.batal}
             </button>
-            <button type="button" className="text-xs text-zinc-500 hover:text-zinc-300" onClick={resetFilter}>
+            <button type="button" className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200" onClick={resetFilter}>
               {copy.econRemoveFilter}
             </button>
           </div>
@@ -418,11 +418,11 @@ export function NoteEconomicCalendar({
       ) : null}
 
       {fetchError === "auth" ? (
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-zinc-400">
           {prefs.locale === "en" ? "Sign in to load the calendar." : "Masuk untuk memuat kalender."}
         </p>
       ) : loading ? (
-        <p className="text-xs text-zinc-600">…</p>
+        <p className="text-xs text-zinc-400">…</p>
       ) : visible.length ? (
         <EconomicCalendarTable
           events={visible}
@@ -434,9 +434,9 @@ export function NoteEconomicCalendar({
         />
       ) : (
         <div className="rounded-md border border-dashed border-zinc-800/90 bg-zinc-950/40 px-4 py-6 text-center">
-          <p className="text-sm text-zinc-500">{copy.econEmpty}</p>
+          <p className="text-sm text-zinc-400">{copy.econEmpty}</p>
           {!compact ? (
-            <p className="mt-2 text-xs text-zinc-600">
+            <p className="mt-2 text-xs text-zinc-400">
               {prefs.locale === "en"
                 ? "Use Filter above to widen impact, event type, or currency, then Apply."
                 : "Pakai Filter di atas untuk melonggarkan impact, jenis event, atau mata uang, lalu Terapkan."}
@@ -446,15 +446,15 @@ export function NoteEconomicCalendar({
       )}
 
       {data?.coverage && !data.coverage.complete && data.coverage.note ? (
-        <p className="mt-2 text-[10px] text-zinc-600">{data.coverage.note}</p>
+        <p className="mt-2 text-xs text-zinc-400">{data.coverage.note}</p>
       ) : null}
 
-      <p className="mt-3 text-[10px] leading-snug text-zinc-600">{data?.disclaimer ?? copy.econDisclaimer}</p>
+      <p className="mt-3 text-xs leading-snug text-zinc-400">{data?.disclaimer ?? copy.econDisclaimer}</p>
       <a
         href="https://www.forexfactory.com/calendar"
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 inline-flex items-center gap-1 text-[11px] text-zinc-400 hover:text-zinc-200"
+        className="mt-2 inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-200"
       >
         Forex Factory <ExternalLink className="size-3" />
       </a>

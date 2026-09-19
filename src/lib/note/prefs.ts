@@ -138,7 +138,7 @@ export function parseNotePrefs(raw: unknown): NotePrefs {
     usdIdrRateManual: o.usdIdrRateManual === true,
     usdIdrRateFetchedAt:
       typeof o.usdIdrRateFetchedAt === "string" ? o.usdIdrRateFetchedAt : undefined,
-    theme: "dark",
+    theme: o.theme === "light" || o.theme === "system" ? o.theme : "dark",
     onboardingCompleted: typeof o.onboardingCompleted === "boolean" ? o.onboardingCompleted : true,
     personalization: parsePersonalization(o.personalization),
   };
@@ -169,10 +169,7 @@ export function loadNotePrefs(): NotePrefs {
 
 export function saveNotePrefs(prefs: NotePrefs) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(
-    NOTE_PREFS_KEY,
-    JSON.stringify({ ...prefs, version: 1, theme: "dark" as const })
-  );
+  window.localStorage.setItem(NOTE_PREFS_KEY, JSON.stringify({ ...prefs, version: 1 }));
   listeners.forEach((listener) => listener());
 }
 
@@ -190,7 +187,8 @@ export function pnlOptsForSlot(prefs: NotePrefs, slot: PnlDisplaySlot): FormatPn
   return pnlFormatForSlot(pnlOptsFromPrefs(prefs), slot);
 }
 
-/** Note is dark-only for now; theme field kept for future. */
-export function resolveNoteTheme(_theme: NoteTheme, _prefersDark = true): "dark" {
+export function resolveNoteTheme(theme: NoteTheme, prefersDark = true): "dark" | "light" {
+  if (theme === "light") return "light";
+  if (theme === "system") return prefersDark ? "dark" : "light";
   return "dark";
 }

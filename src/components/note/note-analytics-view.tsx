@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
@@ -44,7 +44,7 @@ function AnalyticsSection({
     <section className="scroll-mt-20 space-y-3 border-t border-zinc-800/70 pt-6 first:border-t-0 first:pt-0">
       <div>
         <h2 className="text-sm font-semibold tracking-tight text-zinc-100">{title}</h2>
-        {hint ? <p className="mt-0.5 text-xs text-zinc-500">{hint}</p> : null}
+        {hint ? <p className="mt-0.5 text-xs text-zinc-400">{hint}</p> : null}
       </div>
       {children}
     </section>
@@ -60,7 +60,7 @@ function EdgeTable({
   formatOpts: ReturnType<typeof pnlOptsForSlot>;
   empty: string;
 }) {
-  if (!rows.length) return <p className="text-sm text-zinc-500">{empty}</p>;
+  if (!rows.length) return <p className="text-sm text-zinc-400">{empty}</p>;
   return (
     <ul className="divide-y divide-zinc-800/80 rounded-lg border border-zinc-800/80">
       {rows.slice(0, 6).map((r) => (
@@ -119,7 +119,7 @@ export function NoteAnalyticsView() {
   );
 
   if (journal.loading || !journal.data) {
-    return <p className="text-sm text-zinc-600">{copy.loading}</p>;
+    return <p className="text-sm text-zinc-400">{copy.loading}</p>;
   }
 
   const focusBanner =
@@ -149,7 +149,7 @@ export function NoteAnalyticsView() {
         {report.edge.headline[locale]}
       </p>
 
-      {focusBanner ? <p className="text-xs text-zinc-500">{focusBanner}</p> : null}
+      {focusBanner ? <p className="text-xs text-zinc-400">{focusBanner}</p> : null}
 
       <AnalyticsSection
         title={locale === "en" ? "Win rate" : "Win rate"}
@@ -189,7 +189,7 @@ export function NoteAnalyticsView() {
       >
         <div className="grid gap-5 lg:grid-cols-3">
           <div>
-            <h3 className="mb-2 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+            <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-400">
               {locale === "en" ? "Symbol / setup" : "Simbol / setup"}
             </h3>
             <EdgeTable
@@ -199,7 +199,7 @@ export function NoteAnalyticsView() {
             />
           </div>
           <div>
-            <h3 className="mb-2 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+            <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-400">
               {locale === "en" ? "Session" : "Sesi"}
             </h3>
             <EdgeTable
@@ -209,7 +209,7 @@ export function NoteAnalyticsView() {
             />
           </div>
           <div>
-            <h3 className="mb-2 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+            <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-400">
               {locale === "en" ? "Asset class" : "Kelas aset"}
             </h3>
             <EdgeTable
@@ -230,7 +230,7 @@ export function NoteAnalyticsView() {
         }
       >
         {report.leakage.length === 0 ? (
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-400">
             {locale === "en"
               ? "No dominated patterns yet (revenge, clusters, rule breaks)."
               : "Belum ada pola dominasi (revenge, cluster, pelanggaran aturan)."}
@@ -258,7 +258,7 @@ export function NoteAnalyticsView() {
         hint={locale === "en" ? "When to trade vs stay flat." : "Kapan trade vs stay flat."}
       >
         {report.context.length === 0 ? (
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-400">
             {locale === "en" ? "Context matrix needs more journal closes." : "Matrix konteks butuh lebih banyak close di Journal."}
           </p>
         ) : (
@@ -267,7 +267,7 @@ export function NoteAnalyticsView() {
               <div key={c.key} className={cn("rounded-lg border px-4 py-3", ZONE_CLASS[c.zone])}>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-medium">{c.label[locale]}</span>
-                  <span className="text-[11px] uppercase tracking-wide opacity-80">{ZONE_LABEL[c.zone][locale]}</span>
+                  <span className="text-xs uppercase tracking-wide opacity-80">{ZONE_LABEL[c.zone][locale]}</span>
                 </div>
                 <p className="mt-2 tabular-nums text-sm opacity-90">
                   {formatPnl(c.net, formatOpts)} · {c.count} close
@@ -288,7 +288,7 @@ export function NoteAnalyticsView() {
         }
       >
         {report.drift.length === 0 ? (
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-400">
             {locale === "en" ? "Need activity in both windows." : "Butuh aktivitas di kedua window."}
           </p>
         ) : (
@@ -307,7 +307,7 @@ export function NoteAnalyticsView() {
                         ? "note-pnl-up"
                         : d.direction === "worse"
                           ? "note-pnl-down"
-                          : "text-zinc-500"
+                          : "text-zinc-400"
                     }
                   >
                     {d.direction === "better" ? "↑" : d.direction === "worse" ? "↓" : "→"}
@@ -328,7 +328,7 @@ export function NoteAnalyticsView() {
         }
       >
         {report.suggestions.length === 0 ? (
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-400">
             {locale === "en" ? "No rule changes suggested yet." : "Belum ada usulan perubahan aturan."}
           </p>
         ) : (
@@ -341,7 +341,7 @@ export function NoteAnalyticsView() {
                   <button
                     type="button"
                     onClick={() => applySuggestion(s.id)}
-                    className="rounded-md bg-zinc-100 px-3 py-1.5 text-sm font-medium text-zinc-900 hover:bg-white"
+                    className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-sm font-medium text-zinc-900 hover:bg-white"
                   >
                     {appliedId === s.id
                       ? locale === "en"
@@ -353,7 +353,7 @@ export function NoteAnalyticsView() {
                   </button>
                   <Link
                     href="/note/playbook"
-                    className="rounded-md border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 hover:border-zinc-500"
+                    className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-sm text-zinc-300 hover:border-zinc-500"
                   >
                     {locale === "en" ? "Open Playbook" : "Buka Playbook"}
                   </Link>

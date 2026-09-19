@@ -118,8 +118,8 @@ export default function DailyReturnsCalendar({
           <button
             type="button"
             className={cn(
-              "rounded-md text-foreground/45 hover:bg-foreground/5 hover:text-foreground",
-              hero ? "px-2.5 py-1 text-xl" : "px-1.5 py-0.5 text-sm"
+              "inline-flex size-11 items-center justify-center rounded-md text-foreground/45 hover:bg-foreground/5 hover:text-foreground",
+              hero ? "text-xl" : "text-sm"
             )}
             aria-label={locale === "en" ? "Previous month" : "Bulan sebelumnya"}
             onClick={onPrev}
@@ -137,8 +137,8 @@ export default function DailyReturnsCalendar({
           <button
             type="button"
             className={cn(
-              "rounded-md text-foreground/45 hover:bg-foreground/5 hover:text-foreground",
-              hero ? "px-2.5 py-1 text-xl" : "px-1.5 py-0.5 text-sm"
+              "inline-flex size-11 items-center justify-center rounded-md text-foreground/45 hover:bg-foreground/5 hover:text-foreground",
+              hero ? "text-xl" : "text-sm"
             )}
             aria-label={locale === "en" ? "Next month" : "Bulan berikutnya"}
             onClick={onNext}
@@ -149,7 +149,7 @@ export default function DailyReturnsCalendar({
         <span
           className={cn(
             "shrink-0 tabular-nums text-foreground/45",
-            hero ? "text-xs sm:text-sm" : "text-[10px]"
+            hero ? "text-xs sm:text-sm" : "text-xs"
           )}
         >
           {hot && hotDay != null ? (
@@ -196,7 +196,7 @@ export default function DailyReturnsCalendar({
             key={d}
             className={cn(
               "pb-1 text-center font-medium text-foreground/45",
-              hero ? "text-[11px] sm:text-xs" : "pb-0.5 text-[9px]"
+              hero ? "text-xs" : "pb-0.5 text-[11px]"
             )}
           >
             {hero ? d : d.slice(0, 2)}
@@ -205,7 +205,7 @@ export default function DailyReturnsCalendar({
         <span
           className={cn(
             "pb-1 text-center font-normal text-foreground/35",
-            hero ? "text-[10px] sm:text-[11px]" : "pb-0.5 text-[8px]"
+            hero ? "text-xs" : "pb-0.5 text-[11px]"
           )}
           title={locale === "en" ? "Week total (informational)" : "Total minggu (informasi)"}
         >
@@ -258,7 +258,7 @@ export default function DailyReturnsCalendar({
                       "grid w-full outline-none tabular-nums",
                       hero
                         ? "min-h-[4.25rem] sm:min-h-[5.25rem] md:min-h-[5.75rem] place-content-center gap-0.5 rounded-lg px-0.5 py-1.5 text-left sm:px-1"
-                        : "aspect-square place-items-center rounded-[3px] text-[8px] font-semibold"
+                        : "aspect-square place-items-center rounded-[3px] text-[11px] font-semibold"
                     )}
                     style={{
                       background: hasTrade ? cellFill(toneForFill, on || focused) : "transparent",
@@ -286,14 +286,14 @@ export default function DailyReturnsCalendar({
                         </span>
                         {hasTrade && formatDayPnl ? (
                           <span
-                            className="w-full truncate text-left text-[11px] font-semibold leading-tight sm:text-xs"
+                            className="w-full truncate text-left text-xs font-semibold leading-tight"
                             style={{ color: tone >= 0 ? GREEN : RED }}
                           >
                             {formatDayPnl(bucket.pnl)}
                           </span>
                         ) : hasTrade ? (
                           <span
-                            className="w-full text-left text-[10px] font-medium sm:text-[11px]"
+                            className="w-full text-left text-xs font-medium"
                             style={{ color: tone >= 0 ? GREEN : RED }}
                           >
                             {signed(r, 1)}%
@@ -301,7 +301,7 @@ export default function DailyReturnsCalendar({
                         ) : null}
                       </>
                     ) : (
-                      <span className="text-[8px] font-semibold leading-none">{day}</span>
+                      <span className="text-[11px] font-semibold leading-none">{day}</span>
                     )}
                   </motion.button>
                 )
@@ -317,7 +317,7 @@ export default function DailyReturnsCalendar({
                   <span
                     className={cn(
                       "max-w-full truncate font-normal tabular-nums leading-tight text-foreground/45",
-                      hero ? "text-[9px] sm:text-[10px]" : "text-[7px]"
+                      hero ? "text-xs" : "text-[11px]"
                     )}
                     title={
                       locale === "en"

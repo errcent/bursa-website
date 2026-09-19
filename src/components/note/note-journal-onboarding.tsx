@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { NoteQuickPrefs } from "@/components/note/note-quick-prefs";
 import { noteCopy } from "@/lib/note/copy";
@@ -32,7 +32,7 @@ function OptionRow<T extends string>({
           type="button"
           onClick={() => onChange(v)}
           className={cn(
-            "rounded-lg border px-3 py-2.5 text-left text-sm transition-colors",
+            "min-h-11 rounded-lg border px-3 py-2.5 text-left text-sm transition-colors",
             value === v
               ? "border-[var(--chart-info-strong)]/45 bg-[var(--chart-info-track)] text-zinc-100"
               : "border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
@@ -48,14 +48,17 @@ function OptionRow<T extends string>({
 export function NoteJournalOnboarding({
   locale: initialLocale,
   currency: initialCurrency,
+  usdIdrRate: initialUsdIdrRate,
   onComplete,
 }: {
   locale: NoteLocale;
   currency: DisplayCurrency;
+  usdIdrRate?: number;
   onComplete: (patch: {
     locale: NoteLocale;
     currency: DisplayCurrency;
     usdIdrRate: number;
+    usdIdrRateManual?: boolean;
     personalization: NotePersonalization;
     onboardingCompleted: true;
     heroRange?: "all" | "month";
@@ -64,13 +67,33 @@ export function NoteJournalOnboarding({
   const [step, setStep] = useState(0);
   const [locale, setLocale] = useState(initialLocale);
   const [currency, setCurrency] = useState(initialCurrency);
-  const [usdIdrRate, setUsdIdrRate] = useState(DEFAULT_USD_IDR);
+  const [usdIdrRate, setUsdIdrRate] = useState(initialUsdIdrRate ?? DEFAULT_USD_IDR);
+  const [rateTouched, setRateTouched] = useState(false);
+  const rateTouchedRef = useRef(false);
   const [market, setMarket] = useState<NotePrimaryMarket>("mixed");
   const [experience, setExperience] = useState<NoteExperience>("menengah");
   const [focus, setFocus] = useState<NoteJournalFocus>("semua");
 
   const copy = noteCopy(locale);
   const t = (id: string, en: string) => (locale === "en" ? en : id);
+
+  useEffect(() => {
+    if (rateTouchedRef.current) return;
+    if (initialUsdIdrRate && initialUsdIdrRate !== DEFAULT_USD_IDR) {
+      setUsdIdrRate(initialUsdIdrRate);
+    }
+  }, [initialUsdIdrRate]);
+
+  useEffect(() => {
+    if (rateTouchedRef.current) return;
+    void fetch("/api/note/fx/usd-idr", { credentials: "include", cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((body: { rate?: number } | null) => {
+        if (rateTouchedRef.current || body?.rate == null) return;
+        setUsdIdrRate(body.rate);
+      })
+      .catch(() => {});
+  }, []);
 
   const finish = () => {
     const personalization: NotePersonalization = {
@@ -82,6 +105,7 @@ export function NoteJournalOnboarding({
       locale,
       currency,
       usdIdrRate,
+      ...(rateTouched ? { usdIdrRateManual: true } : {}),
       personalization,
       onboardingCompleted: true,
       ...(focus === "edge" ? { heroRange: "month" as const } : {}),
@@ -109,7 +133,7 @@ export function NoteJournalOnboarding({
             </p>
             <button
               type="button"
-              className="w-full rounded-md bg-zinc-100 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-white"
+              className="min-h-11 w-full rounded-md bg-zinc-100 text-sm font-semibold text-zinc-950 hover:bg-white"
               onClick={() => setStep(1)}
             >
               {t("Mulai", "Start")}
@@ -123,7 +147,7 @@ export function NoteJournalOnboarding({
               <h2 className="font-heading text-lg font-semibold text-zinc-50">
                 {t("Preferensi tampilan", "Display preferences")}
               </h2>
-              <p className="mt-1 text-xs text-zinc-500">
+              <p className="mt-1 text-xs text-zinc-400">
                 {t("Bahasa dan mata uang tampilan PnL.", "Language and PnL display currency.")}
               </p>
             </div>
@@ -133,20 +157,24 @@ export function NoteJournalOnboarding({
               usdIdrRate={usdIdrRate}
               onLocale={setLocale}
               onCurrency={setCurrency}
-              onUsdIdrRate={setUsdIdrRate}
+              onUsdIdrRate={(rate) => {
+                rateTouchedRef.current = true;
+                setRateTouched(true);
+                setUsdIdrRate(rate);
+              }}
               copy={copy}
             />
             <div className="flex gap-2">
               <button
                 type="button"
-                className="flex-1 rounded-md border border-zinc-700 py-2 text-sm text-zinc-300"
+                className="min-h-11 flex-1 rounded-md border border-zinc-700 text-sm text-zinc-300"
                 onClick={() => setStep(0)}
               >
                 {t("Kembali", "Back")}
               </button>
               <button
                 type="button"
-                className="flex-1 rounded-md bg-zinc-100 py-2 text-sm font-semibold text-zinc-950 hover:bg-white"
+                className="min-h-11 flex-1 rounded-md bg-zinc-100 text-sm font-semibold text-zinc-950 hover:bg-white"
                 onClick={() => setStep(2)}
               >
                 {t("Lanjut", "Continue")}
@@ -234,14 +262,14 @@ function NavBackNext({
     <div className="flex gap-2 pt-2">
       <button
         type="button"
-        className="flex-1 rounded-md border border-zinc-700 py-2 text-sm text-zinc-300"
+        className="min-h-11 flex-1 rounded-md border border-zinc-700 text-sm text-zinc-300"
         onClick={onBack}
       >
         {t("Kembali", "Back")}
       </button>
       <button
         type="button"
-        className="flex-1 rounded-md bg-zinc-100 py-2 text-sm font-semibold text-zinc-950 hover:bg-white"
+        className="min-h-11 flex-1 rounded-md bg-zinc-100 text-sm font-semibold text-zinc-950 hover:bg-white"
         onClick={onNext}
       >
         {nextLabel ?? t("Lanjut", "Continue")}

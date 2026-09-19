@@ -24,9 +24,16 @@ export function saveTrackStoreLocal(store: TrackStore) {
   localStorage.setItem(TRACK_STORAGE_KEY, JSON.stringify(store));
 }
 
+/** Seed IDs from `demo-seed.ts`. Persist does not turn them into real holdings. */
+export function isDemoTrackStore(store: TrackStore): boolean {
+  if (store.portfolios.length === 0) return false;
+  return store.portfolios.every((p) => p.id.startsWith("demo-portfolio-"));
+}
+
 /** Seed demo portfolios when empty during open access preview. */
 export function withTrackDemoFallback(store: TrackStore): { store: TrackStore; demo: boolean } {
   if (!isNoteOpenAccessPeriod()) return { store, demo: false };
+  if (isDemoTrackStore(store)) return { store, demo: true };
   if (store.portfolios.length > 0) return { store, demo: false };
   const demo = buildDemoTrackStore();
   return { store: demo, demo: true };

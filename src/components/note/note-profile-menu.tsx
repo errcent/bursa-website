@@ -32,7 +32,7 @@ export function NoteProfileMenuContent() {
   const openAccess = isNoteOpenAccessPeriod();
 
   if (isLoading) {
-    return <p className="px-2 py-3 text-xs text-zinc-500">{copy.profil}</p>;
+    return <p className="px-2 py-3 text-xs text-zinc-400">{copy.profil}</p>;
   }
 
   const patchLocale = (locale: NoteLocale) => update({ locale });
@@ -43,7 +43,7 @@ export function NoteProfileMenuContent() {
     <>
       <DropdownMenuGroup>
         <DropdownMenuLabel className="font-normal">
-          <p className="text-[11px] text-zinc-500">{copy.accountEmail}</p>
+          <p className="text-xs text-zinc-400">{copy.accountEmail}</p>
           <p className="truncate text-sm text-zinc-100">
             {session?.email ??
               (openAccess

@@ -144,7 +144,7 @@ function PromptChipRow({
             key={chip.label}
             type="button"
             onClick={() => onSend(chip.send)}
-            className="flex shrink-0 items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/70 px-3 py-1.5 text-left text-[12px] text-zinc-200 transition-colors hover:border-zinc-600 hover:bg-zinc-900"
+            className="flex min-h-11 shrink-0 items-center gap-2 rounded-md border border-zinc-800 bg-zinc-900/70 px-3 text-left text-xs text-zinc-200 transition-colors hover:border-zinc-600 hover:bg-zinc-900"
           >
             <span
               className={cn(
@@ -168,7 +168,7 @@ function PromptChipRow({
           key={chip.label}
           type="button"
           onClick={() => onSend(chip.send)}
-          className="flex items-center gap-2.5 rounded-full border border-zinc-800 bg-zinc-900/50 px-3 py-2.5 text-left text-[13px] text-zinc-200 transition-colors hover:border-zinc-600 hover:bg-zinc-900"
+          className="flex min-h-11 items-center gap-2.5 rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2.5 text-left text-sm text-zinc-200 transition-colors hover:border-zinc-600 hover:bg-zinc-900"
         >
           <span
             className={cn(
@@ -191,6 +191,7 @@ export function NoteAiAssistant() {
   const copy = noteCopy(prefs.locale);
   const journal = useNoteJournal();
   const formatOpts = pnlOptsFromPrefs(prefs);
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMsg[]>([]);
@@ -218,8 +219,8 @@ export function NoteAiAssistant() {
       {
         label: copy.aiPromptSummarize,
         send: copy.aiPromptSummarize,
-        icon: <BarChart3 className="size-4 text-sky-400" aria-hidden />,
-        iconWrap: "bg-sky-500/15",
+        icon: <BarChart3 className="size-4 text-zinc-300" aria-hidden />,
+        iconWrap: "bg-zinc-800",
       },
       {
         label: copy.aiPromptTilt,
@@ -242,14 +243,14 @@ export function NoteAiAssistant() {
       {
         label: copy.aiPromptLog,
         send: copy.aiPromptLog,
-        icon: <PenLine className="size-4 text-violet-400" aria-hidden />,
-        iconWrap: "bg-violet-500/15",
+        icon: <PenLine className="size-4 text-zinc-300" aria-hidden />,
+        iconWrap: "bg-zinc-800",
       },
       {
         label: copy.aiPromptMore,
         send: copy.aiPromptMore,
-        icon: <LayoutGrid className="size-4 text-fuchsia-400" aria-hidden />,
-        iconWrap: "bg-fuchsia-500/15",
+        icon: <LayoutGrid className="size-4 text-zinc-300" aria-hidden />,
+        iconWrap: "bg-zinc-800",
       },
     ],
     [copy]
@@ -275,6 +276,10 @@ export function NoteAiAssistant() {
     setMessages([]);
     setInput("");
     inputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   useEffect(() => {
@@ -319,6 +324,8 @@ export function NoteAiAssistant() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
+  if (!mounted) return null;
+
   const name = firstName(session?.name ?? session?.email, prefs.locale);
   const greeting =
     prefs.locale === "en" ? `Hi ${name}, ${copy.aiWelcomeBack}` : `Hai ${name}, ${copy.aiWelcomeBack}`;
@@ -329,7 +336,7 @@ export function NoteAiAssistant() {
     <>
       {open ? (
         <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px] lg:bg-black/25"
+          className="fixed inset-0 z-40 bg-black/50 lg:bg-black/25"
           aria-hidden
           onClick={() => setOpen(false)}
         />
@@ -348,12 +355,12 @@ export function NoteAiAssistant() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="note-ai-panel-title"
-            className="flex h-[min(85dvh,640px)] w-[min(calc(100vw-1.5rem),420px)] flex-col overflow-hidden rounded-2xl border border-zinc-800/90 bg-zinc-950 shadow-2xl shadow-black/60"
+            className="flex h-[min(85dvh,640px)] w-[min(calc(100vw-1.5rem),420px)] flex-col overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950"
           >
             <header className="flex shrink-0 items-center gap-2 border-b border-zinc-800/80 px-3 py-2.5">
               <div className="flex min-w-0 flex-1 items-center gap-2.5">
                 <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/80">
-                  <Sparkles className="note-pnl-up size-4" aria-hidden />
+                  <Sparkles className="size-4 text-zinc-300" aria-hidden />
                 </div>
                 <div className="min-w-0 text-left">
                   <h2
@@ -362,13 +369,13 @@ export function NoteAiAssistant() {
                   >
                     {copy.aiTitle}
                   </h2>
-                  <p className="truncate text-[11px] text-zinc-500">{copy.aiModeLabel}</p>
+                  <p className="truncate text-xs text-zinc-400">{copy.aiModeLabel}</p>
                 </div>
               </div>
               {messages.length > 0 ? (
                 <button
                   type="button"
-                  className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+                  className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
                   onClick={resetChat}
                 >
                   <RotateCcw className="size-3.5" aria-hidden />
@@ -377,7 +384,7 @@ export function NoteAiAssistant() {
               ) : null}
               <button
                 type="button"
-                className="shrink-0 rounded-lg p-2 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+                className="inline-flex size-11 shrink-0 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
                 aria-label={copy.tutup}
                 onClick={() => setOpen(false)}
               >
@@ -385,20 +392,20 @@ export function NoteAiAssistant() {
               </button>
             </header>
 
-            <div className="flex shrink-0 flex-wrap gap-x-3 gap-y-1 border-b border-zinc-800/60 px-4 py-2 text-[11px] text-zinc-500">
+            <div className="flex shrink-0 flex-wrap gap-x-3 gap-y-1 border-b border-zinc-800/60 px-4 py-2 text-xs text-zinc-400">
               <span>
-                <span className="text-zinc-600">{copy.aiStatNet}</span>{" "}
-                <span className="font-medium tabular-nums text-zinc-300">{ctx.net}</span>
+                <span className="text-zinc-400">{copy.aiStatNet}</span>{" "}
+                <span className="font-medium tabular-nums text-zinc-200">{ctx.net}</span>
               </span>
               <span aria-hidden>·</span>
               <span>
-                <span className="text-zinc-600">{copy.aiStatStreak}</span>{" "}
-                <span className="font-medium tabular-nums text-zinc-300">{ctx.streak}d</span>
+                <span className="text-zinc-400">{copy.aiStatStreak}</span>{" "}
+                <span className="font-medium tabular-nums text-zinc-200">{ctx.streak}d</span>
               </span>
               <span aria-hidden>·</span>
               <span>
-                <span className="text-zinc-600">{copy.aiStatWin}</span>{" "}
-                <span className="font-medium tabular-nums text-zinc-300">{ctx.winPct}</span>
+                <span className="text-zinc-400">{copy.aiStatWin}</span>{" "}
+                <span className="font-medium tabular-nums text-zinc-200">{ctx.winPct}</span>
               </span>
             </div>
 
@@ -410,12 +417,12 @@ export function NoteAiAssistant() {
                   </h3>
                   <p className="mt-2 max-w-[30ch] text-sm leading-relaxed text-zinc-400">{copy.aiWelcomeSub}</p>
                   {econHint ? (
-                    <p className="note-surface-warn-muted mt-3 w-full max-w-none rounded-lg border px-3 py-2 text-left text-[11px] leading-snug">
+                    <p className="note-surface-warn-muted mt-3 w-full max-w-none rounded-lg border px-3 py-2 text-left text-xs leading-snug">
                       {econHint}
                     </p>
                   ) : null}
                   <div className="mt-6 w-full">
-                    <p className="mb-2.5 text-left text-[11px] font-medium uppercase tracking-wide text-zinc-600">
+                    <p className="mb-2.5 text-left text-xs font-medium uppercase tracking-wide text-zinc-400">
                       {copy.aiQuickPrompts}
                     </p>
                     <PromptChipRow chips={chips} onSend={send} />
@@ -424,7 +431,7 @@ export function NoteAiAssistant() {
               ) : (
                 <div className="space-y-3 pb-2">
                   {journal.loading ? (
-                    <p className="text-xs text-zinc-500">…</p>
+                    <p className="text-xs text-zinc-400">{copy.loading}</p>
                   ) : (
                     messages.map((msg, i) => (
                       <div
@@ -436,7 +443,7 @@ export function NoteAiAssistant() {
                       >
                         <div
                           className={cn(
-                            "max-w-[92%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-snug",
+                            "max-w-[92%] rounded-lg px-3.5 py-2.5 text-sm leading-snug",
                             msg.role === "user"
                               ? "bg-zinc-800 text-zinc-100"
                               : "bg-zinc-900/90 text-zinc-300"
@@ -450,7 +457,7 @@ export function NoteAiAssistant() {
                               <Link
                                 key={link.href}
                                 href={link.href}
-                                className="rounded-full border border-zinc-800 bg-zinc-900/80 px-2.5 py-1 text-[11px] font-medium text-zinc-300 hover:border-zinc-600 hover:text-zinc-100"
+                                className="inline-flex min-h-11 items-center rounded-md border border-zinc-800 bg-zinc-900/80 px-2.5 text-xs font-medium text-zinc-300 hover:border-zinc-600 hover:text-zinc-100"
                                 onClick={() => setOpen(false)}
                               >
                                 {link.label} →
@@ -468,7 +475,7 @@ export function NoteAiAssistant() {
             <div className="shrink-0 border-t border-zinc-800/80 bg-zinc-950/95 p-3 pt-2">
               {!showHero ? (
                 <div className="mb-2.5">
-                  <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wide text-zinc-600">
+                  <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-zinc-400">
                     {copy.aiQuickPrompts}
                   </p>
                   <PromptChipRow chips={chips} onSend={send} compact />
@@ -487,16 +494,16 @@ export function NoteAiAssistant() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={copy.aiAskAnything}
-                    className="min-w-0 flex-1 bg-transparent px-1 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none"
+                    className="min-h-11 min-w-0 flex-1 bg-transparent px-1 text-base text-zinc-100 placeholder:text-zinc-400"
                   />
                   <button
                     type="submit"
                     disabled={!canSend}
                     className={cn(
-                      "flex size-8 shrink-0 items-center justify-center rounded-full transition-colors",
+                      "flex size-11 shrink-0 items-center justify-center rounded-md transition-colors",
                       canSend
-                        ? "bg-[var(--chart-up-strong)] text-zinc-950 hover:opacity-90"
-                        : "bg-zinc-800 text-zinc-600"
+                        ? "bg-zinc-100 text-zinc-950 hover:bg-white"
+                        : "bg-zinc-800 text-zinc-400"
                     )}
                     aria-label={copy.aiSend}
                   >
@@ -504,12 +511,12 @@ export function NoteAiAssistant() {
                   </button>
                 </div>
                 <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-800/80 pt-2">
-                  <span className="rounded-lg border border-zinc-800 bg-zinc-950 px-2 py-0.5 text-[10px] font-medium text-zinc-500">
+                  <span className="text-xs font-medium text-zinc-400">
                     {copy.aiDisclaimer}
                   </span>
                   <Link
                     href="/note/analytics"
-                    className="text-[11px] font-medium text-zinc-400 hover:text-zinc-100"
+                    className="inline-flex min-h-11 items-center text-xs font-medium text-zinc-400 hover:text-zinc-100"
                     onClick={() => setOpen(false)}
                   >
                     {copy.aiShortcuts} →
@@ -526,11 +533,11 @@ export function NoteAiAssistant() {
           aria-expanded={open}
           aria-controls="note-ai-panel"
           className={cn(
-            "flex size-14 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg shadow-black/40",
-            "hover:border-[color-mix(in_srgb,var(--chart-up-strong)_50%,transparent)] hover:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--chart-up-strong)]"
+            "flex size-14 items-center justify-center rounded-md border border-zinc-700 bg-zinc-900 text-zinc-100",
+            "hover:border-zinc-500 hover:bg-zinc-800"
           )}
         >
-          {open ? <X className="size-6" aria-hidden /> : <Sparkles className="note-pnl-up size-6" aria-hidden />}
+          {open ? <X className="size-6" aria-hidden /> : <Sparkles className="size-6 text-zinc-200" aria-hidden />}
           <span className="sr-only">{open ? copy.tutup : copy.aiTitle}</span>
         </button>
       </div>

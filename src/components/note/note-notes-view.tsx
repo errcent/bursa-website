@@ -17,7 +17,7 @@ export function NoteNotesView() {
   const entries = journal.data?.entries ?? [];
 
   if (journal.loading || !journal.data) {
-    return <p className="text-sm text-zinc-600">{copy.loading}</p>;
+    return <p className="text-sm text-zinc-400">{copy.loading}</p>;
   }
 
   return (
@@ -29,10 +29,10 @@ export function NoteNotesView() {
       <NoteBeliefPromotions entries={entries} />
 
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{copy.notesStreamTitle}</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">{copy.notesStreamTitle}</h2>
         <Link
           href="/note/baru?layer=notes"
-          className="text-[11px] text-zinc-500 hover:text-zinc-300"
+          className="text-xs text-zinc-400 hover:text-zinc-300"
         >
           {copy.notesAdvancedLink}
         </Link>

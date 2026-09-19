@@ -60,14 +60,14 @@ export function NotePlaybookNotesBridge() {
           <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
             {copy.playbookNotesBridgeTitle}
           </h2>
-          <p className="mt-0.5 text-[11px] text-zinc-500">{copy.playbookNotesBridgeHint}</p>
+          <p className="mt-0.5 text-xs text-zinc-400">{copy.playbookNotesBridgeHint}</p>
         </div>
-        <Link href="/note/catatan" className="text-[11px] text-zinc-400 hover:text-zinc-200">
+        <Link href="/note/catatan" className="text-xs text-zinc-400 hover:text-zinc-200">
           {copy.playbookNotesBridgeOpen}
         </Link>
       </div>
       {linkedCount > 0 ? (
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-zinc-400">
           {locale === "en"
             ? `${linkedCount} belief note(s) linked to a setup.`
             : `${linkedCount} belief note terhubung ke setup.`}
@@ -79,14 +79,14 @@ export function NotePlaybookNotesBridge() {
           <div className="mt-2 flex flex-wrap gap-2">
             <button
               type="button"
-              className="rounded-md bg-zinc-100 px-2.5 py-1 text-[11px] font-semibold text-zinc-900 hover:bg-white"
+              className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-2.5 text-xs font-semibold text-zinc-900 hover:bg-white"
               onClick={() => onAdopt(top.id, top.beliefSnippet!)}
             >
               {adoptedId === top.id ? copy.notesAdoptedPlaybook : copy.notesAdoptPlaybook}
             </button>
             <button
               type="button"
-              className="text-[11px] text-zinc-600 hover:text-zinc-400"
+              className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
               onClick={() => onDismiss(top.id)}
             >
               {copy.notesDismissPromotion}

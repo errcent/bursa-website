@@ -112,8 +112,8 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
               aria-pressed={value.granularity === g}
               onClick={() => setGranularity(g)}
               className={cn(
-                "rounded px-2 py-1 text-[11px] font-medium",
-                value.granularity === g ? "bg-zinc-800 text-zinc-100" : "text-zinc-500 hover:text-zinc-300"
+                "inline-flex min-h-11 items-center rounded px-2.5 text-xs font-medium",
+                value.granularity === g ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:text-zinc-200"
               )}
             >
               {granLabels[g][locale]}
@@ -124,7 +124,7 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
         <div ref={rootRef} className="relative flex items-center gap-0.5">
           <button
             type="button"
-            className="inline-flex size-7 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+            className="inline-flex size-11 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
             onClick={() => shiftDay(-1)}
             aria-label={copy.econRangePrev}
           >
@@ -137,7 +137,7 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
               setOpen((o) => !o);
             }}
             className={cn(
-              "inline-flex max-w-[10rem] items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-medium sm:max-w-none",
+              "inline-flex min-h-11 max-w-[10rem] items-center gap-1 rounded-md border px-2 text-xs font-medium sm:max-w-none",
               open
                 ? "note-surface-up-muted border"
                 : "border-zinc-700 bg-zinc-900 text-zinc-200 hover:border-zinc-600"
@@ -148,7 +148,7 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
           </button>
           <button
             type="button"
-            className="inline-flex size-7 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+            className="inline-flex size-11 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
             onClick={() => shiftDay(1)}
             aria-label={copy.econRangeNext}
           >
@@ -157,24 +157,24 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
 
           {open ? (
             <div className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,22rem)] rounded-lg border border-zinc-700 bg-zinc-950 p-3 shadow-xl">
-              <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">{copy.econRangeTitle}</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">{copy.econRangeTitle}</p>
               <div className="mt-2 grid grid-cols-2 gap-2">
-                <label className="text-[10px] text-zinc-500">
+                <label className="text-xs text-zinc-400">
                   {copy.econRangeFrom}
                   <input
                     type="date"
                     value={draftRange.from}
                     onChange={(e) => setDraftRange((d) => ({ ...d, preset: "custom", from: e.target.value }))}
-                    className="mt-0.5 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-xs text-zinc-100"
+                    className="note-field mt-0.5"
                   />
                 </label>
-                <label className="text-[10px] text-zinc-500">
+                <label className="text-xs text-zinc-400">
                   {copy.econRangeTo}
                   <input
                     type="date"
                     value={draftRange.to}
                     onChange={(e) => setDraftRange((d) => ({ ...d, preset: "custom", to: e.target.value }))}
-                    className="mt-0.5 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-xs text-zinc-100"
+                    className="note-field mt-0.5"
                   />
                 </label>
               </div>
@@ -189,7 +189,7 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
                   <button
                     key={id}
                     type="button"
-                    className="text-xs text-zinc-400 underline decoration-dotted underline-offset-2 hover:text-zinc-200"
+                    className="inline-flex min-h-11 items-center text-xs text-zinc-400 underline decoration-dotted underline-offset-2 hover:text-zinc-200"
                     onClick={() => applyPreset(id)}
                   >
                     {label}
@@ -199,14 +199,14 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"
-                  className="rounded-md bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-900 hover:bg-white"
+                  className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-900 hover:bg-white"
                   onClick={applyRange}
                 >
                   {copy.econApplyFilter}
                 </button>
                 <button
                   type="button"
-                  className="rounded-md border border-zinc-700 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800"
+                  className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
                   onClick={() => setOpen(false)}
                 >
                   {copy.batal}
@@ -218,12 +218,12 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
       </div>
 
       {value.granularity !== "trade" ? (
-        <label className="flex cursor-pointer items-center gap-2 text-[11px] text-zinc-500">
+        <label className="flex min-h-11 cursor-pointer items-center gap-2 text-xs text-zinc-400">
           <input
             type="checkbox"
             checked={value.hideEmptyDays}
             onChange={(e) => commit({ ...value, hideEmptyDays: e.target.checked })}
-            className="size-3.5 rounded border-zinc-600 bg-zinc-900 accent-[var(--chart-up-strong)]"
+            className="size-4 rounded border-zinc-600 bg-zinc-900 accent-[var(--note-accent)]"
           />
           {locale === "en" ? "Hide days with no closes" : "Sembunyikan hari tanpa close"}
         </label>

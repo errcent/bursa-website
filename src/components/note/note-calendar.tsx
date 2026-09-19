@@ -11,7 +11,7 @@ import {
 } from "@/lib/note/stats";
 
 function heatClass(pnl: number, maxAbs: number, count: number, colorMode: ColorMode) {
-  if (count === 0) return "text-zinc-500 hover:bg-zinc-900";
+  if (count === 0) return "text-zinc-400 hover:bg-zinc-900";
   if (colorMode === "pattern") {
     if (pnl < 0) return "bg-zinc-900 text-zinc-100";
     if (pnl > 0) return "bg-zinc-800 text-zinc-50";
@@ -76,7 +76,7 @@ export function NoteCalendar({
       <div className="mb-3 flex items-center justify-between">
         <button
           type="button"
-          className="rounded px-2 py-1 text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+          className="inline-flex size-11 items-center justify-center rounded text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
           aria-label="Bulan sebelumnya"
           onClick={onPrev}
         >
@@ -85,14 +85,14 @@ export function NoteCalendar({
         <h2 className="text-sm font-medium capitalize text-zinc-200">{label}</h2>
         <button
           type="button"
-          className="rounded px-2 py-1 text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+          className="inline-flex size-11 items-center justify-center rounded text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
           aria-label="Bulan berikutnya"
           onClick={onNext}
         >
           ›
         </button>
       </div>
-      <div className="grid grid-cols-7 gap-1 text-center text-[11px] text-zinc-500">
+      <div className="grid grid-cols-7 gap-1 text-center text-xs text-zinc-400">
         {headers.map((d) => (
           <div key={d} className="py-1">
             {d}
@@ -120,13 +120,13 @@ export function NoteCalendar({
                 selected ? "ring-2 ring-zinc-100" : ""
               )}
             >
-              <span className="text-[11px] tabular-nums text-zinc-300">{day}</span>
+              <span className="text-xs tabular-nums text-zinc-300">{day}</span>
               {showNet && bucket.count > 0 ? (
                 <span className="w-full">
-                  <span className={`block text-[10px] tabular-nums sm:text-xs ${pnlTone(bucket.pnl, colorMode)}`}>
+                  <span className={`block text-xs tabular-nums sm:text-xs ${pnlTone(bucket.pnl, colorMode)}`}>
                     {formatPnl(bucket.pnl, formatOpts)}
                   </span>
-                  <span className="text-[10px] text-zinc-500">{bucket.count}</span>
+                  <span className="text-xs text-zinc-400">{bucket.count}</span>
                 </span>
               ) : null}
             </button>

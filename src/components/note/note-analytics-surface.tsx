@@ -20,7 +20,7 @@ const NoteAnalyticsSurfacePlot = dynamic(
   () => import("@/components/note/note-analytics-surface-plot").then((m) => m.NoteAnalyticsSurfacePlot),
   {
     ssr: false,
-    loading: () => <div className="flex h-[360px] items-center justify-center text-sm text-zinc-500">…</div>,
+    loading: () => <div className="flex h-[360px] items-center justify-center text-sm text-zinc-400">…</div>,
   }
 );
 
@@ -110,15 +110,15 @@ export function NoteAnalyticsSurface({ entries, locale }: Props) {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-zinc-500">{labels.hint}</p>
+      <p className="text-xs text-zinc-400">{labels.hint}</p>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <label className="text-[11px] text-zinc-500">
+        <label className="text-xs text-zinc-400">
           {labels.x}
           <select
             value={xAxis}
             onChange={(e) => setXAxis(e.target.value as SurfaceAxisId)}
-            className="mt-1 block w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+            className="note-field mt-1 block"
           >
             {xOptions.map((id) => (
               <option key={id} value={id}>
@@ -127,12 +127,12 @@ export function NoteAnalyticsSurface({ entries, locale }: Props) {
             ))}
           </select>
         </label>
-        <label className="text-[11px] text-zinc-500">
+        <label className="text-xs text-zinc-400">
           {labels.y}
           <select
             value={yAxis}
             onChange={(e) => setYAxis(e.target.value as SurfaceRowId)}
-            className="mt-1 block w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+            className="note-field mt-1 block"
           >
             {rowOptions.map((id) => (
               <option key={id} value={id} disabled={id === "session" && xAxis === "session"}>
@@ -141,12 +141,12 @@ export function NoteAnalyticsSurface({ entries, locale }: Props) {
             ))}
           </select>
         </label>
-        <label className="text-[11px] text-zinc-500">
+        <label className="text-xs text-zinc-400">
           {labels.z}
           <select
             value={metric}
             onChange={(e) => setMetric(e.target.value as SurfaceMetricId)}
-            className="mt-1 block w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+            className="note-field mt-1 block"
           >
             {(Object.keys(labels.metrics) as SurfaceMetricId[]).map((id) => (
               <option key={id} value={id}>
@@ -155,12 +155,12 @@ export function NoteAnalyticsSurface({ entries, locale }: Props) {
             ))}
           </select>
         </label>
-        <label className="text-[11px] text-zinc-500">
+        <label className="text-xs text-zinc-400">
           {labels.range}
           <select
             value={rangePreset}
             onChange={(e) => setRangePreset(e.target.value as SurfaceRangePreset)}
-            className="mt-1 block w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+            className="note-field mt-1 block"
           >
             {(["this_month", "last_30", "last_90", "ytd"] as const).map((p) => (
               <option key={p} value={p}>
@@ -171,13 +171,13 @@ export function NoteAnalyticsSurface({ entries, locale }: Props) {
         </label>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 text-[11px] text-zinc-400">
+      <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400">
         <label className="flex cursor-pointer items-center gap-2">
           <input
             type="checkbox"
             checked={includeBe}
             onChange={(e) => setIncludeBe(e.target.checked)}
-            className="size-3.5 rounded border-zinc-600 bg-zinc-900 accent-[var(--chart-info-strong)]"
+            className="size-4 rounded border-zinc-600 bg-zinc-900 accent-[var(--chart-info-strong)]"
           />
           {labels.be}
         </label>
@@ -186,7 +186,7 @@ export function NoteAnalyticsSurface({ entries, locale }: Props) {
           <select
             value={minCellCount}
             onChange={(e) => setMinCellCount(Number(e.target.value) as 1 | 2 | 3)}
-            className="rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100"
+            className="note-field w-auto min-w-[4.5rem]"
           >
             {[1, 2, 3].map((n) => (
               <option key={n} value={n}>
@@ -200,7 +200,7 @@ export function NoteAnalyticsSurface({ entries, locale }: Props) {
           <select
             value={topRows}
             onChange={(e) => setTopRows(Number(e.target.value))}
-            className="rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100"
+            className="note-field w-auto min-w-[4.5rem]"
           >
             {[5, 8, 12].map((n) => (
               <option key={n} value={n}>
@@ -209,13 +209,13 @@ export function NoteAnalyticsSurface({ entries, locale }: Props) {
             ))}
           </select>
         </label>
-        <span className="tabular-nums text-zinc-500">
+        <span className="tabular-nums text-zinc-400">
           {grid.filteredCount} close · {range.from} → {range.to}
         </span>
       </div>
 
       {grid.empty ? (
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-zinc-400">
           {locale === "en"
             ? "Not enough closed trades in this range for a surface. Log more or widen the range."
             : "Close di rentang ini belum cukup untuk surface. Tambah log atau lebarkan rentang."}

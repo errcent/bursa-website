@@ -9,11 +9,11 @@ export const PLAYBOOK_CHECKS: PlaybookCheckDef[] = [
   },
   {
     id: "liquidity_valid",
-    label: { id: "Liquidity valid?", en: "Liquidity valid?" },
+    label: { id: "Likuiditas valid?", en: "Liquidity valid?" },
   },
   {
     id: "session_active",
-    label: { id: "Session aktif?", en: "Session active?" },
+    label: { id: "Sesi aktif?", en: "Session active?" },
   },
   {
     id: "news_safe",
@@ -35,7 +35,7 @@ export const PLAYBOOK_CHECKS: PlaybookCheckDef[] = [
   },
   {
     id: "structure_confirmed",
-    label: { id: "Struktur double-check?", en: "Structure double-check?" },
+    label: { id: "Struktur dicek ulang?", en: "Structure double-check?" },
   },
 ];
 

@@ -30,7 +30,7 @@ export function NoteTip({
       </span>
       <span
         role="tooltip"
-        className={`pointer-events-none absolute ${place} z-30 w-max max-w-[16rem] rounded-md border border-zinc-700/80 bg-zinc-900 px-2.5 py-1.5 text-left text-[11px] leading-relaxed text-zinc-300 opacity-0 shadow-sm transition-opacity peer-hover:opacity-100 peer-focus:opacity-100 ${pos}`}
+        className={`pointer-events-none absolute ${place} z-30 w-max max-w-[16rem] rounded-md border border-zinc-700/80 bg-zinc-900 px-2.5 py-1.5 text-left text-xs leading-relaxed text-zinc-300 opacity-0 shadow-sm transition-opacity peer-hover:opacity-100 peer-focus:opacity-100 ${pos}`}
       >
         {text}
       </span>

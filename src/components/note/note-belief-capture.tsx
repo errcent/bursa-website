@@ -56,18 +56,18 @@ export function NoteBeliefCapture() {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={copy.notesCapturePlaceholder}
-        className="w-full resize-y rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-zinc-600"
+        className="note-field min-h-[5.5rem] w-full resize-y py-2.5 placeholder:text-zinc-400"
         onKeyDown={(e) => {
           if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) void submit();
         }}
       />
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-[10px] text-zinc-600">{copy.notesCaptureHint}</p>
+        <p className="text-xs text-zinc-400">{copy.notesCaptureHint}</p>
         <button
           type="button"
           disabled={!text.trim() || pending}
           onClick={() => void submit()}
-          className="rounded-md bg-zinc-100 px-3 py-1.5 text-sm font-medium text-zinc-900 hover:bg-white disabled:opacity-40"
+          className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-sm font-medium text-zinc-900 hover:bg-white disabled:opacity-40"
         >
           {pending ? copy.menyimpan : copy.notesCaptureSave}
         </button>

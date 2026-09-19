@@ -14,10 +14,10 @@ export function NoteJournalFilters({ locale, value, symbols, onChange }: Props) 
 
   return (
     <div className="flex flex-wrap items-end gap-3 rounded-lg border border-zinc-800/80 bg-zinc-900/40 p-3">
-      <label className="text-[11px] text-zinc-500">
+      <label className="text-xs text-zinc-400">
         {t("Simbol", "Symbol")}
         <select
-          className="mt-1 block min-w-[7rem] rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+          className="note-field mt-1 block min-w-[7rem]"
           value={value.symbol ?? ""}
           onChange={(e) => onChange({ ...value, symbol: e.target.value || null })}
         >
@@ -29,10 +29,10 @@ export function NoteJournalFilters({ locale, value, symbols, onChange }: Props) 
           ))}
         </select>
       </label>
-      <label className="text-[11px] text-zinc-500">
+      <label className="text-xs text-zinc-400">
         {t("Hasil", "Result")}
         <select
-          className="mt-1 block min-w-[6rem] rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+          className="note-field mt-1 block min-w-[6rem]"
           value={value.result}
           onChange={(e) => onChange({ ...value, result: e.target.value as ResultFilter })}
         >
@@ -43,10 +43,10 @@ export function NoteJournalFilters({ locale, value, symbols, onChange }: Props) 
           <option value="open">Open</option>
         </select>
       </label>
-      <label className="text-[11px] text-zinc-500">
+      <label className="text-xs text-zinc-400">
         {t("Sisi", "Side")}
         <select
-          className="mt-1 block min-w-[5rem] rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+          className="note-field mt-1 block min-w-[5rem]"
           value={value.side ?? ""}
           onChange={(e) => onChange({ ...value, side: e.target.value || null })}
         >
@@ -55,11 +55,11 @@ export function NoteJournalFilters({ locale, value, symbols, onChange }: Props) 
           <option value="SELL">SELL</option>
         </select>
       </label>
-      <label className="text-[11px] text-zinc-500">
+      <label className="text-xs text-zinc-400">
         {t("Dari", "From")}
         <input
           type="date"
-          className="mt-1 block rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+          className="note-field mt-1 block"
           value={value.dateFrom ?? ""}
           onChange={(e) =>
             onChange({
@@ -70,11 +70,11 @@ export function NoteJournalFilters({ locale, value, symbols, onChange }: Props) 
           }
         />
       </label>
-      <label className="text-[11px] text-zinc-500">
+      <label className="text-xs text-zinc-400">
         {t("Sampai", "To")}
         <input
           type="date"
-          className="mt-1 block rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+          className="note-field mt-1 block"
           value={value.dateTo ?? ""}
           onChange={(e) =>
             onChange({
@@ -88,7 +88,7 @@ export function NoteJournalFilters({ locale, value, symbols, onChange }: Props) 
       {(value.symbol || value.side || value.dateFrom || value.dateTo || value.result !== "ALL") && (
         <button
           type="button"
-          className="rounded-md border border-zinc-700 px-2 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800"
+          className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
           onClick={() =>
             onChange({
               kind: value.kind,

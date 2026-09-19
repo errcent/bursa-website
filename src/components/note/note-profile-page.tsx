@@ -18,7 +18,7 @@ export function NoteProfilePage() {
   const loginHref = noteApexLoginHref("/note");
 
   if (isLoading) {
-    return <p className="text-sm text-zinc-500">…</p>;
+    return <p className="text-sm text-zinc-400">…</p>;
   }
 
   if (!session) {
@@ -36,11 +36,11 @@ export function NoteProfilePage() {
     <div className="max-w-md space-y-6">
       <dl className="space-y-3 text-sm">
         <div>
-          <dt className="text-[11px] text-zinc-500">{copy.accountEmail}</dt>
+          <dt className="text-xs text-zinc-400">{copy.accountEmail}</dt>
           <dd className="text-zinc-100">{session.email}</dd>
         </div>
         <div>
-          <dt className="text-[11px] text-zinc-500">{prefs.locale === "en" ? "Name" : "Nama"}</dt>
+          <dt className="text-xs text-zinc-400">{prefs.locale === "en" ? "Name" : "Nama"}</dt>
           <dd className="text-zinc-100">{session.name || " - "}</dd>
         </div>
       </dl>

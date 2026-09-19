@@ -47,8 +47,8 @@ export function NoteWeekdayStrip({
               style={{ height: h }}
               aria-hidden
             />
-            <span className="text-[10px] text-zinc-500">{labels[i]}</span>
-            <span className={`text-[10px] tabular-nums ${pnlTone(cell.net, colorMode)}`}>
+            <span className="text-xs text-zinc-400">{labels[i]}</span>
+            <span className={`text-xs tabular-nums ${pnlTone(cell.net, colorMode)}`}>
               {cell.count ? formatPnl(cell.net, formatOpts) : " - "}
             </span>
           </div>

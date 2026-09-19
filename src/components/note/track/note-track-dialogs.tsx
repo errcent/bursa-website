@@ -18,10 +18,20 @@ function ModalShell({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-4 sm:items-center">
-      <div className="max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className="max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-950 p-5"
+      >
         <div className="mb-4 flex items-center justify-between gap-2">
           <h2 className="font-heading text-lg font-semibold text-zinc-50">{title}</h2>
-          <button type="button" onClick={onClose} className="text-sm text-zinc-500 hover:text-zinc-200">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex size-11 items-center justify-center rounded-md text-sm text-zinc-400 hover:text-zinc-200"
+            aria-label="Tutup"
+          >
             ✕
           </button>
         </div>
@@ -31,8 +41,7 @@ function ModalShell({
   );
 }
 
-const field =
-  "mt-1 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2.5 py-2 text-sm text-zinc-100";
+const field = "note-field mt-1";
 
 export function CreatePortfolioDialog({ locale, onClose }: { locale: "id" | "en"; onClose: () => void }) {
   const { createPortfolio } = useNoteTrack();
@@ -41,7 +50,7 @@ export function CreatePortfolioDialog({ locale, onClose }: { locale: "id" | "en"
 
   return (
     <ModalShell title={t("Buat portfolio", "Create portfolio")} onClose={onClose}>
-      <label className="block text-[11px] text-zinc-500">
+      <label className="block text-xs text-zinc-400">
         {t("Nama", "Name")}
         <input className={field} value={name} onChange={(e) => setName(e.target.value)} placeholder="Core IDX" />
       </label>
@@ -124,7 +133,7 @@ export function AddTransactionDialog({
             type="button"
             onClick={() => setType(k)}
             className={cn(
-              "flex-1 rounded-md py-1.5 text-xs font-medium capitalize",
+              "flex-1 min-h-11 rounded-md text-xs font-medium capitalize",
               type === k ? "bg-zinc-100 text-zinc-900" : "text-zinc-400 hover:text-zinc-200"
             )}
           >
@@ -134,32 +143,32 @@ export function AddTransactionDialog({
       </div>
 
       <div className="mt-4 space-y-3">
-        <label className="block text-[11px] text-zinc-500">
+        <label className="block text-xs text-zinc-400">
           {t("Aset / simbol", "Asset")}
           <input className={field} value={symbol} onChange={(e) => setSymbol(e.target.value)} placeholder="BBCA" />
         </label>
-        <label className="block text-[11px] text-zinc-500">
+        <label className="block text-xs text-zinc-400">
           {t("Quantity", "Quantity")}
           <input className={field} inputMode="decimal" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
         </label>
         {type !== "transfer_in" || price ? (
-          <label className="block text-[11px] text-zinc-500">
+          <label className="block text-xs text-zinc-400">
             {t("Harga per unit", "Price per unit")} ({quoteCurrency})
             <input className={field} inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} />
           </label>
         ) : (
-          <p className="text-xs text-zinc-500">{t("Opsional: isi harga untuk cost basis.", "Optional: price for cost basis.")}</p>
+          <p className="text-xs text-zinc-400">{t("Opsional: isi harga untuk cost basis.", "Optional: price for cost basis.")}</p>
         )}
         <div className="grid grid-cols-3 gap-2">
-          <label className="col-span-1 block text-[11px] text-zinc-500">
+          <label className="col-span-1 block text-xs text-zinc-400">
             {t("Tanggal", "Date")} (DD/MM/YY)
             <input className={field} value={date} onChange={(e) => setDate(e.target.value)} />
           </label>
-          <label className="block text-[11px] text-zinc-500">
+          <label className="block text-xs text-zinc-400">
             {t("Jam", "Time")}
             <input className={field} inputMode="numeric" value={hour} onChange={(e) => setHour(e.target.value)} />
           </label>
-          <label className="block text-[11px] text-zinc-500">
+          <label className="block text-xs text-zinc-400">
             AM/PM
             <select className={field} value={ampm} onChange={(e) => setAmpm(e.target.value as "AM" | "PM")}>
               <option value="AM">AM</option>
@@ -167,11 +176,11 @@ export function AddTransactionDialog({
             </select>
           </label>
         </div>
-        <label className="block text-[11px] text-zinc-500">
+        <label className="block text-xs text-zinc-400">
           Fee ({quoteCurrency})
           <input className={field} inputMode="decimal" value={fee} onChange={(e) => setFee(e.target.value)} />
         </label>
-        <label className="block text-[11px] text-zinc-500">
+        <label className="block text-xs text-zinc-400">
           {t("Catatan", "Notes")}
           <textarea className={cn(field, "min-h-[4rem]")} value={note} onChange={(e) => setNote(e.target.value)} />
         </label>

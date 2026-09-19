@@ -49,7 +49,7 @@ export function NoteBeliefList({
 
   if (!beliefs.length) {
     return (
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-zinc-400">
         {copy.notesEmpty}
       </p>
     );
@@ -67,12 +67,12 @@ export function NoteBeliefList({
             className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 px-3 py-3 sm:px-4"
           >
             <div className="flex flex-wrap items-center gap-2">
-              <time className="text-[11px] tabular-nums text-zinc-500">{dayKey(entry.openedAt)}</time>
+              <time className="text-xs tabular-nums text-zinc-400">{dayKey(entry.openedAt)}</time>
               <div className="flex flex-wrap gap-1">
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full border border-zinc-700/80 bg-zinc-800/60 px-2 py-0.5 text-[10px] text-zinc-400"
+                    className="rounded-full border border-zinc-700/80 bg-zinc-800/60 px-2 py-0.5 text-xs text-zinc-400"
                   >
                     {tagLabel(tag, locale)}
                   </span>
@@ -82,9 +82,9 @@ export function NoteBeliefList({
             <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-zinc-200">{text}</p>
 
             <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-zinc-800/60 pt-3">
-              <span className="text-[10px] uppercase tracking-wide text-zinc-600">{copy.notesLinkOptional}</span>
+              <span className="text-xs uppercase tracking-wide text-zinc-400">{copy.notesLinkOptional}</span>
               <select
-                className="max-w-[10rem] rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300"
+                className="note-field max-w-[10rem] text-xs"
                 value={link?.journalEntryId ?? ""}
                 onChange={(e) => {
                   const journalEntryId = e.target.value || undefined;
@@ -101,7 +101,7 @@ export function NoteBeliefList({
                 ))}
               </select>
               <select
-                className="max-w-[10rem] rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300"
+                className="note-field max-w-[10rem] text-xs"
                 value={link?.playbookSetupId ?? ""}
                 onChange={(e) => {
                   const playbookSetupId = e.target.value || undefined;
@@ -118,7 +118,7 @@ export function NoteBeliefList({
                 ))}
               </select>
               {(link?.journalEntryId || link?.playbookSetupId) && (
-                <Link href="/note/playbook" className="text-[11px] text-zinc-500 hover:text-zinc-300">
+                <Link href="/note/playbook" className="text-xs text-zinc-400 hover:text-zinc-300">
                   {copy.notesLinkPlaybookOpen}
                 </Link>
               )}

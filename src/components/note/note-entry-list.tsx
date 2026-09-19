@@ -41,20 +41,20 @@ export function NoteEntryList({
   );
 
   if (entries.length === 0) {
-    return empty ?? <p className="text-sm text-zinc-500">{copy.belumAda}</p>;
+    return empty ?? <p className="text-sm text-zinc-400">{copy.belumAda}</p>;
   }
 
   return (
     <div className="note-journal-table overflow-x-auto rounded-lg border border-zinc-800/80">
       <table className="w-full min-w-[36rem] text-left text-sm">
         <thead>
-          <tr className="border-b border-zinc-800/80 text-[11px] uppercase tracking-wide text-zinc-500">
-            {hideDates ? null : <th className="px-3 py-2.5 font-medium">{copy.colDate}</th>}
-            <th className="px-3 py-2.5 font-medium">{copy.colSymbol}</th>
-            <th className="px-3 py-2.5 font-medium">{copy.jenis}</th>
-            <th className="px-3 py-2.5 font-medium">{copy.colSide}</th>
-            <th className="px-3 py-2.5 font-medium text-right">PnL</th>
-            <th className="px-3 py-2.5 font-medium">{copy.colMode}</th>
+          <tr className="border-b border-zinc-800/80 text-xs uppercase tracking-wide text-zinc-400">
+            {hideDates ? null : <th className="px-4 py-3 font-medium">{copy.colDate}</th>}
+            <th className="px-4 py-3 font-medium">{copy.colSymbol}</th>
+            <th className="px-4 py-3 font-medium">{copy.jenis}</th>
+            <th className="px-4 py-3 font-medium">{copy.colSide}</th>
+            <th className="px-4 py-3 font-medium text-right">PnL</th>
+            <th className="px-4 py-3 font-medium">{copy.colMode}</th>
           </tr>
         </thead>
         <tbody>
@@ -72,14 +72,14 @@ export function NoteEntryList({
                   onClick={() => setOpenId(open ? null : entry.id)}
                 >
                   {hideDates ? null : (
-                    <td className="px-3 py-2.5 tabular-nums text-zinc-400">{dayKey(entry.openedAt)}</td>
+                    <td className="px-4 py-3 tabular-nums text-zinc-400">{dayKey(entry.openedAt)}</td>
                   )}
-                  <td className="px-3 py-2.5 font-medium text-zinc-200">
+                  <td className="px-4 py-3 font-medium text-zinc-200">
                     {entry.symbol}
                     {courseHref ? (
                       <a
                         href={courseHref}
-                        className="ml-2 text-[11px] font-normal text-zinc-500 hover:text-zinc-300"
+                        className="ml-2 text-xs font-normal text-zinc-400 hover:text-zinc-200"
                         onClick={(e) => e.stopPropagation()}
                         target="_blank"
                         rel="noreferrer"
@@ -88,19 +88,19 @@ export function NoteEntryList({
                       </a>
                     ) : null}
                   </td>
-                  <td className="px-3 py-2.5 text-zinc-400">{journalKindLabel(entry.kind, locale)}</td>
-                  <td className="px-3 py-2.5 text-zinc-400">{entry.side}</td>
+                  <td className="px-4 py-3 text-zinc-400">{journalKindLabel(entry.kind, locale)}</td>
+                  <td className="px-4 py-3 text-zinc-400">{entry.side}</td>
                   <td
-                    className={`px-3 py-2.5 text-right tabular-nums ${isRefleksi ? "text-zinc-600" : pnlTone(entry.pnl ?? 0, colorMode)}`}
+                    className={`px-4 py-3 text-right tabular-nums ${isRefleksi ? "text-zinc-400" : pnlTone(entry.pnl ?? 0, colorMode)}`}
                   >
                     {isRefleksi ? "-" : formatPnl(entry.pnl, formatOpts)}
                   </td>
-                  <td className="px-3 py-2.5 text-zinc-500">{journalModeLabel(entry.mode, locale)}</td>
+                  <td className="px-4 py-3 text-zinc-400">{journalModeLabel(entry.mode, locale)}</td>
                 </tr>
                 {open ? (
                   <tr className="bg-zinc-900/40">
-                    <td colSpan={hideDates ? 5 : 6} className="px-3 py-3 text-xs leading-relaxed text-zinc-400">
-                      <span className="text-zinc-500">{ts.absolute}</span>
+                    <td colSpan={hideDates ? 5 : 6} className="px-4 py-3 text-xs leading-relaxed text-zinc-400">
+                      <span className="text-zinc-400">{ts.absolute}</span>
                       {entry.note ? <p className="mt-1 text-zinc-300">{entry.note}</p> : null}
                       {entry.ruleBroken ? (
                         <p className="mt-1">

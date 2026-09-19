@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function NoteTrackPage() {
   return (
-    <NoteShell>
+    <NoteShell title="Track">
       <NoteTrackView />
     </NoteShell>
   );

@@ -64,7 +64,7 @@ export function TradingViewAdvancedChart({ symbol, locale, className }: Props) {
           href={tradingViewSymbolPageUrl(symbol)}
           rel="noopener nofollow"
           target="_blank"
-          className="text-[10px] text-zinc-600 hover:text-zinc-500"
+          className="text-xs text-zinc-400 hover:text-zinc-400"
         >
           TradingView
         </a>
