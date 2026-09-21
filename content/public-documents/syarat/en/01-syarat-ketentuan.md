@@ -8,7 +8,7 @@ description: Terms that govern your use of Bursa. By accessing, registering, or 
 sortOrder: 1
 ---
 
-_Effective: 22 August 2026 · Last updated: 4 September 2026_
+_Effective: 22 August 2026 · Last updated: 21 September 2026_
 
 If the Indonesian and English versions differ, **the Indonesian version governs.** This English text is a convenience translation.
 
@@ -39,7 +39,7 @@ Bursa provides education and technology infrastructure. Bursa is **not** a secur
 
 Materials are educational. Mentors are responsible for their own content according to their capacity and licences, not in Bursa’s name.
 
-Services include the course catalogue, a protected classroom, private notes, watchlists, and (if enabled) community spaces. Course purchases use a Platform-Mentor commission split.
+Services include the course catalogue, a protected classroom, private notes, watchlists, and (if enabled) community spaces. The intended product model is annual all-access. Public payment is not open yet.
 
 ## 3. Eligibility & accounts
 
@@ -53,7 +53,7 @@ You are responsible for keeping credentials confidential. Notify us promptly of 
 
 Mentors must complete verification before going live. Guaranteed-profit claims, misuse of learner data, or impersonating a licence without basis are forbidden.
 
-Indicative Platform commission is **25%** of the course transaction; mentors set prices. Details appear at checkout.
+When payment opens, Mentor partnership details (including revenue share) will appear before confirmation. No live prices or payment plans are offered on the public product today.
 
 ## 5. User Content & licence
 
@@ -63,7 +63,7 @@ Bursa may moderate or remove User Content that violates these Terms.
 
 ## 6. Intellectual property & video protection
 
-Purchase grants a limited, non-exclusive, non-transferable licence for personal, non-commercial learning, **for the lifetime of the purchased course** (not a per-module subscription).
+Valid access (when available) grants a limited, non-exclusive, non-transferable licence for personal, non-commercial learning according to the product active on your account.
 
 Recording, downloading outside official features, redistributing, or circumventing signed URLs / watermarks / device limits is forbidden.
 
@@ -80,17 +80,15 @@ Copyright reports: legal@bursanalar.com.
 
 ## 8. Payments, pricing & tax
 
-Purchases are **per course, one-time**. Not automatic subscription and not billed per module. After payment is verified, lifetime access to that course applies as described in the product.
+Intended model: **annual all-access** (one subscription unlocks published courses for the product term). **Public payment is not open yet.** There is no live price, checkout, or paid offer today.
 
-Payment is through official gateways. Bursa **does not store** raw card data.
-
-Tax follows Indonesian rules at the time of the transaction. Price changes do not affect access to courses already purchased.
+When payment opens, processing runs through official gateways. Bursa **does not store** raw card data. Tax follows Indonesian rules at the time of the transaction. Price and term details will be shown before you confirm payment.
 
 ## 9. Refunds
 
-Digital goods are generally final, without waiving rights under the Consumer Protection Law. Refunds may be given for unfixed material technical failure, material mismatch with the listing, or duplicate charges.
+While payment is closed, there is no paid transaction to refund.
 
-Request refunds at support@bursanalar.com with transaction evidence. Refunds are not available if the account is suspended for Terms or Learner Guidelines violations (access abuse).
+After payment opens, digital goods are generally final, without waiving rights under the Consumer Protection Law. Refunds may be given for unfixed material technical failure, material mismatch with the listing, or duplicate charges. Request refunds at support@bursanalar.com with transaction evidence. Refunds are not available if the account is suspended for Terms or Learner Guidelines violations (access abuse).
 
 ## 10. Community & signals
 

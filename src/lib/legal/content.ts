@@ -60,8 +60,8 @@ export const termsOfService: LegalDocument = {
         "Katalog kelas dan profil Mentor yang melalui proses kurasi",
         "Ruang belajar terstruktur dengan video terproteksi dan pelacakan progres",
         "Fitur pendukung belajar: catatan pribadi (Notes), watchlist, dan bookmark",
-        "Ruang komunitas diskusi serta sinyal/analisis internal (untuk anggota ruang tertentu)",
-        "Pembelian akses kelas dengan pembagian komisi antara Platform dan Mentor",
+        "Ruang komunitas diskusi serta sinyal/analisis internal (untuk anggota ruang tertentu, jika diaktifkan)",
+        "Akses belajar all-access tahunan (pembayaran publik belum dibuka)",
       ],
     },
     {
@@ -87,8 +87,7 @@ export const termsOfService: LegalDocument = {
       ],
       bullets: [
         "Materi kelas dapat ditinjau tim Bursa sebelum publikasi.",
-        "Komisi Platform indikatif sebesar 25% dari setiap transaksi kelas; rincian final ditampilkan sebelum konfirmasi.",
-        "Mentor menetapkan harga kelasnya sendiri dalam batas kebijakan Platform.",
+        "Saat pembayaran dibuka, rincian kemitraan Mentor akan ditampilkan sebelum konfirmasi. Tidak ada harga atau skema bayar publik saat ini.",
         "Mentor wajib mematuhi Kebijakan Privasi, perlindungan konten internal, dan perjanjian kemitraan yang berlaku.",
       ],
     },
@@ -105,7 +104,7 @@ export const termsOfService: LegalDocument = {
       id: "kekayaan-intelektual",
       title: "6. Hak Kekayaan Intelektual & Proteksi Konten",
       paragraphs: [
-        "Seluruh Konten pembelajaran dilindungi hak cipta yang dimiliki Bursa dan/atau Mentor pembuatnya. Pembelian akses kelas memberikan lisensi terbatas, non-eksklusif, dan tidak dapat dipindahtangankan untuk keperluan pembelajaran pribadi non-komersial sesuai jangka waktu akses produk yang dibeli.",
+        "Seluruh Konten pembelajaran dilindungi hak cipta yang dimiliki Bursa dan/atau Mentor pembuatnya. Akses yang sah (saat tersedia) memberi lisensi terbatas, non-eksklusif, dan tidak dapat dipindahtangankan untuk keperluan pembelajaran pribadi non-komersial sesuai produk yang aktif pada akunmu.",
         "Dilarang merekam, menyalin, mengunduh di luar fitur resmi, mendistribusikan ulang, menayangkan ke publik, atau menjual kembali Konten tanpa izin tertulis. Upaya menghindari mekanisme proteksi konten (signed URL, watermark, pembatasan perangkat) merupakan pelanggaran berat yang dapat berujung penangguhan permanen dan tindakan hukum.",
         "Merek, logo, dan elemen visual Bursa adalah kekayaan intelektual Bursa dan tidak boleh digunakan tanpa izin tertulis.",
       ],
@@ -134,18 +133,18 @@ export const termsOfService: LegalDocument = {
       id: "pembayaran",
       title: "8. Pembayaran, Harga & Pajak",
       paragraphs: [
-        "Akses katalog bersifat all-access: satu akun yang aktif dapat membuka seluruh kelas yang dipublikasikan. Pembayaran berlangganan belum dibuka di produk publik.",
-        "Pembayaran diproses melalui mitra payment gateway resmi. Bursa tidak pernah menyimpan data kartu pembayaran mentah, seluruh pemrosesan kartu tunduk pada standar keamanan mitra yang tersertifikasi PCI-DSS.",
-        "Harga dapat sudah atau belum termasuk pajak (mis. PPN atas jasa digital) sesuai ketentuan perpajakan Indonesia yang berlaku pada saat transaksi. Bursa berhak mengubah struktur harga di masa mendatang dengan pemberitahuan yang wajar bagi produk yang bersifat berkelanjutan.",
+        "Model yang disiapkan: akses all-access tahunan. Pembayaran belum dibuka di produk publik. Tidak ada harga, checkout, atau penawaran berbayar yang hidup saat ini.",
+        "Ketika pembayaran dibuka, pemrosesan melalui mitra payment gateway resmi. Bursa tidak pernah menyimpan data kartu pembayaran mentah.",
+        "Pajak mengikuti ketentuan Indonesia pada saat transaksi. Rincian harga dan masa berlaku akan diumumkan sebelum konfirmasi pembayaran.",
       ],
     },
     {
       id: "refund",
       title: "9. Kebijakan Pengembalian Dana (Refund)",
       paragraphs: [
-        "Pembelian akses kelas bersifat final mengingat sifat produk digital. Namun, ketentuan ini tidak menghapus hak-hakmu yang dilindungi secara memaksa oleh peraturan perundang-undangan, termasuk UU Perlindungan Konsumen.",
-        "Pengembalian dana dapat diberikan dalam hal berikut, dievaluasi berdasarkan itikad baik: (a) kegagalan teknis Platform yang menyebabkan kelas tidak dapat diakses dan tidak dapat kami perbaiki dalam waktu wajar; (b) kelas secara material tidak sesuai dengan deskripsi yang dipublikasikan; atau (c) kesalahan penagihan atau transaksi ganda.",
-        "Permintaan pengembalian dana diajukan melalui support@bursanalar.com dengan menyertakan bukti transaksi dan alasan. Kami akan menanggapi dalam waktu wajar sesuai prosedur operasional yang berlaku.",
+        "Selama pembayaran belum dibuka, tidak ada transaksi berbayar untuk dimohonkan refund.",
+        "Setelah pembayaran dibuka, pembelian bersifat final mengingat sifat produk digital, tanpa menghapus hak yang dilindungi UU Perlindungan Konsumen. Refund dapat diberikan untuk kegagalan teknis material yang tidak terperbaiki, ketidaksesuaian material dengan deskripsi, atau tagihan ganda.",
+        "Permintaan pengembalian dana diajukan melalui support@bursanalar.com dengan menyertakan bukti transaksi dan alasan.",
       ],
     },
     {

@@ -142,21 +142,12 @@ export function PortalHubContent({
   );
 }
 
-export function DraftBanner({ visible }: { visible?: boolean }) {
-  if (!visible) return null;
-  return (
-    <div
-      role="note"
-      className="mb-6 flex items-start gap-3 rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-sm text-muted-foreground"
-    >
-      <span className="mt-0.5 shrink-0 rounded-md bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">
-        Draft
-      </span>
-      <p>
-        Dokumen ini belum difinalisasi advokat. Konten dapat berubah sebelum publish resmi.
-      </p>
-    </div>
-  );
+/**
+ * Public draft banner disabled (founder 2026-09-21).
+ * Internal counsel HOLD stays in QC Queue only — never signal "awaiting lawyer" to stakeholders.
+ */
+export function DraftBanner(_props: { visible?: boolean }) {
+  return null;
 }
 
 export function PortalDocShell({

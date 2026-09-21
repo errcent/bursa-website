@@ -8,7 +8,7 @@ description: Aturan perilaku pelajar di Bursa  -  akun, komunitas, ulasan, dan k
 sortOrder: 2
 ---
 
-_Berlaku efektif: 22 Agustus 2026 · DRAFT hingga review advokat_
+_Berlaku efektif: 22 Agustus 2026 · Terakhir diperbarui: 21 September 2026_
 
 Jika versi Bahasa Indonesia dan Inggris berbeda, **versi Bahasa Indonesia yang berlaku**.
 
@@ -26,11 +26,11 @@ Kerangka analisis, jurnal, dan diskusi proses = diperbolehkan. Tip saham = tidak
 
 ## 2. Akun adalah milik satu orang
 
-Akses kelas bersifat **lifetime setelah sekali bayar**. Berbagi akun = free-rider: satu bayar, banyak orang menikmati. Itu dilarang.
+Akun dan akses belajar bersifat **personal**. Berbagi akun = free-rider dan dilarang, termasuk saat pembayaran belum dibuka maupun setelahnya.
 
 - Jangan bagikan password, session, atau tautan video.
 - Jangan sewakan atau jual akses.
-- Bursa boleh membatasi perangkat dan menonaktifkan akun yang terindikasi sharing **tanpa refund**.
+- Bursa boleh membatasi perangkat dan menonaktifkan akun yang terindikasi sharing.
 
 ## 3. Hormati orang lain
 

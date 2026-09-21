@@ -8,7 +8,7 @@ description: Ketentuan penggunaan platform Bursa. Dengan mengakses, mendaftar, a
 sortOrder: 1
 ---
 
-_Berlaku efektif: 22 Agustus 2026 · Terakhir diperbarui: 4 September 2026_
+_Berlaku efektif: 22 Agustus 2026 · Terakhir diperbarui: 21 September 2026_
 
 Jika versi Bahasa Indonesia dan Inggris berbeda, **versi Bahasa Indonesia yang berlaku**.
 
@@ -39,7 +39,7 @@ Bursa menyediakan infrastruktur edukasi dan teknologi. Bursa **bukan** perusahaa
 
 Materi bersifat edukatif. Tanggung jawab konten Mentor ada pada Mentor sesuai kapasitas dan lisensinya, bukan atas nama Bursa.
 
-Layanan mencakup katalog kelas, ruang belajar berproteksi, catatan pribadi, watchlist, dan (jika diaktifkan) ruang komunitas. Pembelian kelas memakai pembagian komisi Platform-Mentor.
+Layanan mencakup katalog kelas, ruang belajar berproteksi, catatan pribadi, watchlist, dan (jika diaktifkan) ruang komunitas. Model produk yang disiapkan adalah akses all-access tahunan. Pembayaran publik belum dibuka.
 
 ## 3. Kelayakan & Akun
 
@@ -53,7 +53,7 @@ Kamu bertanggung jawab atas kerahasiaan kredensial. Beri tahu kami segera jika a
 
 Mentor wajib verifikasi sebelum tayang. Dilarang menjanjikan keuntungan pasti, menyalahgunakan data pelajar, atau menyamar berlisensi tanpa dasar.
 
-Komisi Platform indikatif **25%** dari transaksi kelas; harga ditetapkan Mentor. Rincian tampil di checkout.
+Saat pembayaran dibuka, rincian kemitraan Mentor (termasuk pembagian hasil) akan ditampilkan sebelum konfirmasi. Tidak ada harga atau skema bayar yang ditawarkan di produk publik saat ini.
 
 ## 5. Konten Pengguna & Lisensi
 
@@ -63,7 +63,7 @@ Bursa boleh memoderasi atau menghapus Konten Pengguna yang melanggar.
 
 ## 6. Kekayaan Intelektual & Proteksi Video
 
-Pembelian memberi lisensi terbatas, non-eksklusif, tidak dapat dipindahtangankan, untuk pembelajaran pribadi non-komersial, **seumur hidup untuk kelas yang dibeli** (bukan langganan per modul).
+Akses yang sah (saat tersedia) memberi lisensi terbatas, non-eksklusif, tidak dapat dipindahtangankan, untuk pembelajaran pribadi non-komersial sesuai produk yang aktif pada akunmu.
 
 Dilarang merekam, mengunduh di luar fitur resmi, mendistribusi ulang, atau menghindari signed URL / watermark / batas perangkat.
 
@@ -80,17 +80,15 @@ Laporan hak cipta: legal@bursanalar.com.
 
 ## 8. Pembayaran, Harga & Pajak
 
-Pembelian **per kelas, sekali bayar**. Bukan langganan otomatis dan bukan tagihan per modul. Setelah pembayaran terverifikasi, akses lifetime untuk kelas tersebut berlaku sesuai produk.
+Model yang disiapkan: **akses all-access tahunan** (satu langganan membuka kelas yang dipublikasikan sesuai masa berlaku produk). **Pembayaran belum dibuka** di produk publik. Tidak ada harga, checkout, atau penawaran berbayar yang hidup saat ini.
 
-Pembayaran via gateway resmi. Bursa **tidak menyimpan** data kartu mentah.
-
-Pajak mengikuti ketentuan Indonesia pada saat transaksi. Perubahan harga tidak mengubah akses kelas yang sudah dibeli.
+Ketika pembayaran dibuka, pemrosesan dilakukan melalui gateway resmi. Bursa **tidak menyimpan** data kartu mentah. Pajak mengikuti ketentuan Indonesia pada saat transaksi. Rincian harga dan masa berlaku akan diumumkan sebelum kamu mengonfirmasi pembayaran.
 
 ## 9. Pengembalian Dana
 
-Produk digital pada umumnya final, tanpa menghapus hak yang dilindungi UU Perlindungan Konsumen. Refund dapat diberikan untuk kegagalan teknis material yang tidak terperbaiki, ketidaksesuaian material dengan deskripsi, atau tagihan ganda.
+Selama pembayaran belum dibuka, tidak ada transaksi berbayar untuk dimohonkan refund.
 
-Ajukan ke support@bursanalar.com dengan bukti transaksi. Refund tidak tersedia jika akun ditangguhkan karena pelanggaran S&K atau Panduan Pelajar (penyalahgunaan akses).
+Setelah pembayaran dibuka, produk digital pada umumnya final, tanpa menghapus hak yang dilindungi UU Perlindungan Konsumen. Refund dapat diberikan untuk kegagalan teknis material yang tidak terperbaiki, ketidaksesuaian material dengan deskripsi, atau tagihan ganda. Ajukan ke support@bursanalar.com dengan bukti transaksi. Refund tidak tersedia jika akun ditangguhkan karena pelanggaran S&K atau Panduan Pelajar (penyalahgunaan akses).
 
 ## 10. Komunitas & Sinyal
 

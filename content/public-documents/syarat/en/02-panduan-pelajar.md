@@ -8,7 +8,7 @@ description: Conduct rules for learners on Bursa  -  accounts, community, review
 sortOrder: 2
 ---
 
-_Effective: 22 August 2026 · DRAFT pending counsel review_
+_Effective: 22 August 2026 · Last updated: 21 September 2026_
 
 If the Indonesian and English versions differ, **the Indonesian version governs.**
 
@@ -26,11 +26,11 @@ Analysis frameworks, journals, and process discussion are allowed. Stock tips ar
 
 ## 2. One person, one account
 
-Course access is **lifetime after a one-time payment**. Sharing an account is free-riding: one payment, many users. That is forbidden.
+Accounts and learning access are **personal**. Sharing an account is free-riding and forbidden, whether payment is closed or open.
 
 - Do not share passwords, sessions, or video links.
 - Do not rent or sell access.
-- Bursa may limit devices and disable accounts indicated as sharing **without a refund**.
+- Bursa may limit devices and disable accounts indicated as sharing.
 
 ## 3. Respect others
 
