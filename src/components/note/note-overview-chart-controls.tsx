@@ -3,6 +3,7 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { NoteRangeCalendar } from "@/components/note/note-range-calendar";
 import {
   addDays,
   formatRangeLabel,
@@ -47,10 +48,7 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
 
   const commit = (next: OverviewChartPrefs) => {
     let patched = next;
-    if (
-      rangeWithinSingleCalendarMonth(next.range) &&
-      patched.granularity === "month"
-    ) {
+    if (rangeWithinSingleCalendarMonth(next.range) && patched.granularity === "month") {
       patched = { ...patched, granularity: "day" };
     }
     onChange(patched);
@@ -60,7 +58,11 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
   const shiftDay = (delta: number) => {
     const span = value.range.from === value.range.to;
     const nextRange = span
-      ? { preset: "custom" as const, from: addDays(value.range.from, delta), to: addDays(value.range.to, delta) }
+      ? {
+          preset: "custom" as const,
+          from: addDays(value.range.from, delta),
+          to: addDays(value.range.to, delta),
+        }
       : {
           preset: "custom" as const,
           from: addDays(value.range.from, delta),
@@ -156,28 +158,16 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
           </button>
 
           {open ? (
-            <div className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,22rem)] rounded-lg border border-zinc-700 bg-zinc-950 p-3 shadow-xl">
-              <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">{copy.econRangeTitle}</p>
-              <div className="mt-2 grid grid-cols-2 gap-2">
-                <label className="text-xs text-zinc-400">
-                  {copy.econRangeFrom}
-                  <input
-                    type="date"
-                    value={draftRange.from}
-                    onChange={(e) => setDraftRange((d) => ({ ...d, preset: "custom", from: e.target.value }))}
-                    className="note-field mt-0.5"
-                  />
-                </label>
-                <label className="text-xs text-zinc-400">
-                  {copy.econRangeTo}
-                  <input
-                    type="date"
-                    value={draftRange.to}
-                    onChange={(e) => setDraftRange((d) => ({ ...d, preset: "custom", to: e.target.value }))}
-                    className="note-field mt-0.5"
-                  />
-                </label>
-              </div>
+            <div className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,20rem)] rounded-lg border border-zinc-700 bg-zinc-950 p-3 shadow-xl">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-400">
+                {copy.econRangeTitle}
+              </p>
+              <NoteRangeCalendar
+                value={draftRange}
+                onChange={(r) => setDraftRange({ ...draftRange, preset: "custom", from: r.from, to: r.to })}
+                locale={locale}
+                weekStart={prefs.weekStart}
+              />
               <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 border-t border-zinc-800 pt-3">
                 {(
                   [

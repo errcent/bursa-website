@@ -1,19 +1,16 @@
 "use client";
 
-import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 
-import { NoteAnalyticsSurface } from "@/components/note/note-analytics-surface";
 import { NoteAnalyticsWinrate } from "@/components/note/note-analytics-winrate";
 import { NoteAnalyticsWinrateTrend } from "@/components/note/note-analytics-winrate-trend";
 import { NoteAnalyticsWinrateWeekday } from "@/components/note/note-analytics-winrate-weekday";
 import { NoteSectionIntro } from "@/components/note/note-section-intro";
 import { useNoteJournal } from "@/components/note/note-journal-context";
 import { NOTE_EXECUTION_KIND } from "@/lib/note/sections";
-import { applyPlaybookSuggestion, buildAnalyticsReport } from "@/lib/note/analytics";
+import { buildAnalyticsReport } from "@/lib/note/analytics";
 import { pnlOptsForSlot } from "@/lib/note/prefs";
 import { filterEntries, formatPnl } from "@/lib/note/stats";
-import { loadPlaybook, savePlaybook } from "@/lib/note/playbook/storage";
 import { isPnlKind } from "@/lib/note/types";
 import { noteCopy } from "@/lib/note/copy";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
@@ -23,12 +20,6 @@ const ZONE_CLASS = {
   high: "note-surface-up-muted border",
   neutral: "note-surface-warn-muted border",
   avoid: "note-surface-down-muted border",
-};
-
-const ZONE_LABEL: Record<"high" | "neutral" | "avoid", Record<"id" | "en", string>> = {
-  high: { id: "Zona edge", en: "High edge" },
-  neutral: { id: "Netral", en: "Neutral" },
-  avoid: { id: "Hindari", en: "Avoid" },
 };
 
 function AnalyticsSection({
@@ -51,33 +42,14 @@ function AnalyticsSection({
   );
 }
 
-function EdgeTable({
-  rows,
-  formatOpts,
-  empty,
-}: {
-  rows: { label: string; net: number; closed: number; winRate: number | null }[];
-  formatOpts: ReturnType<typeof pnlOptsForSlot>;
-  empty: string;
-}) {
-  if (!rows.length) return <p className="text-sm text-zinc-400">{empty}</p>;
-  return (
-    <ul className="divide-y divide-zinc-800/80 rounded-lg border border-zinc-800/80">
-      {rows.slice(0, 6).map((r) => (
-        <li key={r.label} className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm">
-          <span className="font-medium text-zinc-200">{r.label}</span>
-          <span className="flex shrink-0 items-center gap-3 tabular-nums text-zinc-400">
-            <span>{r.closed} close</span>
-            <span>{r.winRate == null ? "-" : `${Math.round(r.winRate * 100)}% W`}</span>
-            <span className={r.net >= 0 ? "note-pnl-up" : "note-pnl-down"}>
-              {formatPnl(r.net, formatOpts)}
-            </span>
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
-}
+type InsightCard = {
+  id: string;
+  kind: "strength" | "leak" | "context" | "drift";
+  title: string;
+  detail: string;
+  tone: "up" | "down" | "neutral" | "warn";
+  meta?: string;
+};
 
 export function NoteAnalyticsView() {
   const [prefs] = useNotePrefs();
@@ -87,13 +59,6 @@ export function NoteAnalyticsView() {
   const formatOpts = pnlOptsForSlot(prefs, "analytics");
   const kind = NOTE_EXECUTION_KIND;
   const journal = useNoteJournal();
-  const [weights, setWeights] = useState<ReturnType<typeof loadPlaybook>["profile"]["weights"] | null>(null);
-  const [appliedId, setAppliedId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const pb = loadPlaybook();
-    setWeights(pb.profile.weights);
-  }, []);
 
   const kindScoped = useMemo(
     () => filterEntries(journal.data?.entries ?? [], { kind, result: "ALL" }),
@@ -102,43 +67,94 @@ export function NoteAnalyticsView() {
   const heroEntries = useMemo(() => kindScoped.filter((e) => isPnlKind(e.kind)), [kindScoped]);
 
   const report = useMemo(
-    () => buildAnalyticsReport(heroEntries, { weights, locale }),
-    [heroEntries, weights, locale]
+    () => buildAnalyticsReport(heroEntries, { weights: null, locale }),
+    [heroEntries, locale]
   );
 
-  const applySuggestion = useCallback(
-    (id: string) => {
-      const suggestion = report.suggestions.find((s) => s.id === id);
-      if (!suggestion) return;
-      const next = applyPlaybookSuggestion(loadPlaybook(), suggestion);
-      savePlaybook(next);
-      setWeights(next.profile.weights);
-      setAppliedId(id);
-    },
-    [report.suggestions]
-  );
+  const insights = useMemo(() => {
+    const cards: InsightCard[] = [];
+
+    for (const row of report.edge.symbols.slice(0, 3)) {
+      cards.push({
+        id: `edge-sym-${row.label}`,
+        kind: "strength",
+        title: row.label,
+        detail:
+          locale === "en"
+            ? `Stronger on this symbol/setup · ${row.closed} closes`
+            : `Lebih kuat di simbol/setup ini · ${row.closed} close`,
+        tone: row.net >= 0 ? "up" : "down",
+        meta: `${formatPnl(row.net, formatOpts)}${row.winRate == null ? "" : ` · ${Math.round(row.winRate * 100)}% W`}`,
+      });
+    }
+    for (const row of report.edge.sessions.slice(0, 2)) {
+      cards.push({
+        id: `edge-ses-${row.label}`,
+        kind: "strength",
+        title: row.label,
+        detail: locale === "en" ? "Session pocket" : "Pocket sesi",
+        tone: row.net >= 0 ? "up" : "down",
+        meta: formatPnl(row.net, formatOpts),
+      });
+    }
+    for (const l of report.leakage) {
+      cards.push({
+        id: `leak-${l.id}`,
+        kind: "leak",
+        title: l.title[locale],
+        detail: l.detail[locale],
+        tone: l.severity === "high" ? "down" : "warn",
+      });
+    }
+    for (const c of report.context) {
+      cards.push({
+        id: `ctx-${c.key}`,
+        kind: "context",
+        title: c.label[locale],
+        detail:
+          locale === "en"
+            ? c.zone === "high"
+              ? "Favor this window"
+              : c.zone === "avoid"
+                ? "Stay flat here"
+                : "Neutral window"
+            : c.zone === "high"
+              ? "Prioritaskan jendela ini"
+              : c.zone === "avoid"
+                ? "Lebih baik flat di sini"
+                : "Jendela netral",
+        tone: c.zone === "high" ? "up" : c.zone === "avoid" ? "down" : "neutral",
+        meta: `${formatPnl(c.net, formatOpts)} · ${c.count} close${
+          c.winRate != null ? ` · ${Math.round(c.winRate * 100)}% W` : ""
+        }`,
+      });
+    }
+    for (const d of report.drift) {
+      cards.push({
+        id: `drift-${d.metric.en}`,
+        kind: "drift",
+        title: d.metric[locale],
+        detail:
+          locale === "en"
+            ? `Last 7d vs prior 7d · ${d.prior} → ${d.recent}`
+            : `7 hari vs 7 hari sebelumnya · ${d.prior} → ${d.recent}`,
+        tone: d.direction === "better" ? "up" : d.direction === "worse" ? "down" : "neutral",
+      });
+    }
+
+    const order = { leak: 0, strength: 1, context: 2, drift: 3 } as const;
+    return cards.sort((a, b) => order[a.kind] - order[b.kind]);
+  }, [report, locale, formatOpts]);
 
   if (journal.loading || !journal.data) {
     return <p className="text-sm text-zinc-400">{copy.loading}</p>;
   }
 
-  const focusBanner =
-    report.focus === "overtrade"
-      ? locale === "en"
-        ? "Personal focus: overtrade leakage (minor wins de-emphasized)."
-        : "Fokus personal: kebocoran overtrade (win kecil tidak di-highlight)."
-      : report.focus === "hesitation"
-        ? locale === "en"
-          ? "Personal focus: missed edge - prioritize valid zones."
-          : "Fokus personal: edge terlewat - prioritaskan zona valid."
-        : null;
-
-  const sectionTitles = {
-    edge: locale === "en" ? "Edge" : "Edge",
-    losses: locale === "en" ? "Leakage" : "Kebocoran",
-    context: locale === "en" ? "Context zones" : "Zona konteks",
-    behavior: locale === "en" ? "Behavior drift" : "Drift perilaku",
-    suggestions: locale === "en" ? "Playbook suggestions" : "Usulan Playbook",
+  const kindLabel: Record<InsightCard["kind"], string> = {
+    strength: locale === "en" ? "Strength" : "Kekuatan",
+    leak: locale === "en" ? "Leak" : "Kebocoran",
+    context: locale === "en" ? "Context" : "Konteks",
+    drift: locale === "en" ? "Drift" : "Drift",
   };
 
   return (
@@ -149,14 +165,12 @@ export function NoteAnalyticsView() {
         {report.edge.headline[locale]}
       </p>
 
-      {focusBanner ? <p className="text-xs text-zinc-400">{focusBanner}</p> : null}
-
       <AnalyticsSection
         title={locale === "en" ? "Win rate" : "Win rate"}
         hint={
           locale === "en"
-            ? "Instrument mix, weekday outcome (Sun–Sat), and rolling win rate."
-            : "Mix instrumen, hasil per hari Min–Sab, dan win rate rolling."
+            ? "Instrument mix, weekday outcome, and rolling win rate."
+            : "Mix instrumen, hasil per hari, dan win rate rolling."
         }
       >
         <div className="space-y-5 rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4">
@@ -171,196 +185,48 @@ export function NoteAnalyticsView() {
       </AnalyticsSection>
 
       <AnalyticsSection
-        title={locale === "en" ? "Context surface (3D)" : "Surface konteks (3D)"}
+        title={locale === "en" ? "Insights" : "Insight"}
         hint={
           locale === "en"
-            ? "Cross session × symbol to spot pockets of edge - rotate the plot to read peaks."
-            : "Potong sesi × simbol untuk lihat pocket edge - putar plot untuk baca puncak."
+            ? "One feed: strengths, leaks, context windows, and recent drift."
+            : "Satu feed: kekuatan, kebocoran, jendela konteks, dan drift."
         }
       >
-        <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4">
-          <NoteAnalyticsSurface entries={heroEntries} locale={locale} />
-        </div>
-      </AnalyticsSection>
-
-      <AnalyticsSection
-        title={sectionTitles.edge}
-        hint={locale === "en" ? "Where you have advantage - trade more here." : "Di mana ada advantage - trade lebih di sini."}
-      >
-        <div className="grid gap-5 lg:grid-cols-3">
-          <div>
-            <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-400">
-              {locale === "en" ? "Symbol / setup" : "Simbol / setup"}
-            </h3>
-            <EdgeTable
-              rows={report.edge.symbols}
-              formatOpts={formatOpts}
-              empty={locale === "en" ? "Need 3+ closes per bucket." : "Butuh 3+ close per bucket."}
-            />
-          </div>
-          <div>
-            <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-400">
-              {locale === "en" ? "Session" : "Sesi"}
-            </h3>
-            <EdgeTable
-              rows={report.edge.sessions}
-              formatOpts={formatOpts}
-              empty={locale === "en" ? "Log more session-tagged trades." : "Log lebih banyak trade per sesi."}
-            />
-          </div>
-          <div>
-            <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-400">
-              {locale === "en" ? "Asset class" : "Kelas aset"}
-            </h3>
-            <EdgeTable
-              rows={report.edge.assets}
-              formatOpts={formatOpts}
-              empty={locale === "en" ? "Need 3+ closes per asset." : "Butuh 3+ close per aset."}
-            />
-          </div>
-        </div>
-      </AnalyticsSection>
-
-      <AnalyticsSection
-        title={sectionTitles.losses}
-        hint={
-          locale === "en"
-            ? "Dominated patterns to remove from your policy."
-            : "Pola dominasi yang sebaiknya dihapus dari kebijakanmu."
-        }
-      >
-        {report.leakage.length === 0 ? (
+        {insights.length === 0 ? (
           <p className="text-sm text-zinc-400">
             {locale === "en"
-              ? "No dominated patterns yet (revenge, clusters, rule breaks)."
-              : "Belum ada pola dominasi (revenge, cluster, pelanggaran aturan)."}
+              ? "Log more closes in Journal to surface patterns."
+              : "Log lebih banyak close di Journal agar pola muncul."}
           </p>
         ) : (
-          <div className="space-y-3">
-            {report.leakage.map((l) => (
-              <article
-                key={l.id}
+          <ul className="space-y-2">
+            {insights.map((card) => (
+              <li
+                key={card.id}
                 className={cn(
                   "rounded-lg border px-4 py-3",
-                  l.severity === "high" ? "note-surface-down border" : "border-zinc-800/80"
+                  card.tone === "up"
+                    ? ZONE_CLASS.high
+                    : card.tone === "down"
+                      ? ZONE_CLASS.avoid
+                      : card.tone === "warn"
+                        ? ZONE_CLASS.neutral
+                        : "border-zinc-800/80 bg-zinc-900/20"
                 )}
               >
-                <h3 className="font-medium text-zinc-100">{l.title[locale]}</h3>
-                <p className="mt-1 text-sm text-zinc-400">{l.detail[locale]}</p>
-              </article>
-            ))}
-          </div>
-        )}
-      </AnalyticsSection>
-
-      <AnalyticsSection
-        title={sectionTitles.context}
-        hint={locale === "en" ? "When to trade vs stay flat." : "Kapan trade vs stay flat."}
-      >
-        {report.context.length === 0 ? (
-          <p className="text-sm text-zinc-400">
-            {locale === "en" ? "Context matrix needs more journal closes." : "Matrix konteks butuh lebih banyak close di Journal."}
-          </p>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {report.context.map((c) => (
-              <div key={c.key} className={cn("rounded-lg border px-4 py-3", ZONE_CLASS[c.zone])}>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-medium">{c.label[locale]}</span>
-                  <span className="text-xs uppercase tracking-wide opacity-80">{ZONE_LABEL[c.zone][locale]}</span>
-                </div>
-                <p className="mt-2 tabular-nums text-sm opacity-90">
-                  {formatPnl(c.net, formatOpts)} · {c.count} close
-                  {c.winRate != null ? ` · ${Math.round(c.winRate * 100)}% W` : ""}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </AnalyticsSection>
-
-      <AnalyticsSection
-        title={sectionTitles.behavior}
-        hint={
-          locale === "en"
-            ? `Last 7d vs prior 7d · ${report.sampleClosed} closes total`
-            : `7 hari vs 7 hari sebelumnya · ${report.sampleClosed} close total`
-        }
-      >
-        {report.drift.length === 0 ? (
-          <p className="text-sm text-zinc-400">
-            {locale === "en" ? "Need activity in both windows." : "Butuh aktivitas di kedua window."}
-          </p>
-        ) : (
-          <div className="space-y-2">
-            {report.drift.map((d) => (
-              <div
-                key={d.metric.en}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-zinc-800/80 px-4 py-3 text-sm"
-              >
-                <span className="text-zinc-300">{d.metric[locale]}</span>
-                <span className="tabular-nums text-zinc-400">
-                  {d.prior} → {d.recent}{" "}
-                  <span
-                    className={
-                      d.direction === "better"
-                        ? "note-pnl-up"
-                        : d.direction === "worse"
-                          ? "note-pnl-down"
-                          : "text-zinc-400"
-                    }
-                  >
-                    {d.direction === "better" ? "↑" : d.direction === "worse" ? "↓" : "→"}
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-sm font-medium text-zinc-100">{card.title}</p>
+                  <span className="text-[10px] font-medium uppercase tracking-wide text-zinc-500">
+                    {kindLabel[card.kind]}
                   </span>
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </AnalyticsSection>
-
-      <AnalyticsSection
-        title={sectionTitles.suggestions}
-        hint={
-          locale === "en"
-            ? "Proposed constraint updates - apply explicitly to Playbook."
-            : "Usulan update constraint - apply eksplisit ke Playbook."
-        }
-      >
-        {report.suggestions.length === 0 ? (
-          <p className="text-sm text-zinc-400">
-            {locale === "en" ? "No rule changes suggested yet." : "Belum ada usulan perubahan aturan."}
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {report.suggestions.map((s) => (
-              <article key={s.id} className="rounded-lg border border-zinc-800/80 px-4 py-3">
-                <h3 className="font-medium text-zinc-100">{s.title[locale]}</h3>
-                <p className="mt-1 text-sm text-zinc-400">{s.detail[locale]}</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => applySuggestion(s.id)}
-                    className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-sm font-medium text-zinc-900 hover:bg-white"
-                  >
-                    {appliedId === s.id
-                      ? locale === "en"
-                        ? "Applied"
-                        : "Sudah diterapkan"
-                      : locale === "en"
-                        ? "Apply to Playbook"
-                        : "Terapkan ke Playbook"}
-                  </button>
-                  <Link
-                    href="/note/playbook"
-                    className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-sm text-zinc-300 hover:border-zinc-500"
-                  >
-                    {locale === "en" ? "Open Playbook" : "Buka Playbook"}
-                  </Link>
                 </div>
-              </article>
+                <p className="mt-1 text-sm text-zinc-400">{card.detail}</p>
+                {card.meta ? (
+                  <p className="mt-1.5 text-xs tabular-nums text-zinc-500">{card.meta}</p>
+                ) : null}
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </AnalyticsSection>
     </div>

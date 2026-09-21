@@ -4,7 +4,6 @@ import type { NoteLocale } from "@/lib/note/prefs";
 export type NoteSectionId =
   | "overview"
   | "journal"
-  | "playbook"
   | "analytics"
   | "news"
   | "notes";
@@ -31,8 +30,8 @@ export const NOTE_SECTIONS: NoteSection[] = [
     question: { id: "Di mana posisiku sekarang?", en: "Where am I right now?" },
     role: { id: "Monitor kondisi (real-time)", en: "State monitor (real-time)" },
     scope: {
-      id: "Kurva ekuitas, PnL harian, exposure risiko, snapshot bias.",
-      en: "Equity curve, daily PnL, risk exposure, bias snapshot.",
+      id: "Kurva ekuitas, PnL harian, ringkasan rentang chart.",
+      en: "Equity curve, daily PnL, chart-range summary.",
     },
     boundary: {
       id: "Bukan log trade, bukan analisis edge, bukan catatan bebas.",
@@ -55,29 +54,14 @@ export const NOTE_SECTIONS: NoteSection[] = [
     },
   },
   {
-    id: "playbook",
-    href: "/note/playbook",
-    label: { id: "Playbook", en: "Playbook" },
-    question: { id: "Apa yang boleh kulakukan?", en: "What am I allowed to do?" },
-    role: { id: "Sistem constraint keputusan", en: "Decision constraint system" },
-    scope: {
-      id: "PROFILE (4 sinyal) → SETUP → CHECK adaptif → RISK.",
-      en: "PROFILE (4 signals) → SETUP → adaptive CHECK → RISK.",
-    },
-    boundary: {
-      id: "Pre-trade constraint engine. Bukan edukasi, analytics, jurnal, atau psikologi.",
-      en: "Pre-trade constraint engine. Not education, analytics, journal, or psychology.",
-    },
-  },
-  {
     id: "analytics",
     href: "/note/analytics",
     label: { id: "Analytics", en: "Analytics" },
     question: { id: "Apa yang harus kubah?", en: "What should I change?" },
     role: { id: "Mesin koreksi keputusan", en: "Decision correction engine" },
     scope: {
-      id: "Edge, leakage, konteks reward, drift perilaku, usulan update Playbook.",
-      en: "Edge, leakage, context zones, behavior drift, Playbook update suggestions.",
+      id: "Win rate + satu feed Insight (pola kuat, kebocoran, konteks, drift).",
+      en: "Win rate + one Insights feed (strengths, leaks, context, drift).",
     },
     boundary: {
       id: "Bukan dashboard dopamine - hanya pola dari Journal, bukan kalender makro.",
@@ -106,12 +90,12 @@ export const NOTE_SECTIONS: NoteSection[] = [
     question: { id: "Apa yang kueksplorasi sebelum eksekusi?", en: "What am I exploring pre-execution?" },
     role: { id: "Ruang eksplorasi belief (zero execution cost)", en: "Belief exploration space (zero execution cost)" },
     scope: {
-      id: "Capture cepat, auto-tag, link opsional ke Journal/Playbook - sinyal upstream.",
-      en: "Quick capture, auto-tags, optional Journal/Playbook links - upstream signals.",
+      id: "Capture cepat, auto-tag, link opsional ke Journal - sinyal upstream.",
+      en: "Quick capture, auto-tags, optional Journal links - upstream signals.",
     },
     boundary: {
-      id: "Bukan diary wajib format - mirror & promosi sinyal ada di Analytics/Playbook.",
-      en: "Not a formatted diary - mirrors and promotions live in Analytics/Playbook.",
+      id: "Bukan diary wajib format - mirror & pola ada di Analytics.",
+      en: "Not a formatted diary - mirrors and patterns live in Analytics.",
     },
   },
 ];

@@ -52,13 +52,13 @@ function sectionLink(id: NoteSectionId, locale: NoteLocale): { href: string; lab
 function followUpLinks(prompt: string, locale: NoteLocale): { href: string; label: string }[] {
   const p = prompt.toLowerCase();
   const ids: NoteSectionId[] = [];
-  if (/tilt|revenge|marah|emosi/.test(p)) ids.push("playbook", "analytics");
-  else if (/minggu|week|review|drift|edge/.test(p)) ids.push("analytics", "playbook");
+  if (/tilt|revenge|marah|emosi/.test(p)) ids.push("analytics", "notes");
+  else if (/minggu|week|review|drift|edge/.test(p)) ids.push("analytics");
   else if (/ekonomi|economic|ff|forex|calendar/.test(p)) ids.push("news");
   else if (/log|entry|cepat|quick/.test(p)) ids.push("journal");
   else if (/ringkas|summary|kondisi|overview|bagus|hancur|summarize/.test(p))
     ids.push("overview", "analytics");
-  else if (/more|lain|help|bantuan/.test(p)) ids.push("overview", "journal", "playbook");
+  else if (/more|lain|help|bantuan/.test(p)) ids.push("overview", "journal", "analytics");
   const seen = new Set<string>();
   return ids
     .map((id) => sectionLink(id, locale))
@@ -107,8 +107,8 @@ function replyFromPrompt(
   }
   if (/more|lain|help|bantuan/.test(p)) {
     return locale === "en"
-      ? "Six sections: Overview (state), Journal (execution), Playbook (rules), Analytics (edge), News (external shock), Notes (thinking)."
-      : "Enam bagian: Overview (state), Journal (eksekusi), Playbook (rules), Analytics (edge), News (shock eksternal), Notes (pikiran).";
+      ? "Five sections: Overview (state), Journal (execution), Analytics (patterns), News (external shock), Notes (thinking)."
+      : "Lima bagian: Overview (state), Journal (eksekusi), Analytics (pola), News (shock eksternal), Notes (pikiran).";
   }
   if (/ringkas|summary|kondisi|overview|bagus|hancur|summarize/.test(p)) {
     const extra = ctx.insights[1] ? ` ${ctx.insights[1]}` : "";

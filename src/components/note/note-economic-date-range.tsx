@@ -3,6 +3,7 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { NoteRangeCalendar } from "@/components/note/note-range-calendar";
 import {
   addDays,
   defaultEconDateRange,
@@ -53,13 +54,11 @@ export function NoteEconomicDateRange({ value, onChange }: Props) {
       saveEconDateRange(next);
       return;
     }
-    const days = Math.round((Date.parse(value.to) - Date.parse(value.from)) / 86400000) + 1;
     const next = {
       preset: "custom" as const,
       from: addDays(value.from, delta),
       to: addDays(value.to, delta),
     };
-    if (days === 7) next.preset = "custom";
     onChange(next);
     saveEconDateRange(next);
   };
@@ -84,13 +83,10 @@ export function NoteEconomicDateRange({ value, onChange }: Props) {
   };
 
   const todayKey = jakartaDateKey();
-  const pillLabel =
-    value.from === value.to && value.from === todayKey
-      ? formatRangeLabel(value, locale)
-      : formatRangeLabel(
-          value.from === value.to ? { ...value, preset: "custom" } : value,
-          locale
-        );
+  const pillLabel = formatRangeLabel(
+    value.from === value.to ? { ...value, preset: "custom" } : value,
+    locale
+  );
 
   return (
     <div ref={rootRef} className="relative flex items-center gap-0.5">
@@ -116,7 +112,9 @@ export function NoteEconomicDateRange({ value, onChange }: Props) {
             : "border-zinc-700 bg-zinc-900 text-zinc-200 hover:border-zinc-600"
         )}
       >
-        <span className="truncate">{pillLabel}</span>
+        <span className="truncate">
+          {value.from === value.to && value.from === todayKey ? formatRangeLabel(value, locale) : pillLabel}
+        </span>
         <ChevronDown className={cn("size-3.5 shrink-0 text-zinc-400 transition", open && "rotate-180")} />
       </button>
 
@@ -130,28 +128,14 @@ export function NoteEconomicDateRange({ value, onChange }: Props) {
       </button>
 
       {open ? (
-        <div className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,22rem)] rounded-lg border border-zinc-700 bg-zinc-950 p-3 shadow-xl">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">{copy.econRangeTitle}</p>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            <label className="text-xs text-zinc-400">
-              {copy.econRangeFrom}
-              <input
-                type="date"
-                value={draft.from}
-                onChange={(e) => setDraft((d) => ({ ...d, preset: "custom", from: e.target.value }))}
-                className="note-field mt-0.5"
-              />
-            </label>
-            <label className="text-xs text-zinc-400">
-              {copy.econRangeTo}
-              <input
-                type="date"
-                value={draft.to}
-                onChange={(e) => setDraft((d) => ({ ...d, preset: "custom", to: e.target.value }))}
-                className="note-field mt-0.5"
-              />
-            </label>
-          </div>
+        <div className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,20rem)] rounded-lg border border-zinc-700 bg-zinc-950 p-3 shadow-xl">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-400">{copy.econRangeTitle}</p>
+          <NoteRangeCalendar
+            value={draft}
+            onChange={(r) => setDraft({ ...draft, preset: "custom", from: r.from, to: r.to })}
+            locale={locale}
+            weekStart={prefs.weekStart}
+          />
 
           <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 border-t border-zinc-800 pt-3">
             {(
@@ -192,7 +176,11 @@ export function NoteEconomicDateRange({ value, onChange }: Props) {
             >
               {copy.batal}
             </button>
-            <button type="button" className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200" onClick={resetToday}>
+            <button
+              type="button"
+              className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
+              onClick={resetToday}
+            >
               {copy.econRangeResetToday}
             </button>
           </div>

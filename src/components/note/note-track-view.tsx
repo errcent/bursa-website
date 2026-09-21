@@ -21,7 +21,6 @@ import { buildTrackSnapshot } from "@/lib/note/track/engine";
 import { useTrackMarketCloses } from "@/lib/note/track/use-market-closes";
 import { jakartaDateKey } from "@/lib/note/economic-calendar/date-range";
 import type { TrackRangePreset } from "@/lib/note/track/types";
-import { fxFootnote } from "@/lib/note/fx/convert";
 import { fxContextFromPrefs } from "@/lib/note/fx/context";
 import { pnlOptsFromPrefs } from "@/lib/note/prefs";
 import { formatPnl } from "@/lib/note/stats";
@@ -140,7 +139,6 @@ function TrackInner() {
               ? "Loading market prices…"
               : "Memuat harga pasar…"
             : null}
-        {snap.mixedCurrencies ? ` · ${fxFootnote(fx.display, fx.rates, locale)}` : null}
       </p>
 
       {/* KPI strip */}

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { NoteJournalOnboarding } from "@/components/note/note-journal-onboarding";
-import { NoteJournalProvider, useNoteJournal } from "@/components/note/note-journal-context";
+import { NoteJournalProvider } from "@/components/note/note-journal-context";
 import { NoteAiAssistant } from "@/components/note/note-ai-assistant";
 import { NoteSidebar } from "@/components/note/note-sidebar";
 import { isProductionHostRouting, originFor } from "@/lib/hosts/hosts";
@@ -32,36 +32,6 @@ function useResolvedNoteTheme(theme: NoteTheme): "dark" | "light" {
 }
 
 const chromePad = "px-4 sm:px-6 lg:px-8";
-
-function NotePublicStatusStrip() {
-  const journal = useNoteJournal();
-  const [prefs] = useNotePrefs();
-  const locale = prefs.locale;
-  if (journal.loading) return null;
-
-  const parts: string[] = [];
-  if (journal.openAccess) {
-    parts.push(
-      locale === "en"
-        ? "Preview until 1 Oct 2026 (no Bursa login required)."
-        : "Preview sampai 1 Okt 2026 (tanpa login Bursa)."
-    );
-  }
-  if (journal.demo) {
-    parts.push(
-      locale === "en"
-        ? "Journal numbers include sample trades until you log your own."
-        : "Angka jurnal memakai contoh trade sampai kamu log sendiri."
-    );
-  }
-  if (!parts.length) return null;
-
-  return (
-    <p className="mb-4 rounded-lg border border-zinc-800/80 bg-zinc-900/40 px-3 py-2 text-xs leading-snug text-zinc-400">
-      {parts.join(" ")}
-    </p>
-  );
-}
 
 function NoteShellInner({ title, children }: { title?: ReactNode; children: ReactNode }) {
   const [prefs, updatePrefs] = useNotePrefs();
@@ -205,7 +175,6 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
               {title}
             </h1>
           ) : null}
-          <NotePublicStatusStrip />
           {children}
         </main>
       </div>

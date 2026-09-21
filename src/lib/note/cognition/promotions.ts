@@ -40,16 +40,16 @@ export function buildBeliefPromotions(
     if (count >= 3) {
       out.push({
         id: `repeat-${snippet.slice(0, 12)}`,
-        kind: "playbook_candidate",
+        kind: "analytics_pattern",
         title: {
-          id: "Ide berulang → kandidat Playbook",
-          en: "Repeated idea → Playbook candidate",
+          id: "Ide berulang",
+          en: "Repeated idea",
         },
         detail: {
-          id: `"${snippet}" muncul ${count}×. Commit eksplisit ke setup (bukan saran otomatis).`,
-          en: `"${snippet}" appears ${count}×. Explicit commit to a setup (not auto-applied).`,
+          id: `"${snippet}" muncul ${count}×. Lihat Analytics untuk pola terkait.`,
+          en: `"${snippet}" appears ${count}×. Check Analytics for related patterns.`,
         },
-        href: "/note/playbook",
+        href: "/note/analytics",
         beliefSnippet: snippet,
       });
       break;

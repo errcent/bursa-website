@@ -14,16 +14,13 @@ import {
 
 import { useNoteJournal } from "@/components/note/note-journal-context";
 import { NOTE_EXECUTION_KIND } from "@/lib/note/sections";
-import { NoteRiskSnapshot } from "@/components/note/note-risk-snapshot";
 import DailyReturnsCalendar from "@/components/ui/daily-returns-calendar";
 import { NoteOverviewPortfolioChart } from "@/components/note/note-overview-portfolio-chart";
 import { NotePnlStackedAreaChart } from "@/components/ui/note-pnl-stacked-area-chart";
 import { NotePnlTradeScatterChart } from "@/components/ui/note-pnl-trade-scatter-chart";
 import { noteCopy } from "@/lib/note/copy";
-import { buildNoteInsights } from "@/lib/note/insights";
 import { noteApexLoginHref } from "@/lib/note/sso-urls";
 import { jakartaDateKey } from "@/lib/note/economic-calendar/date-range";
-import { fxFootnote } from "@/lib/note/fx/convert";
 import { fxContextFromPrefs } from "@/lib/note/fx/context";
 import { pnlOptsForSlot, pnlOptsFromPrefs } from "@/lib/note/prefs";
 import {
@@ -91,10 +88,6 @@ export function NoteOverview() {
     }
     return map;
   }, [buckets, notional]);
-  const insights = useMemo(
-    () => buildNoteInsights(heroEntries, snapshot, prefs.locale),
-    [heroEntries, snapshot, prefs.locale]
-  );
 
   const chartRange = chartPrefs.range;
 
@@ -109,8 +102,6 @@ export function NoteOverview() {
       }),
     [heroEntries, chartRange, chartPrefs.granularity, chartPrefs.hideEmptyDays, fx]
   );
-
-  const fxNote = fxFootnote(fx.display, fx.rates, prefs.locale);
 
   const monthBounds = useMemo(() => {
     const prefix = `${cursor.year}-${String(cursor.month + 1).padStart(2, "0")}`;
@@ -233,28 +224,6 @@ export function NoteOverview() {
             />
           </section>
 
-          <NoteRiskSnapshot entries={heroEntries} snapshot={snapshot} locale={prefs.locale} />
-
-          {insights[0] ? (
-            <section className="space-y-2">
-              <h2 className="text-sm font-semibold text-zinc-200">
-                {prefs.locale === "en" ? "Bias snapshot" : "Snapshot bias"}
-              </h2>
-              <p
-                className={cn(
-                  "rounded-md border px-3 py-2.5 text-sm leading-snug",
-                  insights[0].tone === "warn"
-                    ? "note-surface-down"
-                    : insights[0].tone === "positive"
-                      ? "note-surface-up"
-                      : "border-zinc-800 text-zinc-300"
-                )}
-              >
-                {insights[0].text}
-              </p>
-            </section>
-          ) : null}
-
           <div className="flex flex-wrap gap-2">
             <Link
               href="/note/baru"
@@ -272,83 +241,80 @@ export function NoteOverview() {
         </div>
 
         <section className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4 sm:p-5">
-            <h2 className="mb-1 text-sm font-semibold text-zinc-200">
-              {prefs.locale === "en" ? "Chart range" : "Rentang chart"}
-            </h2>
-            <p className="mb-3 font-heading text-base font-semibold tracking-tight text-zinc-200 sm:text-lg">
-              {headline}
-            </p>
-            <div className="mb-4 grid grid-cols-3 gap-3 sm:gap-4">
-              <div>
-                <p className="text-xs text-zinc-400">
-                  {prefs.locale === "en" ? "PnL" : "PnL"}
-                </p>
-                <p
-                  className={cn(
-                    "font-heading text-xl tabular-nums tracking-tight sm:text-2xl",
-                    rangeSnapshot.pnlSum >= 0 ? "note-pnl-up" : "note-pnl-down"
-                  )}
-                >
-                  {formatPnl(rangeSnapshot.pnlSum, formatOpts)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-zinc-400">
-                  {prefs.locale === "en" ? "Win rate" : "Win rate"}
-                </p>
-                <p className="font-heading text-xl tabular-nums tracking-tight text-zinc-100 sm:text-2xl">
-                  {rangeSnapshot.winRate == null
-                    ? "-"
-                    : `${Math.round(rangeSnapshot.winRate * 100)}%`}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-zinc-400">
-                  {prefs.locale === "en" ? "Trades" : "Trade"}
-                </p>
-                <p className="font-heading text-xl tabular-nums tracking-tight text-zinc-100 sm:text-2xl">
-                  {rangeSnapshot.closedCount}
-                </p>
-              </div>
-            </div>
-            <div className="mb-4">
-              <NoteOverviewChartControls
-                value={chartPrefs}
-                onChange={(next) => {
-                  setChartPrefs(next);
-                  saveOverviewChartPrefs(next);
-                }}
-              />
-            </div>
-            <p className="mb-3 text-xs leading-snug text-zinc-400">{fxNote}</p>
-            <div className="flex flex-col gap-6">
-              <div className="min-w-0 space-y-2">
-                <p className="text-xs font-medium text-zinc-400">
-                  {prefs.locale === "en" ? "PnL · wins / losses / net" : "PnL · menang / rugi / net"}
-                </p>
-                {chartPrefs.granularity === "trade" ? (
-                  <NotePnlTradeScatterChart
-                    data={chartStack}
-                    locale={prefs.locale}
-                    formatValue={(n) => formatPnl(n, chartFmtOpts)}
-                  />
-                ) : (
-                  <NotePnlStackedAreaChart
-                    data={chartStack}
-                    locale={prefs.locale}
-                    formatValue={(n) => formatPnl(n, chartFmtOpts)}
-                  />
+          <h2 className="mb-1 text-sm font-semibold text-zinc-200">
+            {prefs.locale === "en" ? "Chart range" : "Rentang chart"}
+          </h2>
+          <p className="mb-3 font-heading text-base font-semibold tracking-tight text-zinc-200 sm:text-lg">
+            {headline}
+          </p>
+          <div className="mb-4 grid grid-cols-3 gap-3 sm:gap-4">
+            <div>
+              <p className="text-xs text-zinc-400">{prefs.locale === "en" ? "PnL" : "PnL"}</p>
+              <p
+                className={cn(
+                  "font-heading text-xl tabular-nums tracking-tight sm:text-2xl",
+                  rangeSnapshot.pnlSum >= 0 ? "note-pnl-up" : "note-pnl-down"
                 )}
-              </div>
-              <div className="min-w-0">
-                <NoteOverviewPortfolioChart
-                  points={resultsEquity}
+              >
+                {formatPnl(rangeSnapshot.pnlSum, formatOpts)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-400">
+                {prefs.locale === "en" ? "Win rate" : "Win rate"}
+              </p>
+              <p className="font-heading text-xl tabular-nums tracking-tight text-zinc-100 sm:text-2xl">
+                {rangeSnapshot.winRate == null
+                  ? "-"
+                  : `${Math.round(rangeSnapshot.winRate * 100)}%`}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-400">
+                {prefs.locale === "en" ? "Trades" : "Trade"}
+              </p>
+              <p className="font-heading text-xl tabular-nums tracking-tight text-zinc-100 sm:text-2xl">
+                {rangeSnapshot.closedCount}
+              </p>
+            </div>
+          </div>
+          <div className="mb-4">
+            <NoteOverviewChartControls
+              value={chartPrefs}
+              onChange={(next) => {
+                setChartPrefs(next);
+                saveOverviewChartPrefs(next);
+              }}
+            />
+          </div>
+          <div className="flex flex-col gap-6">
+            <div className="min-w-0 space-y-2">
+              <p className="text-xs font-medium text-zinc-400">
+                {prefs.locale === "en" ? "PnL · wins / losses / net" : "PnL · menang / rugi / net"}
+              </p>
+              {chartPrefs.granularity === "trade" ? (
+                <NotePnlTradeScatterChart
+                  data={chartStack}
                   locale={prefs.locale}
-                  granularity={chartPrefs.granularity}
                   formatValue={(n) => formatPnl(n, chartFmtOpts)}
                 />
-              </div>
+              ) : (
+                <NotePnlStackedAreaChart
+                  data={chartStack}
+                  locale={prefs.locale}
+                  formatValue={(n) => formatPnl(n, chartFmtOpts)}
+                />
+              )}
             </div>
+            <div className="min-w-0">
+              <NoteOverviewPortfolioChart
+                points={resultsEquity}
+                locale={prefs.locale}
+                granularity={chartPrefs.granularity}
+                formatValue={(n) => formatPnl(n, chartFmtOpts)}
+              />
+            </div>
+          </div>
         </section>
       </div>
     </div>

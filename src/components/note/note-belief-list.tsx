@@ -1,17 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { classifyNoteText, tagLabel } from "@/lib/note/cognition/tags";
 import { getBeliefLink, loadBeliefLinks, saveBeliefLink } from "@/lib/note/cognition/links";
 import { isBeliefEntry } from "@/lib/note/cognition/promotions";
-import { loadPlaybook } from "@/lib/note/playbook/storage";
 import { dayKey } from "@/lib/note/stats";
 import { noteCopy } from "@/lib/note/copy";
 import type { JournalEntry } from "@/lib/note/types";
 import { isPnlKind } from "@/lib/note/types";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
+
 export function NoteBeliefList({
   entries,
   allEntries,
@@ -45,14 +44,8 @@ export function NoteBeliefList({
     [allEntries]
   );
 
-  const setups = useMemo(() => loadPlaybook().setups.filter((s) => s.enabled), []);
-
   if (!beliefs.length) {
-    return (
-      <p className="text-sm text-zinc-400">
-        {copy.notesEmpty}
-      </p>
-    );
+    return <p className="text-sm text-zinc-400">{copy.notesEmpty}</p>;
   }
 
   return (
@@ -100,28 +93,6 @@ export function NoteBeliefList({
                   </option>
                 ))}
               </select>
-              <select
-                className="note-field max-w-[10rem] text-xs"
-                value={link?.playbookSetupId ?? ""}
-                onChange={(e) => {
-                  const playbookSetupId = e.target.value || undefined;
-                  saveBeliefLink(entry.id, { playbookSetupId });
-                  setLinks({ ...loadBeliefLinks() });
-                }}
-                aria-label={copy.notesLinkPlaybook}
-              >
-                <option value="">{copy.notesLinkPlaybookNone}</option>
-                {setups.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-              {(link?.journalEntryId || link?.playbookSetupId) && (
-                <Link href="/note/playbook" className="text-xs text-zinc-400 hover:text-zinc-300">
-                  {copy.notesLinkPlaybookOpen}
-                </Link>
-              )}
             </div>
           </li>
         );

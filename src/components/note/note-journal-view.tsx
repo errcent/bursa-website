@@ -109,6 +109,7 @@ export function NoteJournalView() {
 
       <NoteJournalFilters
         locale={prefs.locale}
+        weekStart={prefs.weekStart}
         value={filters}
         symbols={symbolOptions}
         onChange={(next) => {

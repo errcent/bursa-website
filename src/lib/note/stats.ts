@@ -811,9 +811,8 @@ export function pnlStackPoints(
     const slice = pnlEntries.length > cap ? pnlEntries.slice(-cap) : pnlEntries;
     return slice.map((entry, i) => {
       const pnl = pnlForAggregate(entry, opts.fx);
-      const sym = entry.symbol.trim();
-      const short = sym.length > 8 ? `${sym.slice(0, 7)}…` : sym;
-      const label = short ? `#${i + 1} ${short}` : `#${i + 1}`;
+      // Axis ticks stay minimal (index only). Symbol lives in tooltip via label if needed later.
+      const label = String(i + 1);
       const bucket = { wins: 0, losses: 0 };
       addPnlToBucket(bucket, pnl);
       return roundStackPoint(label, bucket);

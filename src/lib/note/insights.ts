@@ -51,8 +51,8 @@ export function buildNoteInsights(
       tone: "warn",
       text:
         locale === "en"
-          ? `Win rate ${Math.round(snapshot.winRate * 100)}% on ${snapshot.closedCount} closes - revisit playbook filters.`
-          : `Win rate ${Math.round(snapshot.winRate * 100)}% dari ${snapshot.closedCount} close - cek filter playbook.`,
+          ? `Win rate ${Math.round(snapshot.winRate * 100)}% on ${snapshot.closedCount} closes - review filters in Journal.`
+          : `Win rate ${Math.round(snapshot.winRate * 100)}% dari ${snapshot.closedCount} close - cek filter di Journal.`,
     });
   }
 

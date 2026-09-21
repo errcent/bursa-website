@@ -1,17 +1,11 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { NotePlaybookView } from "@/components/note/note-playbook-view";
-import { NoteShell } from "@/components/note/note-shell";
-
-export const metadata: Metadata = {
+export const metadata = {
   title: "Playbook · Bursa Note",
   robots: { index: false, follow: false },
 };
 
+/** Playbook surface retired - keep route for old bookmarks. */
 export default function NotePlaybookPage() {
-  return (
-    <NoteShell title="Playbook">
-      <NotePlaybookView />
-    </NoteShell>
-  );
+  redirect("/note/analytics");
 }
