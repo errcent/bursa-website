@@ -70,7 +70,7 @@ export function NoteAnalyticsWinrateTrend({ entries, locale }: Props) {
     <div className="space-y-3">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">{title}</p>
+          <p className="text-sm font-medium text-zinc-300">{title}</p>
           <p className="text-xs text-zinc-400">{hint}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -89,12 +89,12 @@ export function NoteAnalyticsWinrateTrend({ entries, locale }: Props) {
               </button>
             ))}
           </div>
-          <label className="flex cursor-pointer items-center gap-2 text-xs text-zinc-400">
+          <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-xs text-zinc-400">
             <input
               type="checkbox"
               checked={includeBe}
               onChange={(e) => setIncludeBe(e.target.checked)}
-              className="size-4 rounded border-zinc-600 bg-zinc-900"
+              className="size-4 rounded border-zinc-600 bg-zinc-900 accent-[var(--chart-info-strong)]"
             />
             {locale === "en" ? "Include BE" : "Sertakan BE"}
           </label>

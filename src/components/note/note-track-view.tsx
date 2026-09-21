@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import { NoteLoadingLine } from "@/components/note/note-loading-line";
 import {
   NoteTrackProvider,
   useNoteTrack,
@@ -27,6 +28,14 @@ import { formatPnl } from "@/lib/note/stats";
 import { noteCopy } from "@/lib/note/copy";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
+
+function formatTrackQty(n: number): string {
+  if (!Number.isFinite(n)) return "-";
+  const abs = Math.abs(n);
+  if (abs >= 1000) return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  if (abs >= 1) return n.toLocaleString(undefined, { maximumFractionDigits: 4 });
+  return n.toLocaleString(undefined, { maximumFractionDigits: 8 });
+}
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -75,7 +84,7 @@ function TrackInner() {
   const txPortfolioId = scope === "all" ? null : scope;
 
   if (loading) {
-    return <p className="text-sm text-zinc-400">{t("Memuat…", "Loading…")}</p>;
+    return <NoteLoadingLine />;
   }
 
   return (
@@ -87,9 +96,10 @@ function TrackInner() {
       ) : null}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0 flex-1 space-y-2">
-          <label className="block text-xs text-zinc-400">
+          <label htmlFor="track-portfolio-scope" className="block text-xs text-zinc-400">
             {t("Portfolio", "Portfolio")}
             <select
+              id="track-portfolio-scope"
               className="mt-1 block min-h-11 w-full max-w-sm rounded-md border border-zinc-700 bg-zinc-900 px-2 text-sm text-zinc-100"
               value={scope}
               onChange={(e) => setScope(e.target.value as "all" | string)}
@@ -222,26 +232,34 @@ function TrackInner() {
           <div className="max-h-[320px] overflow-auto">
             <table className="w-full min-w-[28rem] text-sm">
               <thead className="sticky top-0 bg-zinc-950/95">
-                <tr className="text-left text-xs uppercase text-zinc-400">
-                  <th className="px-3 py-2">Asset</th>
-                  <th className="px-3 py-2">Qty</th>
-                  <th className="px-3 py-2">{t("Nilai", "Value")}</th>
-                  <th className="px-3 py-2">P/L</th>
-                  <th className="px-3 py-2">%</th>
+                <tr className="text-left text-xs text-zinc-500">
+                  <th className="px-3 py-2 font-medium">Asset</th>
+                  <th className="px-3 py-2 font-medium">Qty</th>
+                  <th className="px-3 py-2 font-medium">{t("Nilai", "Value")}</th>
+                  <th className="px-3 py-2 font-medium">P/L</th>
+                  <th className="px-3 py-2 font-medium">%</th>
                 </tr>
               </thead>
               <tbody>
-                {snap.holdings.map((h) => (
+                {snap.holdings.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-3 py-8 text-center text-sm text-zinc-500">
+                      {t("Belum ada holdings. Tambah transaksi dulu.", "No holdings yet. Add a transaction first.")}
+                    </td>
+                  </tr>
+                ) : (
+                  snap.holdings.map((h) => (
                   <tr key={h.symbol} className="border-t border-zinc-800/60">
                     <td className="px-3 py-2 font-medium text-zinc-200">{h.symbol}</td>
-                    <td className="px-3 py-2 tabular-nums text-zinc-400">{h.quantity}</td>
+                    <td className="px-3 py-2 tabular-nums text-zinc-400">{formatTrackQty(h.quantity)}</td>
                     <td className="px-3 py-2 tabular-nums">{formatPnl(h.marketValue, formatOpts)}</td>
                     <td className={cn("px-3 py-2 tabular-nums", h.unrealizedPnl >= 0 ? "note-pnl-up" : "note-pnl-down")}>
                       {formatPnl(h.unrealizedPnl, formatOpts)}
                     </td>
                     <td className="px-3 py-2 tabular-nums text-zinc-400">{h.weight.toFixed(1)}%</td>
                   </tr>
-                ))}
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -266,7 +284,7 @@ function TrackInner() {
                     </span>
                   </div>
                   <p className="mt-0.5 tabular-nums text-xs text-zinc-400">
-                    {tx.quantity} @ {tx.unitPrice ?? "-"} {tx.quoteCurrency}
+                    {formatTrackQty(tx.quantity)} @ {tx.unitPrice ?? "-"} {tx.quoteCurrency}
                   </p>
                 </li>
               ))

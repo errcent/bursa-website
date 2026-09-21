@@ -141,7 +141,7 @@ export function NoteAnalyticsWinrate({ entries, locale }: Props) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-wide text-zinc-400">
+          <p className="text-sm font-medium text-zinc-400">
             {locale === "en" ? "Win rate" : "Win rate"}
           </p>
           <p className="font-heading text-2xl tabular-nums text-zinc-100">
@@ -156,7 +156,7 @@ export function NoteAnalyticsWinrate({ entries, locale }: Props) {
           ) : null}
         </div>
         <div className="flex flex-wrap items-end gap-4">
-          <label className="flex cursor-pointer items-center gap-2 text-xs text-zinc-400">
+          <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-xs text-zinc-400">
             <input
               type="checkbox"
               checked={includeBe}
@@ -183,7 +183,7 @@ export function NoteAnalyticsWinrate({ entries, locale }: Props) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3 text-xs uppercase tracking-wide text-zinc-400">
+      <div className="flex flex-wrap gap-3 text-xs text-zinc-500">
         <span className="inline-flex items-center gap-1.5">
           <span className="size-2 rounded-sm bg-[var(--chart-up-strong)]" aria-hidden />
           {labels.wins}

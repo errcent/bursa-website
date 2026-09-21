@@ -58,13 +58,13 @@ function FilterSection({
   return (
     <fieldset className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <legend className="text-xs font-medium uppercase tracking-wide text-zinc-400">{title}</legend>
-        <span className="text-xs text-zinc-400">
-          <button type="button" className="hover:text-zinc-300" onClick={onAll}>
+        <legend className="text-xs font-medium text-zinc-400">{title}</legend>
+        <span className="text-xs text-zinc-300">
+          <button type="button" className="inline-flex min-h-9 items-center px-1 text-zinc-300 hover:text-zinc-100" onClick={onAll}>
             {allLabel}
           </button>
           {" · "}
-          <button type="button" className="hover:text-zinc-300" onClick={onNone}>
+          <button type="button" className="inline-flex min-h-9 items-center px-1 text-zinc-300 hover:text-zinc-100" onClick={onNone}>
             {noneLabel}
           </button>
         </span>
@@ -212,7 +212,8 @@ export function NoteEconomicCalendar({
   const filterToggle = !compact ? (
     <button
       type="button"
-      className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-300 hover:text-zinc-100"
+      className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-900 hover:text-zinc-100"
+      aria-expanded={filterOpen}
       onClick={() => {
         setDraft(filter);
         setFilterOpen((o) => !o);
@@ -242,17 +243,21 @@ export function NoteEconomicCalendar({
     <section className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4 sm:p-5">
       {monthHint ? <p className="mb-3 text-xs leading-relaxed text-zinc-400">{monthHint}</p> : null}
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <CalendarDays className="size-4 text-zinc-400" aria-hidden />
-        <h2 className="text-xs font-medium uppercase tracking-wide text-zinc-400">{copy.econCalendar}</h2>
+        {!monthScope ? (
+          <>
+            <CalendarDays className="size-4 text-zinc-400" aria-hidden />
+            <h2 className="text-sm font-medium text-zinc-300">{copy.econCalendar}</h2>
+          </>
+        ) : null}
         {data?.provider && data.provider !== "none" ? (
-          <span className="rounded bg-zinc-800/80 px-1.5 py-0.5 text-xs uppercase text-zinc-400">
+          <span className="rounded bg-zinc-800/80 px-1.5 py-0.5 text-xs text-zinc-500">
             {data.provider === "scrape_snapshot" || data.provider === "forexfactory_json"
               ? "scrape"
               : data.provider}
           </span>
         ) : null}
         {!compact ? (
-          <div className="ml-auto flex flex-wrap items-center justify-end gap-3">
+          <div className={cn("flex flex-wrap items-center justify-end gap-3", monthScope ? "w-full" : "ml-auto")}>
             {filterToggle}
             {monthScope ? <NoteEconomicDateRange value={dateRange} onChange={setDateRange} /> : null}
           </div>
@@ -422,7 +427,11 @@ export function NoteEconomicCalendar({
           {prefs.locale === "en" ? "Sign in to load the calendar." : "Masuk untuk memuat kalender."}
         </p>
       ) : loading ? (
-        <p className="text-xs text-zinc-400">…</p>
+        <div className="space-y-2" role="status" aria-busy="true" aria-live="polite">
+          <span className="sr-only">{copy.loading}</span>
+          <div className="h-3 w-32 animate-pulse rounded bg-zinc-800/80" />
+          <div className="h-40 w-full animate-pulse rounded-lg bg-zinc-900/50" />
+        </div>
       ) : visible.length ? (
         <EconomicCalendarTable
           events={visible}
@@ -454,9 +463,9 @@ export function NoteEconomicCalendar({
         href="https://www.forexfactory.com/calendar"
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-200"
+        className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200"
       >
-        Forex Factory <ExternalLink className="size-3" />
+        Forex Factory <ExternalLink className="size-3.5" />
       </a>
     </section>
   );

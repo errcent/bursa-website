@@ -45,8 +45,8 @@ export const NOTE_SECTIONS: NoteSection[] = [
     question: { id: "Apa yang benar-benar kulakukan?", en: "What did I do?" },
     role: { id: "Ground truth eksekusi", en: "Ground truth execution log" },
     scope: {
-      id: "Trade saja: entry/exit, hasil, timestamp, tag setup (simbol/sisi).",
-      en: "Trades only: entry/exit, result, timestamp, setup tag (symbol/side).",
+      id: "Database trade (Notion-style): properti, view, edit/delete, screenshot.",
+      en: "Notion-style trade database: properties, views, edit/delete, screenshots.",
     },
     boundary: {
       id: "Tanpa ide, tanpa refleksi panjang, tanpa narasi → Notes.",

@@ -1,8 +1,9 @@
 import { getNotePrisma } from "@/lib/note/db";
 import { NOTE_JOURNAL_ACCOUNT_MAX, NOTE_JOURNAL_LIST_MAX } from "@/lib/note/resource-limits";
-import type { CreateEntryInput, JournalEntry } from "@/lib/note/types";
+import type { CreateEntryInput, JournalEntry, UpdateEntryInput } from "@/lib/note/types";
 import { buildJournalEntry } from "@/lib/note/build-entry";
 import { encodeJournalPageCursor, parseJournalPageCursor } from "@/lib/note/journal-page-cursor";
+import type { JournalDbSchema } from "@/lib/note/journal-db/types";
 import type { NoteRepository, SsoRecord } from "@/lib/note/repo";
 
 function toIso(value: Date): string {
@@ -103,9 +104,110 @@ export const postgresRepo: NoteRepository = {
         relatedLessonId: built.relatedLessonId,
         openedAt: new Date(built.openedAt),
         createdAt: new Date(built.createdAt),
-      },
+        ...(input.properties ? { properties: input.properties } : {}),
+      } as never,
     });
     return mapRow(apexUserId, row);
+  },
+
+  async updateEntry(apexUserId, id, input: UpdateEntryInput) {
+    const db = getNotePrisma();
+    const account = await db.noteAccount.findUnique({ where: { apexUserId } });
+    if (!account) return null;
+    const existing = await db.journalEntry.findFirst({ where: { id, accountId: account.id } });
+    if (!existing) return null;
+    const prev = mapRow(apexUserId, existing);
+    const built = buildJournalEntry(apexUserId, {
+      kind: input.kind ?? prev.kind,
+      mode: input.mode ?? prev.mode,
+      symbol: input.symbol ?? prev.symbol,
+      side: input.side ?? prev.side,
+      qty: input.qty !== undefined ? input.qty : prev.qty,
+      entryPrice: input.entryPrice !== undefined ? input.entryPrice : prev.entryPrice,
+      exitPrice: input.exitPrice !== undefined ? input.exitPrice : prev.exitPrice,
+      fees: input.fees !== undefined ? input.fees : prev.fees,
+      pnl: input.pnl !== undefined ? input.pnl : prev.pnl,
+      result: input.result !== undefined ? input.result : prev.result,
+      emotion: input.emotion !== undefined ? input.emotion : prev.emotion,
+      note: input.note !== undefined ? input.note : prev.note,
+      ruleBroken: input.ruleBroken !== undefined ? input.ruleBroken : prev.ruleBroken,
+      lesson: input.lesson !== undefined ? input.lesson : prev.lesson,
+      clinicModuleId: input.clinicModuleId !== undefined ? input.clinicModuleId : prev.clinicModuleId,
+      protocol: input.protocol !== undefined ? input.protocol : prev.protocol,
+      accountLabel: input.accountLabel !== undefined ? input.accountLabel : prev.accountLabel,
+      relatedCourseSlug:
+        input.relatedCourseSlug !== undefined ? input.relatedCourseSlug : prev.relatedCourseSlug,
+      relatedLessonId: input.relatedLessonId !== undefined ? input.relatedLessonId : prev.relatedLessonId,
+      openedAt: input.openedAt !== undefined ? input.openedAt : prev.openedAt,
+      properties: input.properties !== undefined ? input.properties : prev.properties,
+    });
+    const row = await db.journalEntry.update({
+      where: { id },
+      data: {
+        kind: built.kind,
+        mode: built.mode,
+        symbol: built.symbol,
+        side: built.side,
+        qty: built.qty,
+        entryPrice: built.entryPrice,
+        exitPrice: built.exitPrice,
+        fees: built.fees,
+        pnl: built.pnl,
+        result: built.result,
+        emotion: built.emotion,
+        note: built.note,
+        ruleBroken: built.ruleBroken,
+        lesson: built.lesson,
+        clinicModuleId: built.clinicModuleId,
+        protocol: built.protocol,
+        accountLabel: built.accountLabel,
+        relatedCourseSlug: built.relatedCourseSlug,
+        relatedLessonId: built.relatedLessonId,
+        openedAt: new Date(built.openedAt),
+        ...(input.properties !== undefined ? { properties: input.properties } : {}),
+      } as never,
+    });
+    return mapRow(apexUserId, row);
+  },
+
+  async deleteEntry(apexUserId, id) {
+    const db = getNotePrisma();
+    const account = await db.noteAccount.findUnique({ where: { apexUserId } });
+    if (!account) return false;
+    const result = await db.journalEntry.deleteMany({ where: { id, accountId: account.id } });
+    return result.count > 0;
+  },
+
+  async getJournalSchema(apexUserId) {
+    const db = getNotePrisma() as ReturnType<typeof getNotePrisma> & {
+      noteJournalSchema: {
+        findUnique: (args: unknown) => Promise<{ schema: unknown } | null>;
+        upsert: (args: unknown) => Promise<unknown>;
+      };
+    };
+    const account = await db.noteAccount.findUnique({ where: { apexUserId } });
+    if (!account) return null;
+    const row = await db.noteJournalSchema.findUnique({ where: { accountId: account.id } });
+    return (row?.schema as JournalDbSchema) ?? null;
+  },
+
+  async upsertJournalSchema(apexUserId, schema) {
+    const db = getNotePrisma() as ReturnType<typeof getNotePrisma> & {
+      noteJournalSchema: {
+        upsert: (args: unknown) => Promise<unknown>;
+      };
+    };
+    const account = await db.noteAccount.upsert({
+      where: { apexUserId },
+      create: { apexUserId, plus: false },
+      update: {},
+    });
+    await db.noteJournalSchema.upsert({
+      where: { accountId: account.id },
+      create: { accountId: account.id, schema },
+      update: { schema },
+    });
+    return schema;
   },
 
   async saveSsoCode(record: SsoRecord) {
@@ -163,8 +265,10 @@ function mapRow(
     accountLabel: string | null;
     relatedCourseSlug: string | null;
     relatedLessonId: string | null;
+    properties?: unknown;
     openedAt: Date;
     createdAt: Date;
+    updatedAt?: Date;
   }
 ): JournalEntry {
   return {
@@ -189,7 +293,12 @@ function mapRow(
     accountLabel: row.accountLabel,
     relatedCourseSlug: row.relatedCourseSlug ?? null,
     relatedLessonId: row.relatedLessonId ?? null,
+    properties:
+      row.properties && typeof row.properties === "object"
+        ? (row.properties as Record<string, unknown>)
+        : null,
     openedAt: toIso(row.openedAt),
     createdAt: toIso(row.createdAt),
+    updatedAt: row.updatedAt ? toIso(row.updatedAt) : undefined,
   };
 }

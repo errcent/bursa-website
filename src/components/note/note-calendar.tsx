@@ -82,7 +82,7 @@ export function NoteCalendar({
         >
           ‹
         </button>
-        <h2 className="text-sm font-medium capitalize text-zinc-200">{label}</h2>
+        <h2 className="text-lg font-semibold capitalize tracking-tight text-zinc-100">{label}</h2>
         <button
           type="button"
           className="inline-flex size-11 items-center justify-center rounded text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"

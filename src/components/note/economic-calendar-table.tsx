@@ -143,7 +143,7 @@ export function EconomicCalendarTable({
   if (!rows.length) return null;
 
   return (
-    <div className="overflow-hidden rounded-md border border-zinc-600/50 bg-zinc-950/50 shadow-sm">
+    <div className="overflow-hidden rounded-md border border-zinc-600/50 bg-zinc-950/50">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-600/60 bg-zinc-800 px-3 py-2.5">
         <p className="text-xs font-semibold text-zinc-100">
           {locale === "en" ? "Today" : "Hari ini"}
@@ -239,7 +239,7 @@ export function EconomicCalendarTable({
                         href={event.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+                        className="inline-flex min-h-11 min-w-11 items-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
                         aria-label="Forex Factory"
                       >
                         <ExternalLink className="size-3.5" />

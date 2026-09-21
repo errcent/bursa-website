@@ -2,7 +2,9 @@
 
 import { noteSection, type NoteSectionId } from "@/lib/note/sections";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
+import { cn } from "@/lib/utils";
 
+/** One decision question under the page H1. Scope/boundary stay in docs, not chrome. */
 export function NoteSectionIntro({
   sectionId,
   className,
@@ -15,10 +17,8 @@ export function NoteSectionIntro({
   const locale = prefs.locale;
 
   return (
-    <header className={className ?? "mb-5 max-w-2xl space-y-1.5 border-b border-zinc-800/60 pb-4"}>
-      <p className="font-heading text-base font-medium text-zinc-200">{s.question[locale]}</p>
-      <p className="text-sm leading-relaxed text-zinc-400">{s.scope[locale]}</p>
-      <p className="text-xs leading-snug text-zinc-400">{s.boundary[locale]}</p>
-    </header>
+    <p className={cn("mb-4 max-w-2xl text-sm leading-relaxed text-zinc-400", className)}>
+      {s.question[locale]}
+    </p>
   );
 }

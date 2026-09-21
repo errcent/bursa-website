@@ -227,16 +227,7 @@ export function shouldServeDemoJournal(entries: JournalEntry[], now = new Date()
   return closedTradesInMonth(entries, ym) < DEMO_JOURNAL_REAL_MONTH_MIN_CLOSES;
 }
 
+/** Forex demo chrome retired - Bagas journal DB seeds client-side via IndexedDB. */
 export function withDemoJournalFallback(all: JournalEntry[]): { entries: JournalEntry[]; demo: boolean } {
-  if (!shouldServeDemoJournal(all)) {
-    return { entries: all, demo: false };
-  }
-  if (all.length === 0) {
-    return { entries: NOTE_DEMO_ENTRIES, demo: true };
-  }
-  const demoIds = new Set(NOTE_DEMO_ENTRIES.map((e) => e.id));
-  return {
-    entries: [...NOTE_DEMO_ENTRIES, ...all.filter((e) => !demoIds.has(e.id))],
-    demo: true,
-  };
+  return { entries: all, demo: false };
 }

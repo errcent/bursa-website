@@ -46,7 +46,7 @@ export function NoteBeliefCapture() {
   }
 
   return (
-    <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/40 p-3 sm:p-4">
+    <div className="rounded-xl border border-zinc-800/60 p-3 sm:p-4">
       <label className="sr-only" htmlFor="belief-capture">
         {copy.notesCapturePlaceholder}
       </label>
@@ -56,18 +56,18 @@ export function NoteBeliefCapture() {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={copy.notesCapturePlaceholder}
-        className="note-field min-h-[5.5rem] w-full resize-y py-2.5 placeholder:text-zinc-400"
+        className="note-field min-h-[5.5rem] w-full resize-y border-0 bg-transparent py-2.5 shadow-none placeholder:text-zinc-500 focus-visible:ring-0"
         onKeyDown={(e) => {
           if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) void submit();
         }}
       />
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs text-zinc-400">{copy.notesCaptureHint}</p>
+        <p className="text-xs text-zinc-500">{copy.notesCaptureHint}</p>
         <button
           type="button"
           disabled={!text.trim() || pending}
           onClick={() => void submit()}
-          className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-sm font-medium text-zinc-900 hover:bg-white disabled:opacity-40"
+          className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3.5 text-sm font-semibold text-zinc-950 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
         >
           {pending ? copy.menyimpan : copy.notesCaptureSave}
         </button>

@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { NOTE_DEMO_ENTRIES, withDemoJournalFallback } from "@/lib/note/demo-entries";
+import { useNoteJournalDb } from "@/components/note/note-journal-db-context";
 import { isNoteOpenAccessPeriod } from "@/lib/note/open-access";
 import { noteSsoStartHref } from "@/lib/note/sso-urls";
 import type { JournalEntry } from "@/lib/note/types";
@@ -30,60 +30,42 @@ function isLocalHost() {
   return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 }
 
-export function NoteJournalProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<JournalState>({
+function NoteJournalProviderInner({ children }: { children: ReactNode }) {
+  const db = useNoteJournalDb();
+  const [apiState, setApiState] = useState<JournalState>({
     data: null,
     demo: false,
     openAccess: isNoteOpenAccessPeriod(),
     error: null,
     loading: true,
   });
+  const useLocalDb = isLocalHost() || isNoteOpenAccessPeriod();
 
   useEffect(() => {
+    if (useLocalDb) return;
     let cancelled = false;
     void fetch(`/api/note/entries?limit=5000&_=${Date.now()}`, { cache: "no-store", credentials: "include" })
       .then(async (res) => {
         if (res.status === 401) {
-          if (isLocalHost() || isNoteOpenAccessPeriod()) {
-            return {
-              demo: true,
-              payload: {
-                entries: NOTE_DEMO_ENTRIES,
-                plus: false,
-                reviewCountThisWeek: 1,
-                demo: true,
-                openAccess: isNoteOpenAccessPeriod(),
-              } satisfies Payload,
-            };
-          }
           window.location.href = noteSsoStartHref("/note");
           return null;
         }
         if (!res.ok) throw new Error("Gagal memuat jurnal.");
-        let payload = (await res.json()) as Payload;
-        const merged = withDemoJournalFallback(payload.entries);
-        if (merged.demo) {
-          payload = {
-            ...payload,
-            entries: merged.entries,
-            demo: true,
-          };
-        }
-        return { demo: Boolean(payload.demo), payload };
+        return (await res.json()) as Payload;
       })
-      .then((next) => {
-        if (cancelled || !next) return;
-        setState({
-          data: next.payload,
-          demo: next.demo,
-          openAccess: Boolean(next.payload.openAccess ?? isNoteOpenAccessPeriod()),
+      .then((payload) => {
+        if (cancelled || !payload) return;
+        setApiState({
+          data: payload,
+          demo: Boolean(payload.demo),
+          openAccess: Boolean(payload.openAccess ?? isNoteOpenAccessPeriod()),
           error: null,
           loading: false,
         });
       })
       .catch((err: Error) => {
         if (!cancelled) {
-          setState({
+          setApiState({
             data: null,
             demo: false,
             openAccess: isNoteOpenAccessPeriod(),
@@ -95,9 +77,32 @@ export function NoteJournalProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [useLocalDb]);
+
+  const state = useMemo<JournalState>(() => {
+    if (useLocalDb) {
+      return {
+        data: {
+          entries: db.projectedEntries,
+          plus: false,
+          reviewCountThisWeek: 1,
+          demo: true,
+          openAccess: isNoteOpenAccessPeriod(),
+        },
+        demo: true,
+        openAccess: isNoteOpenAccessPeriod(),
+        error: db.error,
+        loading: !db.ready,
+      };
+    }
+    return apiState;
+  }, [useLocalDb, db.projectedEntries, db.error, db.ready, apiState]);
 
   return <JournalContext.Provider value={state}>{children}</JournalContext.Provider>;
+}
+
+export function NoteJournalProvider({ children }: { children: ReactNode }) {
+  return <NoteJournalProviderInner>{children}</NoteJournalProviderInner>;
 }
 
 export function useNoteJournal() {

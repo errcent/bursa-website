@@ -19,7 +19,10 @@ type Props = {
  * Advanced Real-Time Chart - official embed widget loader.
  * @see https://www.tradingview.com/widget-docs/widgets/charts/advanced-chart/
  *
- * Requires CSP: script-src https://s3.tradingview.com; frame-src https://*.tradingview.com
+ * Requires CSP: script-src https://s3.tradingview.com; frame-src https://*.tradingview.com https://*.tradingview-widget.com
+ *
+ * Mount is deferred one tick so React Strict Mode remount does not leave the
+ * TradingView loader querying a detached container (querySelector on null).
  */
 export function TradingViewAdvancedChart({ symbol, locale, className }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,20 +33,28 @@ export function TradingViewAdvancedChart({ symbol, locale, className }: Props) {
     const widget = widgetRef.current;
     if (!container || !widget) return;
 
-    widget.replaceChildren();
-    const scripts = container.querySelectorAll('script[src*="tradingview.com"]');
-    scripts.forEach((s) => s.remove());
+    let alive = true;
+    let script: HTMLScriptElement | null = null;
 
-    const script = document.createElement("script");
-    script.src = TV_EMBED_ADVANCED_CHART;
-    script.type = "text/javascript";
-    script.async = true;
-    script.innerHTML = JSON.stringify(buildAdvancedChartEmbedConfig(symbol, locale));
-    container.appendChild(script);
+    const timer = window.setTimeout(() => {
+      if (!alive || !containerRef.current || !widgetRef.current) return;
+
+      widget.replaceChildren();
+      container.querySelectorAll('script[src*="tradingview.com"]').forEach((s) => s.remove());
+
+      script = document.createElement("script");
+      script.src = TV_EMBED_ADVANCED_CHART;
+      script.type = "text/javascript";
+      script.async = true;
+      script.textContent = JSON.stringify(buildAdvancedChartEmbedConfig(symbol, locale));
+      container.appendChild(script);
+    }, 50);
 
     return () => {
-      script.remove();
-      widget.replaceChildren();
+      alive = false;
+      window.clearTimeout(timer);
+      script?.remove();
+      container.querySelectorAll('script[src*="tradingview.com"]').forEach((s) => s.remove());
     };
   }, [symbol, locale]);
 
@@ -64,7 +75,7 @@ export function TradingViewAdvancedChart({ symbol, locale, className }: Props) {
           href={tradingViewSymbolPageUrl(symbol)}
           rel="noopener nofollow"
           target="_blank"
-          className="text-xs text-zinc-400 hover:text-zinc-400"
+          className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
         >
           TradingView
         </a>

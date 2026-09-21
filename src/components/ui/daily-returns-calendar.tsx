@@ -118,7 +118,7 @@ export default function DailyReturnsCalendar({
           <button
             type="button"
             className={cn(
-              "inline-flex size-11 items-center justify-center rounded-md text-foreground/45 hover:bg-foreground/5 hover:text-foreground",
+              "inline-flex size-11 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100",
               hero ? "text-xl" : "text-sm"
             )}
             aria-label={locale === "en" ? "Previous month" : "Bulan sebelumnya"}
@@ -137,7 +137,7 @@ export default function DailyReturnsCalendar({
           <button
             type="button"
             className={cn(
-              "inline-flex size-11 items-center justify-center rounded-md text-foreground/45 hover:bg-foreground/5 hover:text-foreground",
+              "inline-flex size-11 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100",
               hero ? "text-xl" : "text-sm"
             )}
             aria-label={locale === "en" ? "Next month" : "Bulan berikutnya"}
@@ -148,25 +148,25 @@ export default function DailyReturnsCalendar({
         </div>
         <span
           className={cn(
-            "shrink-0 tabular-nums text-foreground/45",
+            "shrink-0 tabular-nums text-zinc-400",
             hero ? "text-xs sm:text-sm" : "text-xs"
           )}
         >
           {hot && hotDay != null ? (
             <>
-              <span className="text-foreground">
+              <span className="text-zinc-100">
                 {hotDay} {label.split(" ")[0]}
               </span>
               {hotBucket && hotBucket.count > 0 && formatDayPnl ? (
                 <>
-                  <span className="mx-1.5 text-foreground/25">·</span>
+                  <span className="mx-1.5 text-zinc-500">·</span>
                   <span style={{ color: hotBucket.pnl >= 0 ? GREEN : RED }}>
                     {formatDayPnl(hotBucket.pnl)}
                   </span>
                 </>
               ) : hotPct != null && hotBucket && hotBucket.count > 0 ? (
                 <>
-                  <span className="mx-1.5 text-foreground/25">·</span>
+                  <span className="mx-1.5 text-zinc-500">·</span>
                   <span style={{ color: hotPct >= 0 ? GREEN : RED }}>{signed(hotPct, 1)}%</span>
                 </>
               ) : null}
@@ -195,7 +195,7 @@ export default function DailyReturnsCalendar({
           <span
             key={d}
             className={cn(
-              "pb-1 text-center font-medium text-foreground/45",
+              "pb-1 text-center font-medium text-zinc-400",
               hero ? "text-xs" : "pb-0.5 text-[11px]"
             )}
           >
@@ -204,7 +204,7 @@ export default function DailyReturnsCalendar({
         ))}
         <span
           className={cn(
-            "pb-1 text-center font-normal text-foreground/35",
+            "pb-1 text-center font-normal text-zinc-400",
             hero ? "text-xs" : "pb-0.5 text-[11px]"
           )}
           title={locale === "en" ? "Week total (informational)" : "Total minggu (informasi)"}
@@ -281,7 +281,7 @@ export default function DailyReturnsCalendar({
                   >
                     {hero ? (
                       <>
-                        <span className="w-full text-left text-sm font-semibold leading-none text-foreground/80 sm:text-base">
+                        <span className="w-full text-left text-sm font-semibold leading-none text-zinc-200 sm:text-base">
                           {day}
                         </span>
                         {hasTrade && formatDayPnl ? (
@@ -316,7 +316,7 @@ export default function DailyReturnsCalendar({
                 {weekHasData ? (
                   <span
                     className={cn(
-                      "max-w-full truncate font-normal tabular-nums leading-tight text-foreground/45",
+                      "max-w-full truncate font-normal tabular-nums leading-tight text-zinc-400",
                       hero ? "text-xs" : "text-[11px]"
                     )}
                     title={

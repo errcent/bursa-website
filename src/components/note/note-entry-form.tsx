@@ -249,7 +249,7 @@ export function NoteEntryForm({
       <div className="flex items-center justify-between border-t border-zinc-800 pt-6">
         <button
           type="button"
-          className="inline-flex min-h-11 items-center text-sm text-zinc-400 hover:text-zinc-200"
+          className="inline-flex min-h-11 min-w-11 items-center px-2 text-sm text-zinc-400 hover:text-zinc-200"
           onClick={() => router.push("/note")}
         >
           {copy.batal}

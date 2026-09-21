@@ -50,8 +50,8 @@ function Choice<T extends string | boolean | number>({
       onClick={() => onChange(value)}
       className={
         selected
-          ? "inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-sm text-zinc-950"
-          : "inline-flex min-h-11 items-center rounded-md px-3 text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+          ? "inline-flex min-h-11 min-w-11 items-center justify-center rounded-md bg-zinc-100 px-3 text-sm text-zinc-950"
+          : "inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-3 text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
       }
     >
       {children}
@@ -60,7 +60,7 @@ function Choice<T extends string | boolean | number>({
 }
 
 function Heading({ children }: { children: ReactNode }) {
-  return <h2 className="pt-8 text-xs font-medium uppercase tracking-wide text-zinc-400 first:pt-0">{children}</h2>;
+  return <h2 className="pt-8 text-sm font-medium text-zinc-300 first:pt-0">{children}</h2>;
 }
 
 export function NoteSettingsForm() {

@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { PanelLeft, PanelLeftClose } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { NoteJournalOnboarding } from "@/components/note/note-journal-onboarding";
+import { NoteJournalDbProvider } from "@/components/note/note-journal-db-context";
 import { NoteJournalProvider } from "@/components/note/note-journal-context";
 import { NoteAiAssistant } from "@/components/note/note-ai-assistant";
 import { NoteSidebar } from "@/components/note/note-sidebar";
@@ -16,6 +18,8 @@ import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
 
 import "./note-theme.css";
+
+const SIDEBAR_KEY = "note-sidebar-open-v1";
 
 function useResolvedNoteTheme(theme: NoteTheme): "dark" | "light" {
   const [prefersDark, setPrefersDark] = useState(true);
@@ -31,6 +35,31 @@ function useResolvedNoteTheme(theme: NoteTheme): "dark" | "light" {
   return resolveNoteTheme(theme, prefersDark);
 }
 
+function useSidebarOpen(): [boolean, (open: boolean) => void] {
+  const [open, setOpenState] = useState(true);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(SIDEBAR_KEY);
+      if (raw === "0") setOpenState(false);
+      if (raw === "1") setOpenState(true);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  function setOpen(next: boolean) {
+    setOpenState(next);
+    try {
+      window.localStorage.setItem(SIDEBAR_KEY, next ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  }
+
+  return [open, setOpen];
+}
+
 const chromePad = "px-4 sm:px-6 lg:px-8";
 
 function NoteShellInner({ title, children }: { title?: ReactNode; children: ReactNode }) {
@@ -38,6 +67,7 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
   const copy = noteCopy(prefs.locale);
   const theme = useResolvedNoteTheme(prefs.theme);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useSidebarOpen();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuWasOpen = useRef(false);
@@ -102,7 +132,7 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
       </a>
       <header className="border-b border-zinc-800/80">
         <div className={`flex h-14 w-full items-center justify-between gap-3 ${chromePad}`}>
-          <div className="flex min-w-0 items-center gap-2">
+          <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
             <button
               ref={menuButtonRef}
               type="button"
@@ -114,6 +144,21 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
             >
               {copy.menu}
             </button>
+            <button
+              type="button"
+              className="hidden min-h-11 min-w-11 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 lg:inline-flex"
+              aria-pressed={!sidebarOpen}
+              aria-controls="note-desktop-sidebar"
+              aria-label={sidebarOpen ? copy.hideSidebar : copy.showSidebar}
+              title={sidebarOpen ? copy.hideSidebar : copy.showSidebar}
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              {sidebarOpen ? (
+                <PanelLeftClose className="size-5" aria-hidden />
+              ) : (
+                <PanelLeft className="size-5" aria-hidden />
+              )}
+            </button>
             <Link href="/note" className="flex min-h-11 shrink-0 items-center gap-2 sm:gap-2.5" aria-label="Bursa Note">
               <BrandLogo variant="product" decorative />
               <span className="hidden h-4 w-px bg-zinc-700 sm:block" aria-hidden />
@@ -122,6 +167,7 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
           </div>
           <a
             href={helpHref}
+            aria-label={copy.support}
             className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-sm text-zinc-400 hover:text-zinc-100"
           >
             {copy.support}
@@ -130,7 +176,13 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
       </header>
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
-        <aside className="hidden w-60 shrink-0 self-stretch border-r border-zinc-800/80 lg:flex lg:min-h-0 lg:flex-col xl:w-64">
+        <aside
+          id="note-desktop-sidebar"
+          className={cn(
+            "hidden shrink-0 self-stretch border-r border-zinc-800/80 lg:min-h-0 lg:flex-col",
+            sidebarOpen ? "lg:flex w-60 xl:w-64" : "lg:hidden"
+          )}
+        >
           <NoteSidebar />
         </aside>
 
@@ -171,7 +223,7 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
           className={`min-h-0 min-w-0 flex-1 overflow-y-auto ${chromePad} py-5 sm:py-7`}
         >
           {title ? (
-            <h1 className="mb-4 font-heading text-xl font-semibold tracking-tight text-zinc-100 sm:mb-5">
+            <h1 className="mb-4 font-heading text-2xl font-semibold tracking-tight text-zinc-100 sm:mb-5 sm:text-3xl">
               {title}
             </h1>
           ) : null}
@@ -198,8 +250,10 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
 
 export function NoteShell({ title, children }: { title?: ReactNode; children: ReactNode }) {
   return (
-    <NoteJournalProvider>
-      <NoteShellInner title={title}>{children}</NoteShellInner>
-    </NoteJournalProvider>
+    <NoteJournalDbProvider>
+      <NoteJournalProvider>
+        <NoteShellInner title={title}>{children}</NoteShellInner>
+      </NoteJournalProvider>
+    </NoteJournalDbProvider>
   );
 }

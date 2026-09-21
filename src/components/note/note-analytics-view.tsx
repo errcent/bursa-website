@@ -5,6 +5,7 @@ import { useMemo, type ReactNode } from "react";
 import { NoteAnalyticsWinrate } from "@/components/note/note-analytics-winrate";
 import { NoteAnalyticsWinrateTrend } from "@/components/note/note-analytics-winrate-trend";
 import { NoteAnalyticsWinrateWeekday } from "@/components/note/note-analytics-winrate-weekday";
+import { NoteLoadingLine } from "@/components/note/note-loading-line";
 import { NoteSectionIntro } from "@/components/note/note-section-intro";
 import { useNoteJournal } from "@/components/note/note-journal-context";
 import { NOTE_EXECUTION_KIND } from "@/lib/note/sections";
@@ -34,7 +35,7 @@ function AnalyticsSection({
   return (
     <section className="scroll-mt-20 space-y-3 border-t border-zinc-800/70 pt-6 first:border-t-0 first:pt-0">
       <div>
-        <h2 className="text-sm font-semibold tracking-tight text-zinc-100">{title}</h2>
+        <h2 className="text-lg font-semibold tracking-tight text-zinc-100">{title}</h2>
         {hint ? <p className="mt-0.5 text-xs text-zinc-400">{hint}</p> : null}
       </div>
       {children}
@@ -147,7 +148,7 @@ export function NoteAnalyticsView() {
   }, [report, locale, formatOpts]);
 
   if (journal.loading || !journal.data) {
-    return <p className="text-sm text-zinc-400">{copy.loading}</p>;
+    return <NoteLoadingLine />;
   }
 
   const kindLabel: Record<InsightCard["kind"], string> = {
@@ -173,7 +174,7 @@ export function NoteAnalyticsView() {
             : "Mix instrumen, hasil per hari, dan win rate rolling."
         }
       >
-        <div className="space-y-5 rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4">
+        <div className="space-y-5">
           <NoteAnalyticsWinrate entries={heroEntries} locale={locale} />
           <div className="border-t border-zinc-800/70 pt-5">
             <NoteAnalyticsWinrateWeekday entries={heroEntries} locale={locale} weekStart={weekStart} />
@@ -216,7 +217,7 @@ export function NoteAnalyticsView() {
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-medium text-zinc-100">{card.title}</p>
-                  <span className="text-[10px] font-medium uppercase tracking-wide text-zinc-500">
+                  <span className="text-xs font-medium text-zinc-500">
                     {kindLabel[card.kind]}
                   </span>
                 </div>

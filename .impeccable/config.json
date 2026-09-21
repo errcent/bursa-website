@@ -1,0 +1,12 @@
+{
+  "buildPath": "code",
+  "hook": {
+    "enabled": true,
+    "quiet": false
+  },
+  "detector": {
+    "designSystem": {
+      "enabled": true
+    }
+  }
+}

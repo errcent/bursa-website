@@ -33,8 +33,11 @@ export interface JournalEntry {
   accountLabel: string | null;
   relatedCourseSlug: string | null;
   relatedLessonId: string | null;
+  /** Notion-style flexible property values */
+  properties?: Record<string, unknown> | null;
   openedAt: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface NoteEntitlement {
@@ -64,7 +67,10 @@ export interface CreateEntryInput {
   relatedCourseSlug?: string | null;
   relatedLessonId?: string | null;
   openedAt?: string | null;
+  properties?: Record<string, unknown> | null;
 }
+
+export type UpdateEntryInput = Partial<CreateEntryInput>;
 
 export interface NoteSession {
   userId: string;

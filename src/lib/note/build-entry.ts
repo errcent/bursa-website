@@ -32,5 +32,6 @@ export function buildJournalEntry(apexUserId: string, input: CreateEntryInput): 
     relatedLessonId: input.relatedLessonId?.trim() || null,
     openedAt: input.openedAt || now,
     createdAt: now,
+    properties: input.properties ?? null,
   };
 }

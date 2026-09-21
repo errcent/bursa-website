@@ -19,6 +19,17 @@ model NoteAccount {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   entries    JournalEntry[]
+  journalSchema NoteJournalSchema?
+}
+
+model NoteJournalSchema {
+  id         String   @id @default(cuid())
+  account    NoteAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId  String   @unique
+  /** JournalDbSchema JSON */
+  schema     Json
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
 }
 
 model JournalEntry {
@@ -44,8 +55,11 @@ model JournalEntry {
   accountLabel   String?
   relatedCourseSlug String?
   relatedLessonId   String?
+  /** Flexible Notion-style property bag */
+  properties     Json?
   openedAt       DateTime
   createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   @@index([accountId, createdAt])
 }

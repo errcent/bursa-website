@@ -12,6 +12,7 @@ import {
   type OverviewChartPrefs,
 } from "@/lib/note/overview-chart-prefs";
 
+import { NoteLoadingLine } from "@/components/note/note-loading-line";
 import { useNoteJournal } from "@/components/note/note-journal-context";
 import { NOTE_EXECUTION_KIND } from "@/lib/note/sections";
 import DailyReturnsCalendar from "@/components/ui/daily-returns-calendar";
@@ -144,7 +145,7 @@ export function NoteOverview() {
     return <p className="note-pnl-down text-sm">{journal.error}</p>;
   }
   if (journal.loading || !journal.data) {
-    return <p className="text-sm text-zinc-400">{copy.loadingJournal}</p>;
+    return <NoteLoadingLine journal />;
   }
 
   const headline =
@@ -172,8 +173,8 @@ export function NoteOverview() {
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] xl:items-start">
         <div className="flex flex-col gap-5">
-          <section className="rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-4 sm:p-5">
-            <h2 className="mb-3 text-sm font-semibold text-zinc-200">
+          <section className="rounded-xl border border-zinc-800/70 p-4 sm:p-5">
+            <h2 className="mb-3 text-lg font-semibold tracking-tight text-zinc-100">
               {prefs.locale === "en" ? "This month" : "Bulan ini"}
             </h2>
             <DailyReturnsCalendar
@@ -197,12 +198,12 @@ export function NoteOverview() {
                   >
                     {formatPnl(monthSnapshot.pnlSum, cellOpts)}
                   </span>
-                  <span className="mx-1.5 text-foreground/25">·</span>
-                  <span className="font-medium text-foreground">
+                  <span className="mx-1.5 text-zinc-500">·</span>
+                  <span className="font-medium text-zinc-100">
                     {monthSnapshot.winRate == null
                       ? "-"
                       : `${Math.round(monthSnapshot.winRate * 100)}%`}
-                    <span className="font-normal text-foreground/40">
+                    <span className="font-normal text-zinc-400">
                       ({monthSnapshot.closedCount})
                     </span>
                   </span>
@@ -240,8 +241,8 @@ export function NoteOverview() {
           </div>
         </div>
 
-        <section className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4 sm:p-5">
-          <h2 className="mb-1 text-sm font-semibold text-zinc-200">
+        <section className="rounded-xl border border-zinc-800/70 p-4 sm:p-5">
+          <h2 className="mb-1 text-lg font-semibold tracking-tight text-zinc-100">
             {prefs.locale === "en" ? "Chart range" : "Rentang chart"}
           </h2>
           <p className="mb-3 font-heading text-base font-semibold tracking-tight text-zinc-200 sm:text-lg">

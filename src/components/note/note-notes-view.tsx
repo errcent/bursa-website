@@ -5,6 +5,7 @@ import Link from "next/link";
 import { NoteBeliefCapture } from "@/components/note/note-belief-capture";
 import { NoteBeliefList } from "@/components/note/note-belief-list";
 import { NoteBeliefPromotions } from "@/components/note/note-belief-promotions";
+import { NoteLoadingLine } from "@/components/note/note-loading-line";
 import { NoteSectionIntro } from "@/components/note/note-section-intro";
 import { useNoteJournal } from "@/components/note/note-journal-context";
 import { noteCopy } from "@/lib/note/copy";
@@ -17,7 +18,7 @@ export function NoteNotesView() {
   const entries = journal.data?.entries ?? [];
 
   if (journal.loading || !journal.data) {
-    return <p className="text-sm text-zinc-400">{copy.loading}</p>;
+    return <NoteLoadingLine />;
   }
 
   return (
@@ -29,10 +30,10 @@ export function NoteNotesView() {
       <NoteBeliefPromotions entries={entries} />
 
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">{copy.notesStreamTitle}</h2>
+        <h2 className="text-sm font-medium text-zinc-300">{copy.notesStreamTitle}</h2>
         <Link
           href="/note/baru?layer=notes"
-          className="text-xs text-zinc-400 hover:text-zinc-300"
+          className="inline-flex min-h-11 items-center px-2 text-xs text-zinc-400 hover:text-zinc-200"
         >
           {copy.notesAdvancedLink}
         </Link>

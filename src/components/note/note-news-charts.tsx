@@ -136,7 +136,7 @@ export function NoteNewsCharts({ filterCurrencies }: Props) {
                       {badge}
                     </span>
                   ) : null}
-                  <div className="relative inline-flex min-w-0 max-w-[12rem] items-center rounded-md border border-zinc-700/90 bg-zinc-900 pl-2 pr-7 shadow-sm transition-colors hover:border-zinc-600 focus-within:border-zinc-500 focus-within:ring-1 focus-within:ring-zinc-600">
+                  <div className="relative inline-flex min-w-0 max-w-[12rem] items-center rounded-md border border-zinc-700/90 bg-zinc-900 pl-2 pr-7 transition-colors hover:border-zinc-600 focus-within:border-zinc-500 focus-within:ring-1 focus-within:ring-zinc-600">
                     <select
                       value={pane.symbol}
                       onChange={(e) => updatePaneSymbol(index, e.target.value)}
