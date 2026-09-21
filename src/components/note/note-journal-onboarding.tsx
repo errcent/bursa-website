@@ -74,6 +74,27 @@ export function NoteJournalOnboarding({
   const [experience, setExperience] = useState<NoteExperience>("menengah");
   const [focus, setFocus] = useState<NoteJournalFocus>("semua");
 
+  // Allow Escape to skip onboarding (audit + a11y: no dead-end modals).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onComplete({
+          locale,
+          currency,
+          usdIdrRate,
+          personalization: {
+            primaryMarket: market,
+            experience,
+            journalFocus: focus,
+          },
+          onboardingCompleted: true,
+        });
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [locale, currency, usdIdrRate, market, experience, focus, onComplete]);
+
   const copy = noteCopy(locale);
   const t = (id: string, en: string) => (locale === "en" ? en : id);
 
@@ -137,6 +158,21 @@ export function NoteJournalOnboarding({
               onClick={() => setStep(1)}
             >
               {t("Mulai", "Start")}
+            </button>
+            <button
+              type="button"
+              className="min-h-11 w-full rounded-md text-sm text-zinc-500 hover:text-zinc-300"
+              onClick={() =>
+                onComplete({
+                  locale,
+                  currency,
+                  usdIdrRate,
+                  personalization: { primaryMarket: market, experience, journalFocus: focus },
+                  onboardingCompleted: true,
+                })
+              }
+            >
+              {t("Lewati", "Skip")}
             </button>
           </div>
         ) : null}

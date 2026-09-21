@@ -10,6 +10,12 @@ import { sendWelcomeEmail } from "@/lib/auth/auth-email";
 import { PUBLIC_REGISTRATION_ENABLED } from "@/lib/features/public-registration";
 import { db } from "@/lib/db";
 
+// Clear AUTH_URL / NEXTAUTH_URL so trustHost: true uses the request's host.
+// This prevents cross-subdomain redirects (e.g. note.bursanalar.com -> bursanalar.com)
+// which cause CORS errors on /api/auth/session.
+delete process.env.AUTH_URL;
+delete process.env.NEXTAUTH_URL;
+
 const providers = [];
 
 if (isGoogleOAuthConfigured()) {
