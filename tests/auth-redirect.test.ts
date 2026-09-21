@@ -44,7 +44,27 @@ describe("BN-SEC-003 auth redirect allowlist", () => {
     assert.equal(resolveAuthRedirect("//evil.tld/phish", base), base);
   });
 
+  it("rejects backslash protocol-relative bypass", () => {
+    assert.equal(resolveAuthRedirect("/\\evil.tld/phish", base), base);
+  });
+
   it("rejects foreign origins", () => {
     assert.equal(resolveAuthRedirect("https://evil.tld/", base), base);
+  });
+});
+
+describe("U-006 resolvePostAuthRedirect backslash", async () => {
+  const { resolvePostAuthRedirect, POST_AUTH_HOME } = await import("../src/lib/auth/redirect");
+
+  it("rejects /\\evil.com", () => {
+    assert.equal(resolvePostAuthRedirect("/\\evil.com"), POST_AUTH_HOME);
+  });
+
+  it("rejects encoded backslash path", () => {
+    assert.equal(resolvePostAuthRedirect("/%5Cevil.com"), POST_AUTH_HOME);
+  });
+
+  it("allows safe relative paths", () => {
+    assert.equal(resolvePostAuthRedirect("/belajar/saham"), "/belajar/saham");
   });
 });

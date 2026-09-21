@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { findUserByIdentifier, verifyPassword } from "@/lib/auth/server";
-import { checkRateLimit, clientIp } from "@/lib/auth/rate-limit";
+import { checkRateLimit, clientIp, normalizeRateLimitId } from "@/lib/auth/rate-limit";
 import {
   signWebSessionToken,
   webSessionCookieOptions,
@@ -16,7 +16,9 @@ const GENERIC_LOGIN_ERROR = "Email, username, atau kata sandi salah.";
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const rate = await checkRateLimit(`login:${ip}`, 5, 60 * 1000);
+    const body = loginSchema.parse(await request.json());
+    const idKey = normalizeRateLimitId(body.identifier);
+    const rate = await checkRateLimit(`login:${idKey}:${ip}`, 5, 60 * 1000);
     if (!rate.allowed) {
       return jsonError(
         `Terlalu banyak percobaan masuk. Coba lagi dalam ${rate.retryAfterSec} detik.`,
@@ -24,7 +26,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = loginSchema.parse(await request.json());
     const user = await findUserByIdentifier(body.identifier);
 
     if (!user) {

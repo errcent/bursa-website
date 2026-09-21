@@ -74,13 +74,16 @@ export async function requireNoteSession(
   }
 
   if (isNoteOpenAccessPeriod()) {
-    return {
-      session: {
-        userId: resolvePreviewUserId(request),
-        email: NOTE_OPEN_ACCESS_GUEST_EMAIL,
-        scopes: ["note.read", "note.write", "note.sync"],
-      },
-    };
+    // U-003: open-access is read-only. Writes/sync require a real session.
+    if (scope === "note.read") {
+      return {
+        session: {
+          userId: resolvePreviewUserId(request),
+          email: NOTE_OPEN_ACCESS_GUEST_EMAIL,
+          scopes: ["note.read"],
+        },
+      };
+    }
   }
 
   return { error: jsonError("Sesi Note diperlukan.", 401) };

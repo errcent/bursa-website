@@ -1,4 +1,6 @@
 import { getAuthSecret } from "@/lib/auth/auth-secret";
+import { isUpstashRateLimitConfigured } from "@/lib/auth/rate-limit-upstash";
+import { WEB_SESSION_SV_REDIS_PREFIX } from "@/lib/auth/web-session.constants";
 
 const WEB_SESSION_TTL_SEC = 7 * 24 * 60 * 60;
 
@@ -32,6 +34,19 @@ async function verifyHs256(
   );
 }
 
+async function readSessionVersionEdge(userId: string): Promise<number | null> {
+  if (!isUpstashRateLimitConfigured()) return null;
+  try {
+    const { Redis } = await import("@upstash/redis");
+    const value = await Redis.fromEnv().get(`${WEB_SESSION_SV_REDIS_PREFIX}${userId}`);
+    if (value == null) return null;
+    const n = typeof value === "number" ? value : Number(value);
+    return Number.isFinite(n) ? n : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Edge-safe JWT verify for `bursa_web_session` (HS256, no jose/Prisma). */
 export async function verifyWebSessionTokenEdge(
   token: string
@@ -60,6 +75,7 @@ export async function verifyWebSessionTokenEdge(
       typ?: string;
       exp?: number;
       jti?: string;
+      sv?: number;
     };
     if (payload.typ !== "web_session") return null;
     if (typeof payload.exp === "number" && payload.exp * 1000 < Date.now()) return null;
@@ -71,6 +87,11 @@ export async function verifyWebSessionTokenEdge(
 
     const { isWebSessionJtiRevokedEdge } = await import("@/lib/auth/revoked-web-session-edge");
     if (await isWebSessionJtiRevokedEdge(jti)) return null;
+
+    // U-005: when Redis has a sessionVersion, reject stale JWTs.
+    const tokenSv = typeof payload.sv === "number" ? payload.sv : 0;
+    const currentSv = await readSessionVersionEdge(userId);
+    if (currentSv != null && tokenSv !== currentSv) return null;
 
     return { userId, email };
   } catch {

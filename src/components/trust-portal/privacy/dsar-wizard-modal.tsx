@@ -14,6 +14,10 @@ import {
 import type { DataSubjectRequestType } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
+import {
+  isTurnstileClientConfigured,
+  TurnstileWidget,
+} from "@/components/turnstile-widget";
 import type { LegalLocale } from "@/lib/hosts/hosts";
 import { legalHrefsFor } from "@/lib/hosts/hosts";
 import { cn } from "@/lib/utils";
@@ -129,6 +133,8 @@ export function DsarWizardModal({ locale = "id" }: { locale?: LegalLocale }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [referenceCode, setReferenceCode] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRequired = isTurnstileClientConfigured();
 
   const close = useCallback(() => {
     const params = new URLSearchParams(searchParams?.toString() ?? "");
@@ -138,6 +144,7 @@ export function DsarWizardModal({ locale = "id" }: { locale?: LegalLocale }) {
     setRequestType(null);
     setError(null);
     setReferenceCode(null);
+    setTurnstileToken(null);
   }, [router, searchParams]);
 
   useEffect(() => {
@@ -155,6 +162,10 @@ export function DsarWizardModal({ locale = "id" }: { locale?: LegalLocale }) {
 
   async function submitRequest() {
     if (!requestType) return;
+    if (turnstileRequired && !turnstileToken) {
+      setError(locale === "en" ? "Complete the verification below." : "Selesaikan verifikasi singkat di bawah.");
+      return;
+    }
     const subjectType = sessionStorage.getItem("bursa-dsar-subject-type") ?? "NON_ACCOUNT";
     setLoading(true);
     setError(null);
@@ -168,6 +179,7 @@ export function DsarWizardModal({ locale = "id" }: { locale?: LegalLocale }) {
           requestType,
           subjectType,
           details,
+          turnstileToken: turnstileToken ?? undefined,
         }),
       });
       const data = (await res.json()) as { error?: string; referenceCode?: string };
@@ -178,6 +190,7 @@ export function DsarWizardModal({ locale = "id" }: { locale?: LegalLocale }) {
       setReferenceCode(data.referenceCode ?? null);
       sessionStorage.removeItem("bursa-dsar-pending-type");
       sessionStorage.removeItem("bursa-dsar-subject-type");
+      setTurnstileToken(null);
     } catch {
       setError(t.sendFail);
     } finally {
@@ -338,6 +351,7 @@ export function DsarWizardModal({ locale = "id" }: { locale?: LegalLocale }) {
                 />
               </div>
               {error && <p className="text-sm text-destructive">{error}</p>}
+              {turnstileRequired ? <TurnstileWidget onToken={setTurnstileToken} /> : null}
               <Button
                 type="button"
                 className="w-full"

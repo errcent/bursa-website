@@ -57,22 +57,35 @@ describe("QC-20260819-02 auth secret", () => {
   });
 });
 
-describe("QC-20260819-03 client IP", () => {
-  it("ignores spoofed x-forwarded-for in production", () => {
+describe("U-001 client IP (platform-controlled)", () => {
+  it("prefers x-vercel-forwarded-for over spoofable x-vercel-ip", () => {
     const request = new Request("https://bursanalar.com/api/auth/login", {
       headers: {
-        "x-forwarded-for": "1.2.3.4",
-        "x-vercel-ip": "9.9.9.9",
+        "x-vercel-forwarded-for": "9.9.9.9",
+        "x-vercel-ip": "1.2.3.4",
+        "cf-connecting-ip": "5.5.5.5",
+        "x-forwarded-for": "8.8.8.8",
       },
     });
     assert.equal(clientIp(request, "production"), "9.9.9.9");
   });
 
-  it("does not fall back to x-forwarded-for in production", () => {
+  it("ignores spoofable x-vercel-ip and cf-connecting-ip", () => {
+    const request = new Request("https://bursanalar.com/api/auth/login", {
+      headers: {
+        "x-vercel-ip": "1.2.3.4",
+        "cf-connecting-ip": "5.5.5.5",
+        "x-forwarded-for": "8.8.8.8",
+      },
+    });
+    assert.equal(clientIp(request, "production"), "8.8.8.8");
+  });
+
+  it("uses x-forwarded-for when vercel header absent", () => {
     const request = new Request("https://bursanalar.com/api/auth/login", {
       headers: { "x-forwarded-for": "1.2.3.4" },
     });
-    assert.equal(clientIp(request, "production"), "unknown");
+    assert.equal(clientIp(request, "production"), "1.2.3.4");
   });
 
   it("allows x-forwarded-for in development", () => {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { assertImageStudioEnabled } from "@/lib/image-studio/guard";
+import { assertImageStudioAdmin } from "@/lib/image-studio/guard";
 import { readStudioSettings, writeStudioSettings } from "@/lib/image-studio/settings";
 
 const patchSchema = z.object({
@@ -9,17 +9,17 @@ const patchSchema = z.object({
   googleBudgetUsd: z.number().min(0).nullable().optional(),
 });
 
-export async function GET() {
-  const disabled = assertImageStudioEnabled();
-  if (disabled) return disabled;
+export async function GET(request: Request) {
+  const gate = await assertImageStudioAdmin(request);
+  if ("error" in gate) return gate.error;
 
   const settings = await readStudioSettings();
   return NextResponse.json({ settings });
 }
 
 export async function PATCH(request: Request) {
-  const disabled = assertImageStudioEnabled();
-  if (disabled) return disabled;
+  const gate = await assertImageStudioAdmin(request);
+  if ("error" in gate) return gate.error;
 
   let body: z.infer<typeof patchSchema>;
   try {

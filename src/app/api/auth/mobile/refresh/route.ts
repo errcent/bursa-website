@@ -18,7 +18,11 @@ export async function POST(request: NextRequest) {
 
     const body = mobileRefreshSchema.parse(await request.json());
     const deviceId =
-      body.deviceId?.trim() || request.headers.get("x-device-id")?.trim() || undefined;
+      body.deviceId?.trim() || request.headers.get("x-device-id")?.trim() || "";
+
+    if (!deviceId) {
+      return jsonError("Device ID diperlukan.", 400);
+    }
 
     const tokens = await rotateRefreshToken({
       refreshToken: body.refreshToken,

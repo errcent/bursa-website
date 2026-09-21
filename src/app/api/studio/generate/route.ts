@@ -3,11 +3,12 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { assertImageStudioEnabled } from "@/lib/image-studio/guard";
+import { assertImageStudioAdmin } from "@/lib/image-studio/guard";
 import { appendLedgerEntry, saveStudioImage } from "@/lib/image-studio/ledger";
 import { readFluxPoolSnapshot, writeFluxPoolSnapshot } from "@/lib/image-studio/flux-pool";
 import { getStudioProvider } from "@/lib/image-studio/registry";
 import type { StudioProviderId } from "@/lib/image-studio/types";
+import { checkRateLimit, clientIp, rateLimitResponse } from "@/lib/auth/rate-limit";
 
 const bodySchema = z.object({
   provider: z.enum(["bfl", "pollinations"]),
@@ -31,8 +32,15 @@ async function decrementFluxPoolIfFree() {
 }
 
 export async function POST(request: Request) {
-  const disabled = assertImageStudioEnabled();
-  if (disabled) return disabled;
+  const gate = await assertImageStudioAdmin(request);
+  if ("error" in gate) return gate.error;
+
+  const rate = await checkRateLimit(
+    `studio-generate:${gate.admin.id}:${clientIp(request)}`,
+    10,
+    60_000
+  );
+  if (!rate.allowed) return rateLimitResponse(rate.retryAfterSec);
 
   let body: z.infer<typeof bodySchema>;
   try {

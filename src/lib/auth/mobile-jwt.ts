@@ -147,7 +147,7 @@ export async function issueMobileTokenPair(params: {
 
 export async function rotateRefreshToken(params: {
   refreshToken: string;
-  deviceId?: string;
+  deviceId: string;
 }): Promise<{
   accessToken: string;
   refreshToken: string;
@@ -163,11 +163,13 @@ export async function rotateRefreshToken(params: {
     return null;
   }
 
-  if (params.deviceId) {
-    const deviceHash = hashDeviceId(params.deviceId);
-    if (deviceHash !== row.deviceHash) {
-      return null;
-    }
+  // U-007: device binding is mandatory on refresh.
+  if (!params.deviceId?.trim()) {
+    return null;
+  }
+  const deviceHash = hashDeviceId(params.deviceId);
+  if (deviceHash !== row.deviceHash) {
+    return null;
   }
 
   await db.refreshToken.update({
@@ -177,7 +179,7 @@ export async function rotateRefreshToken(params: {
 
   return issueMobileTokenPair({
     user: row.user,
-    deviceId: params.deviceId ?? row.deviceHash,
+    deviceId: params.deviceId,
     platform: row.platform,
   }).then(({ accessToken, refreshToken, expiresIn }) => ({
     accessToken,

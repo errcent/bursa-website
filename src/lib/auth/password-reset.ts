@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "crypto";
 
 import bcrypt from "bcryptjs";
 
+import { bumpWebSessionVersion } from "@/lib/auth/session-version";
 import { db } from "@/lib/db";
 
 /** Token valid for 30 minutes (within 15-60 min security guideline). */
@@ -68,7 +69,7 @@ export async function resetPasswordWithToken(token: string, newPassword: string)
   const passwordHash = await bcrypt.hash(newPassword, 12);
   const userId = validation.record.userId;
 
-  // BN-SEC-008: invalidate all web/mobile sessions on password recovery.
+  // BN-SEC-008 / U-005: invalidate all web/mobile sessions on password recovery.
   await db.$transaction([
     db.user.update({
       where: { id: userId },
@@ -81,6 +82,7 @@ export async function resetPasswordWithToken(token: string, newPassword: string)
     db.refreshToken.deleteMany({ where: { userId } }),
     db.userSession.deleteMany({ where: { userId } }),
   ]);
+  await bumpWebSessionVersion(userId);
 
   return {
     valid: true as const,

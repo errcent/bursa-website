@@ -22,7 +22,7 @@ export const mobileLoginSchema = z.object({
 
 export const mobileRefreshSchema = z.object({
   refreshToken: z.string().min(20),
-  deviceId: z.string().min(8).max(128).optional(),
+  deviceId: z.string().min(8).max(128),
 });
 
 export const mobileGoogleSchema = z.object({

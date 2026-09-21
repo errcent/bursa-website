@@ -102,9 +102,9 @@ export async function PATCH(request: NextRequest) {
           ? { phone: phoneUpdate.phone, phoneHash: phoneUpdate.phoneHash }
           : {}),
         ...(body.bio !== undefined ? { bio: body.bio.trim() } : {}),
-        ...(body.avatarUrl !== undefined
-          ? { avatarUrl: body.avatarUrl?.trim() || null }
-          : {}),
+        // U-008: never accept client-supplied avatar URLs (tracker / data-URL bloat).
+        // Clear only; binary uploads use POST /api/me/avatar.
+        ...(body.avatarUrl === null ? { avatarUrl: null } : {}),
       },
     });
 

@@ -17,6 +17,13 @@ function pathOnly(href: string) {
   return href.split("?")[0]?.split("#")[0] ?? href;
 }
 
+function isUnsafeNextPath(raw: string): boolean {
+  // U-006: protocol-relative, backslash bypass, and encoded backslash.
+  if (!raw.startsWith("/") || raw.startsWith("//") || raw.startsWith("/\\")) return true;
+  if (raw.includes("\\") || /%5c/i.test(raw)) return true;
+  return false;
+}
+
 /**
  * Resolve post-login/register destination from a `next` query value.
  * Defaults to beranda; rejects open redirects and sticky account shells.
@@ -26,12 +33,14 @@ export function resolvePostAuthRedirect(
   options?: { forceHome?: boolean }
 ): string {
   if (options?.forceHome) return POST_AUTH_HOME;
-  if (!rawNext || !rawNext.startsWith("/") || rawNext.startsWith("//")) {
+  if (!rawNext || isUnsafeNextPath(rawNext)) {
     return POST_AUTH_HOME;
   }
 
   const path = pathOnly(rawNext);
-  if (!path.startsWith("/") || path.startsWith("//")) return POST_AUTH_HOME;
+  if (isUnsafeNextPath(path)) {
+    return POST_AUTH_HOME;
+  }
   if (AUTH_PAGES.some((p) => path === p || path.startsWith(`${p}/`))) {
     return POST_AUTH_HOME;
   }

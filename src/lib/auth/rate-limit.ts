@@ -27,7 +27,7 @@ function hashKeyMaterial(value: string): string {
   return createHash("sha256").update(value).digest("hex").slice(0, 32);
 }
 
-/** In-memory fixed-window rate limit (per key). Local/dev fallback. */
+/** In-memory fixed-window rate limit (per key). Local/dev fallback only. */
 export function checkRateLimitMemory(
   key: string,
   limit: number,
@@ -54,9 +54,9 @@ export function checkRateLimitMemory(
 }
 
 /**
- * Fixed-window rate limit (BN-SEC-005).
- * Uses Upstash Redis when UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN
- * are set; otherwise process-local memory.
+ * Fixed-window rate limit (BN-SEC-005 / U-013).
+ * Uses Upstash Redis when configured. In production without Upstash:
+ * fail closed (deny) so multi-instance Map fallback cannot dilute limits.
  */
 export async function checkRateLimit(
   key: string,
@@ -68,26 +68,41 @@ export async function checkRateLimit(
       return await checkRateLimitUpstash(key, limit, windowMs);
     } catch (error) {
       console.error("[rate-limit] Upstash error; falling back to memory:", error);
+      if (process.env.NODE_ENV === "production") {
+        return { allowed: false, retryAfterSec: 60 };
+      }
       return checkRateLimitMemory(key, limit, windowMs);
     }
   }
+
+  if (process.env.NODE_ENV === "production") {
+    console.error(
+      "[rate-limit] UPSTASH_REDIS_REST_URL/TOKEN missing in production; denying request (fail-closed)."
+    );
+    return { allowed: false, retryAfterSec: 60 };
+  }
+
   return checkRateLimitMemory(key, limit, windowMs);
 }
 
-export function clientIp(request: Request, env = process.env.NODE_ENV): string {
-  if (env === "production") {
-    const vercel = request.headers.get("x-vercel-ip")?.trim();
-    if (vercel) return vercel;
-    const cf = request.headers.get("cf-connecting-ip")?.trim();
-    if (cf) return cf;
-    const real = request.headers.get("x-real-ip")?.trim();
-    if (real) return real;
-    return "unknown";
-  }
+/**
+ * Platform-controlled client IP (U-001).
+ * Prefer x-vercel-forwarded-for, then x-forwarded-for, then x-real-ip.
+ * Never trust client-supplied x-vercel-ip or cf-connecting-ip on direct Vercel.
+ */
+export function clientIp(request: Request, _env = process.env.NODE_ENV): string {
+  const vercelFwd = request.headers.get("x-vercel-forwarded-for")?.trim();
+  if (vercelFwd) return vercelFwd.split(",")[0]?.trim() || "unknown";
 
-  const forwarded = request.headers.get("x-forwarded-for");
+  const forwarded = request.headers.get("x-forwarded-for")?.trim();
   if (forwarded) return forwarded.split(",")[0]?.trim() || "unknown";
+
   return request.headers.get("x-real-ip")?.trim() || "unknown";
+}
+
+/** Normalize an email/identifier for rate-limit bucket keys. */
+export function normalizeRateLimitId(value: string): string {
+  return value.trim().toLowerCase();
 }
 
 const SESSION_READ_PATHS = new Set(["/api/auth/session", "/api/auth/web-session-bridge"]);

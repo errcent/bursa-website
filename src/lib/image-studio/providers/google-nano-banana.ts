@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI, Modality } from "@google/genai";
 
 import { getProviderEnvKey } from "@/lib/image-studio/config";
 import { applyPromptPreset } from "@/lib/image-studio/presets";
@@ -33,7 +33,7 @@ function resolutionCost(width: number, height: number) {
 function getClient() {
   const apiKey = getProviderEnvKey("google");
   if (!apiKey) throw new Error("GOOGLE_GENERATIVE_AI_API_KEY belum dikonfigurasi");
-  return new GoogleGenerativeAI(apiKey);
+  return new GoogleGenAI({ apiKey });
 }
 
 export const googleNanoBananaProvider: LegacyStudioProvider = {
@@ -63,18 +63,11 @@ export const googleNanoBananaProvider: LegacyStudioProvider = {
   },
 
   async generate(input: GenerateInput): Promise<GenerationResult> {
-    const genAI = getClient();
+    const ai = getClient();
     const prompt = applyPromptPreset(input.prompt, input.preset);
 
-    const model = genAI.getGenerativeModel({
+    const result = await ai.models.generateContent({
       model: MODEL_ID,
-      generationConfig: {
-        // @ts-expect-error - image response modality for Gemini image models
-        responseModalities: ["TEXT", "IMAGE"],
-      },
-    });
-
-    const result = await model.generateContent({
       contents: [
         {
           role: "user",
@@ -85,13 +78,16 @@ export const googleNanoBananaProvider: LegacyStudioProvider = {
           ],
         },
       ],
+      config: {
+        responseModalities: [Modality.TEXT, Modality.IMAGE],
+      },
     });
 
-    const parts = result.response.candidates?.[0]?.content?.parts ?? [];
-    const imagePart = parts.find((part) => "inlineData" in part && part.inlineData?.data);
+    const parts = result.candidates?.[0]?.content?.parts ?? [];
+    const imagePart = parts.find((part) => part.inlineData?.data);
 
-    if (!imagePart || !("inlineData" in imagePart) || !imagePart.inlineData?.data) {
-      const text = result.response.text();
+    if (!imagePart?.inlineData?.data) {
+      const text = result.text;
       throw new Error(text ? `Gemini: ${text.slice(0, 200)}` : "Gemini tidak mengembalikan gambar");
     }
 

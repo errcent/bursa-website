@@ -30,6 +30,8 @@ model User {
   emailVerifiedAt                DateTime?
   /// Set once the phone is verified. Second identity anchor for Sybil resistance (QC-20260719-26).
   phoneVerifiedAt                DateTime?
+  /// U-005: bumped on password reset / OAuth reclaim to invalidate all web session JWTs.
+  sessionVersion                 Int                       @default(0)
   /// Non-cash platform credit (Rupiah) usable toward ANOTHER course. NEVER a refund (QC-20260719-33).
   platformCreditBalance          Int                       @default(0)
   /// Reporter reputation counters for weighted moderation (QC-20260719-40).

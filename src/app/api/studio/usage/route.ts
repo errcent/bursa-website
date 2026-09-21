@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { assertImageStudioEnabled } from "@/lib/image-studio/guard";
+import { assertImageStudioAdmin } from "@/lib/image-studio/guard";
 import { buildUsageSummary, listLedgerEntries, readLedgerEntries } from "@/lib/image-studio/ledger";
 import type { StudioProviderId } from "@/lib/image-studio/types";
 
 export async function GET(request: Request) {
-  const disabled = assertImageStudioEnabled();
-  if (disabled) return disabled;
+  const gate = await assertImageStudioAdmin(request);
+  if ("error" in gate) return gate.error;
 
   const { searchParams } = new URL(request.url);
   const limit = Number(searchParams.get("limit") ?? "100");

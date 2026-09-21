@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
 
-import { assertImageStudioEnabled } from "@/lib/image-studio/guard";
+import { assertImageStudioAdmin } from "@/lib/image-studio/guard";
 import { ledgerEntryExists, readStudioImage } from "@/lib/image-studio/ledger";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(_request: Request, context: RouteContext) {
-  const disabled = assertImageStudioEnabled();
-  if (disabled) return disabled;
+export async function GET(request: Request, context: RouteContext) {
+  const gate = await assertImageStudioAdmin(request);
+  if ("error" in gate) return gate.error;
 
   const { id } = await context.params;
   if (!id || !/^[a-f0-9-]{36}$/i.test(id)) {

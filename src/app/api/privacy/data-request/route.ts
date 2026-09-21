@@ -8,11 +8,17 @@ import { resolveAuthenticatedUser } from "@/lib/auth/request-identity";
 import {
   checkRateLimit,
   clientIp,
+  normalizeRateLimitId,
   rateLimitResponse,
 } from "@/lib/auth/rate-limit";
 import { dsarConfirmationEmail } from "@/lib/privacy/email-templates";
 import { generateDsarReferenceCode } from "@/lib/privacy/reference-code";
 import type { LegalLocale } from "@/lib/hosts/hosts";
+import {
+  isTurnstileBlockingMisconfiguration,
+  isTurnstileConfigured,
+  verifyTurnstileToken,
+} from "@/lib/turnstile/verify";
 
 const schema = z.object({
   fullName: z.string().min(2),
@@ -28,6 +34,7 @@ const schema = z.object({
   subjectType: z.enum(["ACCOUNT", "NON_ACCOUNT", "MENTOR_APPLICANT"]).optional(),
   details: z.string().min(10),
   locale: z.enum(["id", "en"]).optional(),
+  turnstileToken: z.string().trim().optional(),
 });
 
 const IDENTITY_REQUIRED: DataSubjectRequestType[] = [
@@ -39,12 +46,31 @@ const IDENTITY_REQUIRED: DataSubjectRequestType[] = [
 export async function POST(request: Request) {
   try {
     const ip = clientIp(request);
-    const limit = await checkRateLimit(`dsar:${ip}`, 5, 60 * 60 * 1000);
-    if (!limit.allowed) {
-      return rateLimitResponse(limit.retryAfterSec);
+    const body = schema.parse(await request.json());
+    const emailKey = normalizeRateLimitId(body.email);
+
+    const ipLimit = await checkRateLimit(`dsar:${ip}`, 5, 60 * 60 * 1000);
+    if (!ipLimit.allowed) {
+      return rateLimitResponse(ipLimit.retryAfterSec);
+    }
+    const emailLimit = await checkRateLimit(`dsar-email:${emailKey}`, 5, 60 * 60 * 1000);
+    if (!emailLimit.allowed) {
+      return rateLimitResponse(emailLimit.retryAfterSec);
     }
 
-    const body = schema.parse(await request.json());
+    if (isTurnstileBlockingMisconfiguration()) {
+      return NextResponse.json(
+        { error: "Captcha misconfigured. Contact support." },
+        { status: 503 }
+      );
+    }
+    if (isTurnstileConfigured()) {
+      const valid = await verifyTurnstileToken(body.turnstileToken, ip);
+      if (!valid) {
+        return NextResponse.json({ error: "Captcha tidak valid." }, { status: 400 });
+      }
+    }
+
     const requestType = body.requestType as DataSubjectRequestType;
     const locale: LegalLocale = body.locale ?? "id";
 

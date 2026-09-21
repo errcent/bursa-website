@@ -5,7 +5,7 @@ import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
 import { sendPasswordResetEmail } from "@/lib/auth/auth-email";
 import { maskEmail } from "@/lib/auth/password-policy";
 import { createPasswordResetToken } from "@/lib/auth/password-reset";
-import { checkRateLimit, clientIp } from "@/lib/auth/rate-limit";
+import { checkRateLimit, clientIp, normalizeRateLimitId } from "@/lib/auth/rate-limit";
 import { db } from "@/lib/db";
 
 const forgotSchema = z.object({
@@ -21,7 +21,13 @@ const GENERIC_MESSAGE =
 export async function POST(request: NextRequest) {
   try {
     const ip = clientIp(request);
-    const rate = await checkRateLimit(`forgot-password:${ip}`, 3, 60 * 60 * 1000);
+    const body = forgotSchema.parse(await request.json());
+    const email = body.email.trim().toLowerCase();
+    const rate = await checkRateLimit(
+      `forgot-password:${normalizeRateLimitId(email)}:${ip}`,
+      3,
+      60 * 60 * 1000
+    );
     if (!rate.allowed) {
       return jsonError(
         `Terlalu banyak permintaan. Coba lagi dalam ${rate.retryAfterSec} detik.`,
@@ -29,8 +35,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = forgotSchema.parse(await request.json());
-    const email = body.email.trim().toLowerCase();
 
     const user = await db.user.findUnique({ where: { email } });
 

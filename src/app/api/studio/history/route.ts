@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { assertImageStudioEnabled } from "@/lib/image-studio/guard";
+import { assertImageStudioAdmin } from "@/lib/image-studio/guard";
 import { mergeSeedIfEmpty } from "@/lib/image-studio/import-seed";
 import { listLedgerEntries } from "@/lib/image-studio/ledger";
 
 export async function GET(request: Request) {
-  const disabled = assertImageStudioEnabled();
-  if (disabled) return disabled;
+  const gate = await assertImageStudioAdmin(request);
+  if ("error" in gate) return gate.error;
 
   await mergeSeedIfEmpty();
 

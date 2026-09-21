@@ -377,7 +377,7 @@ export function ProfileEditor() {
           name: trimmedName,
           username: normalizedUsername || null,
           bio: bio.trim(),
-          avatarUrl: nextAvatar,
+          // U-008: avatar writes go through POST /api/me/avatar only.
           role: session.role,
         }),
       });
@@ -396,7 +396,7 @@ export function ProfileEditor() {
         username: profile.username ?? "",
         phone: profile.phone ?? "",
         bio: profile.bio ?? "",
-        avatarUrl: profile.avatarUrl,
+        avatarUrl: nextAvatar ?? profile.avatarUrl,
       };
       setName(next.name);
       setUsername(next.username);

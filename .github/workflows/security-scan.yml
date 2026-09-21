@@ -45,8 +45,8 @@ jobs:
     name: Security Reviewer (Semgrep)
     runs-on: ubuntu-latest
     container:
-      image: semgrep/semgrep
-    if: github.actor != 'dependabot[bot]'
+      # U-011: pin version + multi-arch digest (semgrep 1.145.0)
+      image: semgrep/semgrep:1.145.0@sha256:b68f9b68483955b85042dac7b4533757779625a02dcf91e470da4c2df1b430be
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.0
@@ -114,7 +114,8 @@ jobs:
 
   vulnerability-scanner-osv:
     name: Vulnerability Scanner (OSV)
-    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.2.2
+    # U-011: pin reusable workflow to commit SHA (v2.2.2)
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@90b209d0ea55cea1da9fc0c4e65782cc6acb6e2e
     with:
       scan-args: |-
         --lockfile=package-lock.json

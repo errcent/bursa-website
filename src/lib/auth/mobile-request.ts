@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 
 import { verifyAccessToken } from "@/lib/auth/mobile-jwt";
+import { clientIp } from "@/lib/auth/rate-limit";
 
 /** Extract Bearer access token from Authorization header (mobile clients). */
 export function extractBearerToken(request: Request): string | null {
@@ -27,8 +28,7 @@ export function resolveClientPlatformHeader(request: Request): string | null {
   return request.headers.get("x-platform")?.trim() ?? null;
 }
 
+/** U-001: platform-controlled IP (same as rate-limit.clientIp). */
 export function clientIpFromRequest(request: NextRequest | Request): string {
-  const fwd = request.headers.get("x-forwarded-for");
-  if (fwd) return fwd.split(",")[0]!.trim();
-  return request.headers.get("x-real-ip") ?? "unknown";
+  return clientIp(request);
 }

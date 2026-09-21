@@ -1,11 +1,28 @@
 import type { ReactNode } from "react";
-
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { UserRole } from "@prisma/client";
 
+import { verifyWebSessionToken, WEB_SESSION_COOKIE } from "@/lib/auth/web-session";
+import { db } from "@/lib/db";
 import { isImageStudioEnabled } from "@/lib/image-studio/config";
 
-export default function StudioLayout({ children }: { children: ReactNode }) {
+export default async function StudioLayout({ children }: { children: ReactNode }) {
   if (!isImageStudioEnabled()) {
+    notFound();
+  }
+
+  // U-002: UI shell is admin-only (APIs also gated via assertImageStudioAdmin).
+  const jar = await cookies();
+  const token = jar.get(WEB_SESSION_COOKIE)?.value;
+  if (!token) notFound();
+  const session = await verifyWebSessionToken(token);
+  if (!session) notFound();
+  const user = await db.user.findUnique({
+    where: { id: session.userId },
+    select: { role: true },
+  });
+  if (!user || user.role !== UserRole.ADMIN) {
     notFound();
   }
 

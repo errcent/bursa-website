@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { megapixelsFor } from "@/lib/image-studio/config";
 import { writeFluxPoolSnapshot } from "@/lib/image-studio/flux-pool";
-import { assertImageStudioEnabled } from "@/lib/image-studio/guard";
+import { assertImageStudioAdmin } from "@/lib/image-studio/guard";
 import { upsertLedgerEntries } from "@/lib/image-studio/ledger";
 import type { LedgerEntry } from "@/lib/image-studio/types";
 
@@ -29,8 +29,8 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const disabled = assertImageStudioEnabled();
-  if (disabled) return disabled;
+  const gate = await assertImageStudioAdmin(request);
+  if ("error" in gate) return gate.error;
 
   let body: z.infer<typeof bodySchema>;
   try {

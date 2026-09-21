@@ -15,5 +15,9 @@ export async function GET(request: Request) {
     email: isEmailConfigured(),
     turnstile: Boolean(turnstileSiteKey && turnstileSecret),
     fieldEncryption: Boolean(process.env.FIELD_ENCRYPTION_KEY?.trim()),
+    // U-013: Upstash required for distributed rate limits + sessionVersion edge mirror.
+    upstash: Boolean(
+      process.env.UPSTASH_REDIS_REST_URL?.trim() && process.env.UPSTASH_REDIS_REST_TOKEN?.trim()
+    ),
   });
 }

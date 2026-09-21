@@ -1,6 +1,7 @@
 import type { UserRole } from "@prisma/client";
 
 import { getAuthSecret } from "@/lib/auth/auth-secret";
+import { bumpWebSessionVersion } from "@/lib/auth/session-version";
 import { db } from "@/lib/db";
 import { markWaitlistConverted } from "@/lib/waitlist/resend";
 
@@ -58,6 +59,7 @@ async function reclaimUnverifiedPasswordAccount(
       },
     }),
   ]);
+  await bumpWebSessionVersion(userId);
   return db.user.findUniqueOrThrow({ where: { id: userId } });
 }
 

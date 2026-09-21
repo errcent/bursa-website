@@ -4,6 +4,10 @@ import { useMemo, useState } from "react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
+import {
+  isTurnstileClientConfigured,
+  TurnstileWidget,
+} from "@/components/turnstile-widget";
 import type { LegalLocale } from "@/lib/hosts/hosts";
 import { legalHrefsFor } from "@/lib/hosts/hosts";
 
@@ -101,6 +105,9 @@ export function DsarRequestForm({ locale = "id" }: { locale?: LegalLocale }) {
   const [success, setSuccess] = useState(false);
   const [referenceCode, setReferenceCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [showTurnstile, setShowTurnstile] = useState(false);
+  const turnstileRequired = isTurnstileClientConfigured();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -112,12 +119,22 @@ export function DsarRequestForm({ locale = "id" }: { locale?: LegalLocale }) {
       return;
     }
 
+    if (turnstileRequired && !turnstileToken) {
+      setShowTurnstile(true);
+      setError(locale === "en" ? "Complete the verification below." : "Selesaikan verifikasi singkat di bawah.");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/privacy/data-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...parsed.data, locale }),
+        body: JSON.stringify({
+          ...parsed.data,
+          locale,
+          turnstileToken: turnstileToken ?? undefined,
+        }),
       });
       const data = (await res.json()) as { error?: string; referenceCode?: string };
       if (!res.ok) {
@@ -129,6 +146,7 @@ export function DsarRequestForm({ locale = "id" }: { locale?: LegalLocale }) {
       setFullName("");
       setEmail("");
       setDetails("");
+      setTurnstileToken(null);
     } catch {
       setError(t.sendFailRetry);
     } finally {
@@ -232,6 +250,10 @@ export function DsarRequestForm({ locale = "id" }: { locale?: LegalLocale }) {
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
+
+      {turnstileRequired && (showTurnstile || turnstileToken) ? (
+        <TurnstileWidget onToken={setTurnstileToken} />
+      ) : null}
 
       <Button type="submit" disabled={loading}>
         {loading ? t.sending : t.submit}

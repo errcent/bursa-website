@@ -20,21 +20,20 @@ const securityHeaders = [
       "default-src 'self'",
       // Production Next/Turbopack does not need eval. Dev: React 19 reconstructs
       // stacks via eval() - omit this in prod (QC-20260819-06 / BN-SEC-009).
-      // Keep script/style unsafe-inline until BN-SEC-009 nonce.
+      // Keep script/style unsafe-inline until BN-SEC-009 nonce migration.
       `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://challenges.cloudflare.com https://*.posthog.com https://s3.tradingview.com`,
       "style-src 'self' 'unsafe-inline'",
       "object-src 'none'",
-      "img-src 'self' data: blob: https:",
-      // Native <video> falls back to default-src when media-src is omitted - that
-      // blocks Bunny CDN + demo MP4 hosts (MEDIA_ERR_SRC_NOT_SUPPORTED / URL safety).
-      "media-src 'self' blob: https:",
+      // U-010: drop blanket https: on img/connect.
+      "img-src 'self' data: blob: https://*.b-cdn.net https://*.bunnycdn.com https://lh3.googleusercontent.com https://*.googleusercontent.com https://*.posthog.com https://us.i.posthog.com https://eu.i.posthog.com",
+      "media-src 'self' blob: https://*.b-cdn.net https://*.bunnycdn.com",
       "font-src 'self' data:",
-      "connect-src 'self' https: wss:",
-      // Note News: TradingView Advanced Chart embed (script + widget iframe).
+      "connect-src 'self' https://*.posthog.com https://us.i.posthog.com https://eu.i.posthog.com https://s3.tradingview.com https://*.tradingview.com wss://*.tradingview.com https://challenges.cloudflare.com https://oauth2.googleapis.com",
       "frame-src https://challenges.cloudflare.com https://www.tradingview.com https://*.tradingview.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
+      "upgrade-insecure-requests",
     ].join("; "),
   },
 ];

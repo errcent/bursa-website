@@ -227,21 +227,8 @@ export const updateUserProfileSchema = z.object({
       message: "Format nomor telepon tidak valid (gunakan +62 atau 08...).",
     }),
   bio: z.string().max(500, "Bio maksimal 500 karakter.").optional(),
-  avatarUrl: z
-    .string()
-    .max(3_000_000)
-    .optional()
-    .nullable()
-    .refine(
-      (v) =>
-        v == null ||
-        v === "" ||
-        v.startsWith("/uploads/avatars/") ||
-        v.startsWith("data:image/") ||
-        v.startsWith("https://") ||
-        v.startsWith("http://"),
-      { message: "URL foto profil tidak valid." }
-    ),
+  // U-008: client may only clear avatar; uploads go through POST /api/me/avatar.
+  avatarUrl: z.literal(null).optional().nullable(),
   role: z.string().optional(),
 });
 
