@@ -161,7 +161,7 @@ export function NoteJournalOnboarding({
             </button>
             <button
               type="button"
-              className="min-h-11 w-full rounded-md text-sm text-zinc-500 hover:text-zinc-300"
+              className="min-h-11 w-full rounded-md text-sm text-zinc-400 hover:text-zinc-200"
               onClick={() =>
                 onComplete({
                   locale,

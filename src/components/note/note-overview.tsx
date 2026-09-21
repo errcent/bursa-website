@@ -198,7 +198,7 @@ export function NoteOverview() {
                   >
                     {formatPnl(monthSnapshot.pnlSum, cellOpts)}
                   </span>
-                  <span className="mx-1.5 text-zinc-500">·</span>
+                  <span className="mx-1.5 text-zinc-400">·</span>
                   <span className="font-medium text-zinc-100">
                     {monthSnapshot.winRate == null
                       ? "-"
