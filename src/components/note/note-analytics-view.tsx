@@ -12,6 +12,7 @@ import { NOTE_EXECUTION_KIND } from "@/lib/note/sections";
 import { buildAnalyticsReport } from "@/lib/note/analytics";
 import { generateEdgeInsight } from "@/lib/note/edge-finder";
 import { NoteDrawdownGauge } from "@/components/note/note-drawdown-gauge";
+import { NoteEmotionCorrelation } from "@/components/note/note-emotion-correlation";
 import { pnlOptsForSlot } from "@/lib/note/prefs";
 import { filterEntries, formatPnl } from "@/lib/note/stats";
 import { isPnlKind } from "@/lib/note/types";
@@ -201,6 +202,8 @@ export function NoteAnalyticsView() {
       </AnalyticsSection>
 
       <NoteDrawdownGauge />
+
+      <NoteEmotionCorrelation />
 
       <AnalyticsSection
         title={locale === "en" ? "Insights" : "Insight"}

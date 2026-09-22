@@ -247,6 +247,12 @@ export function NoteAiAssistant() {
         iconWrap: "bg-zinc-800",
       },
       {
+        label: prefs.locale === "en" ? "Why did I lose?" : "Kenapa rugi?",
+        send: prefs.locale === "en" ? "Why did I lose on my worst symbol? Analyze my losing trades." : "Kenapa rugi di simbol terburuk? Analisis trade rugiku.",
+        icon: <TrendingDown className="note-pnl-down size-4" aria-hidden />,
+        iconWrap: "bg-[color-mix(in_srgb,var(--chart-down-strong)_15%,transparent)]",
+      },
+      {
         label: copy.aiPromptMore,
         send: copy.aiPromptMore,
         icon: <LayoutGrid className="size-4 text-zinc-300" aria-hidden />,
