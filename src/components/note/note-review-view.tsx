@@ -6,6 +6,7 @@ import { useNoteJournal } from "@/components/note/note-journal-context";
 import { NOTE_EXECUTION_KIND } from "@/lib/note/sections";
 import { pnlOptsFromPrefs } from "@/lib/note/prefs";
 import { BrokerReconcile } from "@/components/note/broker-reconcile";
+import { MentorShareButton } from "@/components/note/mentor-share-button";
 import { dayKey, filterEntries, formatPnl, summarizeJournal } from "@/lib/note/stats";
 import { isPnlKind } from "@/lib/note/types";
 import { noteCopy } from "@/lib/note/copy";
@@ -85,6 +86,8 @@ export function NoteReviewView() {
       </div>
 
       <BrokerReconcile />
+
+      <MentorShareButton />
     </div>
   );
 }

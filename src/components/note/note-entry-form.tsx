@@ -12,6 +12,7 @@ import { parseTradeLine } from "@/lib/note/parse-trade";
 import { plannedRR, formatR } from "@/lib/note/r-multiple";
 import { SymbolInput } from "@/components/note/symbol-input";
 import { VoiceLogButton } from "@/components/note/voice-log-button";
+import { CloneLastTradeButton } from "@/components/note/clone-last-trade-button";
 import type { JournalKind, JournalMode } from "@/lib/note/types";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
@@ -60,6 +61,26 @@ export function NoteEntryForm({
     if (cognition) setKind("REFLEKSI");
     else setKind("TRADE");
   }, [cognition]);
+
+  // Pre-fill from URL params (clone last trade)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const sym = params.get("symbol");
+    if (sym) setSymbol(sym);
+    const side = params.get("side");
+    if (side) setSide(side);
+    const qty = params.get("qty");
+    if (qty) setQty(qty);
+    const entry = params.get("entry");
+    if (entry) setEntryPrice(entry);
+    const sl = params.get("sl");
+    if (sl) setStopLoss(sl);
+    const tp = params.get("tp");
+    if (tp) setTakeProfit(tp);
+    const acct = params.get("acct");
+    if (acct) setAccountLabel(acct);
+  }, []);
 
   const pnlNumber = pnl === "" ? null : Number(pnl);
   const isRefleksi = kind === "REFLEKSI";
@@ -137,36 +158,39 @@ export function NoteEntryForm({
       ) : null}
 
       {!isRefleksi ? (
-        <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-3">
-          <label className="block">
-            <span className={labelClass}>
-              {prefs.locale === "en" ? "Paste a trade" : "Tempel trade"}
-            </span>
-            <textarea
-              rows={2}
-              className={`${inputClass} min-h-[3rem] resize-y py-2`}
-              value={pasteText}
-              onChange={(e) => setPasteText(e.target.value)}
-              placeholder="BUY EURUSD 0.1 @1.0850 SL 1.0820 TP 1.0920"
-              aria-label={prefs.locale === "en" ? "Paste a trade" : "Tempel trade"}
-            />
-          </label>
-          {pasteText.trim() ? (
-            <div className="mt-2 flex items-center gap-2">
-              <button
-                type="button"
-                className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
-                onClick={applyPaste}
-              >
-                {prefs.locale === "en" ? "Parse & fill" : "Parse & isi"}
-              </button>
-              <VoiceLogButton onParsed={(text) => setPasteText(text)} />
-            </div>
-          ) : (
-            <div className="mt-2">
-              <VoiceLogButton onParsed={(text) => setPasteText(text)} />
-            </div>
-          )}
+        <div className="flex items-center justify-between gap-2">
+          <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-3 flex-1">
+            <label className="block">
+              <span className={labelClass}>
+                {prefs.locale === "en" ? "Paste a trade" : "Tempel trade"}
+              </span>
+              <textarea
+                rows={2}
+                className={`${inputClass} min-h-[3rem] resize-y py-2`}
+                value={pasteText}
+                onChange={(e) => setPasteText(e.target.value)}
+                placeholder="BUY EURUSD 0.1 @1.0850 SL 1.0820 TP 1.0920"
+                aria-label={prefs.locale === "en" ? "Paste a trade" : "Tempel trade"}
+              />
+            </label>
+            {pasteText.trim() ? (
+              <div className="mt-2 flex items-center gap-2">
+                <button
+                  type="button"
+                  className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
+                  onClick={applyPaste}
+                >
+                  {prefs.locale === "en" ? "Parse & fill" : "Parse & isi"}
+                </button>
+                <VoiceLogButton onParsed={(text) => setPasteText(text)} />
+              </div>
+            ) : (
+              <div className="mt-2">
+                <VoiceLogButton onParsed={(text) => setPasteText(text)} />
+              </div>
+            )}
+          </div>
+          <CloneLastTradeButton />
         </div>
       ) : null}
 
