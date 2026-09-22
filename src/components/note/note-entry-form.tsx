@@ -13,6 +13,8 @@ import { plannedRR, formatR } from "@/lib/note/r-multiple";
 import { SymbolInput } from "@/components/note/symbol-input";
 import { VoiceLogButton } from "@/components/note/voice-log-button";
 import { CloneLastTradeButton } from "@/components/note/clone-last-trade-button";
+import { snapshotPlaybook } from "@/lib/note/playbook/adherence";
+import { loadPlaybook } from "@/lib/note/playbook/storage";
 import type { JournalKind, JournalMode } from "@/lib/note/types";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
@@ -138,6 +140,7 @@ export function NoteEntryForm({
         note: note.trim() || null,
         ruleBroken: cognition ? ruleBroken.trim() || null : null,
         lesson: cognition ? lesson.trim() || null : null,
+        protocol: isRefleksi ? null : snapshotPlaybook(loadPlaybook()),
         relatedCourseSlug: relatedCourseSlug.trim() || null,
         relatedLessonId: relatedLessonId.trim() || null,
         openedAt: openedDate ? `${openedDate}T12:00:00+07:00` : null,
@@ -183,7 +186,7 @@ export function NoteEntryForm({
               <div className="mt-2 flex items-center gap-2">
                 <button
                   type="button"
-                  className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
+                  className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
                   onClick={applyPaste}
                 >
                   {prefs.locale === "en" ? "Parse & fill" : "Parse & isi"}
@@ -471,7 +474,7 @@ export function NoteEntryForm({
       <div className="flex items-center justify-between border-t border-zinc-800 pt-6">
         <button
           type="button"
-          className="inline-flex min-h-11 min-w-11 items-center px-2 text-sm text-zinc-400 hover:text-zinc-200"
+          className="inline-flex min-h-9 coarse:min-h-11 min-w-9 coarse:min-w-11 items-center px-2 text-sm text-zinc-400 hover:text-zinc-200"
           onClick={() => router.push("/note")}
         >
           {copy.batal}
@@ -479,7 +482,7 @@ export function NoteEntryForm({
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-5 text-sm font-medium text-zinc-950 hover:bg-white disabled:bg-zinc-800 disabled:text-zinc-400"
+          className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-5 text-sm font-medium text-zinc-950 hover:bg-white disabled:bg-zinc-800 disabled:text-zinc-400"
         >
           {pending ? copy.menyimpan : copy.simpan}
         </button>

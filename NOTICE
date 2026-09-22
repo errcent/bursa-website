@@ -1,0 +1,21 @@
+Bursa Note — clean-room notice (competitor-inspired analytics)
+================================================================
+
+Bursa Note's position-cycle engine, Edge Dialect composite, statement
+importers, and excursion estimates were independently implemented by the
+Bursa team from first principles and public trading mathematics
+(FIFO/LIFO/average-cost lot matching, standard drawdown and expectancy
+definitions).
+
+During research we studied the public behavior and documentation of
+several open-source journals, including LuxAlgo trade-journal (MIT).
+No source lines, comments, test fixtures, or sample files were copied.
+Identifier names, file layout, thresholds, and weights are original to
+Bursa; where mechanics necessarily coincide (flat-to-flat cycles must
+split flat-crossing fills; any composite must normalize components),
+expression and calibration differ — see
+Documentation/Engineering/Note/BURSA-EDGE-DIALECT.md and the
+scripts/cleanroom-diff.mjs spot-check.
+
+Third-party open-source software actually vendored or depended upon is
+listed in package.json / pnpm-lock.yaml with its own license terms.

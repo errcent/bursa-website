@@ -67,7 +67,7 @@ export const postgresRepo: NoteRepository = {
     return { entries, nextCursor };
   },
 
-  async createEntry(apexUserId, input: CreateEntryInput) {
+  async createEntry(apexUserId, input: CreateEntryInput, opts?: { breakevenBand?: number }) {
     const db = getNotePrisma();
     const account = await db.noteAccount.upsert({
       where: { apexUserId },
@@ -78,7 +78,7 @@ export const postgresRepo: NoteRepository = {
     if (entryCount >= NOTE_JOURNAL_ACCOUNT_MAX) {
       throw new Error("NOTE_JOURNAL_CAP");
     }
-    const built = buildJournalEntry(apexUserId, input);
+    const built = buildJournalEntry(apexUserId, input, opts);
     const row = await db.journalEntry.create({
       data: {
         id: built.id,
@@ -239,6 +239,31 @@ export const postgresRepo: NoteRepository = {
       email: found.email,
       expiresAt: found.expiresAt.getTime(),
     };
+  },
+
+  async getUserBlob(apexUserId: string, key: string) {
+    const db = getNotePrisma() as ReturnType<typeof getNotePrisma> & {
+      noteUserBlob: {
+        findUnique: (args: unknown) => Promise<{ value: unknown } | null>;
+      };
+    };
+    const row = await db.noteUserBlob.findUnique({
+      where: { apexUserId_key: { apexUserId, key } },
+    });
+    return row?.value ?? null;
+  },
+
+  async setUserBlob(apexUserId: string, key: string, value: unknown) {
+    const db = getNotePrisma() as ReturnType<typeof getNotePrisma> & {
+      noteUserBlob: {
+        upsert: (args: unknown) => Promise<unknown>;
+      };
+    };
+    await db.noteUserBlob.upsert({
+      where: { apexUserId_key: { apexUserId, key } },
+      create: { apexUserId, key, value: value as object },
+      update: { value: value as object },
+    });
   },
 };
 

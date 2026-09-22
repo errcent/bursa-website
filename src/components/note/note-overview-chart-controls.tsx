@@ -114,7 +114,7 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
               aria-pressed={value.granularity === g}
               onClick={() => setGranularity(g)}
               className={cn(
-                "inline-flex min-h-11 items-center rounded px-2.5 text-xs font-medium",
+                "inline-flex min-h-9 coarse:min-h-11 min-w-9 coarse:min-w-11 items-center justify-center rounded px-2.5 text-xs font-medium",
                 value.granularity === g ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:text-zinc-200"
               )}
             >
@@ -139,7 +139,7 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
               setOpen((o) => !o);
             }}
             className={cn(
-              "inline-flex min-h-11 max-w-[10rem] items-center gap-1 rounded-md border px-2 text-xs font-medium sm:max-w-none",
+              "inline-flex min-h-9 coarse:min-h-11 max-w-[10rem] items-center gap-1 rounded-md border px-2 text-xs font-medium sm:max-w-none",
               open
                 ? "note-surface-up-muted border"
                 : "border-zinc-700 bg-zinc-900 text-zinc-200 hover:border-zinc-600"
@@ -179,7 +179,7 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
                   <button
                     key={id}
                     type="button"
-                    className="inline-flex min-h-11 items-center text-xs text-zinc-400 underline decoration-dotted underline-offset-2 hover:text-zinc-200"
+                    className="inline-flex min-h-9 coarse:min-h-11 items-center text-xs text-zinc-400 underline decoration-dotted underline-offset-2 hover:text-zinc-200"
                     onClick={() => applyPreset(id)}
                   >
                     {label}
@@ -189,14 +189,14 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"
-                  className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-900 hover:bg-white"
+                  className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-900 hover:bg-white"
                   onClick={applyRange}
                 >
                   {copy.econApplyFilter}
                 </button>
                 <button
                   type="button"
-                  className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
+                  className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
                   onClick={() => setOpen(false)}
                 >
                   {copy.batal}
@@ -208,7 +208,7 @@ export function NoteOverviewChartControls({ value, onChange }: Props) {
       </div>
 
       {value.granularity !== "trade" ? (
-        <label className="flex min-h-11 cursor-pointer items-center gap-2 text-xs text-zinc-400">
+        <label className="flex min-h-9 coarse:min-h-11 cursor-pointer items-center gap-2 text-xs text-zinc-400">
           <input
             type="checkbox"
             checked={value.hideEmptyDays}

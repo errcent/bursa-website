@@ -104,7 +104,7 @@ function TrackInner() {
             {t("Portfolio", "Portfolio")}
             <select
               id="track-portfolio-scope"
-              className="mt-1 block min-h-11 w-full max-w-sm rounded-md border border-zinc-700 bg-zinc-900 px-2 text-sm text-zinc-100"
+              className="mt-1 block min-h-9 coarse:min-h-11 w-full max-w-sm rounded-md border border-zinc-700 bg-zinc-900 px-2 text-sm text-zinc-100"
               value={scope}
               onChange={(e) => setScope(e.target.value as "all" | string)}
             >
@@ -125,7 +125,7 @@ function TrackInner() {
                 type="button"
                 onClick={() => setRange(r)}
                 className={cn(
-                  "inline-flex min-h-11 items-center rounded-md border px-3 text-xs uppercase",
+                  "inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border px-3 text-xs uppercase",
                   range === r ? "border-zinc-500 bg-zinc-800 text-zinc-200" : "border-zinc-800 text-zinc-400"
                 )}
               >
@@ -135,7 +135,7 @@ function TrackInner() {
           </div>
           <button
             type="button"
-            className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-4 text-sm font-semibold text-zinc-900 hover:bg-white"
+            className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-4 text-sm font-semibold text-zinc-900 hover:bg-white"
             onClick={() => (scope === "all" ? setShowCreatePf(true) : setShowAddTx(true))}
           >
             {scope === "all" ? copy.trackCreate : copy.trackAddTx}

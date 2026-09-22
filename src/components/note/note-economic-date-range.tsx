@@ -106,7 +106,7 @@ export function NoteEconomicDateRange({ value, onChange }: Props) {
           setOpen((o) => !o);
         }}
         className={cn(
-          "inline-flex min-h-11 max-w-[11rem] items-center gap-1 rounded-md border px-2 text-xs font-medium sm:max-w-none",
+          "inline-flex min-h-9 coarse:min-h-11 max-w-[11rem] items-center gap-1 rounded-md border px-2 text-xs font-medium sm:max-w-none",
           open
             ? "note-surface-up-muted border"
             : "border-zinc-700 bg-zinc-900 text-zinc-200 hover:border-zinc-600"
@@ -150,7 +150,7 @@ export function NoteEconomicDateRange({ value, onChange }: Props) {
               <button
                 key={id}
                 type="button"
-                className="inline-flex min-h-11 items-center text-xs text-zinc-400 underline decoration-dotted underline-offset-2 hover:text-zinc-200"
+                className="inline-flex min-h-9 coarse:min-h-11 items-center text-xs text-zinc-400 underline decoration-dotted underline-offset-2 hover:text-zinc-200"
                 onClick={() => applyPreset(id)}
               >
                 {label}
@@ -161,14 +161,14 @@ export function NoteEconomicDateRange({ value, onChange }: Props) {
           <div className="mt-3 flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-900 hover:bg-white"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-900 hover:bg-white"
               onClick={apply}
             >
               {copy.econApplyFilter}
             </button>
             <button
               type="button"
-              className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
               onClick={() => {
                 setDraft(value);
                 setOpen(false);
@@ -178,7 +178,7 @@ export function NoteEconomicDateRange({ value, onChange }: Props) {
             </button>
             <button
               type="button"
-              className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
               onClick={resetToday}
             >
               {copy.econRangeResetToday}

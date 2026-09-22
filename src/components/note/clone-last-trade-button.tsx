@@ -96,7 +96,7 @@ export function CloneLastTradeButton() {
     <button
       type="button"
       className={cn(
-        "inline-flex min-h-11 items-center gap-2 rounded-md border border-zinc-700 px-3 text-xs font-medium",
+        "inline-flex min-h-9 coarse:min-h-11 items-center gap-2 rounded-md border border-zinc-700 px-3 text-xs font-medium",
         "text-zinc-200 hover:bg-zinc-800"
       )}
       onClick={clone}

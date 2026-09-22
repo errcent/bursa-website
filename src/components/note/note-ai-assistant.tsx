@@ -144,7 +144,7 @@ function PromptChipRow({
             key={chip.label}
             type="button"
             onClick={() => onSend(chip.send)}
-            className="flex min-h-11 shrink-0 items-center gap-2 rounded-md border border-zinc-800 bg-zinc-900/70 px-3 text-left text-xs text-zinc-200 transition-colors hover:border-zinc-600 hover:bg-zinc-900"
+            className="flex min-h-9 coarse:min-h-11 shrink-0 items-center gap-2 rounded-md border border-zinc-800 bg-zinc-900/70 px-3 text-left text-xs text-zinc-200 transition-colors hover:border-zinc-600 hover:bg-zinc-900"
           >
             <span
               className={cn(
@@ -168,7 +168,7 @@ function PromptChipRow({
           key={chip.label}
           type="button"
           onClick={() => onSend(chip.send)}
-          className="flex min-h-11 items-center gap-2.5 rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2.5 text-left text-sm text-zinc-200 transition-colors hover:border-zinc-600 hover:bg-zinc-900"
+          className="flex min-h-9 coarse:min-h-11 items-center gap-2.5 rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2.5 text-left text-sm text-zinc-200 transition-colors hover:border-zinc-600 hover:bg-zinc-900"
         >
           <span
             className={cn(
@@ -381,7 +381,7 @@ export function NoteAiAssistant() {
               {messages.length > 0 ? (
                 <button
                   type="button"
-                  className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+                  className="inline-flex min-h-9 coarse:min-h-11 shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
                   onClick={resetChat}
                 >
                   <RotateCcw className="size-3.5" aria-hidden />
@@ -463,7 +463,7 @@ export function NoteAiAssistant() {
                               <Link
                                 key={link.href}
                                 href={link.href}
-                                className="inline-flex min-h-11 items-center rounded-md border border-zinc-800 bg-zinc-900/80 px-2.5 text-xs font-medium text-zinc-300 hover:border-zinc-600 hover:text-zinc-100"
+                                className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-800 bg-zinc-900/80 px-2.5 text-xs font-medium text-zinc-300 hover:border-zinc-600 hover:text-zinc-100"
                                 onClick={() => setOpen(false)}
                               >
                                 {link.label} →
@@ -500,7 +500,7 @@ export function NoteAiAssistant() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={copy.aiAskAnything}
-                    className="min-h-11 min-w-0 flex-1 bg-transparent px-1 text-base text-zinc-100 placeholder:text-zinc-400"
+                    className="min-h-9 coarse:min-h-11 min-w-0 flex-1 bg-transparent px-1 text-base text-zinc-100 placeholder:text-zinc-400"
                   />
                   <button
                     type="submit"
@@ -522,7 +522,7 @@ export function NoteAiAssistant() {
                   </span>
                   <Link
                     href="/note/analytics"
-                    className="inline-flex min-h-11 items-center text-xs font-medium text-zinc-400 hover:text-zinc-100"
+                    className="inline-flex min-h-9 coarse:min-h-11 items-center text-xs font-medium text-zinc-400 hover:text-zinc-100"
                     onClick={() => setOpen(false)}
                   >
                     {copy.aiShortcuts} →

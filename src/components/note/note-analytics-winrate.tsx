@@ -156,7 +156,7 @@ export function NoteAnalyticsWinrate({ entries, locale }: Props) {
           ) : null}
         </div>
         <div className="flex flex-wrap items-end gap-4">
-          <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-xs text-zinc-400">
+          <label className="inline-flex min-h-9 coarse:min-h-11 cursor-pointer items-center gap-2 text-xs text-zinc-400">
             <input
               type="checkbox"
               checked={includeBe}
@@ -183,7 +183,7 @@ export function NoteAnalyticsWinrate({ entries, locale }: Props) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3 text-xs text-zinc-500">
+      <div className="flex flex-wrap gap-3 text-xs text-zinc-400">
         <span className="inline-flex items-center gap-1.5">
           <span className="size-2 rounded-sm bg-[var(--chart-up-strong)]" aria-hidden />
           {labels.wins}

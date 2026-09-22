@@ -8,6 +8,8 @@ import { pnlOptsFromPrefs } from "@/lib/note/prefs";
 import { BrokerReconcile } from "@/components/note/broker-reconcile";
 import { MentorShareButton } from "@/components/note/mentor-share-button";
 import { NoteSessionRecap, NoteTradeCritiques } from "@/components/note/note-recaps";
+import { NoteReviewPdfButton } from "@/components/note/note-review-pdf-button";
+import { NoteRoutines } from "@/components/note/note-routines";
 import { NoteTaxExport } from "@/components/note/note-tax-export";
 import { dayKey, filterEntries, formatPnl, summarizeJournal } from "@/lib/note/stats";
 import { isPnlKind } from "@/lib/note/types";
@@ -87,9 +89,13 @@ export function NoteReviewView() {
         {mistake}
       </div>
 
+      <NoteReviewPdfButton />
+
       <NoteSessionRecap />
 
       <NoteTradeCritiques />
+
+      <NoteRoutines />
 
       <BrokerReconcile />
 

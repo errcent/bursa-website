@@ -6,7 +6,8 @@ export type NoteSectionId =
   | "journal"
   | "analytics"
   | "news"
-  | "notes";
+  | "notes"
+  | "prop";
 
 export type NoteSection = {
   id: NoteSectionId;
@@ -96,6 +97,21 @@ export const NOTE_SECTIONS: NoteSection[] = [
     boundary: {
       id: "Bukan diary wajib format - mirror & pola ada di Analytics.",
       en: "Not a formatted diary - mirrors and patterns live in Analytics.",
+    },
+  },
+  {
+    id: "prop",
+    href: "/note/prop",
+    label: { id: "Prop", en: "Prop" },
+    question: { id: "Berapa kas prop yang benar-benar masuk?", en: "What prop cash actually arrived?" },
+    role: { id: "Buku kas prop (terpisah dari P&L trade)", en: "Prop cash ledger (separate from trade P&L)" },
+    scope: {
+      id: "Biaya evaluasi, refund, request payout, penerimaan aktual, ROI kas.",
+      en: "Evaluation costs, refunds, payout requests, actual receipts, cash ROI.",
+    },
+    boundary: {
+      id: "Hanya kas nyata - bukan nominal akun funded, bukan P&L trading.",
+      en: "Real cash only - not funded nominal size, not trading P&L.",
     },
   },
 ];

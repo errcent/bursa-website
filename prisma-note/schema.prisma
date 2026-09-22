@@ -71,3 +71,29 @@ model NoteSsoCode {
   expiresAt  DateTime
   createdAt  DateTime @default(now())
 }
+
+/** Generic per-user JSON store: sync accounts (encrypted), prop ledger, routines, misses. */
+model NoteUserBlob {
+  id         String   @id @default(cuid())
+  apexUserId String
+  key        String
+  value      Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([apexUserId, key])
+  @@index([apexUserId])
+}
+
+/** Per-trade summary embeddings for Ask Your Journal (pgvector). */
+model NoteAskEmbedding {
+  id         String   @id @default(cuid())
+  apexUserId String
+  ref        String
+  summary    String
+  embedding  Unsupported("vector(1536)")
+  updatedAt  DateTime @updatedAt
+
+  @@unique([apexUserId, ref])
+  @@index([apexUserId])
+}

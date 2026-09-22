@@ -133,7 +133,7 @@ export function AddTransactionDialog({
             type="button"
             onClick={() => setType(k)}
             className={cn(
-              "flex-1 min-h-11 rounded-md text-xs font-medium capitalize",
+              "flex-1 min-h-9 coarse:min-h-11 rounded-md text-xs font-medium capitalize",
               type === k ? "bg-zinc-100 text-zinc-900" : "text-zinc-400 hover:text-zinc-200"
             )}
           >

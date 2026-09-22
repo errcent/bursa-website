@@ -67,7 +67,7 @@ export function NoteBeliefCapture() {
           type="button"
           disabled={!text.trim() || pending}
           onClick={() => void submit()}
-          className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3.5 text-sm font-semibold text-zinc-950 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-3.5 text-sm font-semibold text-zinc-950 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
         >
           {pending ? copy.menyimpan : copy.notesCaptureSave}
         </button>

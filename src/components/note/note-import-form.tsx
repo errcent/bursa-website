@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { NoteAccountsManager } from "@/components/note/note-accounts-manager";
+import { NoteBrokerSync } from "@/components/note/note-broker-sync";
 import { noteCopy } from "@/lib/note/copy";
 import { noteSsoStartHref } from "@/lib/note/sso-urls";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
@@ -16,12 +18,24 @@ export function NoteImportForm() {
   const [pending, setPending] = useState(false);
   const [pasteCsv, setPasteCsv] = useState("");
   const [pasteResult, setPasteResult] = useState<string | null>(null);
+  const [accounts, setAccounts] = useState<{ id: string; label: string }[]>([]);
+  const [accountLabel, setAccountLabel] = useState("");
+
+  useEffect(() => {
+    fetch("/api/note/accounts", { credentials: "include" })
+      .then((r) => r.json().catch(() => ({})))
+      .then((json: { accounts?: { id: string; label: string }[] }) => {
+        if (Array.isArray(json.accounts)) setAccounts(json.accounts);
+      })
+      .catch(() => {});
+  }, []);
 
   async function submitFile(file: File) {
     setPending(true);
     setError(null);
     const body = new FormData();
     body.set("file", file);
+    if (accountLabel.trim()) body.set("account", accountLabel.trim());
     const res = await fetch("/api/note/import", { method: "POST", body });
     const json = (await res.json().catch(() => ({}))) as { error?: string; imported?: number };
     setPending(false);
@@ -56,7 +70,7 @@ export function NoteImportForm() {
     const res = await fetch("/api/note/import", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ csv: pasteCsv }),
+      body: JSON.stringify({ csv: pasteCsv, accountLabel: accountLabel.trim() || undefined }),
     });
     const json = (await res.json().catch(() => ({}))) as { error?: string; imported?: number };
     setPending(false);
@@ -97,7 +111,7 @@ export function NoteImportForm() {
         {pasteCsv.trim() ? (
           <button
             type="button"
-            className="mt-2 inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
+            className="mt-2 inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
             onClick={submitPaste}
             disabled={pending}
           >
@@ -109,6 +123,31 @@ export function NoteImportForm() {
         {pasteResult ? <p className="mt-2 text-sm text-emerald-300">{pasteResult}</p> : null}
       </div>
 
+      <NoteBrokerSync />
+
+      <NoteAccountsManager />
+
+      <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-3">
+        <label className="block">
+          <span className="text-xs font-medium text-zinc-400">
+            {prefs.locale === "en" ? "Import into account (method + multipliers)" : "Impor ke akun (metode + multiplier)"}
+          </span>
+          <select
+            className="note-field mt-1 block min-h-9 coarse:min-h-11 text-sm"
+            value={accountLabel}
+            onChange={(e) => setAccountLabel(e.target.value)}
+            aria-label={prefs.locale === "en" ? "Target account" : "Akun tujuan"}
+          >
+            <option value="">{prefs.locale === "en" ? "Default (FIFO)" : "Default (FIFO)"}</option>
+            {accounts.map((a) => (
+              <option key={a.id} value={a.label}>
+                {a.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       <form onSubmit={onSubmit} className="space-y-4">
         <p className="text-sm text-zinc-400">{copy.importFileHint}</p>
         <label className="block space-y-1.5">
@@ -117,15 +156,15 @@ export function NoteImportForm() {
             name="file"
             type="file"
             accept=".csv,text/csv"
-            className="block min-h-11 w-full text-sm text-zinc-300 file:mr-3 file:min-h-11 file:rounded-md file:border-0 file:bg-zinc-800 file:px-3 file:text-zinc-100"
+            className="block min-h-9 coarse:min-h-11 w-full text-sm text-zinc-300 file:mr-3 file:min-h-9 file:coarse:min-h-11 file:rounded-md file:border-0 file:bg-zinc-800 file:px-3 file:text-zinc-100"
           />
         </label>
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
         <div className="flex gap-2">
-          <Button type="submit" disabled={pending} className="min-h-11">
+          <Button type="submit" disabled={pending} className="min-h-9 coarse:min-h-11">
             {pending ? (prefs.locale === "en" ? "Importing…" : "Mengimpor…") : copy.impor}
           </Button>
-          <Button type="button" variant="ghost" className="min-h-11" onClick={() => router.push("/note")}>
+          <Button type="button" variant="ghost" className="min-h-9 coarse:min-h-11" onClick={() => router.push("/note")}>
             {copy.batal}
           </Button>
         </div>

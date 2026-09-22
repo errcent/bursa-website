@@ -60,6 +60,6 @@ describe("Belief promotions", () => {
       belief({ id: "3", note: "Wait for breakout on XAU only", openedAt: "2026-03-03T10:00:00+07:00" }),
     ];
     const promos = buildBeliefPromotions(entries, "en");
-    assert.ok(promos.some((p) => p.kind === "playbook_candidate"));
+    assert.ok(promos.some((p) => p.kind === "analytics_pattern"));
   });
 });

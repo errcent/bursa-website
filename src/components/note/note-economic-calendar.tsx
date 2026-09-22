@@ -60,11 +60,11 @@ function FilterSection({
       <div className="flex items-center justify-between gap-2">
         <legend className="text-xs font-medium text-zinc-400">{title}</legend>
         <span className="text-xs text-zinc-300">
-          <button type="button" className="inline-flex min-h-9 items-center px-1 text-zinc-300 hover:text-zinc-100" onClick={onAll}>
+          <button type="button" className="inline-flex min-h-9 coarse:min-h-11 items-center px-1 text-zinc-300 hover:text-zinc-100" onClick={onAll}>
             {allLabel}
           </button>
           {" · "}
-          <button type="button" className="inline-flex min-h-9 items-center px-1 text-zinc-300 hover:text-zinc-100" onClick={onNone}>
+          <button type="button" className="inline-flex min-h-9 coarse:min-h-11 items-center px-1 text-zinc-300 hover:text-zinc-100" onClick={onNone}>
             {noneLabel}
           </button>
         </span>
@@ -212,7 +212,7 @@ export function NoteEconomicCalendar({
   const filterToggle = !compact ? (
     <button
       type="button"
-      className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-900 hover:text-zinc-100"
+      className="inline-flex min-h-9 coarse:min-h-11 items-center gap-1.5 rounded-md px-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-900 hover:text-zinc-100"
       aria-expanded={filterOpen}
       onClick={() => {
         setDraft(filter);
@@ -400,14 +400,14 @@ export function NoteEconomicCalendar({
           <div className="flex flex-wrap gap-2 pt-1">
             <button
               type="button"
-              className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-900 hover:bg-white"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-900 hover:bg-white"
               onClick={applyDraft}
             >
               {copy.econApplyFilter}
             </button>
             <button
               type="button"
-              className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
               onClick={() => {
                 setDraft(filter);
                 setFilterOpen(false);
@@ -415,7 +415,7 @@ export function NoteEconomicCalendar({
             >
               {copy.batal}
             </button>
-            <button type="button" className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200" onClick={resetFilter}>
+            <button type="button" className="inline-flex min-h-9 coarse:min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200" onClick={resetFilter}>
               {copy.econRemoveFilter}
             </button>
           </div>
@@ -463,7 +463,7 @@ export function NoteEconomicCalendar({
         href="https://www.forexfactory.com/calendar"
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200"
+        className="mt-2 inline-flex min-h-9 coarse:min-h-11 items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200"
       >
         Forex Factory <ExternalLink className="size-3.5" />
       </a>

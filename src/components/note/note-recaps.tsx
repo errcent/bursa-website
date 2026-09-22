@@ -13,6 +13,7 @@ import { pnlOptsFromPrefs } from "@/lib/note/prefs";
 import { filterEntries } from "@/lib/note/stats";
 import { isPnlKind } from "@/lib/note/types";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
+import { NoteTradeReplay } from "@/components/note/note-trade-replay";
 import { cn } from "@/lib/utils";
 
 /**
@@ -113,6 +114,7 @@ export function NoteTradeCritiques() {
               ))}
             </ul>
             <p className="mt-1 text-xs font-medium text-zinc-200">{c.fix}</p>
+            <NoteTradeReplay entryId={c.entryId} symbol={c.symbol} />
           </li>
         ))}
       </ul>

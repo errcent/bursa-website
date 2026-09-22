@@ -3,6 +3,7 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant coarse (@media (hover: none) and (pointer: coarse));
 
 /*
  * Bursa design system - slate-steel + neutral gray accent

@@ -140,7 +140,7 @@ export function NoteNewsCharts({ filterCurrencies }: Props) {
                     <select
                       value={pane.symbol}
                       onChange={(e) => updatePaneSymbol(index, e.target.value)}
-                      className="min-h-11 w-full min-w-0 cursor-pointer appearance-none border-0 bg-transparent text-sm font-medium text-zinc-100 [&>optgroup]:bg-zinc-900 [&>optgroup]:text-zinc-400 [&>option]:bg-zinc-900 [&>option]:text-zinc-100"
+                      className="min-h-9 coarse:min-h-11 w-full min-w-0 cursor-pointer appearance-none border-0 bg-transparent text-sm font-medium text-zinc-100 [&>optgroup]:bg-zinc-900 [&>optgroup]:text-zinc-400 [&>option]:bg-zinc-900 [&>option]:text-zinc-100"
                       aria-label={`${copy.newsChartsPair} ${index + 1}`}
                     >
                       {singlePaneMultiCurrency

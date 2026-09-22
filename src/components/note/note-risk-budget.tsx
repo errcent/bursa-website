@@ -84,7 +84,7 @@ export function NoteRiskBudget() {
         </p>
         <button
           type="button"
-          className="mt-2 inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
+          className="mt-2 inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
           onClick={() => setEditing(true)}
         >
           {t("Set anggaran", "Set budget")}
@@ -119,14 +119,14 @@ export function NoteRiskBudget() {
         <div className="mt-2 flex gap-2">
           <input
             type="number"
-            className="note-field min-h-11 w-32 text-zinc-100"
+            className="note-field min-h-9 coarse:min-h-11 w-32 text-zinc-100"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             aria-label={t("Anggaran", "Budget")}
           />
           <button
             type="button"
-            className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
+            className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
             onClick={saveBudget}
           >
             {t("Simpan", "Save")}

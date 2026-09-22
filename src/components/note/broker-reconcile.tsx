@@ -76,7 +76,7 @@ export function BrokerReconcile() {
       <div className="flex gap-2">
         <input
           type="text"
-          className="note-field min-h-11 flex-1 text-zinc-100"
+          className="note-field min-h-9 coarse:min-h-11 flex-1 text-zinc-100"
           value={brokerPnl}
           onChange={(e) => setBrokerPnl(e.target.value)}
           placeholder={t("Contoh: 220000 atau -50000", "Example: 220000 or -50000")}
@@ -84,7 +84,7 @@ export function BrokerReconcile() {
         />
         <button
           type="button"
-          className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-4 text-sm font-medium text-zinc-950 hover:bg-white"
+          className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-4 text-sm font-medium text-zinc-950 hover:bg-white"
           onClick={reconcile}
         >
           {t("Cek", "Check")}

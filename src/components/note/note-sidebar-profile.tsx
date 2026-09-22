@@ -29,7 +29,7 @@ export function NoteSidebarProfile() {
   const initial = mounted && session ? initialFrom(session) : "?";
 
   const trigger = (
-    <div className="flex min-h-11 w-full items-center gap-2.5 rounded-md px-1 py-1 hover:bg-zinc-900/80">
+    <div className="flex min-h-9 coarse:min-h-11 w-full items-center gap-2.5 rounded-md px-1 py-1 hover:bg-zinc-900/80">
       <div
         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-medium text-zinc-100"
         aria-hidden

@@ -10,6 +10,7 @@ import {
   type NoteTheme,
 } from "@/lib/note/prefs";
 import { noteCopy } from "@/lib/note/copy";
+import { NoteJournalDefaults } from "@/components/note/note-journal-defaults";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 
 function Row({
@@ -50,8 +51,8 @@ function Choice<T extends string | boolean | number>({
       onClick={() => onChange(value)}
       className={
         selected
-          ? "inline-flex min-h-11 min-w-11 items-center justify-center rounded-md bg-zinc-100 px-3 text-sm text-zinc-950"
-          : "inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-3 text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+          ? "inline-flex min-h-9 coarse:min-h-11 min-w-9 coarse:min-w-11 items-center justify-center rounded-md bg-zinc-100 px-3 text-sm text-zinc-950"
+          : "inline-flex min-h-9 coarse:min-h-11 min-w-9 coarse:min-w-11 items-center justify-center rounded-md px-3 text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
       }
     >
       {children}
@@ -102,6 +103,14 @@ export function NoteSettingsForm() {
             {currency}
           </Choice>
         ))}
+      </Row>
+      <Row label={copy.privacyMode} hint={copy.privacyModeHint}>
+        <Choice value={false} current={prefs.privacyMode} onChange={(privacyMode) => update({ privacyMode })}>
+          {prefs.locale === "en" ? "Off" : "Mati"}
+        </Choice>
+        <Choice value={true} current={prefs.privacyMode} onChange={(privacyMode) => update({ privacyMode })}>
+          {prefs.locale === "en" ? "On" : "Nyala"}
+        </Choice>
       </Row>
       <Heading>{copy.angka}</Heading>
       <Row label={copy.numberFormat} hint={copy.numberFormatCompactHint}>
@@ -169,10 +178,13 @@ export function NoteSettingsForm() {
           {copy.dense}
         </Choice>
       </Row>
+      <div className="pt-6">
+        <NoteJournalDefaults />
+      </div>
       <p className="pt-6 text-xs text-zinc-400">{copy.locked}</p>
       <button
         type="button"
-        className="mt-4 inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
+        className="mt-4 inline-flex min-h-9 coarse:min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
         onClick={() => {
           const reset: NotePrefs = { ...DEFAULT_NOTE_PREFS };
           update(reset);

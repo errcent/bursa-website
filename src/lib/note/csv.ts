@@ -1,8 +1,12 @@
 import type { CreateEntryInput, JournalKind, JournalResult } from "@/lib/note/types";
 import type { Fill, FillSide } from "@/lib/note/position/types";
+import { extractTables, looksLikeMtStatement, pickDealTable, tableRecords } from "@/lib/note/statements/html";
+import { sectionRecords, sliceHeadedBlock, sliceSections } from "@/lib/note/statements/sections";
+import { interpretInTz } from "@/lib/note/statements/timezone";
 
-const MAX_ROWS = 200;
-const MAX_BYTES = 200_000;
+const MAX_ROWS = 5000;
+const MAX_BYTES = 2_000_000;
+const ROW_WINDOW = 1000;
 
 const HEADER_ALIASES: Record<string, string> = {
   symbol: "symbol",
@@ -62,6 +66,7 @@ const HEADER_ALIASES: Record<string, string> = {
   contracts: "qty",
   open: "entryPrice",
   close: "exitPrice",
+  price: "entryPrice",
   realizedpnl: "pnl",
   unrealizedpnl: "pnl",
   totalpnl: "pnl",
@@ -180,9 +185,23 @@ function toResult(value: string | undefined, pnl: number | null): JournalResult 
   return "be";
 }
 
-export function parseJournalCsv(raw: string): { entries: CreateEntryInput[]; errors: string[] } {
+export interface CsvParseOpts {
+  accountRef?: string;
+  /** IANA zone for naive statement timestamps. */
+  statementTz?: string;
+  /** Fee applied when a row carries none. */
+  defaultFee?: number;
+}
+
+function resolveStampedAt(raw: string | undefined, statementTz: string | undefined, fallback: string | null): string | null {
+  if (!raw) return fallback;
+  if (!statementTz) return raw;
+  return interpretInTz(raw, statementTz) ?? raw;
+}
+
+export function parseJournalCsv(raw: string, opts: CsvParseOpts = {}): { entries: CreateEntryInput[]; errors: string[] } {
   if (raw.length > MAX_BYTES) {
-    return { entries: [], errors: ["File CSV terlalu besar (maks 200 KB)."] };
+    return { entries: [], errors: ["File CSV terlalu besar (maks 2 MB)."] };
   }
 
   const lines = raw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
@@ -227,11 +246,11 @@ export function parseJournalCsv(raw: string): { entries: CreateEntryInput[]; err
       qty: toNumber(row.qty),
       entryPrice: toNumber(row.entryPrice),
       exitPrice: toNumber(row.exitPrice),
-      fees: toNumber(row.fees),
+      fees: toNumber(row.fees) ?? (opts.defaultFee || null),
       pnl,
       result: toResult(row.result, pnl),
       note: row.note || null,
-      openedAt: row.openedAt || null,
+      openedAt: resolveStampedAt(row.openedAt, opts.statementTz, null),
     });
   });
 
@@ -261,10 +280,10 @@ function toFillSide(value: string | undefined): FillSide {
  */
 export function parseJournalFills(
   raw: string,
-  opts: { accountRef?: string } = {},
+  opts: CsvParseOpts = {},
 ): { fills: Fill[]; errors: string[] } {
   if (raw.length > MAX_BYTES) {
-    return { fills: [], errors: ["File CSV terlalu besar (maks 200 KB)."] };
+    return { fills: [], errors: ["File CSV terlalu besar (maks 2 MB)."] };
   }
   const lines = raw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   if (lines.length < 2) {
@@ -303,12 +322,125 @@ export function parseJournalFills(
       side: toFillSide(row.side),
       size: qty,
       price,
-      fee: toNumber(row.fees) ?? 0,
-      filledAt: row.openedAt || new Date().toISOString(),
+      fee: toNumber(row.fees) ?? opts.defaultFee ?? 0,
+      filledAt: resolveStampedAt(row.openedAt, opts.statementTz, new Date().toISOString()) ?? new Date().toISOString(),
       origin: "import",
       sequence: index,
     });
   });
 
   return { fills, errors };
+}
+
+/**
+ * Statement format detection. Order is deliberate and ID-first:
+ * Stockbit → Ajaib → MT-HTML → IBKR-section → ThinkorSwim-section → generic.
+ * Content signatures (HTML, section tags) beat plain header sniffing.
+ */
+export type StatementFormat =
+  | "stockbit"
+  | "ajaib"
+  | "html-mt"
+  | "ibkr-section"
+  | "tos-section"
+  | "generic";
+
+export function detectStatementFormat(text: string): StatementFormat {
+  const firstLines = text.split(/\r?\n/).slice(0, 12).join("\n");
+  const firstLine = (text.split(/\r?\n/).find((l) => l.trim()) ?? "").trim();
+  if (isStockbitFormat(parseCsvLine(firstLine))) return "stockbit";
+  if (isAjaibFormat(parseCsvLine(firstLine))) return "ajaib";
+  if (looksLikeMtStatement(text)) return "html-mt";
+  if (/^Trades,Header,/im.test(firstLines)) return "ibkr-section";
+  if (/Account Trade History/i.test(firstLines)) return "tos-section";
+  return "generic";
+}
+
+function recordToFill(
+  row: Record<string, string>,
+  index: number,
+  accountRef: string,
+  opts: CsvParseOpts = {},
+): Fill | null {
+  const symbol = normalizeIdxSymbol((row.symbol ?? "").trim());
+  const sideRaw = (row.side ?? "").trim().toUpperCase();
+  const side: FillSide = sideRaw.startsWith("SELL") || sideRaw.startsWith("SHORT") || sideRaw === "S" ? "sell" : "buy";
+  const size = toNumber(row.qty) ?? 0;
+  const price = toNumber(row.entryPrice) ?? toNumber(row.exitPrice) ?? NaN;
+  if (!symbol || size <= 0 || !Number.isFinite(price)) return null;
+  return {
+    id: `stmt-${Date.now().toString(36)}-${index.toString(36)}`,
+    accountRef,
+    ticker: symbol,
+    side,
+    size,
+    price,
+    fee: toNumber(row.fees) ?? opts.defaultFee ?? 0,
+    filledAt: resolveStampedAt(row.openedAt, opts.statementTz, new Date().toISOString()) ?? new Date().toISOString(),
+    origin: "import",
+    sequence: index,
+  };
+}
+
+/** Parse IBKR activity (`Trades` section) or ThinkorSwim block into fills. */
+export function parseSectionFills(
+  text: string,
+  format: "ibkr-section" | "tos-section",
+  opts: CsvParseOpts = {},
+): { fills: Fill[]; errors: string[] } {
+  const accountRef = opts.accountRef ?? "import";
+  const errors: string[] = [];
+  const fills: Fill[] = [];
+  try {
+    const records =
+      format === "ibkr-section"
+        ? (() => {
+            const section = sliceSections(text).find((s) => s.tag.toLowerCase() === "trades");
+            return section ? sectionRecords(section, normalizeHeader) : [];
+          })()
+        : (() => {
+            const section = sliceHeadedBlock(text, "Account Trade History");
+            return section ? sectionRecords(section, normalizeHeader) : [];
+          })();
+    if (records.length === 0) {
+      return { fills, errors: ["Blok section tidak memuat baris data."] };
+    }
+    records.slice(0, MAX_ROWS).forEach((row, index) => {
+      const fill = recordToFill(row, index, accountRef, opts);
+      if (fill) fills.push(fill);
+    });
+    if (fills.length === 0) errors.push("Tidak ada fill valid pada section ini.");
+  } catch {
+    errors.push("Gagal membaca section statement.");
+  }
+  return { fills, errors };
+}
+
+/** Parse an MT HTML deal report into fills via table extraction. */
+export function parseHtmlFills(
+  html: string,
+  opts: CsvParseOpts = {},
+): { fills: Fill[]; errors: string[] } {
+  const accountRef = opts.accountRef ?? "import";
+  const tables = extractTables(html);
+  const dealTable = pickDealTable(tables, normalizeHeader, ["symbol", "side", "qty"]);
+  if (!dealTable) {
+    return { fills: [], errors: ["Tidak ada tabel deal yang dikenali pada HTML ini."] };
+  }
+  const fills: Fill[] = [];
+  for (const [index, row] of tableRecords(dealTable, normalizeHeader).slice(0, MAX_ROWS).entries()) {
+    const fill = recordToFill(row, index, accountRef, opts);
+    if (fill) fills.push(fill);
+  }
+  if (fills.length === 0) {
+    return { fills, errors: ["Tabel deal tidak memuat fill valid."] };
+  }
+  return { fills, errors: [] };
+}
+
+/** Process row windows (bounds peak memory on large statements). */
+export function windows<T>(rows: T[], size: number = ROW_WINDOW): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < rows.length; i += size) out.push(rows.slice(i, i + size));
+  return out;
 }

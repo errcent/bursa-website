@@ -118,7 +118,7 @@ export default function DailyReturnsCalendar({
           <button
             type="button"
             className={cn(
-              "inline-flex size-11 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100",
+              "inline-flex size-11 shrink-0 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100",
               hero ? "text-xl" : "text-sm"
             )}
             aria-label={locale === "en" ? "Previous month" : "Bulan sebelumnya"}
@@ -137,7 +137,7 @@ export default function DailyReturnsCalendar({
           <button
             type="button"
             className={cn(
-              "inline-flex size-11 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100",
+              "inline-flex size-11 shrink-0 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100",
               hero ? "text-xl" : "text-sm"
             )}
             aria-label={locale === "en" ? "Next month" : "Bulan berikutnya"}

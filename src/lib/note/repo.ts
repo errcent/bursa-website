@@ -25,6 +25,7 @@ interface NoteStoreFile {
   entries: JournalEntry[];
   ssoCodes: SsoRecord[];
   schemas?: Record<string, JournalDbSchema>;
+  blobs?: Record<string, unknown>;
 }
 
 export type JournalListPage = {
@@ -40,13 +41,15 @@ export interface NoteRepository {
     apexUserId: string,
     opts: { limit: number; cursor?: string | null }
   ): Promise<JournalListPage>;
-  createEntry(apexUserId: string, input: CreateEntryInput): Promise<JournalEntry>;
+  createEntry(apexUserId: string, input: CreateEntryInput, opts?: { breakevenBand?: number }): Promise<JournalEntry>;
   updateEntry(apexUserId: string, id: string, input: UpdateEntryInput): Promise<JournalEntry | null>;
   deleteEntry(apexUserId: string, id: string): Promise<boolean>;
   getJournalSchema(apexUserId: string): Promise<JournalDbSchema | null>;
   upsertJournalSchema(apexUserId: string, schema: JournalDbSchema): Promise<JournalDbSchema>;
   saveSsoCode(record: SsoRecord): Promise<void>;
   consumeSsoCode(code: string): Promise<SsoRecord | null>;
+  getUserBlob(apexUserId: string, key: string): Promise<unknown | null>;
+  setUserBlob(apexUserId: string, key: string, value: unknown): Promise<void>;
 }
 
 const EMPTY: NoteStoreFile = { entitlements: [], entries: [], ssoCodes: [], schemas: {} };
@@ -122,13 +125,13 @@ const fileRepo: NoteRepository = {
       nextCursor: hasMore && tail ? encodeJournalPageCursor(tail) : null,
     };
   },
-  async createEntry(apexUserId, input) {
+  async createEntry(apexUserId, input, opts) {
     const store = await readStore();
     const count = store.entries.filter((e) => e.apexUserId === apexUserId).length;
     if (count >= NOTE_JOURNAL_ACCOUNT_MAX) {
       throw new Error("NOTE_JOURNAL_CAP");
     }
-    const entry = buildJournalEntry(apexUserId, input);
+    const entry = buildJournalEntry(apexUserId, input, opts);
     if (input.properties) entry.properties = input.properties;
     store.entries.push(entry);
     await writeStore(store);
@@ -209,6 +212,16 @@ const fileRepo: NoteRepository = {
     if (!found || found.expiresAt <= now) return null;
     return found;
   },
+  async getUserBlob(apexUserId, key) {
+    const store = await readStore();
+    return store.blobs?.[`${apexUserId}:${key}`] ?? null;
+  },
+  async setUserBlob(apexUserId, key, value) {
+    const store = await readStore();
+    store.blobs = store.blobs ?? {};
+    store.blobs[`${apexUserId}:${key}`] = value;
+    await writeStore(store);
+  },
 };
 
 let memory: NoteStoreFile | null = null;
@@ -249,13 +262,13 @@ const memoryRepo: NoteRepository = {
       nextCursor: hasMore && tail ? encodeJournalPageCursor(tail) : null,
     };
   },
-  async createEntry(apexUserId, input) {
+  async createEntry(apexUserId, input, opts) {
     memory ??= { entitlements: [], entries: [], ssoCodes: [], schemas: {} };
     const count = memory.entries.filter((e) => e.apexUserId === apexUserId).length;
     if (count >= NOTE_JOURNAL_ACCOUNT_MAX) {
       throw new Error("NOTE_JOURNAL_CAP");
     }
-    const entry = buildJournalEntry(apexUserId, input);
+    const entry = buildJournalEntry(apexUserId, input, opts);
     if (input.properties) entry.properties = input.properties;
     memory.entries.push(entry);
     return entry;
@@ -328,6 +341,15 @@ const memoryRepo: NoteRepository = {
     memory.ssoCodes = memory.ssoCodes.filter((c) => c.code !== code && c.expiresAt > Date.now());
     if (!found || found.expiresAt <= Date.now()) return null;
     return found;
+  },
+  async getUserBlob(apexUserId, key) {
+    memory ??= { entitlements: [], entries: [], ssoCodes: [] };
+    return memory.blobs?.[`${apexUserId}:${key}`] ?? null;
+  },
+  async setUserBlob(apexUserId, key, value) {
+    memory ??= { entitlements: [], entries: [], ssoCodes: [] };
+    memory.blobs = memory.blobs ?? {};
+    memory.blobs[`${apexUserId}:${key}`] = value;
   },
 };
 

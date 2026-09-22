@@ -97,7 +97,7 @@
 }
 
 .note-field {
-  min-height: 44px;
+  min-height: 40px;
   width: 100%;
   border-radius: 6px;
   border: 1px solid var(--note-border);
@@ -107,13 +107,52 @@
   color: var(--note-text);
 }
 
+@media (hover: none) and (pointer: coarse) {
+  .note-field {
+    min-height: 44px;
+  }
+}
+
 .note-field::placeholder {
   color: var(--note-text-muted);
 }
 
 .note-hit {
-  min-height: 44px;
-  min-width: 44px;
+  min-height: 36px;
+  min-width: 36px;
+}
+
+/* Tiered density: compact on fine pointers, 44px touch targets on coarse. */
+.note-btn {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.note-icon-btn {
+  min-height: 36px;
+  min-width: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .note-hit,
+  .note-btn {
+    min-height: 44px;
+  }
+  .note-hit,
+  .note-icon-btn {
+    min-width: 44px;
+  }
+  .note-icon-btn {
+    min-height: 44px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

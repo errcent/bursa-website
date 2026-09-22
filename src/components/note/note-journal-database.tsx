@@ -92,7 +92,7 @@ function CellEditor({
   if (prop.type === "select") {
     return (
       <select
-        className="note-field min-h-9 w-full min-w-[7rem] text-sm"
+        className="note-field min-h-9 coarse:min-h-11 w-full min-w-[7rem] text-sm"
         value={typeof raw === "string" ? raw : ""}
         onChange={(e) => onChange(e.target.value || null)}
         autoFocus={autoFocus}
@@ -112,7 +112,7 @@ function CellEditor({
       <input
         type="number"
         step="any"
-        className="note-field min-h-9 w-full min-w-[5rem] text-sm tabular-nums"
+        className="note-field min-h-9 coarse:min-h-11 w-full min-w-[5rem] text-sm tabular-nums"
         value={raw == null || raw === "" ? "" : String(raw)}
         onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
         autoFocus={autoFocus}
@@ -124,7 +124,7 @@ function CellEditor({
     return (
       <input
         type="date"
-        className="note-field min-h-9 w-full min-w-[8rem] text-sm"
+        className="note-field min-h-9 coarse:min-h-11 w-full min-w-[8rem] text-sm"
         value={typeof raw === "string" ? raw.slice(0, 10) : ""}
         onChange={(e) => onChange(e.target.value || null)}
         autoFocus={autoFocus}
@@ -146,7 +146,7 @@ function CellEditor({
     const ids = Array.isArray(raw) ? raw.map(String) : [];
     return (
       <input
-        className="note-field min-h-9 w-full text-sm"
+        className="note-field min-h-9 coarse:min-h-11 w-full text-sm"
         placeholder="row ids, comma-separated"
         value={ids.join(", ")}
         onChange={(e) =>
@@ -164,7 +164,7 @@ function CellEditor({
 
   return (
     <input
-      className="note-field min-h-9 w-full min-w-[8rem] text-sm"
+      className="note-field min-h-9 coarse:min-h-11 w-full min-w-[8rem] text-sm"
       value={typeof raw === "string" || typeof raw === "number" ? String(raw) : ""}
       onChange={(e) => onChange(e.target.value)}
       autoFocus={autoFocus}
@@ -205,7 +205,7 @@ function FilesCell({
   return (
     <div className={cn("flex", dense ? "items-center gap-1.5" : "min-w-[9rem] flex-col gap-1.5")}>
       <div className="flex flex-wrap gap-1">
-        {files.length === 0 && dense ? <span className="text-sm text-zinc-600">-</span> : null}
+        {files.length === 0 && dense ? <span className="text-sm text-zinc-400">-</span> : null}
         {files.map((f) =>
           urls[f.id] ? (
             <a
@@ -213,7 +213,7 @@ function FilesCell({
               href={urls[f.id]}
               target="_blank"
               rel="noreferrer"
-              className="block size-9 overflow-hidden rounded border border-zinc-700"
+              className="block size-9 coarse:size-11 overflow-hidden rounded border border-zinc-700"
               title={f.name}
               onClick={(e) => e.stopPropagation()}
             >
@@ -221,7 +221,7 @@ function FilesCell({
               <img src={urls[f.id]} alt={f.name} className="size-full object-cover" />
             </a>
           ) : (
-            <span key={f.id} className="truncate text-xs text-zinc-500">
+            <span key={f.id} className="truncate text-xs text-zinc-400">
               {f.name}
             </span>
           )
@@ -230,7 +230,7 @@ function FilesCell({
       {!dense ? (
         <>
           <div className="flex flex-wrap gap-1">
-            <label className="inline-flex min-h-9 cursor-pointer items-center rounded-md border border-zinc-700 px-2.5 text-xs text-zinc-300 hover:bg-zinc-800">
+            <label className="inline-flex min-h-9 coarse:min-h-11 cursor-pointer items-center rounded-md border border-zinc-700 px-2.5 text-xs text-zinc-300 hover:bg-zinc-800">
               Upload
               <input
                 type="file"
@@ -245,14 +245,14 @@ function FilesCell({
             </label>
             <button
               type="button"
-              className="inline-flex min-h-9 items-center rounded-md border border-zinc-700 px-2.5 text-xs text-zinc-400 hover:bg-zinc-800"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-2.5 text-xs text-zinc-400 hover:bg-zinc-800"
               onClick={() => setDriveHint((v) => !v)}
             >
               Drive
             </button>
           </div>
           {driveHint ? (
-            <p className="text-xs leading-snug text-zinc-500">
+            <p className="text-xs leading-snug text-zinc-400">
               Connect Google Drive soon: images stay in your Drive folder. Bursa only stores file IDs (no hosting cost).
             </p>
           ) : null}
@@ -278,7 +278,7 @@ function ToolbarToggle({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex min-h-9 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium",
+        "inline-flex min-h-9 coarse:min-h-11 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium",
         active
           ? "border-zinc-500 bg-zinc-800 text-zinc-100"
           : "border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
@@ -376,7 +376,7 @@ export function NoteJournalDatabase() {
             type="button"
             onClick={() => db.setActiveViewId(v.id)}
             className={cn(
-              "inline-flex min-h-9 items-center rounded-md border px-2.5 text-xs font-medium",
+              "inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border px-2.5 text-xs font-medium",
               v.id === activeView.id
                 ? "border-zinc-500 bg-zinc-800 text-zinc-100"
                 : "border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
@@ -387,7 +387,7 @@ export function NoteJournalDatabase() {
         ))}
         <button
           type="button"
-          className="inline-flex min-h-9 items-center rounded-md border border-dashed border-zinc-700 px-2.5 text-xs text-zinc-400 hover:text-zinc-200"
+          className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-dashed border-zinc-700 px-2.5 text-xs text-zinc-400 hover:text-zinc-200"
           onClick={() => void db.addView()}
         >
           + View
@@ -412,14 +412,14 @@ export function NoteJournalDatabase() {
 
         <button
           type="button"
-          className="inline-flex min-h-9 items-center rounded-md bg-zinc-100 px-3 text-xs font-semibold text-zinc-950 hover:bg-white"
+          className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-semibold text-zinc-950 hover:bg-white"
           onClick={() => void db.createEmptyRow().then((row) => setDrawerId(row.id))}
         >
           + New
         </button>
         <button
           type="button"
-          className="inline-flex min-h-9 items-center rounded-md border border-zinc-700 px-2.5 text-xs text-zinc-300 hover:bg-zinc-800"
+          className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-2.5 text-xs text-zinc-300 hover:bg-zinc-800"
           onClick={() => {
             setAddPropOpen((o) => !o);
             setPanel(null);
@@ -429,14 +429,14 @@ export function NoteJournalDatabase() {
         </button>
         <button
           type="button"
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-zinc-800 text-xs text-zinc-400 hover:text-zinc-200"
+          className="inline-flex min-h-9 coarse:min-h-11 min-w-9 coarse:min-w-11 items-center justify-center rounded-md border border-zinc-800 text-xs text-zinc-400 hover:text-zinc-200"
           onClick={() => togglePanel("more")}
           aria-label="More actions"
         >
           ···
         </button>
 
-        <p className="ml-auto text-xs tabular-nums text-zinc-500">
+        <p className="ml-auto text-xs tabular-nums text-zinc-400">
           {viewedRows.length} rows
           {db.projectedEntries.length ? ` · ${rSum.toFixed(2)}R` : null}
         </p>
@@ -448,7 +448,7 @@ export function NoteJournalDatabase() {
             <button
               key={t}
               type="button"
-              className="inline-flex min-h-9 items-center rounded-md border border-zinc-700 px-2 text-xs text-zinc-300 hover:bg-zinc-800"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-2 text-xs text-zinc-300 hover:bg-zinc-800"
               onClick={() => {
                 void db.addProperty(t, PROPERTY_TYPE_LABELS[t].en);
                 setAddPropOpen(false);
@@ -469,14 +469,14 @@ export function NoteJournalDatabase() {
                 return (
                   <li
                     key={f.id}
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-zinc-700 bg-zinc-950 px-2 text-xs text-zinc-300"
+                    className="inline-flex min-h-9 coarse:min-h-11 items-center gap-1.5 rounded-md border border-zinc-700 bg-zinc-950 px-2 text-xs text-zinc-300"
                   >
                     <span>
                       {prop?.name ?? f.propertyId} {f.op} {String(f.value ?? "")}
                     </span>
                     <button
                       type="button"
-                      className="inline-flex min-h-11 min-w-11 items-center justify-center text-zinc-500 hover:text-zinc-200"
+                      className="inline-flex min-h-9 coarse:min-h-11 min-w-9 coarse:min-w-11 items-center justify-center text-zinc-400 hover:text-zinc-200"
                       aria-label="Remove filter"
                       onClick={() =>
                         void db.updateView({
@@ -493,7 +493,7 @@ export function NoteJournalDatabase() {
               <li>
                 <button
                   type="button"
-                  className="text-xs text-zinc-500 underline decoration-dotted underline-offset-2"
+                  className="text-xs text-zinc-400 underline decoration-dotted underline-offset-2"
                   onClick={() => void db.updateView({ ...activeView, filters: [] })}
                 >
                   Clear all
@@ -502,10 +502,10 @@ export function NoteJournalDatabase() {
             </ul>
           ) : null}
           <div className="flex flex-wrap items-end gap-2">
-            <label className="text-[10px] uppercase tracking-wide text-zinc-500">
+            <label className="text-[10px] uppercase tracking-wide text-zinc-400">
               Property
               <select
-                className="note-field mt-0.5 block min-h-9 min-w-[8rem] text-sm"
+                className="note-field mt-0.5 block min-h-9 coarse:min-h-11 min-w-[8rem] text-sm"
                 value={filterDraft.propertyId}
                 onChange={(e) => setFilterDraft((d) => ({ ...d, propertyId: e.target.value }))}
               >
@@ -517,10 +517,10 @@ export function NoteJournalDatabase() {
                 ))}
               </select>
             </label>
-            <label className="text-[10px] uppercase tracking-wide text-zinc-500">
+            <label className="text-[10px] uppercase tracking-wide text-zinc-400">
               Op
               <select
-                className="note-field mt-0.5 block min-h-9 text-sm"
+                className="note-field mt-0.5 block min-h-9 coarse:min-h-11 text-sm"
                 value={filterDraft.op}
                 onChange={(e) => setFilterDraft((d) => ({ ...d, op: e.target.value as JournalFilterOp }))}
               >
@@ -531,17 +531,17 @@ export function NoteJournalDatabase() {
                 ))}
               </select>
             </label>
-            <label className="text-[10px] uppercase tracking-wide text-zinc-500">
+            <label className="text-[10px] uppercase tracking-wide text-zinc-400">
               Value
               <input
-                className="note-field mt-0.5 block min-h-9 min-w-[8rem] text-sm"
+                className="note-field mt-0.5 block min-h-9 coarse:min-h-11 min-w-[8rem] text-sm"
                 value={filterDraft.value}
                 onChange={(e) => setFilterDraft((d) => ({ ...d, value: e.target.value }))}
               />
             </label>
             <button
               type="button"
-              className="inline-flex min-h-9 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-200 hover:bg-zinc-800"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-200 hover:bg-zinc-800"
               onClick={() => {
                 if (!filterDraft.propertyId) return;
                 void db.updateView({
@@ -567,10 +567,10 @@ export function NoteJournalDatabase() {
 
       {panel === "sort" ? (
         <div className="flex flex-wrap items-end gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-3">
-          <label className="text-[10px] uppercase tracking-wide text-zinc-500">
+          <label className="text-[10px] uppercase tracking-wide text-zinc-400">
             Sort by
             <select
-              className="note-field mt-0.5 block min-h-9 min-w-[10rem] text-sm"
+              className="note-field mt-0.5 block min-h-9 coarse:min-h-11 min-w-[10rem] text-sm"
               value={activeView.sorts[0]?.propertyId ?? ""}
               onChange={(e) => {
                 const propertyId = e.target.value;
@@ -590,10 +590,10 @@ export function NoteJournalDatabase() {
               ))}
             </select>
           </label>
-          <label className="text-[10px] uppercase tracking-wide text-zinc-500">
+          <label className="text-[10px] uppercase tracking-wide text-zinc-400">
             Direction
             <select
-              className="note-field mt-0.5 block min-h-9 text-sm"
+              className="note-field mt-0.5 block min-h-9 coarse:min-h-11 text-sm"
               value={activeView.sorts[0]?.direction ?? "desc"}
               disabled={!activeView.sorts[0]}
               onChange={(e) => {
@@ -614,10 +614,10 @@ export function NoteJournalDatabase() {
 
       {panel === "group" ? (
         <div className="flex flex-wrap items-end gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-3">
-          <label className="text-[10px] uppercase tracking-wide text-zinc-500">
+          <label className="text-[10px] uppercase tracking-wide text-zinc-400">
             Group by
             <select
-              className="note-field mt-0.5 block min-h-9 min-w-[10rem] text-sm"
+              className="note-field mt-0.5 block min-h-9 coarse:min-h-11 min-w-[10rem] text-sm"
               value={activeView.groupBy ?? ""}
               onChange={(e) => void db.updateView({ ...activeView, groupBy: e.target.value || null })}
             >
@@ -642,7 +642,7 @@ export function NoteJournalDatabase() {
                 const on = activeView.visiblePropertyIds.includes(p.id);
                 return (
                   <li key={p.id}>
-                    <label className="flex min-h-9 cursor-pointer items-center gap-2 rounded-md px-2 text-sm text-zinc-300 hover:bg-zinc-800/60">
+                    <label className="flex min-h-9 coarse:min-h-11 cursor-pointer items-center gap-2 rounded-md px-2 text-sm text-zinc-300 hover:bg-zinc-800/60">
                       <input
                         type="checkbox"
                         checked={on}
@@ -657,7 +657,7 @@ export function NoteJournalDatabase() {
                         className="size-4 accent-[var(--note-accent)]"
                       />
                       <span className="truncate">{p.name}</span>
-                      <span className="ml-auto text-[10px] text-zinc-600">{PROPERTY_TYPE_LABELS[p.type].en}</span>
+                      <span className="ml-auto text-[10px] text-zinc-400">{PROPERTY_TYPE_LABELS[p.type].en}</span>
                     </label>
                   </li>
                 );
@@ -670,7 +670,7 @@ export function NoteJournalDatabase() {
         <div className="flex flex-wrap gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-3">
           <button
             type="button"
-            className="inline-flex min-h-9 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
+            className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
             onClick={() => {
               void db.reseedBagas();
               setPanel(null);
@@ -720,7 +720,7 @@ export function NoteJournalDatabase() {
                       <td className="sticky left-0 z-[1] bg-zinc-950 px-3 py-2 align-middle group-hover:bg-zinc-900">
                         <button
                           type="button"
-                          className="flex min-h-10 w-full items-center truncate text-left text-sm font-medium text-zinc-100 hover:underline"
+                          className="flex min-h-10 coarse:min-h-11 w-full items-center truncate text-left text-sm font-medium text-zinc-100 hover:underline"
                           onClick={() => setDrawerId(row.id)}
                         >
                           {displayText(titleProp, row, localeProps, db.rows)}
@@ -801,7 +801,7 @@ export function NoteJournalDatabase() {
             ))}
             {!viewedRows.length ? (
               <tr>
-                <td colSpan={Math.max(visibleProps.length, 1)} className="px-3 py-10 text-center text-sm text-zinc-500">
+                <td colSpan={Math.max(visibleProps.length, 1)} className="px-3 py-10 text-center text-sm text-zinc-400">
                   No rows. Tap + New or clear filters.
                 </td>
               </tr>
@@ -810,7 +810,7 @@ export function NoteJournalDatabase() {
         </table>
       </div>
 
-      <p className="text-xs text-zinc-600">Click cell to edit · Pair opens detail · Esc closes</p>
+      <p className="text-xs text-zinc-400">Click cell to edit · Pair opens detail · Esc closes</p>
 
       {drawerId ? (
         <RowDrawer
@@ -863,14 +863,14 @@ function RowDrawer({
           <div className="flex shrink-0 gap-1">
             <button
               type="button"
-              className="inline-flex min-h-9 items-center rounded-md px-2.5 text-xs text-rose-300 hover:bg-zinc-900"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md px-2.5 text-xs text-rose-300 hover:bg-zinc-900"
               onClick={onDelete}
             >
               Delete
             </button>
             <button
               type="button"
-              className="inline-flex min-h-9 items-center rounded-md px-2.5 text-xs text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md px-2.5 text-xs text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
               onClick={onClose}
             >
               Close
@@ -892,7 +892,7 @@ function RowDrawer({
                   key={p.id}
                   className={cn("block space-y-1.5", compact && "sm:inline-block sm:w-[calc(50%-0.5rem)] sm:align-top sm:mr-2")}
                 >
-                  <span className="text-[10px] uppercase tracking-wide text-zinc-500">
+                  <span className="text-[10px] uppercase tracking-wide text-zinc-400">
                     {p.name}
                   </span>
                   <CellEditor

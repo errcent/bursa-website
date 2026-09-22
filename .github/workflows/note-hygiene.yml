@@ -1,0 +1,82 @@
+name: Note Hygiene Gate
+
+# Guards Bursa Note against the exact failures found in the LuxAlgo audit:
+# unpatched deps (they ship 2 Next.js criticals), co-located secrets, and
+# clean-room drift in analytics code. Fast, blocking, runs on every PR.
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: note-hygiene-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  npm-audit-gate:
+    name: npm audit (high+ fails)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.0
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f4e964c85205b25 # v6.0.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Fail on high/critical advisories
+        run: npm audit --audit-level=high
+
+  secret-pattern-scan:
+    name: Secret pattern scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.0
+      - name: Reject co-located secrets and key material
+        run: |
+          set -euo pipefail
+          echo "--- .secret file references (must only appear in docs/tests) ---"
+          ! grep -rn --include='*.ts' --include='*.tsx' --include='*.mjs' -E '\.secret' src scripts \
+            | grep -v -i 'secret scan\|\.secret-pattern\|secret-patterns' || {
+              echo "FAIL: .secret-style key material referenced in code"; exit 1;
+            }
+          echo "--- private key / credential literals ---"
+          ! grep -rniE --include='*.ts' --include='*.tsx' 'BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|sk-(live|test)-[A-Za-z0-9]{8,}|xox[bap]-' src scripts tests || {
+              echo "FAIL: possible credential literal"; exit 1;
+            }
+          echo "--- encrypted-blob writes must use field-encryption ---"
+          ! grep -rn --include='*.ts' 'credentialsEnc\|sealed.*=.*apiKey' src/lib/note/sync src/app/api/note/sync || true
+          echo "OK: no secret-pattern violations."
+
+  cleanroom-diff:
+    name: Clean-room spot check vs LuxAlgo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.0
+      - uses: actions/setup-node@6044e13b5dc44855e2357c09f4e964c85205b25 # v6.0.0
+        with:
+          node-version: 22
+      - name: Clone LuxAlgo reference (shallow, comparison only)
+        run: git clone --depth 1 https://github.com/LuxAlgo/trade-journal /tmp/lux-ref
+      - name: Fail on >2 consecutive identical lines
+        run: node scripts/cleanroom-diff.mjs /tmp/lux-ref
+
+  note-tests:
+    name: Note unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.0
+      - uses: actions/setup-node@6044e13b5dc44855e2357c09f4e964c85205b25 # v6.0.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run test:note

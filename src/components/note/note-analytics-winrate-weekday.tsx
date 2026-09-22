@@ -125,7 +125,7 @@ export function NoteAnalyticsWinrateWeekday({ entries, locale, weekStart }: Prop
                 type="button"
                 onClick={() => setRangeDays(n)}
                 className={cn(
-                  "inline-flex min-h-11 min-w-[2.75rem] items-center justify-center rounded-md border px-2.5 text-xs",
+                  "inline-flex min-h-9 coarse:min-h-11 min-w-[2.75rem] items-center justify-center rounded-md border px-2.5 text-xs",
                   rangeDays === n ? "border-zinc-500 bg-zinc-800 text-zinc-200" : "border-zinc-800 text-zinc-400"
                 )}
               >
@@ -133,7 +133,7 @@ export function NoteAnalyticsWinrateWeekday({ entries, locale, weekStart }: Prop
               </button>
             ))}
           </div>
-          <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-xs text-zinc-400">
+          <label className="inline-flex min-h-9 coarse:min-h-11 cursor-pointer items-center gap-2 text-xs text-zinc-400">
             <input
               type="checkbox"
               checked={includeBe}

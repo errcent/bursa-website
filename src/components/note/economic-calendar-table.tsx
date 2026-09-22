@@ -154,7 +154,7 @@ export function EconomicCalendarTable({
             <button
               type="button"
               onClick={onUpNext}
-              className="inline-flex min-h-11 items-center text-xs font-semibold text-zinc-200 hover:text-zinc-50"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center text-xs font-semibold text-zinc-200 hover:text-zinc-50"
             >
               {locale === "en" ? "Up Next" : "Berikutnya"}
             </button>
@@ -239,7 +239,7 @@ export function EconomicCalendarTable({
                         href={event.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex min-h-11 min-w-11 items-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+                        className="inline-flex min-h-9 coarse:min-h-11 min-w-9 coarse:min-w-11 items-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
                         aria-label="Forex Factory"
                       >
                         <ExternalLink className="size-3.5" />

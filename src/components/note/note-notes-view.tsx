@@ -22,7 +22,7 @@ export function NoteNotesView() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5 pb-10">
+    <div className="mx-auto max-w-5xl space-y-5 pb-10">
       <NoteSectionIntro sectionId="notes" />
 
       <NoteBeliefCapture />
@@ -33,7 +33,7 @@ export function NoteNotesView() {
         <h2 className="text-sm font-medium text-zinc-300">{copy.notesStreamTitle}</h2>
         <Link
           href="/note/baru?layer=notes"
-          className="inline-flex min-h-11 items-center px-2 text-xs text-zinc-400 hover:text-zinc-200"
+          className="inline-flex min-h-9 coarse:min-h-11 items-center px-2 text-xs text-zinc-400 hover:text-zinc-200"
         >
           {copy.notesAdvancedLink}
         </Link>

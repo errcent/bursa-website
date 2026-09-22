@@ -221,7 +221,7 @@ describe("Note journal stats", () => {
       to: "2026-06-30",
     });
     assert.equal(stack.length, 2);
-    assert.match(stack[0]!.label, /^#1/);
+    assert.equal(stack[0]!.label, "1");
   });
 
   it("builds monthly pnl stack for a calendar year", () => {

@@ -100,7 +100,7 @@ export function NoteDrawdownGauge() {
             <span className="text-xs text-zinc-400">{t("Account size", "Account size")}</span>
             <input
               type="number"
-              className="note-field mt-1 min-h-11 text-zinc-100"
+              className="note-field mt-1 min-h-9 coarse:min-h-11 text-zinc-100"
               value={accountSize}
               onChange={(e) => setAccountSize(e.target.value)}
               placeholder="10000"
@@ -112,7 +112,7 @@ export function NoteDrawdownGauge() {
             <input
               type="number"
               step="0.1"
-              className="note-field mt-1 min-h-11 text-zinc-100"
+              className="note-field mt-1 min-h-9 coarse:min-h-11 text-zinc-100"
               value={riskPct}
               onChange={(e) => setRiskPct(e.target.value)}
               placeholder="1"
@@ -124,7 +124,7 @@ export function NoteDrawdownGauge() {
             <input
               type="number"
               step="any"
-              className="note-field mt-1 min-h-11 text-zinc-100"
+              className="note-field mt-1 min-h-9 coarse:min-h-11 text-zinc-100"
               value={entry}
               onChange={(e) => setEntry(e.target.value)}
               placeholder="1.0850"
@@ -136,7 +136,7 @@ export function NoteDrawdownGauge() {
             <input
               type="number"
               step="any"
-              className="note-field mt-1 min-h-11 text-zinc-100"
+              className="note-field mt-1 min-h-9 coarse:min-h-11 text-zinc-100"
               value={sl}
               onChange={(e) => setSl(e.target.value)}
               placeholder="1.0820"

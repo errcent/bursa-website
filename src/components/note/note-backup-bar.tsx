@@ -101,7 +101,7 @@ export function NoteBackupBar() {
       </div>
       <button
         type="button"
-        className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
+        className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
         onClick={exportBackup}
         disabled={downloading}
       >

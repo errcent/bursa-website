@@ -53,6 +53,8 @@ export type NotePrefs = {
   theme: NoteTheme;
   onboardingCompleted: boolean;
   personalization: NotePersonalization;
+  /** Mask all monetary values (privacy mode). */
+  privacyMode: boolean;
 };
 
 export const DEFAULT_NOTE_PREFS: NotePrefs = {
@@ -73,6 +75,7 @@ export const DEFAULT_NOTE_PREFS: NotePrefs = {
   theme: "dark",
   onboardingCompleted: false,
   personalization: {},
+  privacyMode: false,
 };
 
 const listeners = new Set<() => void>();
@@ -141,6 +144,7 @@ export function parseNotePrefs(raw: unknown): NotePrefs {
     theme: o.theme === "light" || o.theme === "system" ? o.theme : "dark",
     onboardingCompleted: typeof o.onboardingCompleted === "boolean" ? o.onboardingCompleted : true,
     personalization: parsePersonalization(o.personalization),
+    privacyMode: o.privacyMode === true,
   };
 }
 
@@ -180,6 +184,7 @@ export function pnlOptsFromPrefs(prefs: NotePrefs): FormatPnlOpts {
     lossStyle: prefs.lossStyle,
     currency: prefs.currency,
     locale: prefs.locale,
+    masked: prefs.privacyMode === true,
   };
 }
 

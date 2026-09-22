@@ -32,7 +32,7 @@ function OptionRow<T extends string>({
           type="button"
           onClick={() => onChange(v)}
           className={cn(
-            "min-h-11 rounded-lg border px-3 py-2.5 text-left text-sm transition-colors",
+            "min-h-9 coarse:min-h-11 rounded-lg border px-3 py-2.5 text-left text-sm transition-colors",
             value === v
               ? "border-[var(--chart-info-strong)]/45 bg-[var(--chart-info-track)] text-zinc-100"
               : "border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
@@ -154,14 +154,14 @@ export function NoteJournalOnboarding({
             </p>
             <button
               type="button"
-              className="min-h-11 w-full rounded-md bg-zinc-100 text-sm font-semibold text-zinc-950 hover:bg-white"
+              className="min-h-9 coarse:min-h-11 w-full rounded-md bg-zinc-100 text-sm font-semibold text-zinc-950 hover:bg-white"
               onClick={() => setStep(1)}
             >
               {t("Mulai", "Start")}
             </button>
             <button
               type="button"
-              className="min-h-11 w-full rounded-md text-sm text-zinc-400 hover:text-zinc-200"
+              className="min-h-9 coarse:min-h-11 w-full rounded-md text-sm text-zinc-400 hover:text-zinc-200"
               onClick={() =>
                 onComplete({
                   locale,
@@ -203,14 +203,14 @@ export function NoteJournalOnboarding({
             <div className="flex gap-2">
               <button
                 type="button"
-                className="min-h-11 flex-1 rounded-md border border-zinc-700 text-sm text-zinc-300"
+                className="min-h-9 coarse:min-h-11 flex-1 rounded-md border border-zinc-700 text-sm text-zinc-300"
                 onClick={() => setStep(0)}
               >
                 {t("Kembali", "Back")}
               </button>
               <button
                 type="button"
-                className="min-h-11 flex-1 rounded-md bg-zinc-100 text-sm font-semibold text-zinc-950 hover:bg-white"
+                className="min-h-9 coarse:min-h-11 flex-1 rounded-md bg-zinc-100 text-sm font-semibold text-zinc-950 hover:bg-white"
                 onClick={() => setStep(2)}
               >
                 {t("Lanjut", "Continue")}
@@ -298,14 +298,14 @@ function NavBackNext({
     <div className="flex gap-2 pt-2">
       <button
         type="button"
-        className="min-h-11 flex-1 rounded-md border border-zinc-700 text-sm text-zinc-300"
+        className="min-h-9 coarse:min-h-11 flex-1 rounded-md border border-zinc-700 text-sm text-zinc-300"
         onClick={onBack}
       >
         {t("Kembali", "Back")}
       </button>
       <button
         type="button"
-        className="min-h-11 flex-1 rounded-md bg-zinc-100 text-sm font-semibold text-zinc-950 hover:bg-white"
+        className="min-h-9 coarse:min-h-11 flex-1 rounded-md bg-zinc-100 text-sm font-semibold text-zinc-950 hover:bg-white"
         onClick={onNext}
       >
         {nextLabel ?? t("Lanjut", "Continue")}

@@ -265,13 +265,13 @@ export function NoteOverview() {
           <div className="flex flex-wrap gap-2">
             <Link
               href="/note/baru"
-              className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-4 text-sm font-semibold text-zinc-950 hover:bg-white"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-4 text-sm font-semibold text-zinc-950 hover:bg-white"
             >
               + {copy.logTrade}
             </Link>
             <Link
               href="/note/jurnal"
-              className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-4 text-sm text-zinc-200 hover:bg-zinc-900"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-4 text-sm text-zinc-200 hover:bg-zinc-900"
             >
               {prefs.locale === "en" ? "Open journal" : "Buka jurnal"}
             </Link>

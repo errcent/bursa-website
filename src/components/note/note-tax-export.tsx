@@ -69,7 +69,7 @@ export function NoteTaxExport() {
           {t("Laporan pajak", "Tax report")}
         </h3>
         <select
-          className="note-field min-h-11 w-24 text-sm text-zinc-100"
+          className="note-field min-h-9 coarse:min-h-11 w-24 text-sm text-zinc-100"
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
           aria-label="Year"
@@ -101,7 +101,7 @@ export function NoteTaxExport() {
           </div>
           <button
             type="button"
-            className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-4 text-xs font-medium text-zinc-950 hover:bg-white"
+            className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-4 text-xs font-medium text-zinc-950 hover:bg-white"
             onClick={exportCsv}
             disabled={exporting}
           >

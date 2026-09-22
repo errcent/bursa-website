@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PanelLeft, PanelLeftClose } from "lucide-react";
+import { Menu, PanelLeft, PanelLeftClose } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
@@ -136,17 +136,17 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
             <button
               ref={menuButtonRef}
               type="button"
-              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-2 text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 lg:hidden"
+              className="inline-flex min-h-9 coarse:min-h-11 min-w-9 coarse:min-w-11 items-center justify-center rounded-md px-2 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 lg:hidden"
               aria-expanded={menuOpen}
               aria-controls="note-mobile-panel"
               aria-label={copy.menu}
               onClick={() => setMenuOpen(true)}
             >
-              {copy.menu}
+              <Menu className="size-5" aria-hidden />
             </button>
             <button
               type="button"
-              className="hidden min-h-11 min-w-11 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 lg:inline-flex"
+              className="hidden min-h-9 coarse:min-h-11 min-w-9 coarse:min-w-11 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 lg:inline-flex"
               aria-pressed={!sidebarOpen}
               aria-controls="note-desktop-sidebar"
               aria-label={sidebarOpen ? copy.hideSidebar : copy.showSidebar}
@@ -159,7 +159,7 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
                 <PanelLeft className="size-5" aria-hidden />
               )}
             </button>
-            <Link href="/note" className="flex min-h-11 shrink-0 items-center gap-2 sm:gap-2.5" aria-label="Bursa Note">
+            <Link href="/note" className="flex min-h-9 coarse:min-h-11 shrink-0 items-center gap-2 sm:gap-2.5" aria-label="Bursa Note">
               <BrandLogo variant="product" decorative />
               <span className="hidden h-4 w-px bg-zinc-700 sm:block" aria-hidden />
               <span className="font-heading text-sm font-semibold tracking-wide">Note</span>
@@ -168,7 +168,7 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
           <a
             href={helpHref}
             aria-label={copy.support}
-            className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-sm text-zinc-400 hover:text-zinc-100"
+            className="inline-flex min-h-9 coarse:min-h-11 min-w-9 coarse:min-w-11 shrink-0 items-center justify-center text-sm text-zinc-400 hover:text-zinc-100"
           >
             {copy.support}
           </a>
@@ -203,7 +203,7 @@ function NoteShellInner({ title, children }: { title?: ReactNode; children: Reac
                 <span className="text-sm text-zinc-300">Note</span>
                 <button
                   type="button"
-                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-2 text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+                  className="inline-flex min-h-9 coarse:min-h-11 min-w-9 coarse:min-w-11 items-center justify-center rounded-md px-2 text-sm text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
                   aria-label={copy.tutup}
                   onClick={() => setMenuOpen(false)}
                 >

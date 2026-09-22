@@ -3,7 +3,11 @@ import { plannedRR, actualRR } from "@/lib/note/r-multiple";
 import { deriveSession } from "@/lib/note/edge-finder";
 import type { CreateEntryInput, JournalEntry } from "@/lib/note/types";
 
-export function buildJournalEntry(apexUserId: string, input: CreateEntryInput): JournalEntry {
+export function buildJournalEntry(
+  apexUserId: string,
+  input: CreateEntryInput,
+  opts: { breakevenBand?: number } = {},
+): JournalEntry {
   const now = new Date().toISOString();
   const isRefleksi = input.kind === "REFLEKSI";
   const symbol = isRefleksi
@@ -32,7 +36,7 @@ export function buildJournalEntry(apexUserId: string, input: CreateEntryInput): 
     exitPrice,
     fees: input.fees ?? null,
     pnl: isRefleksi ? null : (input.pnl ?? null),
-    result: isRefleksi ? null : inferJournalResult(input.pnl ?? null, input.result ?? null),
+    result: isRefleksi ? null : inferJournalResult(input.pnl ?? null, input.result ?? null, opts.breakevenBand ?? 0),
     emotion: input.emotion ?? null,
     note: input.note ?? null,
     ruleBroken: input.ruleBroken ?? null,

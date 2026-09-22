@@ -29,7 +29,7 @@ function NavLink({
       aria-current={active ? "page" : undefined}
       onClick={onClick}
       className={cn(
-        "flex min-h-11 items-center rounded-md px-2.5 text-sm transition-colors",
+        "flex min-h-9 coarse:min-h-11 items-center rounded-md px-2.5 text-sm transition-colors",
         active
           ? "bg-zinc-900 font-medium text-zinc-50"
           : "text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-100"

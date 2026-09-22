@@ -13,6 +13,8 @@ import { buildAnalyticsReport } from "@/lib/note/analytics";
 import { generateEdgeInsight } from "@/lib/note/edge-finder";
 import { NoteDrawdownGauge } from "@/components/note/note-drawdown-gauge";
 import { NoteCrossMatrix } from "@/components/note/note-cross-matrix";
+import { NoteAskPanel } from "@/components/note/note-ask-panel";
+import { NoteAdherencePanel } from "@/components/note/note-adherence-panel";
 import { NoteEdgeDialect } from "@/components/note/note-edge-dialect";
 import { NoteEmotionCorrelation } from "@/components/note/note-emotion-correlation";
 import { pnlOptsForSlot } from "@/lib/note/prefs";
@@ -168,7 +170,7 @@ export function NoteAnalyticsView() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 pb-10">
+    <div className="mx-auto max-w-6xl space-y-6 pb-10">
       <NoteSectionIntro sectionId="analytics" />
 
       {edgeInsight ? (
@@ -207,6 +209,8 @@ export function NoteAnalyticsView() {
 
       <NoteEdgeDialect />
 
+      <NoteAdherencePanel />
+
       <NoteEmotionCorrelation />
 
       <AnalyticsSection
@@ -224,7 +228,7 @@ export function NoteAnalyticsView() {
               : "Log lebih banyak close di Journal agar pola muncul."}
           </p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="grid gap-2 xl:grid-cols-2">
             {insights.map((card) => (
               <li
                 key={card.id}
@@ -241,13 +245,13 @@ export function NoteAnalyticsView() {
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-medium text-zinc-100">{card.title}</p>
-                  <span className="text-xs font-medium text-zinc-500">
+                  <span className="text-xs font-medium text-zinc-400">
                     {kindLabel[card.kind]}
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-zinc-400">{card.detail}</p>
                 {card.meta ? (
-                  <p className="mt-1.5 text-xs tabular-nums text-zinc-500">{card.meta}</p>
+                  <p className="mt-1.5 text-xs tabular-nums text-zinc-400">{card.meta}</p>
                 ) : null}
               </li>
             ))}
@@ -264,6 +268,17 @@ export function NoteAnalyticsView() {
         }
       >
         <NoteCrossMatrix />
+      </AnalyticsSection>
+
+      <AnalyticsSection
+        title={locale === "en" ? "Ask your journal" : "Tanya jurnalmu"}
+        hint={
+          locale === "en"
+            ? "Deterministic answers with citations. Optional BYOK LLM for depth."
+            : "Jawaban deterministik bersitasi. Opsional BYOK LLM untuk kedalaman."
+        }
+      >
+        <NoteAskPanel />
       </AnalyticsSection>
     </div>
   );

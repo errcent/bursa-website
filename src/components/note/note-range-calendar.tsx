@@ -96,7 +96,7 @@ export function NoteRangeCalendar({
       <div className="mb-2 flex items-center justify-between gap-2">
         <button
           type="button"
-          className="inline-flex size-9 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+          className="inline-flex size-9 coarse:size-11 shrink-0 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
           aria-label={locale === "en" ? "Previous month" : "Bulan sebelumnya"}
           onClick={() =>
             setCursor((c) =>
@@ -109,7 +109,7 @@ export function NoteRangeCalendar({
         <p className="text-sm font-medium capitalize text-zinc-200">{monthLabel}</p>
         <button
           type="button"
-          className="inline-flex size-9 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+          className="inline-flex size-9 coarse:size-11 shrink-0 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
           aria-label={locale === "en" ? "Next month" : "Bulan berikutnya"}
           onClick={() =>
             setCursor((c) =>
@@ -147,7 +147,7 @@ export function NoteRangeCalendar({
                 onFocus={() => anchor && setHover(iso)}
                 onClick={() => pick(iso)}
                 className={cn(
-                  "relative inline-flex size-9 items-center justify-center rounded-md text-xs tabular-nums transition-colors",
+                  "relative inline-flex size-9 coarse:size-11 items-center justify-center rounded-md text-xs tabular-nums transition-colors",
                   selected ? "bg-zinc-100 text-zinc-950" : "text-zinc-300 hover:bg-zinc-800",
                   !selected && isToday && "ring-1 ring-zinc-600",
                   (isStart || isEnd) && selected && "font-semibold"

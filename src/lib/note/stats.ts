@@ -29,6 +29,8 @@ export type FormatPnlOpts = {
   locale?: NoteUiLocale;
   /** Calendar/weekday cells: signed number only, no currency label. */
   naked?: boolean;
+  /** Privacy mode: mask the value regardless of other opts. */
+  masked?: boolean;
   /** Cap length of numeric body (unit suffix included), e.g. calendar tiles. */
   maxChars?: number;
 };
@@ -151,10 +153,12 @@ export function dayKey(iso: string, timeZone = NOTE_TZ): string {
 
 export function inferJournalResult(
   pnl: number | null | undefined,
-  explicit?: JournalResult | null
+  explicit?: JournalResult | null,
+  breakevenBand = 0,
 ): JournalResult | null {
   if (explicit) return explicit;
   if (pnl == null) return null;
+  if (Math.abs(pnl) <= Math.max(0, breakevenBand)) return "be";
   if (pnl > 0) return "win";
   if (pnl < 0) return "loss";
   return "be";
@@ -675,6 +679,7 @@ function compactBodyCapped(abs: number, maxChars: number, preferredFraction: num
 
 export function formatPnl(value: number | null | undefined, opts?: FormatPnlOpts) {
   if (value == null) return "-";
+  if (opts?.masked) return "•••";
   const locale = opts?.locale ?? "id";
   const maxFraction = opts?.decimals ?? (Number.isInteger(value) ? 0 : 2);
   const abs = Math.abs(value);

@@ -310,7 +310,7 @@ export function NotePlaybookView() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
+    <div className="mx-auto max-w-5xl space-y-8">
       {playbookReady && !state.profile.onboardingCompleted ? (
         <NotePlaybookOnboarding locale={locale} onComplete={finishOnboarding} />
       ) : null}
@@ -339,7 +339,7 @@ export function NotePlaybookView() {
                       aria-pressed={active}
                       onClick={() => setSignal(block.key, opt.value as BehaviorSignals[typeof block.key])}
                       className={cn(
-                        "inline-flex min-h-11 items-center rounded-md px-2.5 text-xs font-medium",
+                        "inline-flex min-h-9 coarse:min-h-11 items-center rounded-md px-2.5 text-xs font-medium",
                         active
                           ? "bg-zinc-100 text-zinc-950"
                           : "border border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
@@ -410,7 +410,7 @@ export function NotePlaybookView() {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs font-medium text-zinc-200 hover:border-zinc-500"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs font-medium text-zinc-200 hover:border-zinc-500"
               onClick={addBlankSetup}
             >
               {locale === "en" ? "+ Add setup" : "+ Tambah setup"}
@@ -418,7 +418,7 @@ export function NotePlaybookView() {
             <label className="flex items-center gap-1.5 text-xs text-zinc-400">
               <span>{locale === "en" ? "Example" : "Contoh"}</span>
               <select
-                className="min-h-11 rounded-md border border-zinc-800 bg-zinc-900/80 px-2 text-xs text-zinc-200"
+                className="min-h-9 coarse:min-h-11 rounded-md border border-zinc-800 bg-zinc-900/80 px-2 text-xs text-zinc-200"
                 defaultValue=""
                 onChange={(e) => {
                   const v = e.target.value;
@@ -488,7 +488,7 @@ export function NotePlaybookView() {
                           </option>
                         ))}
                       </select>
-                      <label className="flex min-h-11 items-center gap-2 text-xs text-zinc-400">
+                      <label className="flex min-h-9 coarse:min-h-11 items-center gap-2 text-xs text-zinc-400">
                         <input
                           type="checkbox"
                           className="size-4"
@@ -500,7 +500,7 @@ export function NotePlaybookView() {
                       {state.setups.length > 1 ? (
                         <button
                           type="button"
-                          className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-red-400"
+                          className="inline-flex min-h-9 coarse:min-h-11 items-center text-xs text-zinc-400 hover:text-red-400"
                           onClick={() => removeSetup(setup.id)}
                         >
                           {locale === "en" ? "Remove" : "Hapus"}
@@ -536,7 +536,7 @@ export function NotePlaybookView() {
                 : `Deterministik · core ${gate.requiredYes}/${CORE_CHECK_IDS.length} YA`}
             </p>
           </div>
-          <button type="button" className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200" onClick={resetChecks}>
+          <button type="button" className="inline-flex min-h-9 coarse:min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200" onClick={resetChecks}>
             {locale === "en" ? "Reset checks" : "Reset check"}
           </button>
         </header>
@@ -564,7 +564,7 @@ export function NotePlaybookView() {
                       aria-pressed={answer === val}
                       onClick={() => setCheck(check.id, val)}
                       className={cn(
-                        "inline-flex min-h-11 items-center rounded px-3 text-xs font-semibold",
+                        "inline-flex min-h-9 coarse:min-h-11 items-center rounded px-3 text-xs font-semibold",
                         answer === val
                           ? val
                             ? "note-chip-up"

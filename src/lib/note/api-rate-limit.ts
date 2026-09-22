@@ -9,6 +9,8 @@ export type NoteRateLimitProfile =
   | "journal_read"
   | "journal_write"
   | "journal_import"
+  | "broker_sync"
+  | "ask"
   | "track_read"
   | "track_write"
   | "market_history"
@@ -24,6 +26,10 @@ const PROFILES: Record<
   journal_read: { limit: 60, guestLimit: 25, windowMs: 60_000 },
   journal_write: { limit: 25, guestLimit: 12, windowMs: 60_000 },
   journal_import: { limit: 6, guestLimit: 3, windowMs: 60_000 },
+  /** Broker sync fans out to signed third-party calls; strict cap. */
+  broker_sync: { limit: 4, guestLimit: 0, windowMs: 60_000 },
+  /** Ask fans out to aggregates and optionally one LLM call. */
+  ask: { limit: 20, guestLimit: 8, windowMs: 60_000 },
   track_read: { limit: 40, guestLimit: 20, windowMs: 60_000 },
   track_write: { limit: 20, guestLimit: 10, windowMs: 60_000 },
   /** Each hit may fan out to multiple Yahoo chart calls. */

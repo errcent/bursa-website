@@ -75,7 +75,7 @@ export function NoteJournalFilters({ locale, value, symbols, onChange, weekStart
           type="button"
           onClick={() => setCalOpen((o) => !o)}
           className={cn(
-            "note-field mt-1 inline-flex min-h-11 min-w-[11rem] items-center justify-between gap-2 px-2 text-left text-xs",
+            "note-field mt-1 inline-flex min-h-9 coarse:min-h-11 min-w-[11rem] items-center justify-between gap-2 px-2 text-left text-xs",
             calOpen && "border-zinc-500"
           )}
         >
@@ -102,14 +102,14 @@ export function NoteJournalFilters({ locale, value, symbols, onChange, weekStart
             <div className="mt-2 flex gap-2 border-t border-zinc-800 pt-2">
               <button
                 type="button"
-                className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-900"
+                className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-900"
                 onClick={() => setCalOpen(false)}
               >
                 {t("Selesai", "Done")}
               </button>
               <button
                 type="button"
-                className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
+                className="inline-flex min-h-9 coarse:min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
                 onClick={() => {
                   onChange({ ...value, dateFrom: null, dateTo: null, date: null });
                   setCalOpen(false);
@@ -125,7 +125,7 @@ export function NoteJournalFilters({ locale, value, symbols, onChange, weekStart
       {(value.symbol || value.side || value.dateFrom || value.dateTo || value.result !== "ALL") && (
         <button
           type="button"
-          className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
+          className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-3 text-xs text-zinc-300 hover:bg-zinc-800"
           onClick={() =>
             onChange({
               kind: value.kind,

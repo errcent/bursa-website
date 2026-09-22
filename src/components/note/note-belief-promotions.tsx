@@ -50,7 +50,7 @@ export function NoteBeliefPromotions({ entries }: { entries: JournalEntry[] }) {
               {p.href ? (
                 <Link
                   href={p.href.startsWith("/note/playbook") ? "/note/analytics" : p.href}
-                  className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-2.5 text-xs text-zinc-300 hover:border-zinc-500"
+                  className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-2.5 text-xs text-zinc-300 hover:border-zinc-500"
                 >
                   {copy.notesMirrorAction}
                 </Link>

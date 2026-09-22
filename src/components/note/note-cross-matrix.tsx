@@ -43,7 +43,7 @@ export function NoteCrossMatrix() {
         <label className="block">
           <span className="text-xs text-zinc-400">{t("Baris", "Rows")}</span>
           <select
-            className="note-field mt-1 block min-h-11 min-w-[10rem] text-sm"
+            className="note-field mt-1 block min-h-9 coarse:min-h-11 min-w-[10rem] text-sm"
             value={rowDim}
             onChange={(e) => setRowDim(e.target.value as MatrixDim)}
             aria-label={t("Dimensi baris", "Row dimension")}
@@ -58,7 +58,7 @@ export function NoteCrossMatrix() {
         <label className="block">
           <span className="text-xs text-zinc-400">{t("Kolom (opsional)", "Columns (optional)")}</span>
           <select
-            className="note-field mt-1 block min-h-11 min-w-[10rem] text-sm"
+            className="note-field mt-1 block min-h-9 coarse:min-h-11 min-w-[10rem] text-sm"
             value={colDim}
             onChange={(e) => setColDim(e.target.value as MatrixDim | "")}
             aria-label={t("Dimensi kolom", "Column dimension")}
@@ -78,7 +78,7 @@ export function NoteCrossMatrix() {
           {t("Belum ada close untuk dianalisis.", "No closes to analyze yet.")}
         </p>
       ) : (
-        <div className="mt-3 max-h-[320px] overflow-auto">
+        <div className="mt-3 max-h-[320px] overflow-auto" role="region" tabIndex={0} aria-label={t("Hasil matriks", "Matrix results")}>
           <table className="w-full min-w-[28rem] text-sm">
             <thead className="sticky top-0 bg-zinc-950/95">
               <tr className="text-left text-xs text-zinc-500">

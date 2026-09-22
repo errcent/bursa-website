@@ -79,14 +79,14 @@ export function NotePlaybookNotesBridge() {
           <div className="mt-2 flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-2.5 text-xs font-semibold text-zinc-900 hover:bg-white"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-2.5 text-xs font-semibold text-zinc-900 hover:bg-white"
               onClick={() => onAdopt(top.id, top.beliefSnippet!)}
             >
               {adoptedId === top.id ? copy.notesAdoptedPlaybook : copy.notesAdoptPlaybook}
             </button>
             <button
               type="button"
-              className="inline-flex min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
+              className="inline-flex min-h-9 coarse:min-h-11 items-center text-xs text-zinc-400 hover:text-zinc-200"
               onClick={() => onDismiss(top.id)}
             >
               {copy.notesDismissPromotion}

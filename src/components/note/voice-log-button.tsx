@@ -123,7 +123,7 @@ export function VoiceLogButton({ onParsed }: Props) {
         type="button"
         onClick={listening ? stopListening : startListening}
         className={cn(
-          "inline-flex min-h-11 items-center gap-2 rounded-md border px-3 text-xs font-medium",
+          "inline-flex min-h-9 coarse:min-h-11 items-center gap-2 rounded-md border px-3 text-xs font-medium",
           listening
             ? "border-rose-700 bg-rose-900/40 text-rose-200"
             : "border-zinc-700 bg-zinc-900 text-zinc-300 hover:bg-zinc-800"

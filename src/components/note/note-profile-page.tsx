@@ -33,13 +33,13 @@ export function NoteProfilePage() {
         <div className="flex flex-wrap gap-2">
           <Link
             href={loginHref}
-            className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3.5 text-sm font-semibold text-zinc-950 hover:bg-white"
+            className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md bg-zinc-100 px-3.5 text-sm font-semibold text-zinc-950 hover:bg-white"
           >
             {copy.masuk}
           </Link>
           <Link
             href="/note/setelan"
-            className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3.5 text-sm text-zinc-300 hover:bg-zinc-900"
+            className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-3.5 text-sm text-zinc-300 hover:bg-zinc-900"
           >
             {copy.setelan}
           </Link>
@@ -63,19 +63,19 @@ export function NoteProfilePage() {
       <div className="flex flex-wrap gap-2">
         <a
           href={apexProfil}
-          className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3.5 text-sm text-zinc-300 hover:bg-zinc-900"
+          className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-3.5 text-sm text-zinc-300 hover:bg-zinc-900"
         >
           {copy.bursaAccount}
         </a>
         <Link
           href="/note/setelan"
-          className="inline-flex min-h-11 items-center rounded-md border border-zinc-700 px-3.5 text-sm text-zinc-300 hover:bg-zinc-900"
+          className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md border border-zinc-700 px-3.5 text-sm text-zinc-300 hover:bg-zinc-900"
         >
           {copy.setelan}
         </Link>
         <button
           type="button"
-          className="inline-flex min-h-11 items-center rounded-md px-3.5 text-sm text-rose-300 hover:bg-zinc-900"
+          className="inline-flex min-h-9 coarse:min-h-11 items-center rounded-md px-3.5 text-sm text-rose-300 hover:bg-zinc-900"
           onClick={() => {
             void logout().then(() => router.replace(loginHref));
           }}
