@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { parseTradeLine } from "@/lib/note/parse-trade";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
@@ -72,7 +72,11 @@ export function VoiceLogButton({ onParsed }: Props) {
   const [prefs] = useNotePrefs();
   const [listening, setListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [supported] = useState(() => getSpeechRecognition() !== null);
+  const [supported, setSupported] = useState(false);
+
+  useEffect(() => {
+    setSupported(getSpeechRecognition() !== null);
+  }, []);
 
   const t = (id: string, en: string) => (prefs.locale === "en" ? en : id);
 
