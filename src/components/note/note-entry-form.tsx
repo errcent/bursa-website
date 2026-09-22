@@ -49,6 +49,8 @@ export function NoteEntryForm({
   const [accountLabel, setAccountLabel] = useState("");
   const [fees, setFees] = useState("");
   const [thesis, setThesis] = useState("");
+  const [isPartial, setIsPartial] = useState(false);
+  const [parentTradeId, setParentTradeId] = useState("");
   const [pasteText, setPasteText] = useState("");
   const [openedDate, setOpenedDate] = useState(initialDate ?? jakartaDateKey());
   const [note, setNote] = useState("");
@@ -331,6 +333,28 @@ export function NoteEntryForm({
                 placeholder={prefs.locale === "en" ? "Setup, trigger, confluence..." : "Setup, trigger, konfluensi..."}
                 aria-label="Thesis"
               />
+            </label>
+            {/* v3 P2: Partial fill / scaling support */}
+            <label className="col-span-2 flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={isPartial}
+                onChange={(e) => setIsPartial(e.target.checked)}
+                className="size-4 rounded border-zinc-600 bg-zinc-900"
+                aria-label="Partial fill"
+              />
+              <span className="text-xs text-zinc-400">
+                {prefs.locale === "en" ? "Partial fill / scale in-out" : "Partial fill / scale in-out"}
+              </span>
+              {isPartial ? (
+                <input
+                  className={`${inputClass} ml-2 w-40`}
+                  value={parentTradeId}
+                  onChange={(e) => setParentTradeId(e.target.value)}
+                  placeholder={prefs.locale === "en" ? "Parent trade ID" : "Parent trade ID"}
+                  aria-label="Parent trade ID"
+                />
+              ) : null}
             </label>
           </>
         ) : null}

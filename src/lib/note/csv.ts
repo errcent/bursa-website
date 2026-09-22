@@ -47,6 +47,27 @@ const HEADER_ALIASES: Record<string, string> = {
   note: "note",
   comment: "note",
   catatan: "note",
+  // TraderSync / TradeZella / Edgewonk aliases
+  tradeid: "symbol",
+  orderid: "symbol",
+  positionid: "symbol",
+  tradereference: "symbol",
+  executionid: "symbol",
+  instrument: "symbol",
+  asset: "symbol",
+  direction: "side",
+  positionside: "side",
+  buysell: "side",
+  contracts: "qty",
+  open: "entryPrice",
+  close: "exitPrice",
+  realizedpnl: "pnl",
+  unrealizedpnl: "pnl",
+  totalpnl: "pnl",
+  netpnl: "pnl",
+  tradingession: "openedAt",
+  executiontime: "openedAt",
+  datetime: "openedAt",
 };
 
 function parseCsvLine(line: string): string[] {
@@ -119,6 +140,34 @@ function isStockbitFormat(headers: string[]): boolean {
 function isAjaibFormat(headers: string[]): boolean {
   const h = headers.map((x) => x.toLowerCase());
   return h.includes("order id") || h.includes("order_id") || h.includes("no. order");
+}
+
+/** Detect if CSV looks like TraderSync export. */
+function isTraderSyncFormat(headers: string[]): boolean {
+  const h = headers.map((x) => x.toLowerCase().replace(/[\s_-]/g, ""));
+  return h.includes("tradeid") || h.includes("orderid") || h.includes("positionid");
+}
+
+/** Detect if CSV looks like TradeZella export. */
+function isTradeZellaFormat(headers: string[]): boolean {
+  const h = headers.map((x) => x.toLowerCase().replace(/[\s_-]/g, ""));
+  return h.includes("tradereference") || h.includes("executionid");
+}
+
+/** Detect if CSV looks like Edgewonk export. */
+function isEdgewonkFormat(headers: string[]): boolean {
+  const h = headers.map((x) => x.toLowerCase().replace(/[\s_-]/g, ""));
+  return h.includes("tradingsession") || h.includes("setupname");
+}
+
+/** Detect broker format from headers. */
+function detectBrokerFormat(headers: string[]): string | null {
+  if (isStockbitFormat(headers)) return "stockbit";
+  if (isAjaibFormat(headers)) return "ajaib";
+  if (isTraderSyncFormat(headers)) return "tradersync";
+  if (isTradeZellaFormat(headers)) return "tradezella";
+  if (isEdgewonkFormat(headers)) return "edgewonk";
+  return null;
 }
 
 function toResult(value: string | undefined, pnl: number | null): JournalResult | null {
