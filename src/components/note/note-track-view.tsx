@@ -20,6 +20,8 @@ import {
 import { formatTrackDateTime } from "@/lib/note/track/datetime";
 import { buildTrackSnapshot } from "@/lib/note/track/engine";
 import { useTrackMarketCloses } from "@/lib/note/track/use-market-closes";
+import { useLiveQuotes } from "@/lib/note/market/use-live-quotes";
+import { normalizeSymbol } from "@/lib/note/market/unified";
 import { jakartaDateKey } from "@/lib/note/economic-calendar/date-range";
 import type { TrackRangePreset } from "@/lib/note/track/types";
 import { fxContextFromPrefs } from "@/lib/note/fx/context";
@@ -76,6 +78,8 @@ function TrackInner() {
     [txns, range, fx, marketCloses]
   );
   const symbols = useMemo(() => snap.holdings.map((h) => h.symbol), [snap.holdings]);
+  const liveSymbols = useMemo(() => symbols.map((s) => normalizeSymbol(s)), [symbols]);
+  const { quotes: liveQuotes } = useLiveQuotes(liveSymbols);
   const recentTx = useMemo(
     () => [...txns].sort((a, b) => b.executedAt.localeCompare(a.executedAt)).slice(0, 10),
     [txns]
@@ -235,6 +239,7 @@ function TrackInner() {
                 <tr className="text-left text-xs text-zinc-500">
                   <th className="px-3 py-2 font-medium">Asset</th>
                   <th className="px-3 py-2 font-medium">Qty</th>
+                  <th className="px-3 py-2 font-medium">{t("Harga live", "Live price")}</th>
                   <th className="px-3 py-2 font-medium">{t("Nilai", "Value")}</th>
                   <th className="px-3 py-2 font-medium">P/L</th>
                   <th className="px-3 py-2 font-medium">%</th>
@@ -243,22 +248,31 @@ function TrackInner() {
               <tbody>
                 {snap.holdings.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-3 py-8 text-center text-sm text-zinc-500">
+                    <td colSpan={6} className="px-3 py-8 text-center text-sm text-zinc-500">
                       {t("Belum ada holdings. Tambah transaksi dulu.", "No holdings yet. Add a transaction first.")}
                     </td>
                   </tr>
                 ) : (
-                  snap.holdings.map((h) => (
+                  snap.holdings.map((h) => {
+                    const normSym = normalizeSymbol(h.symbol);
+                    const live = liveQuotes[normSym];
+                    const livePrice = live?.price ?? null;
+                    return (
                   <tr key={h.symbol} className="border-t border-zinc-800/60">
                     <td className="px-3 py-2 font-medium text-zinc-200">{h.symbol}</td>
                     <td className="px-3 py-2 tabular-nums text-zinc-400">{formatTrackQty(h.quantity)}</td>
+                    <td className="px-3 py-2 tabular-nums text-zinc-300">
+                      {livePrice != null ? livePrice.toLocaleString(undefined, { maximumFractionDigits: 2 }) : "-"}
+                      {live ? <span className="ml-1 text-[10px] text-emerald-400">●</span> : null}
+                    </td>
                     <td className="px-3 py-2 tabular-nums">{formatPnl(h.marketValue, formatOpts)}</td>
                     <td className={cn("px-3 py-2 tabular-nums", h.unrealizedPnl >= 0 ? "note-pnl-up" : "note-pnl-down")}>
                       {formatPnl(h.unrealizedPnl, formatOpts)}
                     </td>
                     <td className="px-3 py-2 tabular-nums text-zinc-400">{h.weight.toFixed(1)}%</td>
                   </tr>
-                  ))
+                    );
+                  })
                 )}
               </tbody>
             </table>
