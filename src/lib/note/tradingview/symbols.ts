@@ -15,6 +15,8 @@ const PAIRS: Record<EconFilterCurrency, TvSymbolOption[]> = {
     { id: "FX:USDJPY", label: { id: "USD/JPY", en: "USD/JPY" } },
     { id: "OANDA:XAUUSD", label: { id: "XAU/USD", en: "XAU/USD" } },
     { id: "COINBASE:BTCUSD", label: { id: "BTC/USD", en: "BTC/USD" } },
+    { id: "BINANCE:BTCUSDT", label: { id: "BTC/USDT", en: "BTC/USDT" } },
+    { id: "BINANCE:ETHUSDT", label: { id: "ETH/USDT", en: "ETH/USDT" } },
   ],
   EUR: [
     { id: "FX:EURUSD", label: { id: "EUR/USD", en: "EUR/USD" } },
@@ -95,3 +97,39 @@ export function allPairsForFilterCurrencies(
   }
   return out;
 }
+
+/** IDX (Bursa Efek Indonesia) stock symbols for TradingView. */
+export const IDX_STOCK_SYMBOLS: TvSymbolOption[] = [
+  { id: "IDX:BBCA", label: { id: "BBCA", en: "BBCA" } },
+  { id: "IDX:TLKM", label: { id: "TLKM", en: "TLKM" } },
+  { id: "IDX:ASII", label: { id: "ASII", en: "ASII" } },
+  { id: "IDX:GGRM", label: { id: "GGRM", en: "GGRM" } },
+  { id: "IDX:UNVR", label: { id: "UNVR", en: "UNVR" } },
+  { id: "IDX:BMRI", label: { id: "BMRI", en: "BMRI" } },
+  { id: "IDX:ICBP", label: { id: "ICBP", en: "ICBP" } },
+  { id: "IDX:ADRO", label: { id: "ADRO", en: "ADRO" } },
+  { id: "IDX:ANTM", label: { id: "ANTM", en: "ANTM" } },
+  { id: "IDX:PGAS", label: { id: "PGAS", en: "PGAS" } },
+];
+
+/** Crypto pairs for TradingView (Binance + Coinbase). */
+export const CRYPTO_SYMBOLS: TvSymbolOption[] = [
+  { id: "BINANCE:BTCUSDT", label: { id: "BTC/USDT", en: "BTC/USDT" } },
+  { id: "BINANCE:ETHUSDT", label: { id: "ETH/USDT", en: "ETH/USDT" } },
+  { id: "BINANCE:BNBUSDT", label: { id: "BNB/USDT", en: "BNB/USDT" } },
+  { id: "BINANCE:SOLUSDT", label: { id: "SOL/USDT", en: "SOL/USDT" } },
+  { id: "BINANCE:XRPUSDT", label: { id: "XRP/USDT", en: "XRP/USDT" } },
+  { id: "BINANCE:DOGEUSDT", label: { id: "DOGE/USDT", en: "DOGE/USDT" } },
+  { id: "COINBASE:BTCUSD", label: { id: "BTC/USD", en: "BTC/USD" } },
+  { id: "COINBASE:ETHUSD", label: { id: "ETH/USD", en: "ETH/USD" } },
+];
+
+/** US stock symbols for TradingView. */
+export const US_STOCK_SYMBOLS: TvSymbolOption[] = [
+  { id: "NASDAQ:AAPL", label: { id: "AAPL", en: "AAPL" } },
+  { id: "NASDAQ:MSFT", label: { id: "MSFT", en: "MSFT" } },
+  { id: "NASDAQ:TSLA", label: { id: "TSLA", en: "TSLA" } },
+  { id: "NASDAQ:NVDA", label: { id: "NVDA", en: "NVDA" } },
+  { id: "NASDAQ:AMZN", label: { id: "AMZN", en: "AMZN" } },
+  { id: "NASDAQ:GOOGL", label: { id: "GOOGL", en: "GOOGL" } },
+];
