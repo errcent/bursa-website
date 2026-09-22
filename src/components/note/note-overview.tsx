@@ -11,6 +11,7 @@ import {
   saveOverviewChartPrefs,
   type OverviewChartPrefs,
 } from "@/lib/note/overview-chart-prefs";
+import { generateInsight } from "@/lib/note/insight";
 
 import { NoteLoadingLine } from "@/components/note/note-loading-line";
 import { useNoteJournal } from "@/components/note/note-journal-context";
@@ -66,6 +67,10 @@ export function NoteOverview() {
     [kindScoped]
   );
   const snapshot = useMemo(() => summarizeJournal(heroEntries, fx), [heroEntries, fx]);
+  const dailyInsight = useMemo(
+    () => generateInsight({ entries: heroEntries, locale: prefs.locale, context: "end-of-day" }),
+    [heroEntries, prefs.locale]
+  );
   const chartStack = useMemo(
     () =>
       pnlStackPoints(heroEntries, {
@@ -168,6 +173,20 @@ export function NoteOverview() {
           <Link href={noteApexLoginHref("/note")} className="text-zinc-200 hover:underline">
             {copy.masuk}
           </Link>
+        </p>
+      ) : null}
+
+      {dailyInsight ? (
+        <p
+          className={cn(
+            "rounded-lg border px-3 py-2.5 text-sm",
+            dailyInsight.tone === "up" && "border-emerald-800/60 bg-emerald-950/30 text-emerald-200",
+            dailyInsight.tone === "down" && "border-rose-800/60 bg-rose-950/30 text-rose-200",
+            dailyInsight.tone === "warn" && "border-amber-800/60 bg-amber-950/30 text-amber-200",
+            dailyInsight.tone === "neutral" && "border-zinc-800/80 bg-zinc-900/30 text-zinc-300"
+          )}
+        >
+          {dailyInsight.text}
         </p>
       ) : null}
 

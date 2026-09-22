@@ -26,6 +26,8 @@ const patchSchema = z.object({
   clinicModuleId: z.string().trim().max(64).optional().nullable(),
   protocol: z.string().trim().max(400).optional().nullable(),
   accountLabel: z.string().trim().max(40).optional().nullable(),
+  stopLoss: z.number().finite().optional().nullable(),
+  takeProfit: z.number().finite().optional().nullable(),
   relatedCourseSlug: z.string().trim().max(120).optional().nullable(),
   relatedLessonId: z.string().trim().max(64).optional().nullable(),
   openedAt: z.string().trim().max(40).optional().nullable(),

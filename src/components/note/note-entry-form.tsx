@@ -8,6 +8,8 @@ import { jakartaDateKey } from "@/lib/note/economic-calendar/date-range";
 import { noteCopy } from "@/lib/note/copy";
 import { noteSsoStartHref } from "@/lib/note/sso-urls";
 import { courseClassHref } from "@/lib/security/safe-http-url";
+import { parseTradeLine } from "@/lib/note/parse-trade";
+import { plannedRR, formatR } from "@/lib/note/r-multiple";
 import type { JournalKind, JournalMode } from "@/lib/note/types";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
@@ -37,6 +39,12 @@ export function NoteEntryForm({
   const [symbol, setSymbol] = useState("");
   const [side, setSide] = useState("BUY");
   const [pnl, setPnl] = useState("");
+  const [qty, setQty] = useState("");
+  const [entryPrice, setEntryPrice] = useState("");
+  const [stopLoss, setStopLoss] = useState("");
+  const [takeProfit, setTakeProfit] = useState("");
+  const [accountLabel, setAccountLabel] = useState("");
+  const [pasteText, setPasteText] = useState("");
   const [openedDate, setOpenedDate] = useState(initialDate ?? jakartaDateKey());
   const [note, setNote] = useState("");
   const [ruleBroken, setRuleBroken] = useState("");
@@ -55,6 +63,31 @@ export function NoteEntryForm({
   const isRefleksi = kind === "REFLEKSI";
   const previewCourseHref = courseClassHref(catalogBase, relatedCourseSlug);
 
+  const previewRR = plannedRR(
+    entryPrice === "" ? null : Number(entryPrice),
+    stopLoss === "" ? null : Number(stopLoss),
+    takeProfit === "" ? null : Number(takeProfit),
+    side
+  );
+
+  function applyPaste() {
+    const parsed = parseTradeLine(pasteText);
+    if (!parsed) {
+      setError(prefs.locale === "en" ? "Could not parse trade line." : "Tidak bisa parse baris trade.");
+      return;
+    }
+    setError(null);
+    setSide(parsed.side);
+    setSymbol(parsed.symbol);
+    if (parsed.qty != null) setQty(String(parsed.qty));
+    if (parsed.entryPrice != null) setEntryPrice(String(parsed.entryPrice));
+    if (parsed.stopLoss != null) setStopLoss(String(parsed.stopLoss));
+    if (parsed.takeProfit != null) setTakeProfit(String(parsed.takeProfit));
+    if (parsed.pnl != null) setPnl(String(parsed.pnl));
+    if (parsed.accountLabel) setAccountLabel(parsed.accountLabel);
+    setPasteText("");
+  }
+
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setPending(true);
@@ -67,7 +100,12 @@ export function NoteEntryForm({
         mode: isRefleksi ? "cepat" : mode,
         symbol: isRefleksi ? relatedCourseSlug || "NOTE" : symbol,
         side: isRefleksi ? "NOTE" : side,
+        qty: isRefleksi ? null : qty === "" ? null : Number(qty),
+        entryPrice: isRefleksi ? null : entryPrice === "" ? null : Number(entryPrice),
+        stopLoss: isRefleksi ? null : stopLoss === "" ? null : Number(stopLoss),
+        takeProfit: isRefleksi ? null : takeProfit === "" ? null : Number(takeProfit),
         pnl: isRefleksi ? null : pnlNumber,
+        accountLabel: accountLabel.trim() || null,
         note: note.trim() || null,
         ruleBroken: cognition ? ruleBroken.trim() || null : null,
         lesson: cognition ? lesson.trim() || null : null,
@@ -94,6 +132,33 @@ export function NoteEntryForm({
     <form onSubmit={onSubmit} className="mx-auto max-w-lg space-y-8">
       {cognition ? (
         <p className="text-sm text-zinc-400">{copy.notesCaptureHint}</p>
+      ) : null}
+
+      {!isRefleksi ? (
+        <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-3">
+          <label className="block">
+            <span className={labelClass}>
+              {prefs.locale === "en" ? "Paste a trade" : "Tempel trade"}
+            </span>
+            <textarea
+              rows={2}
+              className={`${inputClass} min-h-[3rem] resize-y py-2`}
+              value={pasteText}
+              onChange={(e) => setPasteText(e.target.value)}
+              placeholder="BUY EURUSD 0.1 @1.0850 SL 1.0820 TP 1.0920"
+              aria-label={prefs.locale === "en" ? "Paste a trade" : "Tempel trade"}
+            />
+          </label>
+          {pasteText.trim() ? (
+            <button
+              type="button"
+              className="mt-2 inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
+              onClick={applyPaste}
+            >
+              {prefs.locale === "en" ? "Parse & fill" : "Parse & isi"}
+            </button>
+          ) : null}
+        </div>
       ) : null}
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-5">
@@ -132,6 +197,76 @@ export function NoteEntryForm({
                 value={pnl}
                 onChange={(e) => setPnl(e.target.value)}
                 aria-label="PnL"
+              />
+            </label>
+            <label>
+              <span className={labelClass}>
+                {prefs.locale === "en" ? "Qty (optional)" : "Qty (opsional)"}
+              </span>
+              <input
+                type="number"
+                step="any"
+                className={inputClass}
+                value={qty}
+                onChange={(e) => setQty(e.target.value)}
+                aria-label="Qty"
+              />
+            </label>
+            <label>
+              <span className={labelClass}>
+                {prefs.locale === "en" ? "Entry (optional)" : "Entry (opsional)"}
+              </span>
+              <input
+                type="number"
+                step="any"
+                className={inputClass}
+                value={entryPrice}
+                onChange={(e) => setEntryPrice(e.target.value)}
+                aria-label="Entry price"
+              />
+            </label>
+            <label>
+              <span className={labelClass}>
+                {prefs.locale === "en" ? "Stop loss (optional)" : "Stop loss (opsional)"}
+              </span>
+              <input
+                type="number"
+                step="any"
+                className={inputClass}
+                value={stopLoss}
+                onChange={(e) => setStopLoss(e.target.value)}
+                aria-label="Stop loss"
+              />
+            </label>
+            <label>
+              <span className={labelClass}>
+                {prefs.locale === "en" ? "Take profit (optional)" : "Take profit (opsional)"}
+              </span>
+              <input
+                type="number"
+                step="any"
+                className={inputClass}
+                value={takeProfit}
+                onChange={(e) => setTakeProfit(e.target.value)}
+                aria-label="Take profit"
+              />
+            </label>
+            {previewRR != null ? (
+              <p className="col-span-2 text-xs text-zinc-400">
+                {prefs.locale === "en" ? "Planned R:R " : "R:R rencana "}
+                <span className="font-semibold text-zinc-200">{formatR(previewRR)}</span>
+              </p>
+            ) : null}
+            <label className="col-span-2">
+              <span className={labelClass}>
+                {prefs.locale === "en" ? "Account label (optional)" : "Label akun (opsional)"}
+              </span>
+              <input
+                className={inputClass}
+                value={accountLabel}
+                onChange={(e) => setAccountLabel(e.target.value)}
+                placeholder="Personal, FTMO 100K, ..."
+                aria-label="Account label"
               />
             </label>
           </>

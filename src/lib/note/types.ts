@@ -31,6 +31,14 @@ export interface JournalEntry {
   clinicModuleId: string | null;
   protocol: string | null;
   accountLabel: string | null;
+  /** v3: stop loss price (for R-multiple computation) */
+  stopLoss?: number | null;
+  /** v3: take profit price (for R-multiple computation) */
+  takeProfit?: number | null;
+  /** v3: auto-computed planned R:R = (TP-entry)/(entry-SL) */
+  plannedRR?: number | null;
+  /** v3: auto-computed actual R = (exit-entry)/|entry-SL| */
+  actualRR?: number | null;
   relatedCourseSlug: string | null;
   relatedLessonId: string | null;
   /** Notion-style flexible property values */
@@ -64,6 +72,8 @@ export interface CreateEntryInput {
   clinicModuleId?: string | null;
   protocol?: string | null;
   accountLabel?: string | null;
+  stopLoss?: number | null;
+  takeProfit?: number | null;
   relatedCourseSlug?: string | null;
   relatedLessonId?: string | null;
   openedAt?: string | null;
