@@ -37,8 +37,6 @@ export function NoteProfileMenuContent() {
 
   const patchLocale = (locale: NoteLocale) => update({ locale });
   const patchCurrency = (currency: DisplayCurrency) => update({ currency });
-  const patchUsdIdr = (usdIdrRate: number) =>
-    update({ usdIdrRate, usdIdrRateManual: true, usdIdrRateFetchedAt: undefined });
   return (
     <>
       <DropdownMenuGroup>
@@ -66,7 +64,7 @@ export function NoteProfileMenuContent() {
             usdIdrRate={prefs.usdIdrRate}
             onLocale={patchLocale}
             onCurrency={patchCurrency}
-            onUsdIdrRate={patchUsdIdr}
+            onUsdIdrRate={() => {}}
             copy={copy}
             compact
           />

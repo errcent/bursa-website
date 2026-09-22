@@ -89,21 +89,16 @@ export function NoteQuickPrefs({
         ]}
       />
       {copy.usdIdrRate ? (
-        <label className="block space-y-1">
+        <div className="space-y-1">
           <span className="text-xs font-medium text-zinc-400">{copy.usdIdrRate}</span>
-          <input
-            type="number"
-            min={1000}
-            max={50000}
-            step={50}
-            value={usdIdrRate}
-            onChange={(e) => onUsdIdrRate(Number(e.target.value))}
-            className="min-h-11 w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 text-sm tabular-nums text-zinc-100"
-          />
+          <p className="min-h-11 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-2 py-2.5 text-sm tabular-nums text-zinc-300">
+            {usdIdrRate.toLocaleString("id-ID", { maximumFractionDigits: 0 })}
+            <span className="ml-1.5 text-[10px] text-emerald-400">● auto</span>
+          </p>
           {copy.usdIdrRateHint ? (
             <span className="block text-xs leading-snug text-zinc-400">{copy.usdIdrRateHint}</span>
           ) : null}
-        </label>
+        </div>
       ) : null}
     </div>
   );

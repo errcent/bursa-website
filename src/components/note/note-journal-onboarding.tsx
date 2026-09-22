@@ -126,7 +126,7 @@ export function NoteJournalOnboarding({
       locale,
       currency,
       usdIdrRate,
-      ...(rateTouched ? { usdIdrRateManual: true } : {}),
+      usdIdrRateManual: false,
       personalization,
       onboardingCompleted: true,
       ...(focus === "edge" ? { heroRange: "month" as const } : {}),
