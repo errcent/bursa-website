@@ -1,4 +1,5 @@
 import type { CreateEntryInput, JournalKind, JournalResult } from "@/lib/note/types";
+import type { Fill, FillSide } from "@/lib/note/position/types";
 
 const MAX_ROWS = 200;
 const MAX_BYTES = 200_000;
@@ -235,4 +236,79 @@ export function parseJournalCsv(raw: string): { entries: CreateEntryInput[]; err
   });
 
   return { entries, errors };
+}
+
+/** Grain of a statement: per-row trades (has pnl) vs raw fills (side+qty+price, no pnl). */
+export type CsvGrain = "trades" | "fills" | "unknown";
+
+export function detectCsvGrain(raw: string): CsvGrain {
+  const lines = raw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  if (lines.length < 1) return "unknown";
+  const headers = parseCsvLine(lines[0]).map(normalizeHeader);
+  if (headers.includes("pnl") || headers.includes("result")) return "trades";
+  if (headers.includes("symbol") && headers.includes("side")) return "fills";
+  return "unknown";
+}
+
+function toFillSide(value: string | undefined): FillSide {
+  const v = (value ?? "BUY").trim().toUpperCase();
+  return v.startsWith("SELL") || v.startsWith("SHORT") || v === "S" ? "sell" : "buy";
+}
+
+/**
+ * Parse a fills-grain CSV (broker executions: side/qty/price per row, no per-row pnl).
+ * Caller feeds the fills into buildPositionCycles, then cyclesToEntries.
+ */
+export function parseJournalFills(
+  raw: string,
+  opts: { accountRef?: string } = {},
+): { fills: Fill[]; errors: string[] } {
+  if (raw.length > MAX_BYTES) {
+    return { fills: [], errors: ["File CSV terlalu besar (maks 200 KB)."] };
+  }
+  const lines = raw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  if (lines.length < 2) {
+    return { fills: [], errors: ["CSV perlu header dan minimal 1 baris data."] };
+  }
+  const headers = parseCsvLine(lines[0]).map(normalizeHeader);
+  const hasSymbol = headers.some((h) => h === "symbol");
+  if (!hasSymbol) {
+    return { fills: [], errors: ["Header wajib: symbol, ticker, saham, atau kode."] };
+  }
+
+  const errors: string[] = [];
+  const fills: Fill[] = [];
+  const body = lines.slice(1, MAX_ROWS + 1);
+  if (lines.length - 1 > MAX_ROWS) {
+    errors.push(`Hanya ${MAX_ROWS} baris pertama yang diimpor.`);
+  }
+
+  body.forEach((line, index) => {
+    const cols = parseCsvLine(line);
+    const row: Record<string, string> = {};
+    headers.forEach((h, i) => {
+      if (h) row[h] = cols[i] ?? "";
+    });
+    const symbol = normalizeIdxSymbol(row.symbol?.trim() ?? "");
+    const qty = toNumber(row.qty) ?? 0;
+    const price = toNumber(row.entryPrice) ?? toNumber(row.exitPrice) ?? NaN;
+    if (!symbol || qty <= 0 || !Number.isFinite(price)) {
+      errors.push(`Baris ${index + 2}: fill tidak lengkap (butuh simbol/qty/harga), dilewati.`);
+      return;
+    }
+    fills.push({
+      id: `${Date.now().toString(36)}-${index.toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+      accountRef: opts.accountRef ?? "import",
+      ticker: symbol,
+      side: toFillSide(row.side),
+      size: qty,
+      price,
+      fee: toNumber(row.fees) ?? 0,
+      filledAt: row.openedAt || new Date().toISOString(),
+      origin: "import",
+      sequence: index,
+    });
+  });
+
+  return { fills, errors };
 }

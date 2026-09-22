@@ -9,7 +9,7 @@ describe("Note CSV import", () => {
     const { entries, errors } = parseJournalCsv(csv);
     assert.equal(errors.length, 0);
     assert.equal(entries.length, 1);
-    assert.equal(entries[0].symbol, "BBCA");
+    assert.equal(entries[0].symbol, "BBCA.JK");
     assert.equal(entries[0].mode, "cepat");
     assert.equal(entries[0].pnl, 150);
     assert.equal(entries[0].result, "win");

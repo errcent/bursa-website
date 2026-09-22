@@ -1,7 +1,9 @@
 import { NextRequest } from "next/server";
 
 import { handleApiError, jsonError, jsonOk } from "@/lib/api-utils";
-import { parseJournalCsv } from "@/lib/note/csv";
+import { detectCsvGrain, parseJournalCsv, parseJournalFills } from "@/lib/note/csv";
+import { buildPositionCycles } from "@/lib/note/position/cycle";
+import { cyclesToEntries } from "@/lib/note/position/adapter";
 import { enforceNoteRateLimit } from "@/lib/note/api-rate-limit";
 import { applyNoteCors, noteCorsPreflight, requireNoteSession } from "@/lib/note/guard";
 import { isBodyTooLarge } from "@/lib/note/request-limits";
@@ -38,12 +40,39 @@ export async function POST(request: NextRequest) {
       return applyNoteCors(jsonError("Lampirkan file CSV atau field csv.", 400), origin);
     }
 
+    const grain = detectCsvGrain(text);
+    const repo = getNoteRepo();
+
+    // Fills grain: raw executions → position cycles → one entry per cycle.
+    if (grain === "fills") {
+      const { fills, errors: fillErrors } = parseJournalFills(text, {
+        accountRef: `import-${auth.session.userId.slice(0, 8)}`,
+      });
+      if (fills.length === 0) {
+        return applyNoteCors(jsonError(fillErrors[0] ?? "Tidak ada fill yang bisa diimpor.", 400), origin);
+      }
+      const cycles = buildPositionCycles(fills, { method: "fifo" });
+      const inputs = cyclesToEntries(cycles);
+      const created = [];
+      for (const input of inputs) {
+        created.push(await repo.createEntry(auth.session.userId, input));
+      }
+      const varianceFlags = cycles.filter((c) => Math.abs(c.grossVariance) >= 0.01).length;
+      const warnings = [...fillErrors];
+      if (varianceFlags > 0) {
+        warnings.push(`${varianceFlags} siklus punya selisih vs statement — cek catatan entry.`);
+      }
+      return applyNoteCors(
+        jsonOk({ imported: created.length, fills: fills.length, cycles: cycles.length, errors: warnings, entries: created }),
+        origin,
+      );
+    }
+
     const { entries, errors } = parseJournalCsv(text);
     if (entries.length === 0) {
       return applyNoteCors(jsonError(errors[0] ?? "Tidak ada baris yang bisa diimpor.", 400), origin);
     }
 
-    const repo = getNoteRepo();
     const created = [];
     for (const input of entries) {
       created.push(await repo.createEntry(auth.session.userId, input));

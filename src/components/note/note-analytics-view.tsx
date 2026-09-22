@@ -12,6 +12,8 @@ import { NOTE_EXECUTION_KIND } from "@/lib/note/sections";
 import { buildAnalyticsReport } from "@/lib/note/analytics";
 import { generateEdgeInsight } from "@/lib/note/edge-finder";
 import { NoteDrawdownGauge } from "@/components/note/note-drawdown-gauge";
+import { NoteCrossMatrix } from "@/components/note/note-cross-matrix";
+import { NoteEdgeDialect } from "@/components/note/note-edge-dialect";
 import { NoteEmotionCorrelation } from "@/components/note/note-emotion-correlation";
 import { pnlOptsForSlot } from "@/lib/note/prefs";
 import { filterEntries, formatPnl } from "@/lib/note/stats";
@@ -203,6 +205,8 @@ export function NoteAnalyticsView() {
 
       <NoteDrawdownGauge />
 
+      <NoteEdgeDialect />
+
       <NoteEmotionCorrelation />
 
       <AnalyticsSection
@@ -249,6 +253,17 @@ export function NoteAnalyticsView() {
             ))}
           </ul>
         )}
+      </AnalyticsSection>
+
+      <AnalyticsSection
+        title={locale === "en" ? "Cross-matrix" : "Matriks silang"}
+        hint={
+          locale === "en"
+            ? "Two-way breakdown: where net P&L actually comes from."
+            : "Bedah dua arah: dari mana net P&L sebenarnya berasal."
+        }
+      >
+        <NoteCrossMatrix />
       </AnalyticsSection>
     </div>
   );
