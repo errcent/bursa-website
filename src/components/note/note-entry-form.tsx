@@ -11,6 +11,7 @@ import { courseClassHref } from "@/lib/security/safe-http-url";
 import { parseTradeLine } from "@/lib/note/parse-trade";
 import { plannedRR, formatR } from "@/lib/note/r-multiple";
 import { SymbolInput } from "@/components/note/symbol-input";
+import { VoiceLogButton } from "@/components/note/voice-log-button";
 import type { JournalKind, JournalMode } from "@/lib/note/types";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
@@ -151,14 +152,21 @@ export function NoteEntryForm({
             />
           </label>
           {pasteText.trim() ? (
-            <button
-              type="button"
-              className="mt-2 inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
-              onClick={applyPaste}
-            >
-              {prefs.locale === "en" ? "Parse & fill" : "Parse & isi"}
-            </button>
-          ) : null}
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                type="button"
+                className="inline-flex min-h-11 items-center rounded-md bg-zinc-100 px-3 text-xs font-medium text-zinc-950 hover:bg-white"
+                onClick={applyPaste}
+              >
+                {prefs.locale === "en" ? "Parse & fill" : "Parse & isi"}
+              </button>
+              <VoiceLogButton onParsed={(text) => setPasteText(text)} />
+            </div>
+          ) : (
+            <div className="mt-2">
+              <VoiceLogButton onParsed={(text) => setPasteText(text)} />
+            </div>
+          )}
         </div>
       ) : null}
 

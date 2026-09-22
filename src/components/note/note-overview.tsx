@@ -13,6 +13,8 @@ import {
 } from "@/lib/note/overview-chart-prefs";
 import { generateInsight } from "@/lib/note/insight";
 import { NoteMarketTicker } from "@/components/note/note-market-ticker";
+import { NoteDailyPrompt } from "@/components/note/note-daily-prompt";
+import { NoteRiskBudget } from "@/components/note/note-risk-budget";
 
 import { NoteLoadingLine } from "@/components/note/note-loading-line";
 import { useNoteJournal } from "@/components/note/note-journal-context";
@@ -192,6 +194,10 @@ export function NoteOverview() {
       ) : null}
 
       <NoteMarketTicker />
+
+      <NoteDailyPrompt />
+
+      <NoteRiskBudget />
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] xl:items-start">
         <div className="flex flex-col gap-5">
