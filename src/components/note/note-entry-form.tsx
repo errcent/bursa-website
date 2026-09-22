@@ -10,6 +10,7 @@ import { noteSsoStartHref } from "@/lib/note/sso-urls";
 import { courseClassHref } from "@/lib/security/safe-http-url";
 import { parseTradeLine } from "@/lib/note/parse-trade";
 import { plannedRR, formatR } from "@/lib/note/r-multiple";
+import { SymbolInput } from "@/components/note/symbol-input";
 import type { JournalKind, JournalMode } from "@/lib/note/types";
 import { useNotePrefs } from "@/lib/note/use-note-prefs";
 import { cn } from "@/lib/utils";
@@ -166,12 +167,12 @@ export function NoteEntryForm({
           <>
             <label className="col-span-2">
               <span className={labelClass}>{copy.colSymbol}</span>
-              <input
+              <SymbolInput
                 required
                 className={inputClass}
                 value={symbol}
-                onChange={(e) => setSymbol(e.target.value)}
-                aria-label={copy.colSymbol}
+                onChange={setSymbol}
+                ariaLabel={copy.colSymbol}
               />
             </label>
             <label>

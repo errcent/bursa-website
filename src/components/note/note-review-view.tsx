@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { useNoteJournal } from "@/components/note/note-journal-context";
 import { NOTE_EXECUTION_KIND } from "@/lib/note/sections";
 import { pnlOptsFromPrefs } from "@/lib/note/prefs";
+import { BrokerReconcile } from "@/components/note/broker-reconcile";
 import { dayKey, filterEntries, formatPnl, summarizeJournal } from "@/lib/note/stats";
 import { isPnlKind } from "@/lib/note/types";
 import { noteCopy } from "@/lib/note/copy";
@@ -82,6 +83,8 @@ export function NoteReviewView() {
         </p>
         {mistake}
       </div>
+
+      <BrokerReconcile />
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { NoteSectionIntro } from "@/components/note/note-section-intro";
 import { useNoteJournal } from "@/components/note/note-journal-context";
 import { NOTE_EXECUTION_KIND } from "@/lib/note/sections";
 import { buildAnalyticsReport } from "@/lib/note/analytics";
+import { generateEdgeInsight } from "@/lib/note/edge-finder";
 import { pnlOptsForSlot } from "@/lib/note/prefs";
 import { filterEntries, formatPnl } from "@/lib/note/stats";
 import { isPnlKind } from "@/lib/note/types";
@@ -69,6 +70,10 @@ export function NoteAnalyticsView() {
 
   const report = useMemo(
     () => buildAnalyticsReport(heroEntries, { weights: null, locale }),
+    [heroEntries, locale]
+  );
+  const edgeInsight = useMemo(
+    () => generateEdgeInsight(heroEntries, locale),
     [heroEntries, locale]
   );
 
@@ -161,6 +166,15 @@ export function NoteAnalyticsView() {
   return (
     <div className="mx-auto max-w-4xl space-y-6 pb-10">
       <NoteSectionIntro sectionId="analytics" />
+
+      {edgeInsight ? (
+        <div className="rounded-lg border border-zinc-700/60 bg-zinc-800/30 px-4 py-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+            {locale === "en" ? "Edge finder" : "Pencari edge"}
+          </p>
+          <p className="mt-1 text-sm text-zinc-100">{edgeInsight.text}</p>
+        </div>
+      ) : null}
 
       <p className="rounded-lg border border-zinc-800/80 bg-zinc-900/40 px-4 py-3 text-sm text-zinc-300">
         {report.edge.headline[locale]}
