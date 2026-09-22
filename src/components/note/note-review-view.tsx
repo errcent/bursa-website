@@ -7,6 +7,7 @@ import { NOTE_EXECUTION_KIND } from "@/lib/note/sections";
 import { pnlOptsFromPrefs } from "@/lib/note/prefs";
 import { BrokerReconcile } from "@/components/note/broker-reconcile";
 import { MentorShareButton } from "@/components/note/mentor-share-button";
+import { NoteTaxExport } from "@/components/note/note-tax-export";
 import { dayKey, filterEntries, formatPnl, summarizeJournal } from "@/lib/note/stats";
 import { isPnlKind } from "@/lib/note/types";
 import { noteCopy } from "@/lib/note/copy";
@@ -88,6 +89,8 @@ export function NoteReviewView() {
       <BrokerReconcile />
 
       <MentorShareButton />
+
+      <NoteTaxExport />
     </div>
   );
 }

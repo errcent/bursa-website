@@ -17,6 +17,7 @@ import { NoteDailyPrompt } from "@/components/note/note-daily-prompt";
 import { NoteRiskBudget } from "@/components/note/note-risk-budget";
 import { NotePwaPrompt } from "@/components/note/note-pwa-prompt";
 import { NoteBackupBar } from "@/components/note/note-backup-bar";
+import { NoteStreakBadge } from "@/components/note/note-streak-badge";
 
 import { NoteLoadingLine } from "@/components/note/note-loading-line";
 import { useNoteJournal } from "@/components/note/note-journal-context";
@@ -196,6 +197,8 @@ export function NoteOverview() {
       ) : null}
 
       <NoteMarketTicker />
+
+      <NoteStreakBadge />
 
       <NoteDailyPrompt />
 
