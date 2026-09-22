@@ -47,6 +47,8 @@ export function NoteEntryForm({
   const [stopLoss, setStopLoss] = useState("");
   const [takeProfit, setTakeProfit] = useState("");
   const [accountLabel, setAccountLabel] = useState("");
+  const [fees, setFees] = useState("");
+  const [thesis, setThesis] = useState("");
   const [pasteText, setPasteText] = useState("");
   const [openedDate, setOpenedDate] = useState(initialDate ?? jakartaDateKey());
   const [note, setNote] = useState("");
@@ -127,6 +129,8 @@ export function NoteEntryForm({
         entryPrice: isRefleksi ? null : entryPrice === "" ? null : Number(entryPrice),
         stopLoss: isRefleksi ? null : stopLoss === "" ? null : Number(stopLoss),
         takeProfit: isRefleksi ? null : takeProfit === "" ? null : Number(takeProfit),
+        fees: isRefleksi ? null : fees === "" ? null : Number(fees),
+        thesis: isRefleksi ? null : thesis.trim() || null,
         pnl: isRefleksi ? null : pnlNumber,
         accountLabel: accountLabel.trim() || null,
         note: note.trim() || null,
@@ -300,6 +304,32 @@ export function NoteEntryForm({
                 onChange={(e) => setAccountLabel(e.target.value)}
                 placeholder="Personal, FTMO 100K, ..."
                 aria-label="Account label"
+              />
+            </label>
+            <label className="col-span-2">
+              <span className={labelClass}>
+                {prefs.locale === "en" ? "Fees (optional)" : "Biaya (opsional)"}
+              </span>
+              <input
+                type="number"
+                step="any"
+                className={inputClass}
+                value={fees}
+                onChange={(e) => setFees(e.target.value)}
+                aria-label="Fees"
+              />
+            </label>
+            <label className="col-span-2">
+              <span className={labelClass}>
+                {prefs.locale === "en" ? "Why did you enter? (thesis)" : "Kenapa entry? (thesis)"}
+              </span>
+              <textarea
+                rows={2}
+                className={`${inputClass} min-h-[3rem] resize-y py-2`}
+                value={thesis}
+                onChange={(e) => setThesis(e.target.value)}
+                placeholder={prefs.locale === "en" ? "Setup, trigger, confluence..." : "Setup, trigger, konfluensi..."}
+                aria-label="Thesis"
               />
             </label>
           </>

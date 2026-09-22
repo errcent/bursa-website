@@ -1,5 +1,6 @@
 import { inferJournalResult } from "@/lib/note/stats";
 import { plannedRR, actualRR } from "@/lib/note/r-multiple";
+import { deriveSession } from "@/lib/note/edge-finder";
 import type { CreateEntryInput, JournalEntry } from "@/lib/note/types";
 
 export function buildJournalEntry(apexUserId: string, input: CreateEntryInput): JournalEntry {
@@ -43,6 +44,8 @@ export function buildJournalEntry(apexUserId: string, input: CreateEntryInput): 
     takeProfit,
     plannedRR: computedPlannedRR,
     actualRR: computedActualRR,
+    thesis: input.thesis ?? null,
+    session: deriveSession(input.openedAt || now),
     relatedCourseSlug: input.relatedCourseSlug?.trim() || null,
     relatedLessonId: input.relatedLessonId?.trim() || null,
     openedAt: input.openedAt || now,

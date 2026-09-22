@@ -39,6 +39,10 @@ export interface JournalEntry {
   plannedRR?: number | null;
   /** v3: auto-computed actual R = (exit-entry)/|entry-SL| */
   actualRR?: number | null;
+  /** v3: structured "Why did I enter?" thesis */
+  thesis?: string | null;
+  /** v3: auto-detected trading session */
+  session?: string | null;
   relatedCourseSlug: string | null;
   relatedLessonId: string | null;
   /** Notion-style flexible property values */
@@ -74,6 +78,8 @@ export interface CreateEntryInput {
   accountLabel?: string | null;
   stopLoss?: number | null;
   takeProfit?: number | null;
+  thesis?: string | null;
+  session?: string | null;
   relatedCourseSlug?: string | null;
   relatedLessonId?: string | null;
   openedAt?: string | null;

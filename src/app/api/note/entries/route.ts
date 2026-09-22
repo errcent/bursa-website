@@ -35,6 +35,7 @@ const createSchema = z
     accountLabel: z.string().trim().max(40).optional().nullable(),
     stopLoss: z.number().finite().optional().nullable(),
     takeProfit: z.number().finite().optional().nullable(),
+    thesis: z.string().trim().max(1000).optional().nullable(),
     relatedCourseSlug: z.string().trim().max(120).optional().nullable(),
     relatedLessonId: z.string().trim().max(64).optional().nullable(),
     openedAt: z.string().trim().max(40).optional().nullable(),
