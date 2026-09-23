@@ -79,4 +79,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --ignore-scripts
+      - name: Generate Note Prisma client (postinstall skipped in CI)
+        run: npm run db:note:generate
       - run: npm run test:note
