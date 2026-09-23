@@ -12,20 +12,43 @@ export interface HtmlTable {
   rows: string[][];
 }
 
+/** Single-pass entity decode - avoids chained &amp; → & double-unescape (js/double-escaping). */
+const NAMED_HTML_ENTITIES: Record<string, string> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  nbsp: " ",
+};
+
 function decodeEntities(text: string): string {
-  return text
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&quot;/gi, '"')
-    .replace(/&#0?39;/g, "'")
-    .replace(/\s+/g, " ")
-    .trim();
+  const decoded = text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (_full, entity: string) => {
+    if (entity[0] === "#") {
+      const code =
+        entity[1] === "x" || entity[1] === "X"
+          ? Number.parseInt(entity.slice(2), 16)
+          : Number.parseInt(entity.slice(1), 10);
+      if (!Number.isFinite(code) || code < 0 || code > 0x10ffff) return "";
+      try {
+        return String.fromCodePoint(code);
+      } catch {
+        return "";
+      }
+    }
+    return NAMED_HTML_ENTITIES[entity.toLowerCase()] ?? "";
+  });
+  return decoded.replace(/\s+/g, " ").trim();
 }
 
 function stripTags(html: string): string {
-  return decodeEntities(html.replace(/<[^>]*>/g, ""));
+  let text = html;
+  let previous = "";
+  while (text !== previous) {
+    previous = text;
+    text = text.replace(/<[^>]*>/g, "");
+  }
+  return decodeEntities(text);
 }
 
 /** Extract every <table> as header + body rows of cell text. */
